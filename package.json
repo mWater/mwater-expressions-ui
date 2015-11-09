@@ -1,0 +1,52 @@
+{
+  "name": "mwater-expressions-ui",
+  "version": "2.0.0",
+  "description": "Expression UI library",
+  "repository": "git@github.com:mWater/mwater-expressions-ui.git",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "testem ci"
+  },
+  "browserify": {
+    "transform": [
+      "coffeeify",
+      "brfs"
+    ]
+  },
+  "style": "src/index.css",
+  "author": "mWater",
+  "license": "",
+  "dependencies": {
+    "async": "^1.5.0",
+    "lodash": "^3.10.1",
+    "moment": "^2.10.6",
+    "mwater-expressions": "git+ssh://github.com/mWater/mwater-expressions.git",
+    "react": "^0.14.1",
+    "react-bootstrap-daterangepicker": "^1.0.3",
+    "react-dom": "^0.14.1",
+    "react-motion": "^0.3.1",
+    "react-onclickout": "^2.0.1",
+    "react-select": "^0.9.1"
+  },
+  "devDependencies": {
+    "brfs": "^1.4.1",
+    "browser-sync": "^2.9.11",
+    "browserify": "^12.0.1",
+    "canonical-json": "0.0.4",
+    "chai": "^3.4.0",
+    "coffeeify": "^1.1.0",
+    "gulp": "git://github.com/gulpjs/gulp.git#4.0",
+    "gulp-coffee": "^2.3.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-rework": "^1.0.3",
+    "gulp-util": "^3.0.7",
+    "karma": "^0.13.14",
+    "karma-browserify": "^4.4.0",
+    "karma-chrome-launcher": "^0.2.1",
+    "karma-mocha": "^0.2.0",
+    "mocha": "^2.3.3",
+    "rework-npm": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.6.0"
+  }
+}

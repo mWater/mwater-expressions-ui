@@ -1,0 +1,21 @@
+{
+  "name": "mwater-expressions",
+  "version": "0.0.0",
+  "authors": [
+    "Clayton Grassick <clayton@claytronics.org>"
+  ],
+  "description": "mWater Visualization",
+  "license": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test"
+  ],
+  "dependencies": {
+    "lodash": "~3.10.1",
+    "jquery": "~2.1.4",
+    "bootstrap": "~3.3.5"
+  }
+}
