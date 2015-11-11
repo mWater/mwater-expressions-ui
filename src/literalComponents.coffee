@@ -1,6 +1,7 @@
 React = require 'react'
 H = React.DOM
 ReactSelect = require 'react-select'
+_ = require 'lodash'
 
 exports.TextComponent = React.createClass {
   propTypes: {
@@ -88,7 +89,6 @@ exports.EnumArrComponent = class EnumArrComponent extends React.Component
   handleChange: (val) =>
     value = if val then val.split("\n") else []
     value = _.map(value, JSON.parse)
-    console.log value
     @props.onChange({ type: "literal", valueType: "enum[]", value: value })
 
   render: ->

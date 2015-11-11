@@ -1,14 +1,14 @@
 React = require 'react'
 H = React.DOM
 ReactSelect = require 'react-select'
-ExprCompiler = require '../ExprCompiler'
+ExprCompiler = require("mwater-expressions").ExprCompiler
 
 # Displays a combo box that allows selecting multiple text values from an expression
 module.exports = class TextArrayComponent extends React.Component
   @propTypes: 
     value: React.PropTypes.object
     onChange: React.PropTypes.func.isRequired 
-    expr: React.PropTypes.object.isRequired # Expression for the text values to select from
+    refExpr: React.PropTypes.object.isRequired # Expression for the text values to select from
     schema: React.PropTypes.object.isRequired # Schema of the database
     dataSource: React.PropTypes.object.isRequired # Data source to use to get values
 
@@ -27,15 +27,15 @@ module.exports = class TextArrayComponent extends React.Component
     query = {
       type: "query"
       selects: [
-        { type: "select", expr: exprCompiler.compileExpr(expr: @props.expr, tableAlias: "main"), alias: "value" }
+        { type: "select", expr: exprCompiler.compileExpr(expr: @props.refExpr, tableAlias: "main"), alias: "value" }
         { type: "select", expr: { type: "op", op: "count", exprs: [] }, alias: "number" }
       ]
-      from: exprCompiler.compileTable(@props.expr.table), "main") 
+      from: exprCompiler.compileTable(@props.refExpr.table, "main") 
       where: {
         type: "op"
         op: "~*"
         exprs: [
-          exprCompiler.compileExpr(expr: @props.expr, tableAlias: "main")
+          exprCompiler.compileExpr(expr: @props.refExpr, tableAlias: "main")
           "^" + @escapeRegex(input)
         ]
       }

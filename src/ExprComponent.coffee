@@ -5,6 +5,8 @@ H = React.DOM
 
 ExprUtils = require("mwater-expressions").ExprUtils
 SelectExprComponent = require './SelectExprComponent'
+literalComponents = require './literalComponents'
+TextArrayComponent = require './TextArrayComponent'
 
 # Display/editor component for an expression
 # Uses ExprElementBuilder to create the tree of components
@@ -18,9 +20,10 @@ module.exports = class ExprComponent extends React.Component
     onChange: React.PropTypes.func  # Called with new expression
 
     type: React.PropTypes.string    # If specified, the type (value type) of expression required. e.g. boolean
+    enumValues: React.PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
 
   render: ->
-    new ExprElementBuilder(@props.schema, @props.dataSource).build(@props.value, @props.table, @props.onChange, { type: @props.type })
+    new ExprElementBuilder(@props.schema, @props.dataSource).build(@props.value, @props.table, @props.onChange, { type: @props.type, enumValues: @props.enumValues })
 
 class ExprElementBuilder 
   constructor: (schema, dataSource) ->
@@ -31,7 +34,9 @@ class ExprElementBuilder
 
   # Build the tree for an expression
   # Options include:
-  #   type: required value type of expression
+  #  type: required value type of expression
+  #  key: key of the resulting element
+  #  enumValues: array of { id, name } for the enumerable values to display
   build: (expr, table, onChange, options = {}) ->
     # Create new onChange function. If a boolean type is required and the expression given is not, 
     # it will wrap it with an expression
@@ -64,9 +69,75 @@ class ExprElementBuilder
         placeholder: "None"
         initiallyOpen: false
         onSelect: innerOnChange
-      
-    return H.div null, "TODO"
+        key: options.key
+        type: if options.type != "boolean" then options.type # Boolean can be any type because of autowrapping above
+        enumValues: options.enumValues
 
+    # Handle {} placeholder
+    if _.isEmpty(expr)
+      return R SelectExprComponent, 
+        schema: @schema
+        table: table
+        placeholder: "Select..."
+        initiallyOpen: true
+        onSelect: innerOnChange
+        key: options.key
+        type: if options.type != "boolean" then options.type # Boolean can be any type because of autowrapping above
+        enumValues: options.enumValues
+
+    # Handle literals
+    if expr.type == "literal"
+      elem = @buildLiteral(expr, innerOnChange, { key: options.key, enumValues: options.enumValues })
+    else if expr.type == "op"
+      elem = H.div null,
+        expr.op
+        _.map(expr.exprs, (e) => @build(e, table, innerOnChange, options))
+    else if expr.type == "field"
+      # DISPLAY FIELD
+      elem = H.span null, @exprUtils.summarizeExpr(expr)
+    else if expr.type == "scalar"
+      # DISPLAY FIELD
+      elem = H.span null, @exprUtils.summarizeExpr(expr)
+    else
+      throw new Error("Unhandled expression type #{expr.type}")
+      
+    return H.div null, elem
+
+  # Builds a literal component
+  # Options include:
+  #  key: sets the key of the component
+  #  enumValues: array of { id, name } for the enumerable values to display
+  #  refExpr: reference expression to use for selecting appropriate values. For example, text[] uses it to know which values to display
+  buildLiteral: (expr, onChange, options = {}) ->
+    switch expr.valueType
+      when "text"
+        return R(literalComponents.TextComponent, key: options.key, value: expr, onChange: onChange)
+      when "number"
+        return R(literalComponents.NumberComponent, key: options.key, value: expr, onChange: onChange)
+      when "date"
+        return R(literalComponents.DateComponent, key: options.key, value: expr, onChange: onChange)
+      when "datetime"
+        return R(literalComponents.DatetimeComponent, key: options.key, value: expr, onChange: onChange)
+      when "enum"
+        return R(literalComponents.EnumComponent, 
+          key: options.key, 
+          value: expr, 
+          enumValues: options.enumValues
+          onChange: onChange)
+      when "enum[]"
+        return R(literalComponents.EnumArrComponent, 
+          key: options.key, 
+          value: expr, 
+          enumValues: options.enumValues
+          onChange: onChange)
+      when "text[]"
+        return R(TextArrayComponent, 
+          key: options.key
+          value: expr
+          refExpr: options.refExpr
+          schema: @schema
+          dataSource: @dataSource
+          onChange: onChange)
 
 
 # # Displays an expression of any type with controls to allow it to be altered
