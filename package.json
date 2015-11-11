@@ -45,6 +45,7 @@
     "karma-chrome-launcher": "^0.2.1",
     "karma-mocha": "^0.2.0",
     "mocha": "^2.3.3",
+    "react-addons-test-utils": "^0.14.2",
     "rework-npm": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.6.0"

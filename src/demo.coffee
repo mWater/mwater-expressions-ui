@@ -26,7 +26,6 @@ $ ->
   #   { id: "number", name: "number", type: "number" }
   #   { id: "2-1", name: "T2->T1", type: "join", join: { fromTable: "t2", fromColumn: "t1", toTable: "t1", toColumn: "primary", op: "=", multiple: false }}
   #   ]})
-    alert("ho!!")
     class TestComponent extends React.Component
       constructor: ->
         super
