@@ -10,5 +10,6 @@ module.exports = class DropdownComponent extends React.Component
   render: ->
     H.div className: "dropdown #{if @props.dropdown then "open" else ""}", style: { display: "inline-block" },
       @props.children
-      H.div className: "dropdown-menu", style: { width: 400 },
-        @props.dropdown
+      if @props.dropdown
+        H.div className: "dropdown-menu", style: { minWidth: "100%" },
+          @props.dropdown

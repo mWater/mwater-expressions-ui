@@ -6,6 +6,7 @@ Schema = require("mwater-expressions").Schema
 
 ExprComponent = require './ExprComponent'
 ExprCleaner = require("mwater-expressions").ExprCleaner
+OmniBoxExprComponent = require './OmniBoxExprComponent'
 
 $ ->
   $.getJSON "https://api.mwater.co/v3/jsonql/schema?formIds=f6d3b6deed734467932f4dca34af4175", (schemaJson) ->
@@ -34,24 +35,35 @@ $ ->
           { value: "xyz" }
           ])
     }
-    
+
     class TestComponent extends React.Component
       constructor: ->
         super
         @state = { 
           # value: {} 
-          value: {"type":"op","table":"responses:f6d3b6deed734467932f4dca34af4175","op":"= any","exprs":[{"type":"field","table":"responses:f6d3b6deed734467932f4dca34af4175","column":"data:dd4ba7ef310949c7ba11aa46e2529efb:value"},null]}
+          # value: {"type":"op","table":"responses:f6d3b6deed734467932f4dca34af4175","op":"= any","exprs":[{"type":"field","table":"responses:f6d3b6deed734467932f4dca34af4175","column":"data:dd4ba7ef310949c7ba11aa46e2529efb:value"},null]}
+          value: { type: "literal", valueType: "enum", value: "a" }
         }
 
       handleValueChange: (value) => 
-        value = new ExprCleaner(schema).cleanExpr(value, { type: 'boolean' })
+        console.log(JSON.stringify(value))
+        value = new ExprCleaner(schema).cleanExpr(value) #, { type: 'boolean' })
         console.log(JSON.stringify(value))
         @setState(value: value)
 
       render: ->
         dataSource
         H.div style: { padding: 10 },
-          R(ExprComponent, schema: schema, dataSource: dataSource, table: "responses:f6d3b6deed734467932f4dca34af4175", value: @state.value, onChange: @handleValueChange, type: "boolean")
+          R(OmniBoxExprComponent, 
+              schema: schema
+              dataSource: dataSource
+              table: "responses:f6d3b6deed734467932f4dca34af4175"
+              value: @state.value
+              enumValues: [{ id: "a", name: "ABC"}, { id: "b", name: "BCD"}]
+              type: "enum"
+              initialMode: "literal"
+              onChange: @handleValueChange)
+          # R(ExprComponent, schema: schema, dataSource: dataSource, table: "responses:f6d3b6deed734467932f4dca34af4175", value: @state.value, onChange: @handleValueChange, type: "boolean")
           H.br()
           H.br()
           H.pre null, JSON.stringify(@state.value, null, 2)

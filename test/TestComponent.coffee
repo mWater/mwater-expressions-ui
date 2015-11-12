@@ -34,6 +34,7 @@ module.exports = class TestComponent
 
   @click: (comp) -> ReactTestUtils.Simulate.click(comp)
   @pressEnter: (comp) -> ReactTestUtils.Simulate.keyDown(comp, {key: "Enter", keyCode: 13, which: 13})
+  @pressTab: (comp) -> ReactTestUtils.Simulate.keyDown(comp, {key: "Tab", keyCode: 9, which: 9})
   @changeValue: (comp, value) -> 
     comp.value = value
     ReactTestUtils.Simulate.change(comp)
