@@ -8,6 +8,7 @@ OmniBoxExprComponent = require './OmniBoxExprComponent'
 literalComponents = require './literalComponents'
 TextArrayComponent = require './TextArrayComponent'
 LinkComponent = require './LinkComponent'
+StackedComponent = require './StackedComponent'
 
 # Display/editor component for an expression
 # Uses ExprElementBuilder to create the tree of components
@@ -46,6 +47,7 @@ class ExprElementBuilder
   #  enumValues: array of { id, name } for the enumerable values to display
   #  refExpr: expression to get values for (used for literals)
   #  preferLiteral: to preferentially choose literal expressions (used for RHS of expressions)
+  #  suppressWrapOps: pass ops to *not* offer to wrap in
   build: (expr, table, onChange, options = {}) ->
     # Create new onChange function. If a boolean type is required and the expression given is not, 
     # it will wrap it with an expression
@@ -115,20 +117,38 @@ class ExprElementBuilder
     else
       throw new Error("Unhandled expression type #{expr.type}")
 
-    # # Wrap element with hover links to build more complex expressions or to clear it
-    # links = []
+    # Wrap element with hover links to build more complex expressions or to clear it
+    links = []
 
-    # type = @exprUtils.getExprType(expr)
+    type = @exprUtils.getExprType(expr)
 
-    # # If boolean, add + And link
-    # if type == "boolean"
-    #   # if @props.parentOp != "and" and @props.value.op != "and"
-    #   links.push({ label: "+ And", onClick: => innerOnChange({ type: "op", op: "and", table: table, exprs: [expr, {}] }) })
-    #   # if @props.parentOp != "or" and @props.value.op != "or"
-    #   links.push({ label: "+ Or", onClick: => innerOnChange({ type: "op", op: "or", table: table, exprs: [expr, {}] }) })
+    # If boolean, add and/or link
+    createWrapOp = (op, name, binaryOnly) =>
+      if op not in (options.suppressWrapOps or [])
+        # Prevent nesting when simple adding would work
+        if expr.op != op or binaryOnly
+          links.push({ label: name, onClick: => innerOnChange({ type: "op", op: op, table: table, exprs: [expr, null] }) })
+        else
+          # Just add extra element
+          links.push({ label: name, onClick: => 
+            exprs = expr.exprs.slice()
+            exprs.push(null)
+            innerOnChange(_.extend({}, expr, { exprs: exprs }))
+          })
+
+    if type == "boolean"
+      createWrapOp("and", "+ And", false)
+      createWrapOp("or", "+ Or", false)
+
+    if type == "number"
+      createWrapOp("+", "+", false)
+      createWrapOp("-", "-", true)
+      createWrapOp("*", "*", false)
+      createWrapOp("/", "/", true)
 
     # links.push({ label: "Remove", onClick: => onChange(null) })
-    # elem = R WrappedLinkComponent, links: links, elem
+    if links.length > 0
+      elem = R WrappedLinkComponent, links: links, elem
 
     return elem
 
@@ -175,7 +195,7 @@ class ExprElementBuilder
     innerOnChange = (value) =>
       onChange(_.extend({}, expr, { expr: value }))
 
-    return H.div style: { display: "inline-block" },
+    return H.div style: { display: "flex", alignItems: "center" },
       # Aggregate dropdown
       aggrElem
       R(LinkComponent, 
@@ -200,15 +220,18 @@ class ExprElementBuilder
             # Set expr value
             onChange(_.extend({}, expr, { exprs: newExprs }))
 
-          @build(innerExpr, table, innerElemOnChange, type: "boolean")
+          @build(innerExpr, table, innerElemOnChange, type: "boolean", suppressWrapOps: [expr.op])
         
-        # Create vertical expression
-        R(VerticalExprComponent, itemLabel: expr.op, innerElems)
+        # Create stacked expression
+        R(StackedComponent, joinLabel: expr.op, innerElems)
+        # H.div null,
+        #   R(StackedComponent, joinLabel: expr.op, innerElems)
+        #   H.a null, "+ Add"
 
-      # For numeric vertical ops (ones with n values)
-      when '+', '*'
+      # For numeric ops (ones with n values)
+      when '+', '*', '-', "/"
         # Create inner elements
-        innerElems = _.map elem.exprs, (innerExpr, i) =>
+        innerElems = _.map expr.exprs, (innerExpr, i) =>
           # Create onChange that switched single value
           innerElemOnChange = (newValue) =>
             newExprs = expr.exprs.slice()
@@ -217,10 +240,13 @@ class ExprElementBuilder
             # Set expr value
             onChange(_.extend({}, expr, { exprs: newExprs }))
 
-          @build(innerExpr, table, innerElemOnChange, type: "number")
+          @build(innerExpr, table, innerElemOnChange, type: "number", suppressWrapOps: [expr.op])
         
-        # Create vertical expression
-        R(VerticalExprComponent, itemLabel: expr.op, innerElems)
+        R(StackedComponent, joinLabel: expr.op, innerElems)
+        # # Create stacked expression
+        # H.div null,
+        #   R(StackedComponent, joinLabel: expr.op, innerElems)
+        #   H.a null, "+ Add"
 
       when "between"
         # TODO
@@ -262,18 +288,8 @@ class ExprElementBuilder
             onChange(_.extend({}, expr, { op: op }))
           , opItem.name)
 
-        return H.div style: { display: "inline-block" },
+        return H.div style: { display: "flex", alignItems: "center", flexWrap: "wrap" },
           lhsElem, opElem, rhsElem
-
-
-# Displays a set of expressions vertically with an optional label before
-class VerticalExprComponent extends React.Component
-  render: ->
-    H.div null,
-      _.map @props.children, (child) =>
-        H.div null, 
-          @props.itemLabel
-          child
 
 
 # TODO DOC
@@ -298,7 +314,7 @@ class WrappedLinkComponent extends React.Component
           link.label
 
   render: ->
-    H.div style: { display: "inline-block", paddingBottom: 20, position: "relative" }, className: "hover-display-parent",
+    H.div style: { paddingBottom: 20, position: "relative" }, className: "hover-display-parent",
       H.div style: { 
         position: "absolute"
         height: 10

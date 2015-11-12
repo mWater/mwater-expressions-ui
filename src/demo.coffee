@@ -41,7 +41,8 @@ $ ->
         super
         @state = { 
           # value: {} 
-          value: {"type":"op","table":"responses:f6d3b6deed734467932f4dca34af4175","op":"= any","exprs":[{"type":"field","table":"responses:f6d3b6deed734467932f4dca34af4175","column":"data:dd4ba7ef310949c7ba11aa46e2529efb:value"},null]}
+          value: value
+# }{"type":"op","table":"responses:f6d3b6deed734467932f4dca34af4175","op":"= any","exprs":[{"type":"field","table":"responses:f6d3b6deed734467932f4dca34af4175","column":"data:dd4ba7ef310949c7ba11aa46e2529efb:value"},null]}
           # value: { type: "literal", valueType: "enum", value: "a" }
         }
 
@@ -71,6 +72,52 @@ $ ->
     ReactDOM.render(R(TestComponent), document.getElementById("main"))
 
 
+value = {
+      "type": "op",
+      "table": "responses:f6d3b6deed734467932f4dca34af4175",
+      "op": "=",
+      "exprs": [
+        {
+          "type": "op",
+          "op": "+",
+          "table": "responses:f6d3b6deed734467932f4dca34af4175",
+          "exprs": [
+            {
+              "type": "field",
+              "table": "responses:f6d3b6deed734467932f4dca34af4175",
+              "column": "data:fe22d5cd035a48c69883c2a735bd46b6:value:quantity"
+            },
+            null
+          ]
+        },
+        null
+      ]
+    }
+
+# class JoinedRowComponent extends React.Component
+#   render: ->
+#     H.div style: { display: "flex" },
+#       H.div style: { flex: "0 1 100px", display: "flex" }, 
+#         R(CrossComponent, 
+#           n: if not @props.first then "solid 1px gray"
+#           e: "solid 1px gray"
+#           s: if not @props.last then "solid 1px gray"
+#         )
+#       H.div style: { flex: "1 1 auto" }, 
+#         H.div style: { backgroundColor: "#FFDDDD", border: "solid 2px blue", margin: 10, height: 50 }
+
+# boxes = H.div style: { display: "flex", flexDirection: "column" }, # Outer container
+#   # H.div style: { display: "flex" }, 
+#   R(JoinedRowComponent, first: true)
+#   H.div(style: { width: 100, textAlign: "center" }, "and")
+#   R(JoinedRowComponent)
+#   H.div(style: { width: 100, textAlign: "center" }, "and")
+#   R(JoinedRowComponent)
+#   H.div(style: { width: 100, textAlign: "center" }, "and")
+#   R(JoinedRowComponent, last: true)
+
+  # H.div style: { backgroundColor: "#FFDDDD", border: "solid 2px blue", margin: 10 }
+  # H.div style: { backgroundColor: "#FFDDDD", border: "solid 2px blue", margin: 10 }
 
 # class SelectExprComponent extends React.Component
 #   constructor: ->

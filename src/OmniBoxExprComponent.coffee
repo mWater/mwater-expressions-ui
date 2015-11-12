@@ -225,7 +225,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
         H.input 
           type: "text"
           className: "form-control"
-          style: { width: "30em" }
+          # style: { width: "30em" }
           ref: @inputRef
           value: @state.inputText
           onFocus: @handleFocus
