@@ -302,7 +302,7 @@ class ExprElementBuilder
           @build(cse.when, expr.table, innerElemOnWhenChange, key: "content", type: "boolean", suppressWrapOps: ["if"])
         H.div key: "then", style: { display: "flex", alignItems: "center" },
           H.div key: "label", style: labelStyle, "then"
-          @build(cse.then, expr.table, innerElemOnThenChange, key: "content", type: options.type, preferLiteral: true)
+          @build(cse.then, expr.table, innerElemOnThenChange, key: "content", type: options.type, preferLiteral: true, enumValues: options.enumValues)
 
       handleRemove = =>
         cases = expr.cases.slice()
@@ -318,7 +318,7 @@ class ExprElementBuilder
     items.push({
       elem: H.div key: "when", style: { display: "flex", alignItems: "center" },
         H.div key: "label", style: labelStyle, "else"
-        @build(expr.else, expr.table, onElseChange, key: "content", type: options.type, preferLiteral: true)  
+        @build(expr.else, expr.table, onElseChange, key: "content", type: options.type, preferLiteral: true, enumValues: options.enumValues)  
     })
 
     # Create stacked expression

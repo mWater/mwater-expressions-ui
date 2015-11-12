@@ -7,6 +7,10 @@ Schema = require("mwater-expressions").Schema
 ExprComponent = require './ExprComponent'
 ExprCleaner = require("mwater-expressions").ExprCleaner
 OmniBoxExprComponent = require './OmniBoxExprComponent'
+ExprCompiler = require("mwater-expressions").ExprCompiler
+
+DataSource = require('mwater-expressions').DataSource
+
 
 $ ->
   $.getJSON "https://api.mwater.co/v3/jsonql/schema?formIds=f6d3b6deed734467932f4dca34af4175", (schemaJson) ->
@@ -27,30 +31,48 @@ $ ->
   #   { id: "number", name: "number", type: "number" }
   #   { id: "2-1", name: "T2->T1", type: "join", join: { fromTable: "t2", fromColumn: "t1", toTable: "t1", toColumn: "primary", op: "=", multiple: false }}
   #   ]})
-    # Fake data source
-    dataSource = {
-      performQuery: (query, cb) =>
-        cb(null, [
-          { value: "abc" }
-          { value: "xyz" }
-          ])
-    }
+    # # Fake data source
+    # dataSource = {
+    #   performQuery: (query, cb) =>
+    #     cb(null, [
+    #       { value: "abc" }
+    #       { value: "xyz" }
+    #       ])
+    # }
+
+    dataSource = new MWaterDataSource("http://localhost:1234/v3/", "e449acf016c362f19c4b65b52db23486", false)
 
     class TestComponent extends React.Component
       constructor: ->
         super
         @state = { 
-          # value: {} 
-          value: value
+          value: null
+          # value: value
 # }{"type":"op","table":"responses:f6d3b6deed734467932f4dca34af4175","op":"= any","exprs":[{"type":"field","table":"responses:f6d3b6deed734467932f4dca34af4175","column":"data:dd4ba7ef310949c7ba11aa46e2529efb:value"},null]}
           # value: { type: "literal", valueType: "enum", value: "a" }
         }
 
       handleValueChange: (value) => 
-        console.log(JSON.stringify(value))
         value = new ExprCleaner(schema).cleanExpr(value) #, { type: 'boolean' })
-        console.log(JSON.stringify(value))
         @setState(value: value)
+
+      handleCompute: =>
+        exprCompiler = new ExprCompiler(schema)
+
+        compiledExpr = exprCompiler.compileExpr(expr: @state.value, tableAlias: "main")
+
+        # Create query
+        query = {
+          type: "query"
+          selects: [
+            { type: "select", expr: compiledExpr, alias: "value" }
+          ]
+          from: exprCompiler.compileTable("responses:f6d3b6deed734467932f4dca34af4175", "main")
+        }
+
+        dataSource.performQuery(query, (err, rows) =>
+          console.log rows
+          )
 
       render: ->
         dataSource
@@ -64,10 +86,23 @@ $ ->
           #     type: "enum"
           #     initialMode: "literal"
           #     onChange: @handleValueChange)
-          R(ExprComponent, schema: schema, dataSource: dataSource, table: "responses:f6d3b6deed734467932f4dca34af4175", value: @state.value, onChange: @handleValueChange, type: "boolean")
+          R(ExprComponent, 
+            schema: schema
+            dataSource: dataSource
+            table: "responses:f6d3b6deed734467932f4dca34af4175"
+            value: @state.value
+            onChange: @handleValueChange
+            type: "enum"
+            enumValues: [
+              { id: "high", name: "High" }
+              { id: "medium", name: "Medium" }
+              { id: "low", name: "Low" }
+            ]
+          )
           H.br()
           H.br()
           H.pre null, JSON.stringify(@state.value, null, 2)
+          H.button type: "button", className: "btn btn-primary", onClick: @handleCompute, "Compute"
 
     ReactDOM.render(R(TestComponent), document.getElementById("main"))
 
@@ -99,45 +134,27 @@ value = {
     null
   ]
 }
-# class JoinedRowComponent extends React.Component
-#   render: ->
-#     H.div style: { display: "flex" },
-#       H.div style: { flex: "0 1 100px", display: "flex" }, 
-#         R(CrossComponent, 
-#           n: if not @props.first then "solid 1px gray"
-#           e: "solid 1px gray"
-#           s: if not @props.last then "solid 1px gray"
-#         )
-#       H.div style: { flex: "1 1 auto" }, 
-#         H.div style: { backgroundColor: "#FFDDDD", border: "solid 2px blue", margin: 10, height: 50 }
 
-# boxes = H.div style: { display: "flex", flexDirection: "column" }, # Outer container
-#   # H.div style: { display: "flex" }, 
-#   R(JoinedRowComponent, first: true)
-#   H.div(style: { width: 100, textAlign: "center" }, "and")
-#   R(JoinedRowComponent)
-#   H.div(style: { width: 100, textAlign: "center" }, "and")
-#   R(JoinedRowComponent)
-#   H.div(style: { width: 100, textAlign: "center" }, "and")
-#   R(JoinedRowComponent, last: true)
+# Caching data source for mWater. Requires jQuery
+class MWaterDataSource extends DataSource
+  # Caching allows server to send cached results
+  constructor: (apiUrl, client, caching = true) ->
+    @apiUrl = apiUrl
+    @client = client
+    @caching = caching
 
-  # H.div style: { backgroundColor: "#FFDDDD", border: "solid 2px blue", margin: 10 }
-  # H.div style: { backgroundColor: "#FFDDDD", border: "solid 2px blue", margin: 10 }
+  performQuery: (query, cb) ->
+    url = @apiUrl + "jsonql?jsonql=" + encodeURIComponent(JSON.stringify(query))
+    if @client
+      url += "&client=#{@client}"
 
-# class SelectExprComponent extends React.Component
-#   constructor: ->
-#     super
-#     @state = { active: false }
-  
-#   handleActivate: =>
-#     @setState(active: true)
+    # Setup caching
+    headers = {}
+    if not @caching
+      headers['Cache-Control'] = "no-cache"
 
-#   handleDeactivate: =>
-#     @setState(active: false)
-
-#   render: ->
-#     if @state.active
-#       R ClickOutHandler, onClickOut: @handleDeactivate,
-#         H.input type: "text", initialValue: ""
-#     else
-#       H.a onClick: @handleActivate, "Select..."      
+    $.ajax({ dataType: "json", url: url, headers: headers })
+      .done (rows) =>
+        cb(null, rows)
+      .fail (xhr) =>
+        cb(new Error(xhr.responseText))

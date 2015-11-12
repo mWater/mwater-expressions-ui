@@ -92,7 +92,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
   handleBlur: => 
     if not @state.focused
       return
-      
+
     @setState(focused: false)
 
     # Process literal if present
