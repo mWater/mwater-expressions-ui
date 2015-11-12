@@ -146,6 +146,14 @@ class ExprElementBuilder
       createWrapOp("*", "*", false)
       createWrapOp("/", "/", true)
 
+    # Add + If
+    if expr and expr.type == "case"
+      links.push({ label: "+ If", onClick: => 
+        cases = expr.cases.slice()
+        cases.push({ when: null, then: null })
+        innerOnChange(_.extend({}, expr, { cases: cases }))
+      })
+
     # links.push({ label: "Remove", onClick: => onChange(null) })
     if links.length > 0
       elem = R WrappedLinkComponent, links: links, elem
