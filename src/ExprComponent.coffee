@@ -102,7 +102,7 @@ class ExprElementBuilder
     else
       throw new Error("Unhandled expression type #{expr.type}")
       
-    return H.div null, elem
+    return elem
 
   # Build a simple field component. No options
   buildField: (expr, onChange, options = {}) ->

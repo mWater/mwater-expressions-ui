@@ -29,14 +29,22 @@ $ ->
     class TestComponent extends React.Component
       constructor: ->
         super
-        @state = { value: {} }
+        @state = { 
+          # value: {} 
+          value: {"type":"op","table":"responses:f6d3b6deed734467932f4dca34af4175","op":"= any","exprs":[{"type":"field","table":"responses:f6d3b6deed734467932f4dca34af4175","column":"data:dd4ba7ef310949c7ba11aa46e2529efb:value"},null]}
+        }
 
       handleValueChange: (value) => 
         value = new ExprCleaner(schema).cleanExpr(value, { types: ['boolean'] })
+        console.log(JSON.stringify(value))
         @setState(value: value)
 
       render: ->
-        R(ExprComponent, schema: schema, dataSource: {}, table: "responses:f6d3b6deed734467932f4dca34af4175", value: @state.value, onChange: @handleValueChange)
+        H.div null,
+          R(ExprComponent, schema: schema, dataSource: {}, table: "responses:f6d3b6deed734467932f4dca34af4175", value: @state.value, onChange: @handleValueChange, type: "boolean")
+          H.br()
+          H.br()
+          H.pre null, JSON.stringify(@state.value, null, 2)
 
     ReactDOM.render(R(TestComponent), document.getElementById("main"))
 
