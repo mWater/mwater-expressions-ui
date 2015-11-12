@@ -115,6 +115,14 @@ module.exports = class OmniBoxExprComponent extends React.Component
       @props.onChange(null)
     @setState(focused: false)
 
+  handleIfSelected: =>
+    ifExpr = {
+      type: "case"
+      cases: [{ when: null, then: null }]
+      else: null
+    }
+    @props.onChange(ifExpr)
+
   # Handle a selection in the scalar expression tree. Called with { table, joins, expr }
   handleTreeChange: (val) => 
     # Loses focus when selection made
@@ -142,50 +150,72 @@ module.exports = class OmniBoxExprComponent extends React.Component
 
     # If in formula, render literal
     if @state.mode == "formula"
-      return H.a(onClick: @handleModeChange.bind(null, "literal"), H.i(null, "abc"))
+      if @props.type == "number"
+        label = "123"
+      else 
+        label = "abc"
+
+      return H.a(onClick: @handleModeChange.bind(null, "literal"), H.i(null, label))
     else
       return H.a(onClick: @handleModeChange.bind(null, "formula"), H.i(null, "f", H.sub(null, "x")))
+
+  renderLiteralDropdown: ->
+    # If enum type, display dropdown
+    if (@props.value and @props.value.valueType == "enum") or (@props.type == "enum")
+      # Escape regex for filter string
+      escapeRegex = (s) -> return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+      if @state.inputText 
+        filter = new RegExp(escapeRegex(@state.inputText), "i")
+
+      dropdown = _.map @props.enumValues, (ev) =>
+        if filter and not ev.name.match(filter)
+          return null
+        H.li key: ev.id, 
+          H.a 
+            onClick: @handleEnumSelected.bind(null, ev.id),
+            ev.name
+
+      # Add none selection
+      dropdown.unshift(H.li(key: "_null", H.a(onClick: @handleEnumSelected.bind(null, null), H.i(null, "None"))))
+
+    return dropdown
+
+  # Renders a dropdown that allows formula building (mostly scalar expression choosing)
+  renderFormulaDropdown: ->
+    dropdown = []
+
+    # Add if statement
+    dropdown.push(H.div(key: "special", H.a(onClick: @handleIfSelected, style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, "If/Then")))
+
+    # Special handling for enum type required, as cannot select arbitrary enum
+    if @props.type != "enum"
+      # Escape regex for filter string
+      escapeRegex = (s) -> return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+      if @state.inputText 
+        filter = new RegExp(escapeRegex(@state.inputText), "i")
+
+      # Create tree 
+      treeBuilder = new ScalarExprTreeBuilder(@props.schema)
+      types = if @props.type then [@props.type]
+      tree = treeBuilder.getTree(table: @props.table, types: types, includeCount: @props.includeCount, filter: filter)
+
+      # Create tree component with value of table and path
+      dropdown.push(R(ScalarExprTreeComponent, 
+        key: "scalar_tree"
+        tree: tree,
+        onChange: @handleTreeChange
+        height: 350))
+
+    return dropdown
 
   render: ->
     # If focused
     if @state.focused
       # If formula mode, render dropdown scalar
       if @state.mode == "formula"
-        # Escape regex for filter string
-        escapeRegex = (s) -> return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
-        if @state.inputText 
-          filter = new RegExp(escapeRegex(@state.inputText), "i")
-
-        # Create tree 
-        treeBuilder = new ScalarExprTreeBuilder(@props.schema)
-        types = if @props.type then [@props.type]
-        tree = treeBuilder.getTree(table: @props.table, types: types, includeCount: @props.includeCount, filter: filter)
-
-        # Create tree component with value of table and path
-        dropdown = R ScalarExprTreeComponent, 
-          tree: tree,
-          onChange: @handleTreeChange
-          height: 350
-
-      # If literal 
-      if @state.mode == "literal" 
-        # If enum type, display dropdown
-        if (@props.value and @props.value.valueType == "enum") or (@props.type == "enum")
-          # Escape regex for filter string
-          escapeRegex = (s) -> return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
-          if @state.inputText 
-            filter = new RegExp(escapeRegex(@state.inputText), "i")
-
-          dropdown = _.map @props.enumValues, (ev) =>
-            if filter and not ev.name.match(filter)
-              return null
-            H.li key: ev.id, 
-              H.a 
-                onClick: @handleEnumSelected.bind(null, ev.id),
-                ev.name
-
-          # Add none selection
-          dropdown.unshift(H.li(key: "_null", H.a(onClick: @handleEnumSelected.bind(null, null), H.i(null, "None"))))
+        dropdown = @renderFormulaDropdown()
+      else if @state.mode == "literal" 
+        dropdown = @renderLiteralDropdown()
 
     # Close when clicked outside
     R ClickOutHandler, onClickOut: @handleBlur,

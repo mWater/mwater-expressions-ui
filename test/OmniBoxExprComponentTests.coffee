@@ -53,17 +53,37 @@ describe "OmniBoxExprComponent", ->
       assert not @comp.findComponentByText(/Number/), "Should not show"
 
   describe "null with number type specified", ->
-    it "does not show text fields"
-    it "allows selecting Number field"
-    it "clicking on 123 clears field"
-    it "clicking on 123 and entering number sets literal"
+    beforeEach ->
+      @comp = @render({ type: "number", value: null, onChange: @onChange })
+
+    it "does not show text fields", ->
+      TestComponent.click(@comp.findInput())
+      assert not @comp.findComponentByText(/Text/), "Should not show"
+
+    it "allows selecting Number field", ->
+      TestComponent.click(@comp.findInput())
+      TestComponent.click(@comp.findComponentByText(/Number/))
+      assert.equal @value.column, "number"
+
+    it "clicking on 123 clears field", ->
+      TestComponent.click(@comp.findInput())
+      TestComponent.changeValue(@comp.findInput(), "xy")
+      TestComponent.click(@comp.findComponentByText(/123/))
+      assert.equal @comp.findInput().value, ""
+
+    it "clicking on 123 and entering number sets literal", ->
+      TestComponent.click(@comp.findInput())
+      TestComponent.click(@comp.findComponentByText(/123/))
+      TestComponent.changeValue(@comp.findInput(), "999")
+      TestComponent.pressEnter(@comp.findInput())
+      assert.equal @value.value, 999
+
     it "respects literal initial mode"
     it "allows changing to formula mode"
 
   describe "null with enum type specified", ->
     it "allows searching for item"
     it "does not show Enum field"
-
 
   describe "existing number literal", ->
     beforeEach ->
@@ -83,10 +103,38 @@ describe "OmniBoxExprComponent", ->
     # it "does not update value until enter", ->
     # it "does not update value until click out", ->
 
-    it "allows nulling by emptying"
+    it "allows nulling by emptying", ->
+      TestComponent.click(@comp.findInput())
+      TestComponent.changeValue(@comp.findInput(), "567")
+      TestComponent.pressTab(@comp.findInput())
+
+      TestComponent.click(@comp.findInput())
+      TestComponent.changeValue(@comp.findInput(), "")
+      TestComponent.pressTab(@comp.findInput())
+
+      assert.isNull @value
 
     it "allows switching to formula mode"
 
+
+  describe "if/then", ->
+    beforeEach ->
+      @comp = @render({ type: null, value: null, onChange: @onChange })
+
+    it "adds if/then with single empty clause", ->
+      # Open dropdown
+      TestComponent.click(@comp.findInput())
+
+      # Click on if/then
+      TestComponent.click(@comp.findComponentByText(/then/i))
+
+      compare(@value, {
+        type: "case"
+        cases: [
+          { when: null, then: null }
+        ]
+        else: null
+        })
 
   # describe "with placeholder (empty) expression", ->
   #   it "allows click selecting number", (done) ->
