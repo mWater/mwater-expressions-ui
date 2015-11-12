@@ -33,6 +33,10 @@ describe "OmniBoxExprComponent", ->
     for comp in @toDestroy
       comp.destroy()
 
+  describe "TODO", ->
+    it "add date and calendar"
+    it "add enum if building"
+
   describe "null with no type specified", ->
     beforeEach ->
       @comp = @render({ type: null, value: null, onChange: @onChange })
@@ -130,6 +134,7 @@ describe "OmniBoxExprComponent", ->
 
       compare(@value, {
         type: "case"
+        table: "t1"
         cases: [
           { when: null, then: null }
         ]

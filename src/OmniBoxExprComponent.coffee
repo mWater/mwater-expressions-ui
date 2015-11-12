@@ -16,7 +16,7 @@ LinkComponent = require './LinkComponent'
 # When in literal mode, 
 module.exports = class OmniBoxExprComponent extends React.Component
   @propTypes:
-    dataSource: React.PropTypes.object.isRequired # Data source to use to get values
+    schema: React.PropTypes.object.isRequired
 
     table: React.PropTypes.string.isRequired # Current table
     value: React.PropTypes.object   # Current expression value
@@ -118,6 +118,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
   handleIfSelected: =>
     ifExpr = {
       type: "case"
+      table: @props.table
       cases: [{ when: null, then: null }]
       else: null
     }
@@ -220,11 +221,11 @@ module.exports = class OmniBoxExprComponent extends React.Component
     # Close when clicked outside
     R ClickOutHandler, onClickOut: @handleBlur,
       R DropdownComponent, dropdown: dropdown,
-        H.div style: { position: "absolute", right: 10, top: 5, cursor: "pointer" }, @renderModeSwitcher()
+        H.div style: { position: "absolute", right: 10, top: 8, cursor: "pointer" }, @renderModeSwitcher()
         H.input 
           type: "text"
-          className: "form-control input-sm"
-          style: { width: "40em" }
+          className: "form-control"
+          style: { width: "30em" }
           ref: @inputRef
           value: @state.inputText
           onFocus: @handleFocus

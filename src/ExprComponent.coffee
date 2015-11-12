@@ -4,7 +4,7 @@ R = React.createElement
 H = React.DOM
 
 ExprUtils = require("mwater-expressions").ExprUtils
-SelectExprComponent = require './SelectExprComponent'
+OmniBoxExprComponent = require './OmniBoxExprComponent'
 literalComponents = require './literalComponents'
 TextArrayComponent = require './TextArrayComponent'
 LinkComponent = require './LinkComponent'
@@ -23,8 +23,14 @@ module.exports = class ExprComponent extends React.Component
     type: React.PropTypes.string    # If specified, the type (value type) of expression required. e.g. boolean
     enumValues: React.PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
 
+    preferLiteral: React.PropTypes.bool # True to prefer literal expressions
+
   render: ->
-    new ExprElementBuilder(@props.schema, @props.dataSource).build(@props.value, @props.table, @props.onChange, { type: @props.type, enumValues: @props.enumValues })
+    new ExprElementBuilder(@props.schema, @props.dataSource).build(@props.value, @props.table, @props.onChange, { 
+      type: @props.type
+      enumValues: @props.enumValues 
+      preferLiteral: @props.preferLiteral
+      })
 
 class ExprElementBuilder 
   constructor: (schema, dataSource) ->
@@ -39,6 +45,7 @@ class ExprElementBuilder
   #  key: key of the resulting element
   #  enumValues: array of { id, name } for the enumerable values to display
   #  refExpr: expression to get values for (used for literals)
+  #  preferLiteral: to preferentially choose literal expressions (used for RHS of expressions)
   build: (expr, table, onChange, options = {}) ->
     # Create new onChange function. If a boolean type is required and the expression given is not, 
     # it will wrap it with an expression
@@ -63,66 +70,74 @@ class ExprElementBuilder
 
       onChange(newExpr)
 
-    # Handle null case by returning select expression component
-    if not expr?
-      # text[] and enum[] are special cases that require non-standard component that can't select array
-      if options.type in ["text[]", "enum[]"]
-        return @buildLiteral(expr, options.type, innerOnChange, { key: options.key, enumValues: options.enumValues, refExpr: options.refExpr })
+    # Get type (what it is, or barring that, what it should be)
+    exprType = @exprUtils.getExprType(expr) or options.type
 
-      return R SelectExprComponent, 
+    # If text[] or enum[], use special component
+    if exprType == "text[]"
+      return R(TextArrayComponent, 
+        key: options.key
+        value: expr
+        refExpr: options.refExpr
+        schema: @schema
+        dataSource: @dataSource
+        onChange: onChange)
+
+    if exprType == "enum[]"
+      return R(literalComponents.EnumArrComponent, 
+        key: options.key, 
+        value: expr, 
+        enumValues: options.enumValues
+        onChange: onChange)
+
+    # Handle empty and literals with OmniBox
+    if not expr or not expr.type or expr.type == "literal"
+      elem = R(OmniBoxExprComponent,
         schema: @schema
         table: table
-        placeholder: "None"
-        initiallyOpen: false
-        onSelect: innerOnChange
-        key: options.key
-        type: if options.type != "boolean" then options.type # Boolean can be any type because of autowrapping above
+        value: expr
+        onChange: innerOnChange
+        # Allow any type for boolean due to wrapping
+        type: if options.type != "boolean" then options.type
         enumValues: options.enumValues
+        initialMode: if options.preferLiteral then "literal"
+        # includeCount: TODO
+        enumValues: options.enumValues)
 
-    # Handle {} placeholder
-    if _.isEmpty(expr)
-      return R SelectExprComponent, 
-        schema: @schema
-        table: table
-        placeholder: "Select..."
-        initiallyOpen: true
-        onSelect: innerOnChange
-        key: options.key
-        type: if options.type != "boolean" then options.type # Boolean can be any type because of autowrapping above
-        enumValues: options.enumValues
-
-    # Handle literals
-    if expr.type == "literal"
-      elem = @buildLiteral(expr, expr.valueType, innerOnChange, { key: options.key, enumValues: options.enumValues, refExpr: options.refExpr })
     else if expr.type == "op"
       elem = @buildOp(expr, table, innerOnChange, options)
     else if expr.type == "field"
       elem = @buildField(expr, innerOnChange, { key: options.key })
     else if expr.type == "scalar"
       elem = @buildScalar(expr, innerOnChange, { key: options.key, type: options.type })
+    else if expr.type == "case"
+      elem = @buildCase(expr, innerOnChange, { key: options.key, type: options.type })
     else
       throw new Error("Unhandled expression type #{expr.type}")
 
-    # Wrap element with hover links to build more complex expressions or to clear it
-    links = []
+    # # Wrap element with hover links to build more complex expressions or to clear it
+    # links = []
 
-    type = @exprUtils.getExprType(expr)
+    # type = @exprUtils.getExprType(expr)
 
-    # If boolean, add + And link
-    if type == "boolean"
-      # if @props.parentOp != "and" and @props.value.op != "and"
-      links.push({ label: "+ And", onClick: => innerOnChange({ type: "op", op: "and", table: table, exprs: [expr, {}] }) })
-      # if @props.parentOp != "or" and @props.value.op != "or"
-      links.push({ label: "+ Or", onClick: => innerOnChange({ type: "op", op: "or", table: table, exprs: [expr, {}] }) })
+    # # If boolean, add + And link
+    # if type == "boolean"
+    #   # if @props.parentOp != "and" and @props.value.op != "and"
+    #   links.push({ label: "+ And", onClick: => innerOnChange({ type: "op", op: "and", table: table, exprs: [expr, {}] }) })
+    #   # if @props.parentOp != "or" and @props.value.op != "or"
+    #   links.push({ label: "+ Or", onClick: => innerOnChange({ type: "op", op: "or", table: table, exprs: [expr, {}] }) })
 
-    links.push({ label: "Remove", onClick: => onChange(null) })
-    elem = R WrappedLinkComponent, links: links, elem
+    # links.push({ label: "Remove", onClick: => onChange(null) })
+    # elem = R WrappedLinkComponent, links: links, elem
 
     return elem
 
-  # Build a simple field component. No options
+  # Build a simple field component. Only remove option
   buildField: (expr, onChange, options = {}) ->
-    H.b null, @exprUtils.summarizeExpr(expr)
+    return R(LinkComponent, 
+      dropdownItems: [{ id: "remove", name: "Remove" }]
+      onDropdownItemClicked: => onChange(null),
+      @exprUtils.summarizeExpr(expr))    
 
   # Display aggr if present
   buildScalar: (expr, onChange, options = {}) ->
@@ -147,6 +162,15 @@ class ExprElementBuilder
       joinsStr += joinCol.name + " > "
       t = joinCol.join.toTable
 
+    # If just a field inside, add to string and make a simple link control
+    # TODO what about count special handling?
+    if expr.expr and expr.expr.type == "field"
+      joinsStr += @exprUtils.summarizeExpr(expr.expr)
+      return R(LinkComponent, 
+        dropdownItems: [{ id: "remove", name: "Remove" }]
+        onDropdownItemClicked: => onChange(null),
+        joinsStr)
+
     # Create inner expression onChange
     innerOnChange = (value) =>
       onChange(_.extend({}, expr, { expr: value }))
@@ -154,7 +178,10 @@ class ExprElementBuilder
     return H.div style: { display: "inline-block" },
       # Aggregate dropdown
       aggrElem
-      H.b(null, joinsStr)
+      R(LinkComponent, 
+        dropdownItems: [{ id: "remove", name: "Remove" }]
+        onDropdownItemClicked: => onChange(null),
+        joinsStr)
       # TODO what about count special handling?
       @build(expr.expr, (if expr.expr then expr.expr.table), innerOnChange, { type: options.type })
 
@@ -222,7 +249,7 @@ class ExprElementBuilder
             # Set expr value
             onChange(_.extend({}, expr, { exprs: newExprs }))
 
-          rhsElem = @build(expr.exprs[1], table, rhsOnChange, type: opItem.exprTypes[1], enumValues: @exprUtils.getExprValues(expr.exprs[0]), refExpr: expr.exprs[0])
+          rhsElem = @build(expr.exprs[1], table, rhsOnChange, type: opItem.exprTypes[1], enumValues: @exprUtils.getExprValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
 
         # Create op dropdown (finding matching type and lhs, not op)
         opItems = @exprUtils.findMatchingOpItems(resultType: options.type, exprTypes: [expr1Type])
@@ -237,42 +264,6 @@ class ExprElementBuilder
 
         return H.div style: { display: "inline-block" },
           lhsElem, opElem, rhsElem
-
-  # Builds a literal component
-  # Options include:
-  #  key: sets the key of the component
-  #  enumValues: array of { id, name } for the enumerable values to display
-  #  refExpr: reference expression to use for selecting appropriate values. For example, text[] uses it to know which values to display
-  buildLiteral: (expr, type, onChange, options = {}) ->
-    switch type
-      when "text"
-        return R(literalComponents.TextComponent, key: options.key, value: expr, onChange: onChange)
-      when "number"
-        return R(literalComponents.NumberComponent, key: options.key, value: expr, onChange: onChange)
-      when "date"
-        return R(literalComponents.DateComponent, key: options.key, value: expr, onChange: onChange)
-      when "datetime"
-        return R(literalComponents.DatetimeComponent, key: options.key, value: expr, onChange: onChange)
-      when "enum"
-        return R(literalComponents.EnumComponent, 
-          key: options.key, 
-          value: expr, 
-          enumValues: options.enumValues
-          onChange: onChange)
-      when "enum[]"
-        return R(literalComponents.EnumArrComponent, 
-          key: options.key, 
-          value: expr, 
-          enumValues: options.enumValues
-          onChange: onChange)
-      when "text[]"
-        return R(TextArrayComponent, 
-          key: options.key
-          value: expr
-          refExpr: options.refExpr
-          schema: @schema
-          dataSource: @dataSource
-          onChange: onChange)
 
 
 # Displays a set of expressions vertically with an optional label before
