@@ -207,9 +207,15 @@ class ExprElementBuilder
 
   # Builds on op component
   buildOp: (expr, table, onChange, options = {}) ->
+    # Removes the ith item
+    handleRemove = (i) =>
+      exprs = expr.exprs.slice()
+      exprs.splice(i, 1)
+      onChange(_.extend({}, expr, { exprs: exprs }))          
+
     switch expr.op
-      # For boolean vertical ops (ones with n values)
-      when 'and', 'or'
+      # For vertical ops (ones with n values or other arithmetic)
+      when 'and', 'or', '+', '*', '-', "/"
         # Create inner elements
         innerElems = _.map expr.exprs, (innerExpr, i) =>
           # Create onChange that switched single value
@@ -220,34 +226,11 @@ class ExprElementBuilder
             # Set expr value
             onChange(_.extend({}, expr, { exprs: newExprs }))
 
-          @build(innerExpr, table, innerElemOnChange, type: "boolean", suppressWrapOps: [expr.op])
+          type = if expr.op in ['and', 'or'] then "boolean" else "number"
+          @build(innerExpr, table, innerElemOnChange, type: type, suppressWrapOps: [expr.op])
         
         # Create stacked expression
-        R(StackedComponent, joinLabel: expr.op, innerElems)
-        # H.div null,
-        #   R(StackedComponent, joinLabel: expr.op, innerElems)
-        #   H.a null, "+ Add"
-
-      # For numeric ops (ones with n values)
-      when '+', '*', '-', "/"
-        # Create inner elements
-        innerElems = _.map expr.exprs, (innerExpr, i) =>
-          # Create onChange that switched single value
-          innerElemOnChange = (newValue) =>
-            newExprs = expr.exprs.slice()
-            newExprs[i] = newValue
-
-            # Set expr value
-            onChange(_.extend({}, expr, { exprs: newExprs }))
-
-          @build(innerExpr, table, innerElemOnChange, type: "number", suppressWrapOps: [expr.op])
-        
-        R(StackedComponent, joinLabel: expr.op, innerElems)
-        # # Create stacked expression
-        # H.div null,
-        #   R(StackedComponent, joinLabel: expr.op, innerElems)
-        #   H.a null, "+ Add"
-
+        R(StackedComponent, joinLabel: expr.op, onRemove: handleRemove, innerElems)
       when "between"
         # TODO
       else

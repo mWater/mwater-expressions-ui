@@ -9,10 +9,11 @@ width = 60
 module.exports = class StackedComponent extends React.Component
   @propTypes:
     joinLabel: React.PropTypes.node   # Label between connections
+    onRemove: React.PropTypes.func    # Pass to put a remove link on right. Called with item number (0, 1, 2)
 
-  renderRow: (item, first, last) ->
+  renderRow: (item, i, first, last) ->
     # Create row that has lines to the left
-    H.div style: { display: "flex" },
+    H.div style: { display: "flex" }, className: "hover-display-parent",
       H.div style: { flex: "0 0 #{width}px", display: "flex" }, 
         R(CrossComponent, 
           n: if not first then "solid 1px #DDD"
@@ -21,6 +22,10 @@ module.exports = class StackedComponent extends React.Component
         )
       H.div style: { flex: "1 1 auto" }, 
         item
+      if @props.onRemove
+        H.div style: { flex: "0 0 auto", alignSelf: "center" }, className: "hover-display-child",
+          H.a onClick: @props.onRemove.bind(null, i), style: { fontSize: "80%", cursor: "pointer", marginLeft: 5 },
+            H.span className: "glyphicon glyphicon-remove"
 
   render: ->
     rowElems = []
@@ -29,7 +34,7 @@ module.exports = class StackedComponent extends React.Component
       # If not first, add joiner
       if i > 0 and @props.joinLabel
         rowElems.push(H.div(style: { width: width, textAlign: "center" }, @props.joinLabel))
-      rowElems.push(@renderRow(child, i == 0, i == @props.children.length - 1))
+      rowElems.push(@renderRow(child, i, i == 0, i == @props.children.length - 1))
 
     H.div style: { display: "flex", flexDirection: "column" }, # Outer container
       rowElems
