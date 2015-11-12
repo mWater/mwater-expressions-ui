@@ -38,6 +38,7 @@ class ExprElementBuilder
   #  type: required value type of expression
   #  key: key of the resulting element
   #  enumValues: array of { id, name } for the enumerable values to display
+  #  refExpr: expression to get values for (used for literals)
   build: (expr, table, onChange, options = {}) ->
     # Create new onChange function. If a boolean type is required and the expression given is not, 
     # it will wrap it with an expression
@@ -66,7 +67,7 @@ class ExprElementBuilder
     if not expr?
       # text[] and enum[] are special cases that require non-standard component that can't select array
       if options.type in ["text[]", "enum[]"]
-        return @buildLiteral(expr, options.type, innerOnChange, { key: options.key, enumValues: options.enumValues })
+        return @buildLiteral(expr, options.type, innerOnChange, { key: options.key, enumValues: options.enumValues, refExpr: options.refExpr })
 
       return R SelectExprComponent, 
         schema: @schema
@@ -92,7 +93,7 @@ class ExprElementBuilder
 
     # Handle literals
     if expr.type == "literal"
-      elem = @buildLiteral(expr, expr.valueType, innerOnChange, { key: options.key, enumValues: options.enumValues })
+      elem = @buildLiteral(expr, expr.valueType, innerOnChange, { key: options.key, enumValues: options.enumValues, refExpr: options.refExpr })
     else if expr.type == "op"
       elem = @buildOp(expr, table, innerOnChange, options)
     else if expr.type == "field"
@@ -101,7 +102,22 @@ class ExprElementBuilder
       elem = @buildScalar(expr, innerOnChange, { key: options.key, type: options.type })
     else
       throw new Error("Unhandled expression type #{expr.type}")
-      
+
+    # Wrap element with hover links to build more complex expressions or to clear it
+    links = []
+
+    type = @exprUtils.getExprType(expr)
+
+    # If boolean, add + And link
+    if type == "boolean"
+      # if @props.parentOp != "and" and @props.value.op != "and"
+      links.push({ label: "+ And", onClick: => innerOnChange({ type: "op", op: "and", table: table, exprs: [expr, {}] }) })
+      # if @props.parentOp != "or" and @props.value.op != "or"
+      links.push({ label: "+ Or", onClick: => innerOnChange({ type: "op", op: "or", table: table, exprs: [expr, {}] }) })
+
+    links.push({ label: "Remove", onClick: => onChange(null) })
+    elem = R WrappedLinkComponent, links: links, elem
+
     return elem
 
   # Build a simple field component. No options
@@ -148,7 +164,7 @@ class ExprElementBuilder
       # For boolean vertical ops (ones with n values)
       when 'and', 'or'
         # Create inner elements
-        innerElems = _.map elem.exprs, (innerExpr, i) =>
+        innerElems = _.map expr.exprs, (innerExpr, i) =>
           # Create onChange that switched single value
           innerElemOnChange = (newValue) =>
             newExprs = expr.exprs.slice()
@@ -206,7 +222,7 @@ class ExprElementBuilder
             # Set expr value
             onChange(_.extend({}, expr, { exprs: newExprs }))
 
-          rhsElem = @build(expr.exprs[1], table, rhsOnChange, type: opItem.exprTypes[1], enumValues: @exprUtils.getExprValues(expr.exprs[0]))
+          rhsElem = @build(expr.exprs[1], table, rhsOnChange, type: opItem.exprTypes[1], enumValues: @exprUtils.getExprValues(expr.exprs[0]), refExpr: expr.exprs[0])
 
         # Create op dropdown (finding matching type and lhs, not op)
         opItems = @exprUtils.findMatchingOpItems(resultType: options.type, exprTypes: [expr1Type])
@@ -219,7 +235,7 @@ class ExprElementBuilder
             onChange(_.extend({}, expr, { op: op }))
           , opItem.name)
 
-        return H.div null,
+        return H.div style: { display: "inline-block" },
           lhsElem, opElem, rhsElem
 
   # Builds a literal component
@@ -263,7 +279,47 @@ class ExprElementBuilder
 class VerticalExprComponent extends React.Component
   render: ->
     H.div null,
-      @props.children
+      _.map @props.children, (child) =>
+        H.div null, 
+          @props.itemLabel
+          child
+
+
+# TODO DOC
+class WrappedLinkComponent extends React.Component
+  @propTypes:
+    links: React.PropTypes.array.isRequired # Shape is label, onClick
+
+  renderLinks: ->
+    H.div style: { 
+      position: "absolute"
+      left: 10
+      bottom: 0 
+    }, className: "hover-display-child",
+      _.map @props.links, (link, i) =>
+        H.a key: "#{i}", style: { 
+          paddingLeft: 3
+          paddingRight: 3
+          backgroundColor: "white"
+          cursor: "pointer"
+          fontSize: 12
+        }, onClick: link.onClick,
+          link.label
+
+  render: ->
+    H.div style: { display: "inline-block", paddingBottom: 20, position: "relative" }, className: "hover-display-parent",
+      H.div style: { 
+        position: "absolute"
+        height: 10
+        bottom: 10
+        left: 0
+        right: 0
+        borderLeft: "solid 1px #DDD" 
+        borderBottom: "solid 1px #DDD" 
+        borderRight: "solid 1px #DDD" 
+      }, className: "hover-display-child"
+      @renderLinks(),
+        @props.children
 
 # # Displays an expression of any type with controls to allow it to be altered
 # module.exports = class ExprComponent extends React.Component
@@ -360,38 +416,3 @@ class VerticalExprComponent extends React.Component
 
 #     R LinkComponent, {}, exprUtils.summarizeExpr(@props.value)
 
-# # TODO DOC
-# class WrappedLinkComponent extends React.Component
-#   @propTypes:
-#     links: React.PropTypes.array.isRequired # Shape is label, onClick
-
-#   renderLinks: ->
-#     H.div style: { 
-#       position: "absolute"
-#       left: 10
-#       bottom: 0 
-#     }, className: "hover-display-child",
-#       _.map @props.links, (link, i) =>
-#         H.a key: "#{i}", style: { 
-#           paddingLeft: 3
-#           paddingRight: 3
-#           backgroundColor: "white"
-#           cursor: "pointer"
-#           fontSize: 12
-#         }, onClick: link.onClick,
-#           link.label
-
-#   render: ->
-#     H.div style: { display: "inline-block", paddingBottom: 20, position: "relative" }, className: "hover-display-parent",
-#       H.div style: { 
-#         position: "absolute"
-#         height: 10
-#         bottom: 10
-#         left: 0
-#         right: 0
-#         borderLeft: "solid 1px #DDD" 
-#         borderBottom: "solid 1px #DDD" 
-#         borderRight: "solid 1px #DDD" 
-#       }, className: "hover-display-child"
-#       @renderLinks(),
-#         @props.children

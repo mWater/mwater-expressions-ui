@@ -26,6 +26,15 @@ $ ->
   #   { id: "number", name: "number", type: "number" }
   #   { id: "2-1", name: "T2->T1", type: "join", join: { fromTable: "t2", fromColumn: "t1", toTable: "t1", toColumn: "primary", op: "=", multiple: false }}
   #   ]})
+    # Fake data source
+    dataSource = {
+      performQuery: (query, cb) =>
+        cb(null, [
+          { value: "abc" }
+          { value: "xyz" }
+          ])
+    }
+    
     class TestComponent extends React.Component
       constructor: ->
         super
@@ -35,13 +44,14 @@ $ ->
         }
 
       handleValueChange: (value) => 
-        value = new ExprCleaner(schema).cleanExpr(value, { types: ['boolean'] })
+        value = new ExprCleaner(schema).cleanExpr(value, { type: 'boolean' })
         console.log(JSON.stringify(value))
         @setState(value: value)
 
       render: ->
-        H.div null,
-          R(ExprComponent, schema: schema, dataSource: {}, table: "responses:f6d3b6deed734467932f4dca34af4175", value: @state.value, onChange: @handleValueChange, type: "boolean")
+        dataSource
+        H.div style: { padding: 10 },
+          R(ExprComponent, schema: schema, dataSource: dataSource, table: "responses:f6d3b6deed734467932f4dca34af4175", value: @state.value, onChange: @handleValueChange, type: "boolean")
           H.br()
           H.br()
           H.pre null, JSON.stringify(@state.value, null, 2)
