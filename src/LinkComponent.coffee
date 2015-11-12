@@ -1,5 +1,6 @@
 React = require 'react'
 H = React.DOM
+_ = require 'lodash'
 
 # Component that is blue to show that it is a link and responds to clicks
 # Also has a dropdown component if dropdown items are specified

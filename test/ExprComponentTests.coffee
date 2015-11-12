@@ -171,7 +171,7 @@ describe "ExprComponent", ->
       table: "t1"
       op: "="
       exprs: [
-        { type: "field", table: "t1", column: "number" }
+        { type: "field", table: "t1", column: "enum" }
         { type: "literal", valueType: "enum", value: null }
       ]
     }
@@ -183,8 +183,106 @@ describe "ExprComponent", ->
     # Check enumValues
     compare(enumComp.props.enumValues, @schema.getColumn("t1", "enum").values)
 
-  it "sets enumValues for literal being compared to enum field with = any"
+  it "sets enumValues for literal being compared to enum field with = any", ->
+    expr = {
+      type: "op"
+      table: "t1"
+      op: "="
+      exprs: [
+        { type: "field", table: "t1", column: "enum" }
+        { type: "literal", valueType: "enum[]", value: [] }
+      ]
+    }
 
+    # Find EnumArrComponent
+    comp = @render(value: expr)
+    enumComp = ReactTestUtils.findRenderedComponentWithType(comp.getComponent(), literalComponents.EnumArrComponent)
+
+    # Check enumValues
+    compare(enumComp.props.enumValues, @schema.getColumn("t1", "enum").values)
+
+  it "allows switching of operation", (done) ->
+    # Number = number
+    expr = {
+      type: "op"
+      table: "t1"
+      op: "="
+      exprs: [
+        { type: "field", table: "t1", column: "number" }
+        { type: "literal", valueType: "number", value: 3 }
+      ]
+    }
+
+    onChange = (value) =>
+      assert.equal value.op, ">"
+      done()
+
+    comp = @render(value: expr, onChange: onChange, type: "boolean")
+
+    # Open dropdown
+    TestComponent.click(comp.findComponentByText(/^is$/))
+    
+    # Switch to "is greater than"
+    TestComponent.click(comp.findComponentByText(/is greater than/))
+
+
+  it "renders 'matches' for ~*"
+
+  it "propagates inner changes to expressions upwards", (done) ->
+    expr = {
+      type: "op"
+      table: "t1"
+      op: "="
+      exprs: [
+        { type: "field", table: "t1", column: "number" }
+        { type: "literal", valueType: "number", value: 3 }
+      ]
+    }
+
+    onChange = (value) =>
+      compare(value.exprs[1], { type: "literal", valueType: "number", value: 4 })
+      done()
+
+    comp = @render(value: expr, onChange: onChange)
+    TestComponent.changeValue(comp.findInput(), "4")
+
+
+  it "displays EnumArrComponent when rhs is enum[] but null", ->
+    expr = {
+      type: "op"
+      table: "t1"
+      op: "= any"
+      exprs: [
+        { type: "field", table: "t1", column: "enum" }
+        null
+      ]
+    }
+
+    # Find EnumArrComponent
+    comp = @render(value: expr)
+    enumComp = ReactTestUtils.findRenderedComponentWithType(comp.getComponent(), literalComponents.EnumArrComponent)
+
+    # Check enumValues
+    compare(enumComp.props.enumValues, @schema.getColumn("t1", "enum").values)
+
+  it "displays scalar", ->
+    expr = {
+      type: "scalar"
+      table: "t1"
+      aggr: "sum"
+      joins: ["1-2"]
+      expr: { type: "field", table: "t2", column: "number" }
+    }
+
+    comp = @render(value: expr)
+
+    # Finds join listed
+    assert comp.findComponentByText(/T1->T2/)
+
+    # Finds dest column listed
+    assert comp.findComponentByText(/Number/)
+    
+  # it "allows switching of scalar aggr", ->
 
 
   # it "creates literal components for nulls on rhs of expressions", ->

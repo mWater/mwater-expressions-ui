@@ -28,6 +28,10 @@ module.exports = class TestComponent
           node.nodeType == 3 and node.textContent.match(pattern))
       )[0]
 
+  # Find input field
+  findInput: ->
+    return ReactTestUtils.findRenderedDOMComponentWithTag(@comp, "input")
+
   @click: (comp) -> ReactTestUtils.Simulate.click(comp)
   @pressEnter: (comp) -> ReactTestUtils.Simulate.keyDown(comp, {key: "Enter", keyCode: 13, which: 13})
   @changeValue: (comp, value) -> 

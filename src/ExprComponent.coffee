@@ -7,6 +7,7 @@ ExprUtils = require("mwater-expressions").ExprUtils
 SelectExprComponent = require './SelectExprComponent'
 literalComponents = require './literalComponents'
 TextArrayComponent = require './TextArrayComponent'
+LinkComponent = require './LinkComponent'
 
 # Display/editor component for an expression
 # Uses ExprElementBuilder to create the tree of components
@@ -61,8 +62,12 @@ class ExprElementBuilder
 
       onChange(newExpr)
 
-    # Handle null case by returning placeholder
+    # Handle null case by returning select expression component
     if not expr?
+      # text[] and enum[] are special cases that require non-standard component that can't select array
+      if options.type in ["text[]", "enum[]"]
+        return @buildLiteral(expr, options.type, innerOnChange, { key: options.key, enumValues: options.enumValues })
+
       return R SelectExprComponent, 
         schema: @schema
         table: table
@@ -87,29 +92,143 @@ class ExprElementBuilder
 
     # Handle literals
     if expr.type == "literal"
-      elem = @buildLiteral(expr, innerOnChange, { key: options.key, enumValues: options.enumValues })
+      elem = @buildLiteral(expr, expr.valueType, innerOnChange, { key: options.key, enumValues: options.enumValues })
     else if expr.type == "op"
-      elem = H.div null,
-        expr.op
-        _.map(expr.exprs, (e) => @build(e, table, innerOnChange, options))
+      elem = @buildOp(expr, table, innerOnChange, options)
     else if expr.type == "field"
-      # DISPLAY FIELD
-      elem = H.span null, @exprUtils.summarizeExpr(expr)
+      elem = @buildField(expr, innerOnChange, { key: options.key })
     else if expr.type == "scalar"
-      # DISPLAY FIELD
-      elem = H.span null, @exprUtils.summarizeExpr(expr)
+      elem = @buildScalar(expr, innerOnChange, { key: options.key, type: options.type })
     else
       throw new Error("Unhandled expression type #{expr.type}")
       
     return H.div null, elem
+
+  # Build a simple field component. No options
+  buildField: (expr, onChange, options = {}) ->
+    H.b null, @exprUtils.summarizeExpr(expr)
+
+  # Display aggr if present
+  buildScalar: (expr, onChange, options = {}) ->
+    # Get aggregations possible on inner expression
+    if expr.aggr
+      aggrs = @exprUtils.getAggrs(expr.expr)
+
+      # Get current aggr
+      aggr = _.findWhere(aggrs, id: expr.aggr)
+
+      aggrElem = R(LinkComponent, 
+        dropdownItems: _.map(aggrs, (ag) -> { id: ag.id, name: ag.name }) 
+        onDropdownItemClicked: (aggr) =>
+          onChange(_.extend({}, expr, { aggr: aggr }))
+        , aggr.name)
+
+    # Get joins string
+    t = expr.table
+    joinsStr = ""
+    for join in expr.joins
+      joinCol = @schema.getColumn(t, join)
+      joinsStr += joinCol.name + " > "
+      t = joinCol.join.toTable
+
+    # Create inner expression onChange
+    innerOnChange = (value) =>
+      onChange(_.extend({}, expr, { expr: value }))
+
+    return H.div style: { display: "inline-block" },
+      # Aggregate dropdown
+      aggrElem
+      H.b(null, joinsStr)
+      # TODO what about count special handling?
+      @build(expr.expr, (if expr.expr then expr.expr.table), innerOnChange, { type: options.type })
+
+  # Builds on op component
+  buildOp: (expr, table, onChange, options = {}) ->
+    switch expr.op
+      # For boolean vertical ops (ones with n values)
+      when 'and', 'or'
+        # Create inner elements
+        innerElems = _.map elem.exprs, (innerExpr, i) =>
+          # Create onChange that switched single value
+          innerElemOnChange = (newValue) =>
+            newExprs = expr.exprs.slice()
+            newExprs[i] = newValue
+
+            # Set expr value
+            onChange(_.extend({}, expr, { exprs: newExprs }))
+
+          @build(innerExpr, table, innerElemOnChange, type: "boolean")
+        
+        # Create vertical expression
+        R(VerticalExprComponent, itemLabel: expr.op, innerElems)
+
+      # For numeric vertical ops (ones with n values)
+      when '+', '*'
+        # Create inner elements
+        innerElems = _.map elem.exprs, (innerExpr, i) =>
+          # Create onChange that switched single value
+          innerElemOnChange = (newValue) =>
+            newExprs = expr.exprs.slice()
+            newExprs[i] = newValue
+
+            # Set expr value
+            onChange(_.extend({}, expr, { exprs: newExprs }))
+
+          @build(innerExpr, table, innerElemOnChange, type: "number")
+        
+        # Create vertical expression
+        R(VerticalExprComponent, itemLabel: expr.op, innerElems)
+
+      when "between"
+        # TODO
+      else
+        # Horizontal expression. Render each part
+        expr1Type = @exprUtils.getExprType(expr.exprs[0])
+        opItem = @exprUtils.findMatchingOpItems(op: expr.op, resultType: options.type, exprTypes: [expr1Type])[0]
+        if not opItem
+          throw new Error("No opItem defined for op:#{expr.op}, resultType: #{options.type}, lhs:#{expr1Type}")
+
+        lhsOnChange = (newValue) =>
+          newExprs = expr.exprs.slice()
+          newExprs[0] = newValue
+
+          # Set expr value
+          onChange(_.extend({}, expr, { exprs: newExprs }))
+        
+        lhsElem = @build(expr.exprs[0], table, lhsOnChange, type: opItem.exprTypes[0])
+
+        # If has two expressions
+        if opItem.exprTypes.length > 1
+          rhsOnChange = (newValue) =>
+            newExprs = expr.exprs.slice()
+            newExprs[1] = newValue
+
+            # Set expr value
+            onChange(_.extend({}, expr, { exprs: newExprs }))
+
+          rhsElem = @build(expr.exprs[1], table, rhsOnChange, type: opItem.exprTypes[1], enumValues: @exprUtils.getExprValues(expr.exprs[0]))
+
+        # Create op dropdown (finding matching type and lhs, not op)
+        opItems = @exprUtils.findMatchingOpItems(resultType: options.type, exprTypes: [expr1Type])
+
+        # Remove current op
+        opItems = _.filter(opItems, (oi) -> oi.op != expr.op)
+        opElem = R(LinkComponent, 
+          dropdownItems: _.map(opItems, (oi) -> { id: oi.op, name: oi.name }) 
+          onDropdownItemClicked: (op) =>
+            onChange(_.extend({}, expr, { op: op }))
+          , opItem.name)
+
+        return H.div null,
+          lhsElem, opElem, rhsElem
 
   # Builds a literal component
   # Options include:
   #  key: sets the key of the component
   #  enumValues: array of { id, name } for the enumerable values to display
   #  refExpr: reference expression to use for selecting appropriate values. For example, text[] uses it to know which values to display
-  buildLiteral: (expr, onChange, options = {}) ->
-    switch expr.valueType
+  buildLiteral: (expr, type, onChange, options = {}) ->
+    switch type
       when "text"
         return R(literalComponents.TextComponent, key: options.key, value: expr, onChange: onChange)
       when "number"
@@ -139,6 +258,12 @@ class ExprElementBuilder
           dataSource: @dataSource
           onChange: onChange)
 
+
+# Displays a set of expressions vertically with an optional label before
+class VerticalExprComponent extends React.Component
+  render: ->
+    H.div null,
+      @props.children
 
 # # Displays an expression of any type with controls to allow it to be altered
 # module.exports = class ExprComponent extends React.Component
