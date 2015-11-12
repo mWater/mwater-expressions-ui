@@ -80,6 +80,9 @@ module.exports = class OmniBoxExprComponent extends React.Component
   handleTextChange: (ev) => @setState(inputText: ev.target.value)
 
   handleFocus: => 
+    if @state.focused
+      return
+
     @setState(focused: true)
 
     # Clear input text if literal enum
@@ -87,6 +90,9 @@ module.exports = class OmniBoxExprComponent extends React.Component
       @setState(inputText: "")
 
   handleBlur: => 
+    if not @state.focused
+      return
+      
     @setState(focused: false)
 
     # Process literal if present

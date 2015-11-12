@@ -207,17 +207,11 @@ class ExprElementBuilder
 
   # Builds on op component
   buildOp: (expr, table, onChange, options = {}) ->
-    # Removes the ith item
-    handleRemove = (i) =>
-      exprs = expr.exprs.slice()
-      exprs.splice(i, 1)
-      onChange(_.extend({}, expr, { exprs: exprs }))          
-
     switch expr.op
       # For vertical ops (ones with n values or other arithmetic)
       when 'and', 'or', '+', '*', '-', "/"
-        # Create inner elements
-        innerElems = _.map expr.exprs, (innerExpr, i) =>
+        # Create inner items
+        items = _.map expr.exprs, (innerExpr, i) =>
           # Create onChange that switched single value
           innerElemOnChange = (newValue) =>
             newExprs = expr.exprs.slice()
@@ -227,10 +221,16 @@ class ExprElementBuilder
             onChange(_.extend({}, expr, { exprs: newExprs }))
 
           type = if expr.op in ['and', 'or'] then "boolean" else "number"
-          @build(innerExpr, table, innerElemOnChange, type: type, suppressWrapOps: [expr.op])
+          elem = @build(innerExpr, table, innerElemOnChange, type: type, suppressWrapOps: [expr.op])
+          handleRemove = =>
+            exprs = expr.exprs.slice()
+            exprs.splice(i, 1)
+            onChange(_.extend({}, expr, { exprs: exprs }))          
+
+          return { elem: elem, onRemove: handleRemove }
         
         # Create stacked expression
-        R(StackedComponent, joinLabel: expr.op, onRemove: handleRemove, innerElems)
+        R(StackedComponent, joinLabel: expr.op, items: items)
       when "between"
         # TODO
       else
@@ -275,14 +275,7 @@ class ExprElementBuilder
           lhsElem, opElem, rhsElem
 
   buildCase: (expr, onChange, options) ->
-    # Removes the ith item
-    handleRemove = (i) =>
-      cases = expr.cases.slice()
-      cases.splice(i, 1)
-      onChange(_.extend({}, expr, { cases: cases }))          
-
     # Style for labels "if", "then", "else"
-
     labelStyle = { 
       flex: "0 0 auto"  # Don't resize
       padding: 5
@@ -290,7 +283,7 @@ class ExprElementBuilder
     }
 
     # Create inner elements
-    innerElems = _.map expr.cases, (cse, i) =>
+    items = _.map expr.cases, (cse, i) =>
       # Create onChange functions
       innerElemOnWhenChange = (newWhen) =>
         cases = expr.cases.slice()
@@ -303,26 +296,33 @@ class ExprElementBuilder
         onChange(_.extend({}, expr, { cases: cases }))
 
       # Build a flexbox that wraps with a when and then flexbox
-      return H.div key: "#{i}", style: { display: "flex", alignItems: "center"  },
+      elem = H.div key: "#{i}", style: { display: "flex", alignItems: "center"  },
         H.div key: "when", style: { display: "flex", alignItems: "center" },
           H.div key: "label", style: labelStyle, "if"
           @build(cse.when, expr.table, innerElemOnWhenChange, key: "content", type: "boolean", suppressWrapOps: ["if"])
         H.div key: "then", style: { display: "flex", alignItems: "center" },
           H.div key: "label", style: labelStyle, "then"
-          @build(cse.then, expr.table, innerElemOnThenChange, key: "content", type: options.type)
+          @build(cse.then, expr.table, innerElemOnThenChange, key: "content", type: options.type, preferLiteral: true)
+
+      handleRemove = =>
+        cases = expr.cases.slice()
+        cases.splice(i, 1)
+        onChange(_.extend({}, expr, { cases: cases })) 
+
+      return { elem: elem, onRemove: handleRemove }
     
     # Add else
     onElseChange = (newValue) =>
       onChange(_.extend({}, expr, { else: newValue }))
 
-    innerElems.push(
-      H.div key: "when", style: { display: "flex", alignItems: "center" },
+    items.push({
+      elem: H.div key: "when", style: { display: "flex", alignItems: "center" },
         H.div key: "label", style: labelStyle, "else"
-        @build(expr.else, expr.table, onElseChange, key: "content", type: options.type)  
-    )
+        @build(expr.else, expr.table, onElseChange, key: "content", type: options.type, preferLiteral: true)  
+    })
 
     # Create stacked expression
-    R(StackedComponent, onRemove: handleRemove, innerElems)
+    R(StackedComponent, items: items)
 
 # TODO DOC
 class WrappedLinkComponent extends React.Component
