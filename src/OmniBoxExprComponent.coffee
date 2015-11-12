@@ -97,7 +97,9 @@ module.exports = class OmniBoxExprComponent extends React.Component
       else if (@props.value and @props.value.valueType == "number") or @props.type == "number"
         # Empty means no value
         if not @state.inputText
-          @props.onChange(null)
+          if @props.value
+            @props.onChange(null)
+          return
 
         value = parseFloat(@state.inputText)
         if _.isFinite(value)
@@ -136,7 +138,11 @@ module.exports = class OmniBoxExprComponent extends React.Component
     else
       @props.onChange({ type: "scalar", table: @props.table, joins: val.joins, expr: val.expr })
 
-  handleModeChange: (mode) => 
+  handleModeChange: (mode, ev) => 
+    ev.stopPropagation()
+
+    @refs.input.focus()
+
     # If in formula, clear text
     if mode == "formula"
       @setState(mode: mode, inputText: "", focused: true)
@@ -226,7 +232,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
           type: "text"
           className: "form-control"
           # style: { width: "30em" }
-          ref: @inputRef
+          ref: "input"
           value: @state.inputText
           onFocus: @handleFocus
           onClick: @handleFocus

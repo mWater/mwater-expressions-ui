@@ -73,27 +73,32 @@ $ ->
 
 
 value = {
+  "type": "op",
+  "table": "responses:f6d3b6deed734467932f4dca34af4175",
+  "op": "=",
+  "exprs": [
+    {
       "type": "op",
+      "op": "+",
       "table": "responses:f6d3b6deed734467932f4dca34af4175",
-      "op": "=",
       "exprs": [
         {
-          "type": "op",
-          "op": "+",
+          "type": "case",
           "table": "responses:f6d3b6deed734467932f4dca34af4175",
-          "exprs": [
+          "cases": [
             {
-              "type": "field",
-              "table": "responses:f6d3b6deed734467932f4dca34af4175",
-              "column": "data:fe22d5cd035a48c69883c2a735bd46b6:value:quantity"
-            },
-            null
-          ]
+              "when": null,
+              "then": null
+            }
+          ],
+          "else": null
         },
         null
       ]
-    }
-
+    },
+    null
+  ]
+}
 # class JoinedRowComponent extends React.Component
 #   render: ->
 #     H.div style: { display: "flex" },

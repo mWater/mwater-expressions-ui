@@ -113,7 +113,7 @@ class ExprElementBuilder
     else if expr.type == "scalar"
       elem = @buildScalar(expr, innerOnChange, { key: options.key, type: options.type })
     else if expr.type == "case"
-      elem = @buildCase(expr, innerOnChange, { key: options.key, type: options.type })
+      elem = @buildCase(expr, innerOnChange, { key: options.key, type: options.type, enumValues: options.enumValues })
     else
       throw new Error("Unhandled expression type #{expr.type}")
 
@@ -274,6 +274,55 @@ class ExprElementBuilder
         return H.div style: { display: "flex", alignItems: "center", flexWrap: "wrap" },
           lhsElem, opElem, rhsElem
 
+  buildCase: (expr, onChange, options) ->
+    # Removes the ith item
+    handleRemove = (i) =>
+      cases = expr.cases.slice()
+      cases.splice(i, 1)
+      onChange(_.extend({}, expr, { cases: cases }))          
+
+    # Style for labels "if", "then", "else"
+
+    labelStyle = { 
+      flex: "0 0 auto"  # Don't resize
+      padding: 5
+      color: "#AAA"
+    }
+
+    # Create inner elements
+    innerElems = _.map expr.cases, (cse, i) =>
+      # Create onChange functions
+      innerElemOnWhenChange = (newWhen) =>
+        cases = expr.cases.slice()
+        cases[i] = _.extend({}, cases[i], { when: newWhen })
+        onChange(_.extend({}, expr, { cases: cases }))
+
+      innerElemOnThenChange = (newThen) =>
+        cases = expr.cases.slice()
+        cases[i] = _.extend({}, cases[i], { then: newThen })
+        onChange(_.extend({}, expr, { cases: cases }))
+
+      # Build a flexbox that wraps with a when and then flexbox
+      return H.div key: "#{i}", style: { display: "flex", alignItems: "center"  },
+        H.div key: "when", style: { display: "flex", alignItems: "center" },
+          H.div key: "label", style: labelStyle, "if"
+          @build(cse.when, expr.table, innerElemOnWhenChange, key: "content", type: "boolean", suppressWrapOps: ["if"])
+        H.div key: "then", style: { display: "flex", alignItems: "center" },
+          H.div key: "label", style: labelStyle, "then"
+          @build(cse.then, expr.table, innerElemOnThenChange, key: "content", type: options.type)
+    
+    # Add else
+    onElseChange = (newValue) =>
+      onChange(_.extend({}, expr, { else: newValue }))
+
+    innerElems.push(
+      H.div key: "when", style: { display: "flex", alignItems: "center" },
+        H.div key: "label", style: labelStyle, "else"
+        @build(expr.else, expr.table, onElseChange, key: "content", type: options.type)  
+    )
+
+    # Create stacked expression
+    R(StackedComponent, onRemove: handleRemove, innerElems)
 
 # TODO DOC
 class WrappedLinkComponent extends React.Component
