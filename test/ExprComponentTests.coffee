@@ -9,25 +9,11 @@ fixtures = require './fixtures'
 TestComponent = require './TestComponent'
 
 ExprComponent = require '../src/ExprComponent'
-SelectExprComponent = require '../src/SelectExprComponent'
 literalComponents = require '../src/literalComponents'
+OmniBoxExprComponent = require '../src/OmniBoxExprComponent'
 
 compare = (actual, expected) ->
   assert.equal canonical(actual), canonical(expected), "\n" + canonical(actual) + "\n" + canonical(expected) + "\n"
-
-# findComponentByText = (comp, pattern) ->
-#   return ReactTestUtils.findAllInRenderedTree(comp, (c) -> 
-#     # Only match DOM components with a child node that is matching string
-#     if ReactTestUtils.isDOMComponent(c)
-#       _.any(c.childNodes, (node) -> 
-#         node.nodeType == 3 and node.textContent.match(pattern))
-#     )[0]
-
-# clickComponent = (comp) -> ReactTestUtils.Simulate.click(comp)
-# pressEnterComponent = (comp) -> ReactTestUtils.Simulate.keyDown(comp, {key: "Enter", keyCode: 13, which: 13})
-# changeValueComponent = (comp, value) -> 
-#   comp.value = value
-#   ReactTestUtils.Simulate.change(comp)
 
 describe "ExprComponent", ->
   beforeEach ->
@@ -46,13 +32,15 @@ describe "ExprComponent", ->
     for comp in @toDestroy
       comp.destroy()
 
-  describe "with placeholder (empty) expression", ->
+  describe "with null expression", ->
     it "allows click selecting number", (done) ->
       onChange = (value) =>
         compare(value, { type: "field", table: "t1", column: "number" })
         done()
 
-      comp = @render(value: {}, onChange: onChange)
+      comp = @render(value: null, onChange: onChange)
+
+      TestComponent.click(comp.findInput()) # Click to open dropdown
       listItem = comp.findComponentByText(/Number/)
       TestComponent.click(listItem)
 
@@ -68,138 +56,18 @@ describe "ExprComponent", ->
         # Create component
         comp = @render(value: null, onChange: onChange, type: "boolean")
 
-        # Find SelectExprComponent
-        selectComp = ReactTestUtils.findRenderedComponentWithType(comp.getComponent(), SelectExprComponent)
+        # Find OmniBoxExprComponent
+        omniComp = ReactTestUtils.findRenderedComponentWithType(comp.getComponent(), OmniBoxExprComponent)
 
         # Fake selecting number field
-        selectComp.props.onSelect(numberField)
+        omniComp.props.onChange(numberField)
 
       it "allows selecting any type", ->
-        comp = @render(value: {}, type: "boolean")
+        comp = @render(value: null, type: "boolean")
 
+        TestComponent.click(comp.findInput()) # Click to open dropdown
         assert comp.findComponentByText(/Text/)
         assert comp.findComponentByText(/Enum/)
-
-    describe "number required", ->
-      it "does not show text fields", ->
-        comp = @render(value: {}, type: "number")
-        assert not comp.findComponentByText(/Text/)
-
-      it "does show number fields", ->
-        comp = @render(value: {}, type: "number")
-        assert comp.findComponentByText(/Number/)
-
-      it "allows literal + enter key", (done) ->
-        onChange = (value) =>
-          compare(value, { type: "literal", valueType: "number", value: 123 })
-          done()
-
-        comp = @render(value: {}, onChange: onChange, type: "number")
-
-        # Type 123 and enter
-        input = ReactTestUtils.findRenderedDOMComponentWithTag(comp.getComponent(), "input")
-        TestComponent.changeValue(input, "123")
-        TestComponent.pressEnter(input)
-
-      it "allows literal + click outside", (done) ->
-        onChange = (value) =>
-          compare(value, { type: "literal", valueType: "number", value: 123 })
-          done()
-
-        comp = @render(value: {}, onChange: onChange, type: "number")
-
-        _.defer () =>
-          # Type 123 and enter
-          input = ReactTestUtils.findRenderedDOMComponentWithTag(comp.getComponent(), "input")
-          TestComponent.changeValue(input, "123")
-          document.body.click()
-
-    describe "text required", ->
-      it "does not show number fields", ->
-        comp = @render(value: {}, type: "text")
-        assert not comp.findComponentByText(/Number/)
-
-      it "shows text fields", ->
-        comp = @render(value: {}, type: "text")
-        assert comp.findComponentByText(/Text/)
-
-      it "allows literal + enter key", (done) ->
-        onChange = (value) =>
-          compare(value, { type: "literal", valueType: "text", value: "abc" })
-          done()
-
-        comp = @render(value: {}, onChange: onChange, type: "text")
-
-        # Type 123 and enter
-        input = ReactTestUtils.findRenderedDOMComponentWithTag(comp.getComponent(), "input")
-        TestComponent.changeValue(input, "abc")
-        TestComponent.pressEnter(input)
-
-      it "allows literal + click outside", (done) ->
-        onChange = (value) =>
-          compare(value, { type: "literal", valueType: "text", value: "abc" })
-          done()
-
-        comp = @render(value: {}, onChange: onChange, type: "text")
-
-        _.defer () =>
-          # Type 123 and enter
-          input = ReactTestUtils.findRenderedDOMComponentWithTag(comp.getComponent(), "input")
-          TestComponent.changeValue(input, "abc")
-          document.body.click()
-
-    describe "enum required", ->
-      it "allows clicking on enum name", (done) ->
-        onChange = (value) =>
-          compare(value, { type: "literal", valueType: "enum", value: "b" })
-          done()
-
-        comp = @render(value: {}, onChange: onChange, type: "enum", enumValues: [{ id: "a", name: "ValueA" }, { id: "b", name: "ValueB" }])
-        TestComponent.click(comp.findComponentByText(/ValueB/))
-
-      it "does not show enum fields (since they prob don't match types)", ->
-        comp = @render(value: {}, type: "enum", enumValues: [{ id: "a", name: "ValueA" }, { id: "b", name: "ValueB" }])
-        assert not comp.findComponentByText(/Enum/)
-
-      it "does not show number fields", ->
-        comp = @render(value: {}, type: "enum", enumValues: [{ id: "a", name: "ValueA" }, { id: "b", name: "ValueB" }])
-        assert not comp.findComponentByText(/Number/)
-
-  it "sets enumValues for literal being compared to enum field with =", ->
-    expr = {
-      type: "op"
-      table: "t1"
-      op: "="
-      exprs: [
-        { type: "field", table: "t1", column: "enum" }
-        { type: "literal", valueType: "enum", value: null }
-      ]
-    }
-
-    # Find EnumComponent
-    comp = @render(value: expr)
-    enumComp = ReactTestUtils.findRenderedComponentWithType(comp.getComponent(), literalComponents.EnumComponent)
-
-    # Check enumValues
-    compare(enumComp.props.enumValues, @schema.getColumn("t1", "enum").values)
-
-  it "sets enumValues for literal being compared to enum field with = any", ->
-    expr = {
-      type: "op"
-      table: "t1"
-      op: "="
-      exprs: [
-        { type: "field", table: "t1", column: "enum" }
-        { type: "literal", valueType: "enum[]", value: [] }
-      ]
-    }
-
-    # Find EnumArrComponent
-    comp = @render(value: expr)
-    enumComp = ReactTestUtils.findRenderedComponentWithType(comp.getComponent(), literalComponents.EnumArrComponent)
-
-    # Check enumValues
-    compare(enumComp.props.enumValues, @schema.getColumn("t1", "enum").values)
 
   it "allows switching of operation", (done) ->
     # Number = number
@@ -225,9 +93,6 @@ describe "ExprComponent", ->
     # Switch to "is greater than"
     TestComponent.click(comp.findComponentByText(/is greater than/))
 
-
-  it "renders 'matches' for ~*"
-
   it "propagates inner changes to expressions upwards", (done) ->
     expr = {
       type: "op"
@@ -244,8 +109,10 @@ describe "ExprComponent", ->
       done()
 
     comp = @render(value: expr, onChange: onChange)
-    TestComponent.changeValue(comp.findInput(), "4")
 
+    TestComponent.click(comp.findInput())
+    TestComponent.changeValue(comp.findInput(), "4")
+    TestComponent.pressEnter(comp.findInput())
 
   it "displays EnumArrComponent when rhs is enum[] but null", ->
     expr = {
@@ -281,6 +148,128 @@ describe "ExprComponent", ->
 
     # Finds dest column listed
     assert comp.findComponentByText(/Number/)
+  
+  #   describe "number required", ->
+  #     it "does not show text fields", ->
+  #       comp = @render(value: {}, type: "number")
+  #       assert not comp.findComponentByText(/Text/)
+
+  #     it "does show number fields", ->
+  #       comp = @render(value: {}, type: "number")
+  #       assert comp.findComponentByText(/Number/)
+
+  #     it "allows literal + enter key", (done) ->
+  #       onChange = (value) =>
+  #         compare(value, { type: "literal", valueType: "number", value: 123 })
+  #         done()
+
+  #       comp = @render(value: {}, onChange: onChange, type: "number")
+
+  #       # Type 123 and enter
+  #       input = ReactTestUtils.findRenderedDOMComponentWithTag(comp.getComponent(), "input")
+  #       TestComponent.changeValue(input, "123")
+  #       TestComponent.pressEnter(input)
+
+  #     it "allows literal + click outside", (done) ->
+  #       onChange = (value) =>
+  #         compare(value, { type: "literal", valueType: "number", value: 123 })
+  #         done()
+
+  #       comp = @render(value: {}, onChange: onChange, type: "number")
+
+  #       _.defer () =>
+  #         # Type 123 and enter
+  #         input = ReactTestUtils.findRenderedDOMComponentWithTag(comp.getComponent(), "input")
+  #         TestComponent.changeValue(input, "123")
+  #         document.body.click()
+
+  #   describe "text required", ->
+  #     it "does not show number fields", ->
+  #       comp = @render(value: {}, type: "text")
+  #       assert not comp.findComponentByText(/Number/)
+
+  #     it "shows text fields", ->
+  #       comp = @render(value: {}, type: "text")
+  #       assert comp.findComponentByText(/Text/)
+
+  #     it "allows literal + enter key", (done) ->
+  #       onChange = (value) =>
+  #         compare(value, { type: "literal", valueType: "text", value: "abc" })
+  #         done()
+
+  #       comp = @render(value: {}, onChange: onChange, type: "text")
+
+  #       # Type 123 and enter
+  #       input = ReactTestUtils.findRenderedDOMComponentWithTag(comp.getComponent(), "input")
+  #       TestComponent.changeValue(input, "abc")
+  #       TestComponent.pressEnter(input)
+
+  #     it "allows literal + click outside", (done) ->
+  #       onChange = (value) =>
+  #         compare(value, { type: "literal", valueType: "text", value: "abc" })
+  #         done()
+
+  #       comp = @render(value: {}, onChange: onChange, type: "text")
+
+  #       _.defer () =>
+  #         # Type 123 and enter
+  #         input = ReactTestUtils.findRenderedDOMComponentWithTag(comp.getComponent(), "input")
+  #         TestComponent.changeValue(input, "abc")
+  #         document.body.click()
+
+  #   describe "enum required", ->
+  #     it "allows clicking on enum name", (done) ->
+  #       onChange = (value) =>
+  #         compare(value, { type: "literal", valueType: "enum", value: "b" })
+  #         done()
+
+  #       comp = @render(value: {}, onChange: onChange, type: "enum", enumValues: [{ id: "a", name: "ValueA" }, { id: "b", name: "ValueB" }])
+  #       TestComponent.click(comp.findComponentByText(/ValueB/))
+
+  #     it "does not show enum fields (since they prob don't match types)", ->
+  #       comp = @render(value: {}, type: "enum", enumValues: [{ id: "a", name: "ValueA" }, { id: "b", name: "ValueB" }])
+  #       assert not comp.findComponentByText(/Enum/)
+
+  #     it "does not show number fields", ->
+  #       comp = @render(value: {}, type: "enum", enumValues: [{ id: "a", name: "ValueA" }, { id: "b", name: "ValueB" }])
+  #       assert not comp.findComponentByText(/Number/)
+
+  # it "sets enumValues for literal being compared to enum field with =", ->
+  #   expr = {
+  #     type: "op"
+  #     table: "t1"
+  #     op: "="
+  #     exprs: [
+  #       { type: "field", table: "t1", column: "enum" }
+  #       { type: "literal", valueType: "enum", value: null }
+  #     ]
+  #   }
+
+  #   # Find EnumComponent
+  #   comp = @render(value: expr)
+  #   enumComp = ReactTestUtils.findRenderedComponentWithType(comp.getComponent(), literalComponents.EnumComponent)
+
+  #   # Check enumValues
+  #   compare(enumComp.props.enumValues, @schema.getColumn("t1", "enum").values)
+
+  # it "sets enumValues for literal being compared to enum field with = any", ->
+  #   expr = {
+  #     type: "op"
+  #     table: "t1"
+  #     op: "="
+  #     exprs: [
+  #       { type: "field", table: "t1", column: "enum" }
+  #       { type: "literal", valueType: "enum[]", value: [] }
+  #     ]
+  #   }
+
+  #   # Find EnumArrComponent
+  #   comp = @render(value: expr)
+  #   enumComp = ReactTestUtils.findRenderedComponentWithType(comp.getComponent(), literalComponents.EnumArrComponent)
+
+  #   # Check enumValues
+  #   compare(enumComp.props.enumValues, @schema.getColumn("t1", "enum").values)
+
     
   # it "allows switching of scalar aggr", ->
 

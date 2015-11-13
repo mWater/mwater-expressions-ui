@@ -46,7 +46,7 @@ $ ->
       constructor: ->
         super
         @state = { 
-          value: null
+          value: value
           # value: value
 # }{"type":"op","table":"responses:f6d3b6deed734467932f4dca34af4175","op":"= any","exprs":[{"type":"field","table":"responses:f6d3b6deed734467932f4dca34af4175","column":"data:dd4ba7ef310949c7ba11aa46e2529efb:value"},null]}
           # value: { type: "literal", valueType: "enum", value: "a" }
@@ -71,7 +71,7 @@ $ ->
         }
 
         dataSource.performQuery(query, (err, rows) =>
-          console.log rows
+          console.log _.countBy(rows, "value")
           )
 
       render: ->
@@ -97,6 +97,7 @@ $ ->
               { id: "high", name: "High" }
               { id: "medium", name: "Medium" }
               { id: "low", name: "Low" }
+              { id: "nodata", name: "No Data" }
             ]
           )
           H.br()
@@ -108,31 +109,95 @@ $ ->
 
 
 value = {
-  "type": "op",
+  "type": "case",
   "table": "responses:f6d3b6deed734467932f4dca34af4175",
-  "op": "=",
-  "exprs": [
+  "cases": [
     {
-      "type": "op",
-      "op": "+",
-      "table": "responses:f6d3b6deed734467932f4dca34af4175",
-      "exprs": [
-        {
-          "type": "case",
-          "table": "responses:f6d3b6deed734467932f4dca34af4175",
-          "cases": [
-            {
-              "when": null,
-              "then": null
-            }
-          ],
-          "else": null
-        },
-        null
-      ]
+      "when": {
+        "type": "op",
+        "table": "responses:f6d3b6deed734467932f4dca34af4175",
+        "op": "= any",
+        "exprs": [
+          {
+            "type": "field",
+            "table": "responses:f6d3b6deed734467932f4dca34af4175",
+            "column": "data:cc53351619f343b48ad490d5eb1361c6:value"
+          },
+          {
+            "type": "literal",
+            "valueType": "enum[]",
+            "value": [
+              "fSwM5qf",
+              "eRnmrpl"
+            ]
+          }
+        ]
+      },
+      "then": {
+        "type": "literal",
+        "valueType": "enum",
+        "value": "high"
+      }
     },
-    null
-  ]
+    {
+      "when": {
+        "type": "op",
+        "table": "responses:f6d3b6deed734467932f4dca34af4175",
+        "op": "= any",
+        "exprs": [
+          {
+            "type": "field",
+            "table": "responses:f6d3b6deed734467932f4dca34af4175",
+            "column": "data:cc53351619f343b48ad490d5eb1361c6:value"
+          },
+          {
+            "type": "literal",
+            "valueType": "enum[]",
+            "value": [
+              "7HgUHBd"
+            ]
+          }
+        ]
+      },
+      "then": {
+        "type": "literal",
+        "valueType": "enum",
+        "value": "medium"
+      }
+    },
+    {
+      "when": {
+        "type": "op",
+        "table": "responses:f6d3b6deed734467932f4dca34af4175",
+        "op": "= any",
+        "exprs": [
+          {
+            "type": "field",
+            "table": "responses:f6d3b6deed734467932f4dca34af4175",
+            "column": "data:cc53351619f343b48ad490d5eb1361c6:value"
+          },
+          {
+            "type": "literal",
+            "valueType": "enum[]",
+            "value": [
+              "UMRWnnt",
+              "7t7XKLe"
+            ]
+          }
+        ]
+      },
+      "then": {
+        "type": "literal",
+        "valueType": "enum",
+        "value": "low"
+      }
+    }
+  ],
+  "else": {
+    "type": "literal",
+    "valueType": "enum",
+    "value": "nodata"
+  }
 }
 
 # Caching data source for mWater. Requires jQuery
