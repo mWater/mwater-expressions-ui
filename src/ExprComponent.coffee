@@ -40,7 +40,7 @@ module.exports = class ExprComponent extends React.Component
     @props.onChange(expr)
 
   render: ->
-    new ExprElementBuilder(@props.schema, @props.dataSource).build(@props.value, @props.table, @props.onChange, { 
+    new ExprElementBuilder(@props.schema, @props.dataSource).build(@props.value, @props.table, @handleChange, { 
       type: @props.type
       enumValues: @props.enumValues 
       preferLiteral: @props.preferLiteral
