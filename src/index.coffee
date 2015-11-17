@@ -1,1 +1,1 @@
-# TODO
+exports.ExprComponent = require './ExprComponent'
