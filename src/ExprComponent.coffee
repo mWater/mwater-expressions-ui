@@ -3,6 +3,7 @@ React = require 'react'
 R = React.createElement
 H = React.DOM
 
+ExprCleaner = require("mwater-expressions").ExprCleaner
 ExprUtils = require("mwater-expressions").ExprUtils
 OmniBoxExprComponent = require './OmniBoxExprComponent'
 literalComponents = require './literalComponents'
@@ -12,6 +13,7 @@ StackedComponent = require './StackedComponent'
 
 # Display/editor component for an expression
 # Uses ExprElementBuilder to create the tree of components
+# Cleans values as a convenience
 module.exports = class ExprComponent extends React.Component
   @propTypes:
     schema: React.PropTypes.object.isRequired
@@ -25,6 +27,17 @@ module.exports = class ExprComponent extends React.Component
     enumValues: React.PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
 
     preferLiteral: React.PropTypes.bool # True to prefer literal expressions
+
+  # Clean expression and pass up
+  handleChange: (expr) =>
+    # Clean expression
+    expr = new ExprCleaner(@props.schema).cleanExpr(expr, {
+      table: @props.table
+      type: @props.type
+      valueIds: if @props.enumValues then _.pluck(@props.enumValues, "id")
+    })
+
+    @props.onChange(expr)
 
   render: ->
     new ExprElementBuilder(@props.schema, @props.dataSource).build(@props.value, @props.table, @props.onChange, { 
