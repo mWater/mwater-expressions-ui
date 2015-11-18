@@ -130,7 +130,7 @@ describe "ExprComponent", ->
     enumComp = ReactTestUtils.findRenderedComponentWithType(comp.getComponent(), literalComponents.EnumArrComponent)
 
     # Check enumValues
-    compare(enumComp.props.enumValues, @schema.getColumn("t1", "enum").values)
+    compare(enumComp.props.enumValues, @schema.getColumn("t1", "enum").enumValues)
 
   it "displays scalar", ->
     expr = {

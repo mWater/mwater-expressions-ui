@@ -28,7 +28,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
     noneLabel: React.PropTypes.string # What to display when no value. Default "Select..."
     initialMode: React.PropTypes.oneOf(['formula', 'literal']) # Initial mode. Default formula
 
-    includeCount: React.PropTypes.bool # Optionally include count at root level of a table
+    includeCount: React.PropTypes.bool # Optionally include count at root level of a table. Returns id expression
     
     enumValues: React.PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
 

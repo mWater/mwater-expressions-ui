@@ -48,7 +48,7 @@ module.exports = class ScalarExprTreeBuilder
     if options.includeCount
       node = {
         name: "Number of #{@schema.getTable(options.table).name}"
-        value: { table: options.startTable, joins: options.joins, expr: { type: "count", table: options.table } }
+        value: { table: options.startTable, joins: options.joins, expr: { type: "id", table: options.table } }
       }
       if not options.filter or node.name.match(options.filter)
         nodes.push(node)

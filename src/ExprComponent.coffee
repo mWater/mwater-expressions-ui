@@ -13,7 +13,7 @@ StackedComponent = require './StackedComponent'
 
 # Display/editor component for an expression
 # Uses ExprElementBuilder to create the tree of components
-# Cleans values as a convenience
+# Cleans expression as a convenience
 module.exports = class ExprComponent extends React.Component
   @propTypes:
     schema: React.PropTypes.object.isRequired
@@ -58,7 +58,7 @@ class ExprElementBuilder
   #  type: required value type of expression
   #  key: key of the resulting element
   #  enumValues: array of { id, name } for the enumerable values to display
-  #  refExpr: expression to get values for (used for literals)
+  #  refExpr: expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
   #  preferLiteral: to preferentially choose literal expressions (used for RHS of expressions)
   #  suppressWrapOps: pass ops to *not* offer to wrap in
   build: (expr, table, onChange, options = {}) ->
@@ -127,6 +127,8 @@ class ExprElementBuilder
       elem = @buildScalar(expr, innerOnChange, { key: options.key, type: options.type })
     else if expr.type == "case"
       elem = @buildCase(expr, innerOnChange, { key: options.key, type: options.type, enumValues: options.enumValues })
+    else if expr.type == "id"
+      elem = @buildId(expr, innerOnChange, { key: options.key })
     else
       throw new Error("Unhandled expression type #{expr.type}")
 
@@ -180,6 +182,13 @@ class ExprElementBuilder
       onDropdownItemClicked: => onChange(null),
       @exprUtils.summarizeExpr(expr))    
 
+  # Build an id component. Displays table name. Only remove option
+  buildId: (expr, onChange, options = {}) ->
+    return R(LinkComponent, 
+      dropdownItems: [{ id: "remove", name: "Remove" }]
+      onDropdownItemClicked: => onChange(null),
+      @exprUtils.summarizeExpr(expr)) 
+
   # Display aggr if present
   buildScalar: (expr, onChange, options = {}) ->
     # Get aggregations possible on inner expression
@@ -203,9 +212,8 @@ class ExprElementBuilder
       joinsStr += joinCol.name + " > "
       t = joinCol.join.toTable
 
-    # If just a field inside, add to string and make a simple link control
-    # TODO what about count special handling?
-    if expr.expr and expr.expr.type == "field"
+    # If just a field or id inside, add to string and make a simple link control
+    if expr.expr and expr.expr.type in ["field", "id"]
       joinsStr += @exprUtils.summarizeExpr(expr.expr)
       return R(LinkComponent, 
         dropdownItems: [{ id: "remove", name: "Remove" }]
@@ -279,7 +287,7 @@ class ExprElementBuilder
             # Set expr value
             onChange(_.extend({}, expr, { exprs: newExprs }))
 
-          rhsElem = @build(expr.exprs[1], table, rhsOnChange, type: opItem.exprTypes[1], enumValues: @exprUtils.getExprValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
+          rhsElem = @build(expr.exprs[1], table, rhsOnChange, type: opItem.exprTypes[1], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
 
         # Create op dropdown (finding matching type and lhs, not op)
         opItems = @exprUtils.findMatchingOpItems(resultType: options.type, exprTypes: [expr1Type])
