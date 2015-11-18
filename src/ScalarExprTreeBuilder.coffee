@@ -120,6 +120,10 @@ module.exports = class ScalarExprTreeBuilder
       joins.push(column.id)
       initVal = options.initialValue
       
+      # Single joins have a value of id
+      if column.join.multiple == false
+        node.value = { table: options.startTable, joins: joins, expr: { type: "id", table: column.join.toTable } }
+
       node.children = =>
         # Determine if to include count. True if aggregated
         includeCount = exprUtils.isMultipleJoins(options.startTable, joins)

@@ -19,6 +19,17 @@ describe "ScalarExprTreeBuilder", ->
     assert.deepEqual _.pluck(nodes, "name"), ["C1"]
     assert _.isEqual(nodes[0].value, { table: "t1", joins: [], expr: { type: "field", table: "t1", column: "c1"}}), JSON.stringify(nodes[0].value)
 
+  it "allows selection of single join as id type", ->
+    # Join single column
+    join = { fromTable: "t1", fromCol: "c1", toTable: "t2", toCol: "c1", op: "=", multiple: false }
+    @schema = @schema.addTable({ id: "t1", name: "T1", contents: [
+      { id: "c1", name: "C1", type: "text" }
+      { id: "c2", name: "C2", type: "join", join: join }
+    ]})
+
+    nodes = new ScalarExprTreeBuilder(@schema).getTree(table: "t1")
+    assert _.isEqual(nodes[1].value, { table: "t1", joins: ["c2"], expr: { type: "id", table: "t2" }}), JSON.stringify(nodes[1].value)
+
   it "returns table sections if present", ->
     @schema = new Schema()
     @schema = @schema.addTable({ id: "t1", contents: [

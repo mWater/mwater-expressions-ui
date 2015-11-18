@@ -25,6 +25,7 @@ module.exports = class ExprComponent extends React.Component
 
     type: React.PropTypes.string    # If specified, the type (value type) of expression required. e.g. boolean
     enumValues: React.PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
+    idTable: React.PropTypes.string # If specified the table from which id-type expressions must come
 
     preferLiteral: React.PropTypes.bool # True to prefer literal expressions
 
@@ -34,7 +35,7 @@ module.exports = class ExprComponent extends React.Component
     expr = new ExprCleaner(@props.schema).cleanExpr(expr, {
       table: @props.table
       type: @props.type
-      valueIds: if @props.enumValues then _.pluck(@props.enumValues, "id")
+      enumValueIds: if @props.enumValues then _.pluck(@props.enumValues, "id")
     })
 
     @props.onChange(expr)
@@ -44,6 +45,7 @@ module.exports = class ExprComponent extends React.Component
       type: @props.type
       enumValues: @props.enumValues 
       preferLiteral: @props.preferLiteral
+      idTable: @props.idTable
       })
 
 class ExprElementBuilder 
@@ -58,6 +60,7 @@ class ExprElementBuilder
   #  type: required value type of expression
   #  key: key of the resulting element
   #  enumValues: array of { id, name } for the enumerable values to display
+  #  idTable: the table from which id-type expressions must come
   #  refExpr: expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
   #  preferLiteral: to preferentially choose literal expressions (used for RHS of expressions)
   #  suppressWrapOps: pass ops to *not* offer to wrap in
