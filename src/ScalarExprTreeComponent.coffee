@@ -54,7 +54,7 @@ class ScalarExprTreeLeafComponent extends React.Component
       @props.item.name
 
 class ScalarExprTreeNodeComponent extends React.Component
-  propTypes:
+  @propTypes:
     item: React.PropTypes.object.isRequired # Item to display
     onChange: React.PropTypes.func.isRequired # Called when item is selected
 

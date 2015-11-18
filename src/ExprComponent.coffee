@@ -217,7 +217,8 @@ class ExprElementBuilder
 
     # If just a field or id inside, add to string and make a simple link control
     if expr.expr and expr.expr.type in ["field", "id"]
-      joinsStr += @exprUtils.summarizeExpr(expr.expr)
+      # Summarize without aggr
+      joinsStr = @exprUtils.summarizeExpr(_.omit(expr, "aggr"))
       return R(LinkComponent, 
         dropdownItems: [{ id: "remove", name: "Remove" }]
         onDropdownItemClicked: => onChange(null),
