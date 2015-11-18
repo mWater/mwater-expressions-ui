@@ -54,6 +54,10 @@ class ScalarExprTreeLeafComponent extends React.Component
       @props.item.name
 
 class ScalarExprTreeNodeComponent extends React.Component
+  propTypes:
+    item: React.PropTypes.object.isRequired # Item to display
+    onChange: React.PropTypes.func.isRequired # Called when item is selected
+
   constructor: (props) ->
     super
     @state = { 
@@ -65,6 +69,13 @@ class ScalarExprTreeNodeComponent extends React.Component
       @setState(collapse: "closed")
     else if @state.collapse == "closed" 
       @setState(collapse: "open")
+
+  handleItemClick: =>
+    # If no value, treat as arrow click
+    if not @props.item.value
+      @handleArrowClick()
+    else
+      @props.onChange(@props.item.value)      
 
   render: ->
     arrow = null
@@ -78,8 +89,8 @@ class ScalarExprTreeNodeComponent extends React.Component
         React.createElement(ScalarExprTreeTreeComponent, tree: @props.item.children(), onChange: @props.onChange)
 
     H.div null,
-      H.div onClick: @handleArrowClick, style: { cursor: "pointer", padding: 4 }, key: "arrow",
-        H.span style: { color: "#AAA", cursor: "pointer", paddingRight: 3 }, arrow
-        @props.item.name
+      H.div style: { cursor: "pointer", padding: 4 }, key: "arrow",
+        H.span style: { color: "#AAA", cursor: "pointer", paddingRight: 3 }, onClick: @handleArrowClick, arrow
+        H.span onClick: @handleItemClick, @props.item.name
       children
       
