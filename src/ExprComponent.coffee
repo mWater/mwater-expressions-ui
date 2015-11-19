@@ -28,6 +28,7 @@ module.exports = class ExprComponent extends React.Component
     idTable: React.PropTypes.string # If specified the table from which id-type expressions must come
 
     preferLiteral: React.PropTypes.bool # True to prefer literal expressions
+    includeCount: React.PropTypes.bool # true to include count (id) item at root level in expression selector
 
   # Clean expression and pass up
   handleChange: (expr) =>
@@ -64,6 +65,7 @@ class ExprElementBuilder
   #  refExpr: expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
   #  preferLiteral: to preferentially choose literal expressions (used for RHS of expressions)
   #  suppressWrapOps: pass ops to *not* offer to wrap in
+  #  includeCount: true to include count (id) item at root level in expression selector
   build: (expr, table, onChange, options = {}) ->
     # Create new onChange function. If a boolean type is required and the expression given is not, 
     # it will wrap it with an expression
@@ -119,7 +121,7 @@ class ExprElementBuilder
         type: if options.type != "boolean" then options.type
         enumValues: options.enumValues
         initialMode: if options.preferLiteral then "literal"
-        # includeCount: TODO
+        includeCount: options.includeCount
         enumValues: options.enumValues)
 
     else if expr.type == "op"
