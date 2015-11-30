@@ -190,8 +190,18 @@ module.exports = class OmniBoxExprComponent extends React.Component
 
       # Add none selection
       dropdown.unshift(H.li(key: "_null", H.a(onClick: @handleEnumSelected.bind(null, null), H.i(null, "None"))))
+      return dropdown
 
-    return dropdown
+    # If date type, display dropdown
+    if (@props.value and @props.value.valueType == "date") or (@props.type == "date")
+      # TODO https://github.com/mWater/mwater-expressions-ui/issues/3
+      return "THIS SHOULD BE A CALENDAR"
+
+    # If datetime type, display dropdown
+    if (@props.value and @props.value.valueType == "datetime") or (@props.type == "datetime")
+      # TODO https://github.com/mWater/mwater-expressions-ui/issues/3
+      return "THIS SHOULD BE A CALENDAR POSSIBLY WITH DATETIME CONTROL"
+      
 
   # Renders a dropdown that allows formula building (mostly scalar expression choosing)
   renderFormulaDropdown: ->

@@ -266,8 +266,6 @@ class ExprElementBuilder
         
         # Create stacked expression
         R(StackedComponent, joinLabel: expr.op, items: items)
-      when "between"
-        # TODO
       else
         # Horizontal expression. Render each part
         expr1Type = @exprUtils.getExprType(expr.exprs[0])
@@ -284,8 +282,29 @@ class ExprElementBuilder
         
         lhsElem = @build(expr.exprs[0], table, lhsOnChange, type: opItem.exprTypes[0])
 
-        # If has two expressions
-        if opItem.exprTypes.length > 1
+        # Special case for between 
+        if expr.op == "between"
+          rhs1OnChange = (newValue) =>
+            newExprs = expr.exprs.slice()
+            newExprs[1] = newValue
+
+            # Set expr value
+            onChange(_.extend({}, expr, { exprs: newExprs }))
+
+          rhs2OnChange = (newValue) =>
+            newExprs = expr.exprs.slice()
+            newExprs[2] = newValue
+
+            # Set expr value
+            onChange(_.extend({}, expr, { exprs: newExprs }))
+
+          # Build rhs
+          rhsElem = [
+            @build(expr.exprs[1], table, rhsOnChange, type: opItem.exprTypes[1], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
+            "\u00A0and\u00A0"
+            @build(expr.exprs[2], table, rhsOnChange, type: opItem.exprTypes[2], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
+          ]
+        else if opItem.exprTypes.length > 1 # If has two expressions
           rhsOnChange = (newValue) =>
             newExprs = expr.exprs.slice()
             newExprs[1] = newValue

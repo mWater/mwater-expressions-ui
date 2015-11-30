@@ -13,191 +13,112 @@ DataSource = require('mwater-expressions').DataSource
 
 
 $ ->
-  $.getJSON "https://api.mwater.co/v3/jsonql/schema?formIds=f6d3b6deed734467932f4dca34af4175", (schemaJson) ->
-    schema = new Schema(schemaJson)
-  # schema = schema.addTable({ id: "t1", name: "T1", contents: [
-  #   { id: "text", name: "Text", type: "text" }
-  #   { id: "number", name: "Number", type: "number" }
-  #   { id: "enum", name: "Enum", type: "enum", values: [{ id: "a", name: "A"}, { id: "b", name: "B"}] }
-  #   { id: "date", name: "Date", type: "date" }
-  #   { id: "datetime", name: "Datetime", type: "datetime" }
-  #   { id: "boolean", name: "Boolean", type: "boolean" }
-  #   { id: "1-2", name: "T1->T2", type: "join", join: { fromTable: "t1", fromColumn: "primary", toTable: "t2", toColumn: "t1", op: "=", multiple: true }}
-  # ]})
+  # $.getJSON "https://api.mwater.co/v3/jsonql/schema?formIds=f6d3b6deed734467932f4dca34af4175", (schemaJson) ->
+  #   schema = new Schema(schemaJson)
+    # dataSource = new MWaterDataSource("https://api.mwater.co/v3/", null, false)
+    # # dataSource = new MWaterDataSource("http://localhost:1234/v3/", "e449acf016c362f19c4b65b52db23486", false)
 
-  # schema = schema.addTable({ id: "t2", name: "T2", ordering: "number", contents: [
-  #   { id: "t1", name: "T1", type: "uuid" }
-  #   { id: "text", name: "Text", type: "text" }
-  #   { id: "number", name: "number", type: "number" }
-  #   { id: "2-1", name: "T2->T1", type: "join", join: { fromTable: "t2", fromColumn: "t1", toTable: "t1", toColumn: "primary", op: "=", multiple: false }}
-  #   ]})
-    # # Fake data source
-    # dataSource = {
-    #   performQuery: (query, cb) =>
-    #     cb(null, [
-    #       { value: "abc" }
-    #       { value: "xyz" }
-    #       ])
-    # }
+  schema = new Schema()
+  schema = schema.addTable({ id: "t1", name: "T1", contents: [
+    { id: "text", name: "Text", type: "text" }
+    { id: "number", name: "Number", type: "number" }
+    { id: "enum", name: "Enum", type: "enum", values: [{ id: "a", name: "A"}, { id: "b", name: "B"}] }
+    { id: "date", name: "Date", type: "date" }
+    { id: "datetime", name: "Datetime", type: "datetime" }
+    { id: "boolean", name: "Boolean", type: "boolean" }
+    { id: "1-2", name: "T1->T2", type: "join", join: { fromTable: "t1", fromColumn: "primary", toTable: "t2", toColumn: "t1", op: "=", multiple: true }}
+  ]})
 
-    dataSource = new MWaterDataSource("http://localhost:1234/v3/", "e449acf016c362f19c4b65b52db23486", false)
+  schema = schema.addTable({ id: "t2", name: "T2", ordering: "number", contents: [
+    { id: "t1", name: "T1", type: "uuid" }
+    { id: "text", name: "Text", type: "text" }
+    { id: "number", name: "number", type: "number" }
+    { id: "2-1", name: "T2->T1", type: "join", join: { fromTable: "t2", fromColumn: "t1", toTable: "t1", toColumn: "primary", op: "=", multiple: false }}
+    ]})
 
-    class TestComponent extends React.Component
-      constructor: ->
-        super
-        @state = { 
-          value: value
-          # value: value
-# }{"type":"op","table":"responses:f6d3b6deed734467932f4dca34af4175","op":"= any","exprs":[{"type":"field","table":"responses:f6d3b6deed734467932f4dca34af4175","column":"data:dd4ba7ef310949c7ba11aa46e2529efb:value"},null]}
-          # value: { type: "literal", valueType: "enum", value: "a" }
-        }
+  # Fake data source
+  dataSource = {
+    performQuery: (query, cb) =>
+      cb(null, [
+        { value: "abc" }
+        { value: "xyz" }
+        ])
+  }
 
-      handleValueChange: (value) => 
-        value = new ExprCleaner(schema).cleanExpr(value) #, { type: 'boolean' })
-        @setState(value: value)
 
-      handleCompute: =>
-        exprCompiler = new ExprCompiler(schema)
+  class TestComponent extends React.Component
+    constructor: ->
+      super
+      @state = { 
+        value: value
+      }
 
-        compiledExpr = exprCompiler.compileExpr(expr: @state.value, tableAlias: "main")
+    handleValueChange: (value) => 
+      value = new ExprCleaner(schema).cleanExpr(value) #, { type: 'boolean' })
+      @setState(value: value)
 
-        # Create query
-        query = {
-          type: "query"
-          selects: [
-            { type: "select", expr: compiledExpr, alias: "value" }
-          ]
-          from: exprCompiler.compileTable("responses:f6d3b6deed734467932f4dca34af4175", "main")
-        }
 
-        dataSource.performQuery(query, (err, rows) =>
-          console.log _.countBy(rows, "value")
-          )
+    render: ->
+      dataSource
+      H.div style: { padding: 10 },
+        # R(OmniBoxExprComponent, 
+        #     schema: schema
+        #     dataSource: dataSource
+        #     table: "responses:f6d3b6deed734467932f4dca34af4175"
+        #     value: @state.value
+        #     enumValues: [{ id: "a", name: "ABC"}, { id: "b", name: "BCD"}]
+        #     type: "enum"
+        #     initialMode: "literal"
+        #     onChange: @handleValueChange)
+        R(ExprComponent, 
+          schema: schema
+          dataSource: dataSource
+          table: "t1"
+          value: @state.value
+          type: "boolean"
+          onChange: @handleValueChange
+        )
+        H.br()
+        H.br()
+        H.pre null, JSON.stringify(@state.value, null, 2)
 
-      render: ->
-        dataSource
-        H.div style: { padding: 10 },
-          # R(OmniBoxExprComponent, 
-          #     schema: schema
-          #     dataSource: dataSource
-          #     table: "responses:f6d3b6deed734467932f4dca34af4175"
-          #     value: @state.value
-          #     enumValues: [{ id: "a", name: "ABC"}, { id: "b", name: "BCD"}]
-          #     type: "enum"
-          #     initialMode: "literal"
-          #     onChange: @handleValueChange)
-          R(ExprComponent, 
-            schema: schema
-            dataSource: dataSource
-            table: "responses:f6d3b6deed734467932f4dca34af4175"
-            value: @state.value
-            onChange: @handleValueChange
-            type: "enum"
-            enumValues: [
-              { id: "high", name: "High" }
-              { id: "medium", name: "Medium" }
-              { id: "low", name: "Low" }
-              { id: "nodata", name: "No Data" }
-            ]
-          )
-          H.br()
-          H.br()
-          H.pre null, JSON.stringify(@state.value, null, 2)
-          H.button type: "button", className: "btn btn-primary", onClick: @handleCompute, "Compute"
-
-    ReactDOM.render(R(TestComponent), document.getElementById("main"))
+  ReactDOM.render(R(TestComponent), document.getElementById("main"))
 
 
 value = {
-  "type": "case",
-  "table": "responses:f6d3b6deed734467932f4dca34af4175",
-  "cases": [
+  "type": "op",
+  "op": "and",
+  "table": "t1",
+  "exprs": [
     {
-      "when": {
-        "type": "op",
-        "table": "responses:f6d3b6deed734467932f4dca34af4175",
-        "op": "= any",
-        "exprs": [
-          {
-            "type": "field",
-            "table": "responses:f6d3b6deed734467932f4dca34af4175",
-            "column": "data:cc53351619f343b48ad490d5eb1361c6:value"
-          },
-          {
-            "type": "literal",
-            "valueType": "enum[]",
-            "value": [
-              "fSwM5qf",
-              "eRnmrpl"
-            ]
-          }
-        ]
-      },
-      "then": {
-        "type": "literal",
-        "valueType": "enum",
-        "value": "high"
-      }
+      "type": "op",
+      "table": "t1",
+      "op": "between",
+      "exprs": [
+        {
+          "type": "field",
+          "table": "t1",
+          "column": "date"
+        },
+        null,
+        null
+      ]
     },
     {
-      "when": {
-        "type": "op",
-        "table": "responses:f6d3b6deed734467932f4dca34af4175",
-        "op": "= any",
-        "exprs": [
-          {
-            "type": "field",
-            "table": "responses:f6d3b6deed734467932f4dca34af4175",
-            "column": "data:cc53351619f343b48ad490d5eb1361c6:value"
-          },
-          {
-            "type": "literal",
-            "valueType": "enum[]",
-            "value": [
-              "7HgUHBd"
-            ]
-          }
-        ]
-      },
-      "then": {
-        "type": "literal",
-        "valueType": "enum",
-        "value": "medium"
-      }
-    },
-    {
-      "when": {
-        "type": "op",
-        "table": "responses:f6d3b6deed734467932f4dca34af4175",
-        "op": "= any",
-        "exprs": [
-          {
-            "type": "field",
-            "table": "responses:f6d3b6deed734467932f4dca34af4175",
-            "column": "data:cc53351619f343b48ad490d5eb1361c6:value"
-          },
-          {
-            "type": "literal",
-            "valueType": "enum[]",
-            "value": [
-              "UMRWnnt",
-              "7t7XKLe"
-            ]
-          }
-        ]
-      },
-      "then": {
-        "type": "literal",
-        "valueType": "enum",
-        "value": "low"
-      }
+      "type": "op",
+      "table": "t1",
+      "op": "between",
+      "exprs": [
+        {
+          "type": "field",
+          "table": "t1",
+          "column": "datetime"
+        },
+        null,
+        null
+      ]
     }
-  ],
-  "else": {
-    "type": "literal",
-    "valueType": "enum",
-    "value": "nodata"
-  }
+  ]
 }
 
 # Caching data source for mWater. Requires jQuery
