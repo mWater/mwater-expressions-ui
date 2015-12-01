@@ -1,4 +1,4 @@
-CrossComponent = require './CrossComponent'
+CrossComponent = require('react-library/lib/CrossComponent')
 React = require 'react'
 H = React.DOM
 R = React.createElement
