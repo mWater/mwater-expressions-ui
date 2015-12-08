@@ -6,7 +6,7 @@ H = React.DOM
 ExprCleaner = require("mwater-expressions").ExprCleaner
 ExprUtils = require("mwater-expressions").ExprUtils
 OmniBoxExprComponent = require './OmniBoxExprComponent'
-EnumArrayComponent = require './EnumArrayComponent'
+EnumSetComponent = require './EnumSetComponent'
 TextArrayComponent = require './TextArrayComponent'
 LinkComponent = require './LinkComponent'
 StackedComponent = require './StackedComponent'
@@ -93,7 +93,7 @@ class ExprElementBuilder
     # Get type (what it is, or barring that, what it should be)
     exprType = @exprUtils.getExprType(expr) or options.type
 
-    # If text[] or enum[], use special component
+    # If text[] or enumset, use special component
     if exprType == "text[]"
       return R(TextArrayComponent, 
         key: options.key
@@ -103,8 +103,8 @@ class ExprElementBuilder
         dataSource: @dataSource
         onChange: onChange)
 
-    if exprType == "enum[]"
-      return R(EnumArrayComponent, 
+    if exprType == "enumset"
+      return R(EnumSetComponent, 
         key: options.key, 
         value: expr, 
         enumValues: options.enumValues

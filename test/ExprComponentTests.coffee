@@ -9,7 +9,7 @@ fixtures = require './fixtures'
 TestComponent = require './TestComponent'
 
 ExprComponent = require '../src/ExprComponent'
-literalComponents = require '../src/literalComponents'
+EnumSetComponent = require '../src/EnumSetComponent'
 OmniBoxExprComponent = require '../src/OmniBoxExprComponent'
 
 compare = (actual, expected) ->
@@ -114,7 +114,7 @@ describe "ExprComponent", ->
     TestComponent.changeValue(comp.findInput(), "4")
     TestComponent.pressEnter(comp.findInput())
 
-  it "displays EnumArrComponent when rhs is enum[] but null", ->
+  it "displays EnumSetComponent when rhs is enumset but null", ->
     expr = {
       type: "op"
       table: "t1"
@@ -125,9 +125,9 @@ describe "ExprComponent", ->
       ]
     }
 
-    # Find EnumArrComponent
+    # Find EnumSetComponent
     comp = @render(value: expr)
-    enumComp = ReactTestUtils.findRenderedComponentWithType(comp.getComponent(), literalComponents.EnumArrComponent)
+    enumComp = ReactTestUtils.findRenderedComponentWithType(comp.getComponent(), EnumSetComponent)
 
     # Check enumValues
     compare(enumComp.props.enumValues, @schema.getColumn("t1", "enum").enumValues)

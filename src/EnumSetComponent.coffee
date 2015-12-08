@@ -13,7 +13,7 @@ module.exports = class EnumArrComponent extends React.Component
   handleChange: (val) =>
     value = if val then val.split("\n") else []
     value = _.map(value, JSON.parse)
-    @props.onChange({ type: "literal", valueType: "enum[]", value: value })
+    @props.onChange({ type: "literal", valueType: "enumset", value: value })
 
   render: ->
     value = null
