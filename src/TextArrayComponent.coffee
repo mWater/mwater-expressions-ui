@@ -63,7 +63,6 @@ module.exports = class TextArrayComponent extends React.Component
     if @props.value and @props.value.value.length > 0 
       value = @props.value.value.join("\n")
 
-    options = _.map(@props.enumValues, (val) -> { value: val.id, label: val.name })
     H.div style: { width: "100%" },
       React.createElement(ReactSelect, { 
         value: value
