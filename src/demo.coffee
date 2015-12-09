@@ -19,22 +19,23 @@ $ ->
     # # dataSource = new MWaterDataSource("http://localhost:1234/v3/", "e449acf016c362f19c4b65b52db23486", false)
 
   schema = new Schema()
-  schema = schema.addTable({ id: "t1", name: "T1", contents: [
-    { id: "text", name: "Text", type: "text" }
-    { id: "number", name: "Number", type: "number" }
-    { id: "enum", name: "Enum", type: "enum", values: [{ id: "a", name: "A"}, { id: "b", name: "B"}] }
-    { id: "date", name: "Date", type: "date" }
-    { id: "datetime", name: "Datetime", type: "datetime" }
-    { id: "boolean", name: "Boolean", type: "boolean" }
-    { id: "1-2", name: "T1->T2", type: "join", join: { fromTable: "t1", fromColumn: "primary", toTable: "t2", toColumn: "t1", op: "=", multiple: true }}
+  schema = schema.addTable({ id: "t1", name: { en: "T1" }, primaryKey: "primary", contents: [
+    { id: "text", name: { en: "Text" }, type: "text" }
+    { id: "number", name: { en: "Number" }, type: "number" }
+    { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: "A"}, { id: "b", name: "B"}] }
+    { id: "enumset", name: { en: "EnumSet" }, type: "enumset", enumValues: [{ id: "a", name: "A"}, { id: "b", name: "B"}] }
+    { id: "date", name: { en: "Date" }, type: "date" }
+    { id: "datetime", name: { en: "Datetime" }, type: "datetime" }
+    { id: "boolean", name: { en: "Boolean" }, type: "boolean" }
+    { id: "1-2", name: { en: "T1->T2" }, type: "join", join: { fromTable: "t1", fromColumn: "primary", toTable: "t2", toColumn: "t1", op: "=", multiple: true }}
   ]})
 
-  schema = schema.addTable({ id: "t2", name: "T2", ordering: "number", contents: [
-    { id: "t1", name: "T1", type: "uuid" }
-    { id: "text", name: "Text", type: "text" }
-    { id: "number", name: "number", type: "number" }
-    { id: "2-1", name: "T2->T1", type: "join", join: { fromTable: "t2", fromColumn: "t1", toTable: "t1", toColumn: "primary", op: "=", multiple: false }}
-    ]})
+  schema = schema.addTable({ id: "t2", name: { en: "T2" }, primaryKey: "primary", ordering: "number", contents: [
+    { id: "t1", name: { en: "T1" }, type: "uuid" }
+    { id: "text", name: { en: "Text" }, type: "text" }
+    { id: "number", name: { en: "Number" }, type: "number" }
+    { id: "2-1", name: { en: "T2->T1" }, type: "join", join: { fromTable: "t2", fromColumn: "t1", toTable: "t1", toColumn: "primary", op: "=", multiple: false }}
+  ]})
 
   # Fake data source
   dataSource = {
@@ -84,42 +85,54 @@ $ ->
 
   ReactDOM.render(R(TestComponent), document.getElementById("main"))
 
-
 value = {
   "type": "op",
-  "op": "and",
   "table": "t1",
+  "op": "contains",
   "exprs": [
     {
-      "type": "op",
+      "type": "field",
       "table": "t1",
-      "op": "between",
-      "exprs": [
-        {
-          "type": "field",
-          "table": "t1",
-          "column": "date"
-        },
-        null,
-        null
-      ]
+      "column": "enumset"
     },
-    {
-      "type": "op",
-      "table": "t1",
-      "op": "between",
-      "exprs": [
-        {
-          "type": "field",
-          "table": "t1",
-          "column": "datetime"
-        },
-        null,
-        null
-      ]
-    }
+    null
   ]
 }
+
+# value = {
+#   "type": "op",
+#   "op": "and",
+#   "table": "t1",
+#   "exprs": [
+#     {
+#       "type": "op",
+#       "table": "t1",
+#       "op": "= any",
+#       "exprs": [
+#         {
+#           "type": "field",
+#           "table": "t1",
+#           "column": "enum"
+#         },
+#         null
+#       ]
+#     },
+#     {
+#       "type": "op",
+#       "table": "t1",
+#       "op": "between",
+#       "exprs": [
+#         {
+#           "type": "field",
+#           "table": "t1",
+#           "column": "datetime"
+#         },
+#         null,
+#         null
+#       ]
+#     }
+#   ]
+# }
 
 # Caching data source for mWater. Requires jQuery
 class MWaterDataSource extends DataSource

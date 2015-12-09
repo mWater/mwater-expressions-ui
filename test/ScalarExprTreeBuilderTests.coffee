@@ -7,11 +7,11 @@ describe "ScalarExprTreeBuilder", ->
   beforeEach ->
     @schema = new Schema()
     @schema = @schema.addTable({ id: "t1", name: "T1", contents: [
-      { id: "c1", name: "C1", type: "text" }
+      { id: "c1", name: { en: "C1" }, type: "text" }
     ]})
 
     @schema = @schema.addTable({ id: "t2", name: "T2", contents: [
-      { id: "c1", name: "C1", type: "text" }
+      { id: "c1", name: { en: "C1" }, type: "text" }
     ]})
 
   it "returns columns", ->
@@ -23,8 +23,8 @@ describe "ScalarExprTreeBuilder", ->
     # Join single column
     join = { fromTable: "t1", fromCol: "c1", toTable: "t2", toCol: "c1", op: "=", multiple: false }
     @schema = @schema.addTable({ id: "t1", name: "T1", contents: [
-      { id: "c1", name: "C1", type: "text" }
-      { id: "c2", name: "C2", type: "join", join: join }
+      { id: "c1", name: { en: "C1" }, type: "text" }
+      { id: "c2", name: { en: "C2" }, type: "join", join: join }
     ]})
 
     nodes = new ScalarExprTreeBuilder(@schema).getTree(table: "t1")
@@ -33,10 +33,10 @@ describe "ScalarExprTreeBuilder", ->
   it "returns table sections if present", ->
     @schema = new Schema()
     @schema = @schema.addTable({ id: "t1", contents: [
-        { id: "c2", name: "C2", type: "text" }
-        { name: "A", type: "section", contents: [
-          { id: "c4", name: "C4", type: "text" }
-          { id: "c5", name: "C5", type: "text" }
+        { id: "c2", name: { en: "C2" }, type: "text" }
+        { name: { en: "A" }, type: "section", contents: [
+          { id: "c4", name: { en: "C4" }, type: "text" }
+          { id: "c5", name: { en: "C5" }, type: "text" }
         ]}
     ]})
 
@@ -54,9 +54,9 @@ describe "ScalarExprTreeBuilder", ->
   describe "filtering", ->
     it "filters by name", ->
       @schema = new Schema({ tables: [{ id: "t1", contents: [
-        { id: "c1", name: "abc", type: "text" }
-        { id: "c2", name: "BCD", type: "text" }
-        { id: "c3", name: "cde", type: "text" }
+        { id: "c1", name: { en: "abc" }, type: "text" }
+        { id: "c2", name: { en: "BCD" }, type: "text" }
+        { id: "c3", name: { en: "cde" }, type: "text" }
       ]}]})
 
       nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: /Cd/i })
@@ -64,9 +64,9 @@ describe "ScalarExprTreeBuilder", ->
 
     it "keeps all children of matching nodes with children", ->
       @schema = new Schema({ tables: [{ id: "t1", contents: [
-        { id: "c1", name: "abc", type: "text" } # Not a match
-        { id: "c2", name: "BCD", type: "section", contents: [
-          { id: "c3", name: "xyz", type: "text" }  # Not a match
+        { id: "c1", name: { en: "abc" }, type: "text" } # Not a match
+        { id: "c2", name: { en: "BCD" }, type: "section", contents: [
+          { id: "c3", name: { en: "xyz" }, type: "text" }  # Not a match
         ]}
       ]}]})
 
@@ -75,9 +75,9 @@ describe "ScalarExprTreeBuilder", ->
 
     it "has level 1 initially open when filtering", ->
       @schema = new Schema({ tables: [{ id: "t1", contents: [
-        { id: "c1", name: "abc", type: "text" } # Not a match
-        { id: "c2", name: "BCD", type: "section", contents: [
-          { id: "c3", name: "xyz", type: "text" }  # Not a match
+        { id: "c1", name: { en: "abc" }, type: "text" } # Not a match
+        { id: "c2", name: { en: "BCD" }, type: "section", contents: [
+          { id: "c3", name: { en: "xyz" }, type: "text" }  # Not a match
         ]}
       ]}]})
 
@@ -88,9 +88,9 @@ describe "ScalarExprTreeBuilder", ->
     # Join column
     join = { fromTable: "t1", fromCol: "c1", toTable: "t2", toCol: "c1", op: "=", multiple: false }
     
-    @schema = @schema.addTable({ id: "t1", name: "T1", contents: [
-      { id: "c1", name: "C1", type: "text" }
-      { id: "c2", name: "C2", type: "join", join: join }
+    @schema = @schema.addTable({ id: "t1", name: { en: "T1" }, contents: [
+      { id: "c1", name: { en: "C1" }, type: "text" }
+      { id: "c2", name: { en: "C2" }, type: "join", join: join }
     ]})
 
     nodes = new ScalarExprTreeBuilder(@schema).getTree(table: "t1")
@@ -106,9 +106,9 @@ describe "ScalarExprTreeBuilder", ->
 
   describe "limits type", ->
     it "includes direct types", ->
-      @schema = @schema.addTable({ id: "t1", name: "T1", contents: [
-        { id: "c1", name: "C1", type: "text" }
-        { id: "c2", name: "C2", type: "number" }
+      @schema = @schema.addTable({ id: "t1", name: { en: "T1" }, contents: [
+        { id: "c1", name: { en: "C1" }, type: "text" }
+        { id: "c2", name: { en: "C2" }, type: "number" }
       ]})
 
       # Get nodes 
@@ -122,9 +122,9 @@ describe "ScalarExprTreeBuilder", ->
     it "includes types formed by aggregation", ->
       # Join column
       join = { fromTable: "t1", fromCol: "c1", toTable: "t2", toCol: "c1", op: "=", multiple: true }
-      @schema = @schema.addTable({ id: "t1", name: "T1", contents: [
-        { id: "c1", name: "C1", type: "text" }
-        { id: "c2", name: "C2", type: "join", join: join }
+      @schema = @schema.addTable({ id: "t1", name: { en: "T1" }, contents: [
+        { id: "c1", name: { en: "C1" }, type: "text" }
+        { id: "c2", name: { en: "C2" }, type: "join", join: join }
       ]})
 
       # Go to 2nd child, children

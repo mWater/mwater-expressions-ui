@@ -4,8 +4,9 @@ ExprUtils = require("mwater-expressions").ExprUtils
 # Builds a tree for selecting table + joins + expr of a scalar expression
 # Organizes columns, and follows joins
 module.exports = class ScalarExprTreeBuilder
-  constructor: (schema) ->
+  constructor: (schema, locale) ->
     @schema = schema
+    @locale = locale
 
   # Returns array of 
   # { 
@@ -47,7 +48,7 @@ module.exports = class ScalarExprTreeBuilder
     # Create count node if any joins
     if options.includeCount
       node = {
-        name: "Number of #{@schema.getTable(options.table).name}"
+        name: "Number of #{ExprUtils.localizeString(@schema.getTable(options.table).name, @locale)}"
         value: { table: options.startTable, joins: options.joins, expr: { type: "id", table: options.table } }
       }
       if not options.filter or node.name.match(options.filter)
@@ -64,7 +65,9 @@ module.exports = class ScalarExprTreeBuilder
       do (item) =>
         if item.type == "section"
           # Determine if matches
-          matches = not options.filter or item.name.match(options.filter)
+          name = ExprUtils.localizeString(item.name, @locale)
+
+          matches = not options.filter or name.match(options.filter)
 
           childOptions = _.extend({}, options)
 
@@ -76,7 +79,7 @@ module.exports = class ScalarExprTreeBuilder
           childOptions.depth += 1
 
           node = {
-            name: item.name
+            name: name
             children: =>
               @createNodes(item.contents, childOptions)
           }
@@ -106,8 +109,8 @@ module.exports = class ScalarExprTreeBuilder
     column = options.column
 
     node = { 
-      name: column.name
-      desc: column.desc
+      name: ExprUtils.localizeString(column.name, @locale)
+      desc: ExprUtils.localizeString(column.desc, @locale)
     }
 
     # Determine if matches

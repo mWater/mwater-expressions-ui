@@ -36,6 +36,9 @@ module.exports = class OmniBoxExprComponent extends React.Component
     noneLabel: "Select..."
     initialMode: "formula"
 
+  @contextTypes:
+    locale: React.PropTypes.string  # e.g. "en"
+
   constructor: (props) ->
     super
 
@@ -70,7 +73,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
     if literalExpr and literalExpr.valueType == "enum"
       item = _.findWhere(props.enumValues, { id: literalExpr.value })
       if item 
-        return item.name
+        return ExprUtils.localizeString(item.name, @context.locale)
       return "???"
 
     if literalExpr and literalExpr.value?
@@ -181,12 +184,13 @@ module.exports = class OmniBoxExprComponent extends React.Component
         filter = new RegExp(escapeRegex(@state.inputText), "i")
 
       dropdown = _.map @props.enumValues, (ev) =>
-        if filter and not ev.name.match(filter)
+        name = ExprUtils.localizeString(ev.name, @context.locale)
+        if filter and not name.match(filter)
           return null
         H.li key: ev.id, 
           H.a 
             onClick: @handleEnumSelected.bind(null, ev.id),
-            ev.name
+            name
 
       # Add none selection
       dropdown.unshift(H.li(key: "_null", H.a(onClick: @handleEnumSelected.bind(null, null), H.i(null, "None"))))
@@ -218,7 +222,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
         filter = new RegExp(escapeRegex(@state.inputText), "i")
 
       # Create tree 
-      treeBuilder = new ScalarExprTreeBuilder(@props.schema)
+      treeBuilder = new ScalarExprTreeBuilder(@props.schema, @context.locale)
       types = if @props.type then [@props.type]
       tree = treeBuilder.getTree(table: @props.table, types: types, includeCount: @props.includeCount, filter: filter)
 

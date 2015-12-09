@@ -2,13 +2,17 @@ React = require 'react'
 H = React.DOM
 ReactSelect = require 'react-select'
 _ = require 'lodash'
+ExprUtils = require("mwater-expressions").ExprUtils
 
 # Component which displays an array of enums
-module.exports = class EnumArrComponent extends React.Component
+module.exports = class EnumSetComponent extends React.Component
   @propTypes: 
     value: React.PropTypes.object
     onChange: React.PropTypes.func.isRequired 
-    enumValues: React.PropTypes.array.isRequired # Array of id and name
+    enumValues: React.PropTypes.array.isRequired # Array of id and name (localized string)
+
+  @contextTypes:
+    locale: React.PropTypes.string  # e.g. "en"
 
   handleChange: (val) =>
     value = if val then val.split("\n") else []
@@ -21,7 +25,7 @@ module.exports = class EnumArrComponent extends React.Component
       value = _.map(@props.value.value, JSON.stringify).join("\n")
 
     # Use JSON to allow non-strings as ids
-    options = _.map(@props.enumValues, (val) -> { value: JSON.stringify(val.id), label: val.name })
+    options = _.map(@props.enumValues, (val) => { value: JSON.stringify(val.id), label: ExprUtils.localizeString(val.name, @context.locale) })
     H.div style: { width: "100%" },
       React.createElement(ReactSelect, { 
         value: value

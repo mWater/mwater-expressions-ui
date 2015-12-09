@@ -30,6 +30,9 @@ module.exports = class ExprComponent extends React.Component
     preferLiteral: React.PropTypes.bool # True to prefer literal expressions
     includeCount: React.PropTypes.bool # true to include count (id) item at root level in expression selector
 
+  @contextTypes:
+    locale: React.PropTypes.string  # e.g. "en"
+
   # Clean expression and pass up
   handleChange: (expr) =>
     # Clean expression
@@ -42,7 +45,7 @@ module.exports = class ExprComponent extends React.Component
     @props.onChange(expr)
 
   render: ->
-    new ExprElementBuilder(@props.schema, @props.dataSource).build(@props.value, @props.table, @handleChange, { 
+    new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(@props.value, @props.table, @handleChange, { 
       type: @props.type
       enumValues: @props.enumValues 
       preferLiteral: @props.preferLiteral
@@ -50,9 +53,10 @@ module.exports = class ExprComponent extends React.Component
       })
 
 class ExprElementBuilder 
-  constructor: (schema, dataSource) ->
+  constructor: (schema, dataSource, locale) ->
     @schema = schema
     @dataSource = dataSource
+    @locale = locale
 
     @exprUtils = new ExprUtils(@schema)
 
@@ -93,22 +97,23 @@ class ExprElementBuilder
     # Get type (what it is, or barring that, what it should be)
     exprType = @exprUtils.getExprType(expr) or options.type
 
-    # If text[] or enumset, use special component
-    if exprType == "text[]"
-      return R(TextArrayComponent, 
-        key: options.key
-        value: expr
-        refExpr: options.refExpr
-        schema: @schema
-        dataSource: @dataSource
-        onChange: onChange)
+    # If text[] or enumset literal, use special component
+    if (expr and expr.type == "literal") or (not expr and options.preferLiteral)
+      if exprType == "text[]"
+        return R(TextArrayComponent, 
+          key: options.key
+          value: expr
+          refExpr: options.refExpr
+          schema: @schema
+          dataSource: @dataSource
+          onChange: onChange)
 
-    if exprType == "enumset"
-      return R(EnumSetComponent, 
-        key: options.key, 
-        value: expr, 
-        enumValues: options.enumValues
-        onChange: onChange)
+      if exprType == "enumset"
+        return R(EnumSetComponent, 
+          key: options.key, 
+          value: expr, 
+          enumValues: options.enumValues
+          onChange: onChange)
 
     # Handle empty and literals with OmniBox
     if not expr or not expr.type or expr.type == "literal"
@@ -214,7 +219,7 @@ class ExprElementBuilder
     joinsStr = ""
     for join in expr.joins
       joinCol = @schema.getColumn(t, join)
-      joinsStr += joinCol.name + " > "
+      joinsStr += ExprUtils.localizeString(joinCol.name, @locale) + " > "
       t = joinCol.join.toTable
 
     # If just a field or id inside, add to string and make a simple link control
