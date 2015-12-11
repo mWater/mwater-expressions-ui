@@ -8,6 +8,7 @@ ScalarExprTreeComponent = require './ScalarExprTreeComponent'
 ScalarExprTreeBuilder = require './ScalarExprTreeBuilder'
 DropdownComponent = require './DropdownComponent'
 LinkComponent = require './LinkComponent'
+ExprUtils = require('mwater-expressions').ExprUtils
 
 
 # Box component that allows selecting if statements, scalars and literals, all in one place
