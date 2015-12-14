@@ -1,37 +1,43 @@
-# _ = require 'lodash'
-# React = require 'react'
-# R = React.createElement
-# H = React.DOM
+_ = require 'lodash'
+React = require 'react'
+R = React.createElement
+H = React.DOM
 
-# ExprComponent = require './ExprComponent'
+ExprComponent = require './ExprComponent'
 
+# Displays a boolean filter expression
+module.exports = class FilterExprComponent extends React.Component
+  @propTypes:
+    schema: React.PropTypes.object.isRequired
+    dataSource: React.PropTypes.object.isRequired # Data source to use to get values
+    table: React.PropTypes.string.isRequired # Current table
+    value: React.PropTypes.object   # Current value
+    onChange: React.PropTypes.func  # Called with new expression
 
-# # Displays a boolean filter expression
-# module.exports = class FilterExprComponent extends React.Component
-#   @propTypes:
-#     schema: React.PropTypes.object.isRequired
-#     dataSource: React.PropTypes.object.isRequired # Data source to use to get values
-#     table: React.PropTypes.string.isRequired # Current table
-#     value: React.PropTypes.object   # Current value
-#     onChange: React.PropTypes.func  # Called with new expression
+  # Handle add filter clicked by wrapping in and if existing, otherwise adding 
+  handleAddFilter: =>
 
-#   # Handle add filter clicked by wrapping in and if existing, otherwise adding 
-#   handleAddFilter: =>
+  render: ->
+    R ExprComponent, 
+      schema: @props.schema
+      dataSource: @props.dataSource
+      table: @props.table
+      value: @props.value
+      onChange: @props.onChange
+      type: "boolean"
 
-#   render: ->
-#     # If null, just add filter
-#     if not @props.value
-#       return @renderAddFilter()
+    # # If null, just add filter
+    # if not @props.value
+    #   return @renderAddFilter()
 
-#     # If {} placeholder, just render component without add filter
-#     if _.isEmpty(@props.value)
-#       return @renderExpr(@props.value)
+    # # If {} placeholder, just render component without add filter
+    # if _.isEmpty(@props.value)
+    #   return @renderExpr(@props.value)
 
-#     If and
-#     H.div null,
-#       R ExprComponent, schema: @props.schema, dataSource: @props.dataSource, table: @props.table, value: @props.value, onChange: @props.onChange, parentOp: "and"
-#       # Add filter link 
-#       H.a onClick: @handleAddFilter, "+ Add Filter"
+    # # If and
+    # H.div null,
+    #   # Add filter link 
+    #   H.a onClick: @handleAddFilter, "+ Add Filter"
 
 # class OpExprComponent extends React.Component
 #   @propTypes:
