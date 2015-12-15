@@ -20,7 +20,7 @@ module.exports = class ExprElementBuilder
 
   # Build the tree for an expression
   # Options include:
-  #  type: required value type of expression
+  #  types: required value types of expression e.g. ['boolean']
   #  key: key of the resulting element
   #  enumValues: array of { id, name } for the enumerable values to display
   #  idTable: the table from which id-type expressions must come
@@ -29,15 +29,18 @@ module.exports = class ExprElementBuilder
   #  suppressWrapOps: pass ops to *not* offer to wrap in
   #  includeCount: true to include count (id) item at root level in expression selector
   build: (expr, table, onChange, options = {}) ->
+    # True if a boolean expression is required
+    booleanOnly = options.types and options.types.length == 1 and options.types[0] == "boolean" 
+
     # Create new onChange function. If a boolean type is required and the expression given is not, 
     # it will wrap it with an expression
     innerOnChange = (newExpr) =>
-      # If boolean and newExpr is not boolean, wrap with appropriate expression
       exprType = @exprUtils.getExprType(newExpr)
 
-      if options.type == "boolean" and exprType and exprType != options.type
+      # If boolean and newExpr is not boolean, wrap with appropriate expression
+      if booleanOnly and exprType and exprType != "boolean"
         # Find op item that matches
-        opItem = @exprUtils.findMatchingOpItems(resultType: options.type, exprTypes: [exprType])[0]
+        opItem = @exprUtils.findMatchingOpItems(resultType: "boolean", exprTypes: [exprType])[0]
 
         if opItem
           # Wrap in op to make it boolean
@@ -52,8 +55,16 @@ module.exports = class ExprElementBuilder
 
       onChange(newExpr)
 
-    # Get type (what it is, or barring that, what it should be)
-    exprType = @exprUtils.getExprType(expr) or options.type
+    # Get types (what it is, or barring that, what it should be)
+    # exprType is set if single type
+    exprType = @exprUtils.getExprType(expr)
+    if exprType
+      exprTypes = [exprType]
+    else
+      exprTypes = options.type
+      # If only one, set exprType
+      if exprTypes and exprTypes.length == 1
+        exprType = exprTypes[0]
 
     # If text[] or enumset literal, use special component
     if (expr and expr.type == "literal") or (not expr and options.preferLiteral)
@@ -81,7 +92,7 @@ module.exports = class ExprElementBuilder
         value: expr
         onChange: innerOnChange
         # Allow any type for boolean due to wrapping
-        type: if options.type != "boolean" then options.type
+        types: if not booleanOnly then options.types
         enumValues: options.enumValues
         initialMode: if options.preferLiteral then "literal"
         includeCount: options.includeCount
@@ -92,9 +103,9 @@ module.exports = class ExprElementBuilder
     else if expr.type == "field"
       elem = @buildField(expr, innerOnChange, { key: options.key })
     else if expr.type == "scalar"
-      elem = @buildScalar(expr, innerOnChange, { key: options.key, type: options.type })
+      elem = @buildScalar(expr, innerOnChange, { key: options.key, types: options.types })
     else if expr.type == "case"
-      elem = @buildCase(expr, innerOnChange, { key: options.key, type: options.type, enumValues: options.enumValues })
+      elem = @buildCase(expr, innerOnChange, { key: options.key, types: options.types, enumValues: options.enumValues })
     else if expr.type == "id"
       elem = @buildId(expr, innerOnChange, { key: options.key })
     else
@@ -102,8 +113,6 @@ module.exports = class ExprElementBuilder
 
     # Wrap element with hover links to build more complex expressions or to clear it
     links = []
-
-    type = @exprUtils.getExprType(expr)
 
     # If boolean, add and/or link
     createWrapOp = (op, name, binaryOnly) =>
@@ -119,11 +128,11 @@ module.exports = class ExprElementBuilder
             innerOnChange(_.extend({}, expr, { exprs: exprs }))
           })
 
-    if type == "boolean"
+    if exprType == "boolean"
       createWrapOp("and", "+ And", false)
       createWrapOp("or", "+ Or", false)
 
-    if type == "number"
+    if exprType == "number"
       createWrapOp("+", "+", false)
       createWrapOp("-", "-", true)
       createWrapOp("*", "*", false)
@@ -201,7 +210,7 @@ module.exports = class ExprElementBuilder
         onDropdownItemClicked: => onChange(null),
         joinsStr)
       # TODO what about count special handling?
-      @build(expr.expr, (if expr.expr then expr.expr.table), innerOnChange, { type: options.type })
+      @build(expr.expr, (if expr.expr then expr.expr.table), innerOnChange, { types: options.types })
 
   # Builds on op component
   buildOp: (expr, table, onChange, options = {}) ->
@@ -218,8 +227,8 @@ module.exports = class ExprElementBuilder
             # Set expr value
             onChange(_.extend({}, expr, { exprs: newExprs }))
 
-          type = if expr.op in ['and', 'or'] then "boolean" else "number"
-          elem = @build(innerExpr, table, innerElemOnChange, type: type, suppressWrapOps: [expr.op])
+          types = if expr.op in ['and', 'or'] then ["boolean"] else ["number"]
+          elem = @build(innerExpr, table, innerElemOnChange, types: types, suppressWrapOps: [expr.op])
           handleRemove = =>
             exprs = expr.exprs.slice()
             exprs.splice(i, 1)
@@ -232,9 +241,9 @@ module.exports = class ExprElementBuilder
       else
         # Horizontal expression. Render each part
         expr1Type = @exprUtils.getExprType(expr.exprs[0])
-        opItem = @exprUtils.findMatchingOpItems(op: expr.op, resultType: options.type, exprTypes: [expr1Type])[0]
+        opItem = @exprUtils.findMatchingOpItems(op: expr.op, resultType: options.types, exprTypes: [expr1Type])[0]
         if not opItem
-          throw new Error("No opItem defined for op:#{expr.op}, resultType: #{options.type}, lhs:#{expr1Type}")
+          throw new Error("No opItem defined for op:#{expr.op}, resultType: #{options.types}, lhs:#{expr1Type}")
 
         lhsOnChange = (newValue) =>
           newExprs = expr.exprs.slice()
@@ -243,7 +252,7 @@ module.exports = class ExprElementBuilder
           # Set expr value
           onChange(_.extend({}, expr, { exprs: newExprs }))
         
-        lhsElem = @build(expr.exprs[0], table, lhsOnChange, type: opItem.exprTypes[0])
+        lhsElem = @build(expr.exprs[0], table, lhsOnChange, types: [opItem.exprTypes[0]])
 
         # Special case for between 
         if expr.op == "between"
@@ -263,9 +272,9 @@ module.exports = class ExprElementBuilder
 
           # Build rhs
           rhsElem = [
-            @build(expr.exprs[1], table, rhsOnChange, type: opItem.exprTypes[1], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
+            @build(expr.exprs[1], table, rhsOnChange, types: [opItem.exprTypes[1]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
             "\u00A0and\u00A0"
-            @build(expr.exprs[2], table, rhsOnChange, type: opItem.exprTypes[2], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
+            @build(expr.exprs[2], table, rhsOnChange, types: [opItem.exprTypes[2]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
           ]
         else if opItem.exprTypes.length > 1 # If has two expressions
           rhsOnChange = (newValue) =>
@@ -275,10 +284,10 @@ module.exports = class ExprElementBuilder
             # Set expr value
             onChange(_.extend({}, expr, { exprs: newExprs }))
 
-          rhsElem = @build(expr.exprs[1], table, rhsOnChange, type: opItem.exprTypes[1], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
+          rhsElem = @build(expr.exprs[1], table, rhsOnChange, types: [opItem.exprTypes[1]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
 
         # Create op dropdown (finding matching type and lhs, not op)
-        opItems = @exprUtils.findMatchingOpItems(resultType: options.type, exprTypes: [expr1Type])
+        opItems = @exprUtils.findMatchingOpItems(resultType: options.types, exprTypes: [expr1Type])
 
         # Remove current op
         opItems = _.filter(opItems, (oi) -> oi.op != expr.op)
@@ -316,10 +325,10 @@ module.exports = class ExprElementBuilder
       elem = H.div key: "#{i}", style: { display: "flex", alignItems: "center"  },
         H.div key: "when", style: { display: "flex", alignItems: "center" },
           H.div key: "label", style: labelStyle, "if"
-          @build(cse.when, expr.table, innerElemOnWhenChange, key: "content", type: "boolean", suppressWrapOps: ["if"])
+          @build(cse.when, expr.table, innerElemOnWhenChange, key: "content", types: ["boolean"], suppressWrapOps: ["if"])
         H.div key: "then", style: { display: "flex", alignItems: "center" },
           H.div key: "label", style: labelStyle, "then"
-          @build(cse.then, expr.table, innerElemOnThenChange, key: "content", type: options.type, preferLiteral: true, enumValues: options.enumValues)
+          @build(cse.then, expr.table, innerElemOnThenChange, key: "content", types: options.types, preferLiteral: true, enumValues: options.enumValues)
 
       handleRemove = =>
         cases = expr.cases.slice()
@@ -335,7 +344,7 @@ module.exports = class ExprElementBuilder
     items.push({
       elem: H.div key: "when", style: { display: "flex", alignItems: "center" },
         H.div key: "label", style: labelStyle, "else"
-        @build(expr.else, expr.table, onElseChange, key: "content", type: options.type, preferLiteral: true, enumValues: options.enumValues)  
+        @build(expr.else, expr.table, onElseChange, key: "content", types: options.types, preferLiteral: true, enumValues: options.enumValues)  
     })
 
     # Create stacked expression

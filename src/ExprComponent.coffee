@@ -18,7 +18,7 @@ module.exports = class ExprComponent extends React.Component
     value: React.PropTypes.object   # Current expression value
     onChange: React.PropTypes.func  # Called with new expression
 
-    type: React.PropTypes.string    # If specified, the type (value type) of expression required. e.g. boolean
+    types: React.PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
     enumValues: React.PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
     idTable: React.PropTypes.string # If specified the table from which id-type expressions must come
 
@@ -33,7 +33,7 @@ module.exports = class ExprComponent extends React.Component
     # Clean expression
     expr = new ExprCleaner(@props.schema).cleanExpr(expr, {
       table: @props.table
-      type: @props.type
+      types: @props.types
       enumValueIds: if @props.enumValues then _.pluck(@props.enumValues, "id")
       idTable: @props.idTable
     })
@@ -42,7 +42,7 @@ module.exports = class ExprComponent extends React.Component
 
   render: ->
     new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(@props.value, @props.table, @handleChange, { 
-      type: @props.type
+      types: @props.types
       enumValues: @props.enumValues 
       preferLiteral: @props.preferLiteral
       idTable: @props.idTable

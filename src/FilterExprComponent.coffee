@@ -47,7 +47,7 @@ module.exports = class FilterExprComponent extends React.Component
     # Clean expression
     expr = new ExprCleaner(@props.schema).cleanExpr(expr, {
       table: @props.table
-      type: "boolean"
+      types: ["boolean"]
     })
 
     @props.onChange(expr)
@@ -75,7 +75,7 @@ module.exports = class FilterExprComponent extends React.Component
           joinLabel: "and"
           items: _.map @props.value.exprs, (expr, i) =>
             elem: new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(expr, @props.table, @handleAndChange.bind(null, i), { 
-              type: "boolean"
+              types: ["boolean"]
               preferLiteral: false
               suppressWrapOps: ['and']   # Don't allow wrapping in and since this is an and control
             })
@@ -90,7 +90,7 @@ module.exports = class FilterExprComponent extends React.Component
         R RemovableComponent, 
           onRemove: @handleRemove,
           new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(@props.value, @props.table, @handleChange, { 
-            type: "boolean"
+            types: ["boolean"]
             preferLiteral: false
             suppressWrapOps: ['and']  # Don't allow wrapping in and since this is an and control
           })
