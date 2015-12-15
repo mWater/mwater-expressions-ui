@@ -2,7 +2,7 @@ _ = require 'lodash'
 React = require 'react'
 R = React.createElement
 H = React.DOM
-  ClickOutHandler = require('react-onclickout')
+ClickOutHandler = require('react-onclickout')
 
 ScalarExprTreeComponent = require './ScalarExprTreeComponent'
 ScalarExprTreeBuilder = require './ScalarExprTreeBuilder'

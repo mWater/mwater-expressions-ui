@@ -10,7 +10,7 @@ OmniBoxExprComponent = require './OmniBoxExprComponent'
 ExprCompiler = require("mwater-expressions").ExprCompiler
 
 DataSource = require('mwater-expressions').DataSource
-
+FilterExprComponent = require './FilterExprComponent'
 
 $ ->
   # $.getJSON "https://api.mwater.co/v3/jsonql/schema?formIds=f6d3b6deed734467932f4dca34af4175", (schemaJson) ->
@@ -71,12 +71,19 @@ $ ->
         #     type: "enum"
         #     initialMode: "literal"
         #     onChange: @handleValueChange)
-        R(ExprComponent, 
+        # R(ExprComponent, 
+        #   schema: schema
+        #   dataSource: dataSource
+        #   table: "t1"
+        #   value: @state.value
+        #   type: "boolean"
+        #   onChange: @handleValueChange
+        # )
+        R(FilterExprComponent, 
           schema: schema
           dataSource: dataSource
           table: "t1"
           value: @state.value
-          type: "boolean"
           onChange: @handleValueChange
         )
         H.br()
