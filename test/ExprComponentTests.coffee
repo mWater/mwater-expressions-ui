@@ -54,7 +54,7 @@ describe "ExprComponent", ->
           done()
 
         # Create component
-        comp = @render(value: null, onChange: onChange, type: "boolean")
+        comp = @render(value: null, onChange: onChange, types: ["boolean"])
 
         # Find OmniBoxExprComponent
         omniComp = ReactTestUtils.findRenderedComponentWithType(comp.getComponent(), OmniBoxExprComponent)
@@ -63,7 +63,7 @@ describe "ExprComponent", ->
         omniComp.props.onChange(numberField)
 
       it "allows selecting any type", ->
-        comp = @render(value: null, type: "boolean")
+        comp = @render(value: null, types: ["boolean"])
 
         TestComponent.click(comp.findInput()) # Click to open dropdown
         assert comp.findComponentByText(/Text/)
@@ -85,7 +85,7 @@ describe "ExprComponent", ->
       assert.equal value.op, ">"
       done()
 
-    comp = @render(value: expr, onChange: onChange, type: "boolean")
+    comp = @render(value: expr, onChange: onChange, types: ["boolean"])
 
     # Open dropdown
     TestComponent.click(comp.findComponentByText(/^is$/))

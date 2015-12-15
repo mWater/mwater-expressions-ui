@@ -1,3 +1,4 @@
+_ = require 'lodash'
 React = require 'react'
 R = React.createElement
 H = React.DOM
@@ -55,20 +56,12 @@ module.exports = class ExprElementBuilder
 
       onChange(newExpr)
 
-    # Get types (what it is, or barring that, what it should be)
-    # exprType is set if single type
+    # Get current expression type
     exprType = @exprUtils.getExprType(expr)
-    if exprType
-      exprTypes = [exprType]
-    else
-      exprTypes = options.type
-      # If only one, set exprType
-      if exprTypes and exprTypes.length == 1
-        exprType = exprTypes[0]
 
     # If text[] or enumset literal, use special component
     if (expr and expr.type == "literal") or (not expr and options.preferLiteral)
-      if exprType == "text[]"
+      if exprType == "text[]" or _.isEqual(options.types, ["text[]"])
         return R(TextArrayComponent, 
           key: options.key
           value: expr
@@ -77,7 +70,7 @@ module.exports = class ExprElementBuilder
           dataSource: @dataSource
           onChange: onChange)
 
-      if exprType == "enumset"
+      if exprType == "enumset" or _.isEqual(options.types, ["enumset"])
         return R(EnumSetComponent, 
           key: options.key, 
           value: expr, 

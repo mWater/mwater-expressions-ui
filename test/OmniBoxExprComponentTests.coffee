@@ -37,9 +37,9 @@ describe "OmniBoxExprComponent", ->
     it "add date and calendar"
     it "add enum if building"
 
-  describe "null with no type specified", ->
+  describe "null with no types specified", ->
     beforeEach ->
-      @comp = @render({ type: null, value: null, onChange: @onChange })
+      @comp = @render({ types: null, value: null, onChange: @onChange })
 
     it "does not show dropdown until focused", ->
       assert not @comp.findComponentByText(/Number/), "Should not show yet"
@@ -58,7 +58,7 @@ describe "OmniBoxExprComponent", ->
 
   describe "null with number type specified", ->
     beforeEach ->
-      @comp = @render({ type: "number", value: null, onChange: @onChange })
+      @comp = @render({ types: ["number"], value: null, onChange: @onChange })
 
     it "does not show text fields", ->
       TestComponent.click(@comp.findInput())
@@ -91,7 +91,7 @@ describe "OmniBoxExprComponent", ->
 
   describe "existing number literal", ->
     beforeEach ->
-      @comp = @render({ type: null, value: { type: "literal", valueType: "number", value: 234 }, onChange: @onChange })
+      @comp = @render({ types: null, value: { type: "literal", valueType: "number", value: 234 }, onChange: @onChange })
 
     it "displays number", ->
       assert.equal @comp.findInput().value, "234"
@@ -123,7 +123,7 @@ describe "OmniBoxExprComponent", ->
 
   describe "if/then", ->
     beforeEach ->
-      @comp = @render({ type: null, value: null, onChange: @onChange })
+      @comp = @render({ types: null, value: null, onChange: @onChange })
 
     it "adds if/then with single empty clause", ->
       # Open dropdown

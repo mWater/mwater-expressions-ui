@@ -124,7 +124,7 @@ module.exports = class ScalarExprTreeBuilder
       initVal = options.initialValue
       
       # Single joins have a value of id
-      if column.join.multiple == false
+      if column.join.type in ['n-1', '1-1']
         node.value = { table: options.startTable, joins: joins, expr: { type: "id", table: column.join.toTable } }
 
       node.children = =>
