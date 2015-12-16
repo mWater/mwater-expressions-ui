@@ -195,7 +195,7 @@ module.exports = class ExprElementBuilder
     innerOnChange = (value) =>
       onChange(_.extend({}, expr, { expr: value }))
 
-    return H.div style: { display: "flex", alignItems: "center" },
+    return H.div style: { display: "flex", alignItems: "baseline" },
       # Aggregate dropdown
       aggrElem
       R(LinkComponent, 
@@ -290,7 +290,7 @@ module.exports = class ExprElementBuilder
             onChange(_.extend({}, expr, { op: op }))
           , opItem.name)
 
-        return H.div style: { display: "flex", alignItems: "center", flexWrap: "wrap" },
+        return H.div style: { display: "flex", alignItems: "baseline", flexWrap: "wrap" },
           lhsElem, opElem, rhsElem
 
   buildCase: (expr, onChange, options) ->
@@ -315,11 +315,11 @@ module.exports = class ExprElementBuilder
         onChange(_.extend({}, expr, { cases: cases }))
 
       # Build a flexbox that wraps with a when and then flexbox
-      elem = H.div key: "#{i}", style: { display: "flex", alignItems: "center"  },
-        H.div key: "when", style: { display: "flex", alignItems: "center" },
+      elem = H.div key: "#{i}", style: { display: "flex", alignItems: "baseline"  },
+        H.div key: "when", style: { display: "flex", alignItems: "baseline" },
           H.div key: "label", style: labelStyle, "if"
           @build(cse.when, expr.table, innerElemOnWhenChange, key: "content", types: ["boolean"], suppressWrapOps: ["if"])
-        H.div key: "then", style: { display: "flex", alignItems: "center" },
+        H.div key: "then", style: { display: "flex", alignItems: "baseline" },
           H.div key: "label", style: labelStyle, "then"
           @build(cse.then, expr.table, innerElemOnThenChange, key: "content", types: options.types, preferLiteral: true, enumValues: options.enumValues)
 
@@ -335,7 +335,7 @@ module.exports = class ExprElementBuilder
       onChange(_.extend({}, expr, { else: newValue }))
 
     items.push({
-      elem: H.div key: "when", style: { display: "flex", alignItems: "center" },
+      elem: H.div key: "when", style: { display: "flex", alignItems: "baseline" },
         H.div key: "label", style: labelStyle, "else"
         @build(expr.else, expr.table, onElseChange, key: "content", types: options.types, preferLiteral: true, enumValues: options.enumValues)  
     })
