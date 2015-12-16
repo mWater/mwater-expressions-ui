@@ -46,5 +46,6 @@ module.exports = class ExprComponent extends React.Component
       enumValues: @props.enumValues 
       preferLiteral: @props.preferLiteral
       idTable: @props.idTable
+      includeCount: @props.includeCount
       })
 
