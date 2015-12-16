@@ -212,8 +212,10 @@ module.exports = class OmniBoxExprComponent extends React.Component
     # Add if statement
     dropdown.push(H.div(key: "special", H.a(onClick: @handleIfSelected, style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, "If/Then")))
 
-    # Special handling for enum type required, as cannot select arbitrary enum
-    if "enum" not in (@props.types or [])
+    # Special handling for enum/enumset type required, as cannot select arbitrary enum if enum is only type allowed and values are specified
+    noTree = @props.enumValues and (_.isEqual(@props.types, ["enum"]) or _.isEqual(@props.types, ["enumset"]))
+    
+    if not noTree
       # Escape regex for filter string
       escapeRegex = (s) -> return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
       if @state.inputText 
