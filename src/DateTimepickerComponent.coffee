@@ -13,6 +13,9 @@ module.exports = class DateTimepickerComponent extends React.Component
     # argument: {date: moment object for currently selected datetime, oldDate: moment object for previous datetime}
     onChange: React.PropTypes.func
 
+    # the default date/datetime
+    defaultDate: React.PropTypes.string
+
   @defaultProps:
     timepicker: false
 
@@ -27,6 +30,10 @@ module.exports = class DateTimepickerComponent extends React.Component
       inline: true
       sideBySide: true
 
+    if @props.defaultDate
+      pickerOptions.defaultDate = @props.defaultDate
+
+    console.log pickerOptions
     picker = $(node).datetimepicker(pickerOptions)
     $(node).on("dp.change", @onDateChanged)
 

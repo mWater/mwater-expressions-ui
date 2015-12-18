@@ -207,11 +207,11 @@ module.exports = class OmniBoxExprComponent extends React.Component
 
     # If date type, display dropdown
     if (@props.value and @props.value.valueType == "date") or (@props.type == "date")
-      return R DateTimepickerComponent, onChange: @handleDateSelected
+      return R DateTimepickerComponent, {onChange: @handleDateSelected, defaultDate: @state.inputText}
 
     # If datetime type, display dropdown
     if (@props.value and @props.value.valueType == "datetime") or (@props.type == "datetime")
-      return R DateTimepickerComponent, {timepicker: true, onChange: @handleDateTimeSelected}
+      return R DateTimepickerComponent, {timepicker: true, onChange: @handleDateTimeSelected, defaultDate: @state.inputText}
 
   # Renders a dropdown that allows formula building (mostly scalar expression choosing)
   renderFormulaDropdown: ->
