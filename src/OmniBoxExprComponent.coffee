@@ -167,8 +167,10 @@ module.exports = class OmniBoxExprComponent extends React.Component
     if @state.mode == "formula"
       if @props.types[0] == "number"
         label = "123"
-      else 
+      else if @props.types[0] in ["text", "enum", "enumset"]
         label = "abc"
+      else
+        return
 
       return H.a(onClick: @handleModeChange.bind(null, "literal"), H.i(null, label))
     else
