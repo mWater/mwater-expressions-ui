@@ -79,10 +79,11 @@ $ ->
         #   type: "boolean"
         #   onChange: @handleValueChange
         # )
-        R(FilterExprComponent, 
+        R(ExprComponent, 
           schema: schema
           dataSource: dataSource
           table: "t1"
+          types: ['boolean']
           value: @state.value
           onChange: @handleValueChange
         )
@@ -95,16 +96,29 @@ $ ->
 value = {
   "type": "op",
   "table": "t1",
-  "op": "contains",
+  "op": "=",
   "exprs": [
     {
       "type": "field",
       "table": "t1",
-      "column": "enumset"
+      "column": "date"
     },
     null
   ]
 }
+
+#   "type": "op",
+#   "table": "t1",
+#   "op": "contains",
+#   "exprs": [
+#     {
+#       "type": "field",
+#       "table": "t1",
+#       "column": "enumset"
+#     },
+#     null
+#   ]
+# }
 
 # value = {
 #   "type": "op",
