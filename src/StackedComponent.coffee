@@ -22,6 +22,7 @@ module.exports = class StackedComponent extends React.Component
           n: if not first then "solid 1px #DDD"
           e: "solid 1px #DDD"
           s: if not last then "solid 1px #DDD"
+          height: "auto"
         )
       H.div style: { flex: "1 1 auto" }, 
         item.elem

@@ -24,15 +24,13 @@ module.exports = class OmniBoxExprComponent extends React.Component
     value: React.PropTypes.object   # Current expression value
     onChange: React.PropTypes.func  # Called with new expression
 
-    type: React.PropTypes.string    # If specified, the type (value type) of expression required. e.g. boolean
+    types: React.PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
     enumValues: React.PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
 
     noneLabel: React.PropTypes.string # What to display when no value. Default "Select..."
     initialMode: React.PropTypes.oneOf(['formula', 'literal']) # Initial mode. Default formula
 
     includeCount: React.PropTypes.bool # Optionally include count at root level of a table. Returns id expression
-    
-    enumValues: React.PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
 
   @defaultProps:
     noneLabel: "Select..."
@@ -102,10 +100,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
 
     # Process literal if present
     if @state.mode == "literal"
-      # If text
-      if (@props.value and @props.value.valueType == "text") or @props.type == "text"
-        @props.onChange({ type: "literal", valueType: "text", value: @state.inputText })
-      else if (@props.value and @props.value.valueType == "number") or @props.type == "number"
+      if (@props.value and @props.value.valueType == "number") or "number" in (@props.types or [])
         # Empty means no value
         if not @state.inputText
           if @props.value
@@ -115,6 +110,9 @@ module.exports = class OmniBoxExprComponent extends React.Component
         value = parseFloat(@state.inputText)
         if _.isFinite(value)
           @props.onChange({ type: "literal", valueType: "number", value: value })
+      # If text
+      else if (@props.value and @props.value.valueType == "text") or "text" in (@props.types or [])
+        @props.onChange({ type: "literal", valueType: "text", value: @state.inputText })
 
   # Handle enter+tab key
   handleKeyDown: (ev) =>
@@ -162,16 +160,18 @@ module.exports = class OmniBoxExprComponent extends React.Component
 
   # renders mode switching link
   renderModeSwitcher: ->
-    # If no value and no type, can't be literal
-    if not @props.type and not @props.value
+    # If no value and no single type, can't be literal
+    if (not @props.types or @props.types.length != 1) and not @props.value
       return
 
     # If in formula, render literal
     if @state.mode == "formula"
-      if @props.type == "number"
+      if @props.types[0] == "number"
         label = "123"
-      else 
+      else if @props.types[0] in ["text", "enum", "enumset"]
         label = "abc"
+      else
+        return
 
       return H.a(onClick: @handleModeChange.bind(null, "literal"), H.i(null, label))
     else
@@ -186,7 +186,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
 
   renderLiteralDropdown: ->
     # If enum type, display dropdown
-    if (@props.value and @props.value.valueType == "enum") or (@props.type == "enum")
+    if (@props.value and @props.value.valueType == "enum") or "enum" in (@props.types or [])
       # Escape regex for filter string
       escapeRegex = (s) -> return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
       if @state.inputText 
@@ -212,7 +212,6 @@ module.exports = class OmniBoxExprComponent extends React.Component
     # If datetime type, display dropdown
     if (@props.value and @props.value.valueType == "datetime") or (@props.type == "datetime")
       return R DateTimepickerComponent, {timepicker: true, onChange: @handleDateTimeSelected}
-      
 
   # Renders a dropdown that allows formula building (mostly scalar expression choosing)
   renderFormulaDropdown: ->
@@ -221,8 +220,10 @@ module.exports = class OmniBoxExprComponent extends React.Component
     # Add if statement
     dropdown.push(H.div(key: "special", H.a(onClick: @handleIfSelected, style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, "If/Then")))
 
-    # Special handling for enum type required, as cannot select arbitrary enum
-    if @props.type != "enum"
+    # Special handling for enum/enumset type required, as cannot select arbitrary enum if enum is only type allowed and values are specified
+    noTree = @props.enumValues and (_.isEqual(@props.types, ["enum"]) or _.isEqual(@props.types, ["enumset"]))
+    
+    if not noTree
       # Escape regex for filter string
       escapeRegex = (s) -> return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
       if @state.inputText 
@@ -230,8 +231,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
 
       # Create tree 
       treeBuilder = new ScalarExprTreeBuilder(@props.schema, @context.locale)
-      types = if @props.type then [@props.type]
-      tree = treeBuilder.getTree(table: @props.table, types: types, includeCount: @props.includeCount, filter: filter)
+      tree = treeBuilder.getTree(table: @props.table, types: @props.types, includeCount: @props.includeCount, filter: filter)
 
       # Create tree component with value of table and path
       dropdown.push(R(ScalarExprTreeComponent, 

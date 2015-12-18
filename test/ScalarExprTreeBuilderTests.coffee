@@ -21,7 +21,7 @@ describe "ScalarExprTreeBuilder", ->
 
   it "allows selection of single join as id type", ->
     # Join single column
-    join = { fromTable: "t1", fromCol: "c1", toTable: "t2", toCol: "c1", op: "=", multiple: false }
+    join = { fromCol: "c1", toTable: "t2", toCol: "c1", type: "n-1" }
     @schema = @schema.addTable({ id: "t1", name: "T1", contents: [
       { id: "c1", name: { en: "C1" }, type: "text" }
       { id: "c2", name: { en: "C2" }, type: "join", join: join }
@@ -86,7 +86,7 @@ describe "ScalarExprTreeBuilder", ->
 
   it "follows joins", ->
     # Join column
-    join = { fromTable: "t1", fromCol: "c1", toTable: "t2", toCol: "c1", op: "=", multiple: false }
+    join = { fromCol: "c1", toTable: "t2", toCol: "c1", type: "n-1" }
     
     @schema = @schema.addTable({ id: "t1", name: { en: "T1" }, contents: [
       { id: "c1", name: { en: "C1" }, type: "text" }
@@ -121,7 +121,7 @@ describe "ScalarExprTreeBuilder", ->
 
     it "includes types formed by aggregation", ->
       # Join column
-      join = { fromTable: "t1", fromCol: "c1", toTable: "t2", toCol: "c1", op: "=", multiple: true }
+      join = { fromCol: "c1", toTable: "t2", toCol: "c1", type: "1-n" }
       @schema = @schema.addTable({ id: "t1", name: { en: "T1" }, contents: [
         { id: "c1", name: { en: "C1" }, type: "text" }
         { id: "c2", name: { en: "C2" }, type: "join", join: join }
@@ -130,11 +130,8 @@ describe "ScalarExprTreeBuilder", ->
       # Go to 2nd child, children
       nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", types: ["number"] })[0].children()
       
-      # Should include id and text field, because can be aggregated to number via count
-      assert.equal nodes.length, 2, "Should include count and text"
+      # Should include id field, because can be aggregated to number via count
+      assert.equal nodes.length, 1, "Should include id"
 
       assert.equal nodes[0].name, "Number of T2"
       assert.deepEqual nodes[0].value.expr, { type: "id", table: "t2" }
-
-      assert.equal nodes[1].name, "C1"
-      assert.equal nodes[1].value.expr.column, "c1"

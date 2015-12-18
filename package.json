@@ -1,6 +1,6 @@
 {
   "name": "mwater-expressions-ui",
-  "version": "2.2.0",
+  "version": "2.4.3",
   "description": "Expression UI library",
   "repository": "git@github.com:mWater/mwater-expressions-ui.git",
   "main": "lib/index.js",
@@ -27,7 +27,8 @@
     "react-library": "github:mwater/react-library",
     "react-motion": "^0.3.1",
     "react-onclickout": "^2.0.4",
-    "react-select": "^0.9.1"
+    "react-select": "^0.9.1",
+    "update-object": "^1.0.0"
   },
   "devDependencies": {
     "brfs": "^1.4.1",
