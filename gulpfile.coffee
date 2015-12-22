@@ -41,6 +41,7 @@ gulp.task "libs_css", ->
   return gulp.src([
     "./bower_components/bootstrap/dist/css/bootstrap.css"
     "./bower_components/bootstrap/dist/css/bootstrap-theme.css"
+    "./bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css"
   ]).pipe(concat("libs.css"))
     .pipe(gulp.dest("./dist/css/"))
 
@@ -49,6 +50,8 @@ gulp.task "libs_js", ->
     "./bower_components/jquery/dist/jquery.js"
     "./bower_components/bootstrap/dist/js/bootstrap.js"
     "./bower_components/lodash/lodash.js"
+    "./bower_components/moment/min/moment.min.js"
+    "./bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"
   ]).pipe(concat("libs.js"))
     .pipe(gulp.dest("./dist/js/"))
 

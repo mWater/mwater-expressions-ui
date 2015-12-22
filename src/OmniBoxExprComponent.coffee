@@ -8,6 +8,7 @@ ScalarExprTreeComponent = require './ScalarExprTreeComponent'
 ScalarExprTreeBuilder = require './ScalarExprTreeBuilder'
 DropdownComponent = require './DropdownComponent'
 LinkComponent = require './LinkComponent'
+DateTimepickerComponent = require './DateTimepickerComponent'
 ExprUtils = require('mwater-expressions').ExprUtils
 
 
@@ -176,6 +177,13 @@ module.exports = class OmniBoxExprComponent extends React.Component
     else
       return H.a(onClick: @handleModeChange.bind(null, "formula"), H.i(null, "f", H.sub(null, "x")))
 
+
+  handleDateSelected: (event) =>
+    @setState(inputText: event.date.format("YYYY-MM-DD"), focused: false)
+
+  handleDateTimeSelected: (event) =>
+    @setState(inputText: event.date.format("YYYY-MM-DD HH-mm-ss"))
+
   renderLiteralDropdown: ->
     # If enum type, display dropdown
     if (@props.value and @props.value.valueType == "enum") or "enum" in (@props.types or [])
@@ -199,13 +207,11 @@ module.exports = class OmniBoxExprComponent extends React.Component
 
     # If date type, display dropdown
     if (@props.value and @props.value.valueType == "date") or "date" in (@props.types or [])
-      # TODO https://github.com/mWater/mwater-expressions-ui/issues/3
-      return "THIS SHOULD BE A CALENDAR"
+      return R DateTimepickerComponent, {onChange: @handleDateSelected, defaultDate: @state.inputText}
 
     # If datetime type, display dropdown
     if (@props.value and @props.value.valueType == "datetime") or "datetime" in (@props.types or [])
-      # TODO https://github.com/mWater/mwater-expressions-ui/issues/3
-      return "THIS SHOULD BE A CALENDAR POSSIBLY WITH DATETIME CONTROL"
+      return R DateTimepickerComponent, {timepicker: true, onChange: @handleDateTimeSelected, defaultDate: @state.inputText}
 
   # Renders a dropdown that allows formula building (mostly scalar expression choosing)
   renderFormulaDropdown: ->
