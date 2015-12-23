@@ -30,18 +30,19 @@ module.exports = class ExprComponent extends React.Component
 
   # Clean expression and pass up
   handleChange: (expr) =>
-    # Clean expression
-    expr = new ExprCleaner(@props.schema).cleanExpr(expr, {
+    @props.onChange(@cleanExpr(expr))
+
+  # Cleans an expression
+  cleanExpr: (expr) ->
+    return new ExprCleaner(@props.schema).cleanExpr(expr, {
       table: @props.table
       types: @props.types
       enumValueIds: if @props.enumValues then _.pluck(@props.enumValues, "id")
       idTable: @props.idTable
     })
 
-    @props.onChange(expr)
-
   render: ->
-    new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(@props.value, @props.table, @handleChange, { 
+    new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(@cleanExpr(@props.value), @props.table, @handleChange, { 
       types: @props.types
       enumValues: @props.enumValues 
       preferLiteral: @props.preferLiteral

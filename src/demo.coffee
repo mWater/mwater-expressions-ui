@@ -79,11 +79,11 @@ $ ->
         #   type: "boolean"
         #   onChange: @handleValueChange
         # )
-        R(ExprComponent, 
+        R(FilterExprComponent, 
           schema: schema
           dataSource: dataSource
           table: "t1"
-          types: ['boolean']
+          # types: ['boolean']
           value: @state.value
           onChange: @handleValueChange
         )
@@ -93,19 +93,9 @@ $ ->
 
   ReactDOM.render(R(TestComponent), document.getElementById("main"))
 
-value = {
-  "type": "op",
-  "table": "t1",
-  "op": "=",
-  "exprs": [
-    {
-      "type": "field",
-      "table": "t1",
-      "column": "date"
-    },
-    null
-  ]
-}
+expr1 = { type: "comparison", table: "t1", op: "=", lhs: { type: "field", table: "t1", column: "number" }, rhs: { type: "literal", valueType: "integer", value: 4 } }
+expr2 = { type: "comparison", table: "t1", op: "=", lhs: { type: "field", table: "t1", column: "number" }, rhs: { type: "literal", valueType: "integer", value: 5 } }
+value = { type: "logical", table: "t1", op: "and", exprs: [expr1, expr2] }
 
 #   "type": "op",
 #   "table": "t1",

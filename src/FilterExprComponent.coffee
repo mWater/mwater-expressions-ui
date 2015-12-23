@@ -44,13 +44,14 @@ module.exports = class FilterExprComponent extends React.Component
 
   # Clean expression and pass up
   handleChange: (expr) =>
-    # Clean expression
-    expr = new ExprCleaner(@props.schema).cleanExpr(expr, {
+    @props.onChange(@cleanExpr(expr))
+
+  # Cleans an expression
+  cleanExpr: (expr) ->
+    return new ExprCleaner(@props.schema).cleanExpr(expr, {
       table: @props.table
       types: ["boolean"]
     })
-
-    @props.onChange(expr)
 
   # Handle change to a single item
   handleAndChange: (i, expr) =>
@@ -68,13 +69,15 @@ module.exports = class FilterExprComponent extends React.Component
       H.a onClick: @handleAddFilter, "+ Add Filter"
 
   render: ->
+    expr = @cleanExpr(@props.value)
+
     # Render each item of and
-    if @props.value and @props.value.op == "and"
+    if expr and expr.op == "and"
       return H.div null,
         R StackedComponent, 
           joinLabel: "and"
-          items: _.map @props.value.exprs, (expr, i) =>
-            elem: new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(expr, @props.table, @handleAndChange.bind(null, i), { 
+          items: _.map expr.exprs, (subexpr, i) =>
+            elem: new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(subexpr, @props.table, @handleAndChange.bind(null, i), { 
               types: ["boolean"]
               preferLiteral: false
               suppressWrapOps: ['and']   # Don't allow wrapping in and since this is an and control
@@ -82,21 +85,21 @@ module.exports = class FilterExprComponent extends React.Component
             onRemove: @handleAndRemove.bind(null, i)
 
         # Only display add if last item is not null
-        if _.last(@props.value.exprs) != null
+        if _.last(expr.exprs) != null
           @renderAddFilter()
 
-    else if @props.value or @state.displayNull
+    else if expr or @state.displayNull
       return H.div null,
         R RemovableComponent, 
           onRemove: @handleRemove,
-          new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(@props.value, @props.table, @handleChange, { 
+          new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(expr, @props.table, @handleChange, { 
             types: ["boolean"]
             preferLiteral: false
             suppressWrapOps: ['and']  # Don't allow wrapping in and since this is an and control
           })
 
         # Only display add if has a value
-        if @props.value
+        if expr
           @renderAddFilter()
 
     else
