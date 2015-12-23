@@ -265,9 +265,9 @@ module.exports = class ExprElementBuilder
 
           # Build rhs
           rhsElem = [
-            @build(expr.exprs[1], table, rhsOnChange, types: [opItem.exprTypes[1]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
+            @build(expr.exprs[1], table, rhs1OnChange, types: [opItem.exprTypes[1]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
             "\u00A0and\u00A0"
-            @build(expr.exprs[2], table, rhsOnChange, types: [opItem.exprTypes[2]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
+            @build(expr.exprs[2], table, rhs2OnChange, types: [opItem.exprTypes[2]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
           ]
         else if opItem.exprTypes.length > 1 # If has two expressions
           rhsOnChange = (newValue) =>

@@ -1,4 +1,5 @@
 @import "react-select/dist/react-select.css";
+@import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css";
 
 .editable-link {
   color: #478;

@@ -3,12 +3,13 @@ React = require 'react'
 R = React.createElement
 H = React.DOM
 ClickOutHandler = require('react-onclickout')
+moment = require 'moment'
 
 ScalarExprTreeComponent = require './ScalarExprTreeComponent'
 ScalarExprTreeBuilder = require './ScalarExprTreeBuilder'
 DropdownComponent = require './DropdownComponent'
 LinkComponent = require './LinkComponent'
-DateTimepickerComponent = require './DateTimepickerComponent'
+DateTimePickerComponent = require './DateTimePickerComponent'
 ExprUtils = require('mwater-expressions').ExprUtils
 
 
@@ -77,6 +78,11 @@ module.exports = class OmniBoxExprComponent extends React.Component
       return "???"
 
     if literalExpr and literalExpr.value?
+      # Handle date
+      if literalExpr.valueType == "date"
+        return moment(literalExpr.value, moment.ISO_8601).format("l")
+      if literalExpr.valueType == "datetime"
+        return moment(literalExpr.value, moment.ISO_8601).format("lll")
       return "" + literalExpr.value
     return ""
 
@@ -100,19 +106,35 @@ module.exports = class OmniBoxExprComponent extends React.Component
 
     # Process literal if present
     if @state.mode == "literal"
-      if (@props.value and @props.value.valueType == "number") or "number" in (@props.types or [])
-        # Empty means no value
-        if not @state.inputText
-          if @props.value
-            @props.onChange(null)
-          return
+      # Empty means no value
+      if not @state.inputText
+        if @props.value
+          @props.onChange(null)
+        return
 
+      if (@props.value and @props.value.valueType == "number") or "number" in (@props.types or [])
         value = parseFloat(@state.inputText)
         if _.isFinite(value)
           @props.onChange({ type: "literal", valueType: "number", value: value })
       # If text
       else if (@props.value and @props.value.valueType == "text") or "text" in (@props.types or [])
         @props.onChange({ type: "literal", valueType: "text", value: @state.inputText })
+      # If date
+      else if (@props.value and @props.value.valueType == "date") or "date" in (@props.types or [])
+        date = moment(@state.inputText, "l")
+        if date.isValid()
+          @props.onChange({ type: "literal", valueType: "date", value: date.format("YYYY-MM-DD") })
+        else
+          # TODO make red instead
+          @setState(inputText: "")
+      # If datetime
+      else if (@props.value and @props.value.valueType == "datetime") or "datetime" in (@props.types or [])
+        date = moment(@state.inputText, "lll")
+        if date.isValid()
+          @props.onChange({ type: "literal", valueType: "datetime", value: date.toISOString() })
+        else
+          # TODO make red instead
+          @setState(inputText: "")
 
   # Handle enter+tab key
   handleKeyDown: (ev) =>
@@ -168,7 +190,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
     if @state.mode == "formula"
       if @props.types[0] == "number"
         label = "123"
-      else if @props.types[0] in ["text", "enum", "enumset"]
+      else if @props.types[0] in ["text", "enum", "enumset", "date", "datetime"]
         label = "abc"
       else
         return
@@ -177,12 +199,15 @@ module.exports = class OmniBoxExprComponent extends React.Component
     else
       return H.a(onClick: @handleModeChange.bind(null, "formula"), H.i(null, "f", H.sub(null, "x")))
 
-
   handleDateSelected: (event) =>
-    @setState(inputText: event.date.format("YYYY-MM-DD"), focused: false)
+    @setState(inputText: event.date.format("l"))
+    @refs.input.blur()
+    @handleBlur()
 
   handleDateTimeSelected: (event) =>
-    @setState(inputText: event.date.format("YYYY-MM-DD HH-mm-ss"))
+    @setState(inputText: event.date.format("lll"))
+    @refs.input.blur()
+    @handleBlur()
 
   renderLiteralDropdown: ->
     # If enum type, display dropdown
@@ -207,11 +232,11 @@ module.exports = class OmniBoxExprComponent extends React.Component
 
     # If date type, display dropdown
     if (@props.value and @props.value.valueType == "date") or "date" in (@props.types or [])
-      return R DateTimepickerComponent, {onChange: @handleDateSelected, defaultDate: @state.inputText}
+      return R DateTimePickerComponent, {onChange: @handleDateSelected, defaultDate: @state.inputText}
 
     # If datetime type, display dropdown
     if (@props.value and @props.value.valueType == "datetime") or "datetime" in (@props.types or [])
-      return R DateTimepickerComponent, {timepicker: true, onChange: @handleDateTimeSelected, defaultDate: @state.inputText}
+      return R DateTimePickerComponent, {timepicker: true, onChange: @handleDateTimeSelected, defaultDate: @state.inputText}
 
   # Renders a dropdown that allows formula building (mostly scalar expression choosing)
   renderFormulaDropdown: ->
@@ -267,5 +292,4 @@ module.exports = class OmniBoxExprComponent extends React.Component
           onKeyDown: @handleKeyDown
           placeholder: @props.noneLabel
 
-    
-
+  
