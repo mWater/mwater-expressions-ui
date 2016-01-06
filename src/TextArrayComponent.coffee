@@ -58,6 +58,8 @@ module.exports = class TextArrayComponent extends React.Component
         complete: false # TODO rows.length < 50 # Complete if didn't hit limit
       })
 
+    return
+
   render: ->
     value = ""
     if @props.value and @props.value.value.length > 0 
