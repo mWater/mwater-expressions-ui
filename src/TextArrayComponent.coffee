@@ -70,6 +70,7 @@ module.exports = class TextArrayComponent extends React.Component
         value: value
         multi: true
         delimiter: "\n"
+        placeholder: "All"
         asyncOptions: @getOptions
         onChange: @handleChange
       })
