@@ -13,7 +13,7 @@ module.exports = class LinkComponent extends React.Component
 
   renderRemove: ->
     if @props.onRemove
-      return H.span className: "editable-link-remove", onClick: @props.onRemove,
+      return H.span className: "link-component-remove", onClick: @props.onRemove,
         H.span(className: "glyphicon glyphicon-remove")
 
   renderDropdownItem: (item) =>
@@ -33,7 +33,7 @@ module.exports = class LinkComponent extends React.Component
       H.a(key: id, onClick: @props.onDropdownItemClicked.bind(null, id), name)
 
   render: ->
-    elem = H.div className: "editable-link", "data-toggle": "dropdown", 
+    elem = H.div className: "link-component", "data-toggle": "dropdown", 
       H.div style: { display: "inline-block" }, onClick: @props.onClick, 
         @props.children
       @renderRemove()
