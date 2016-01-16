@@ -27,14 +27,14 @@ $ ->
     { id: "date", name: { en: "Date" }, type: "date" }
     { id: "datetime", name: { en: "Datetime" }, type: "datetime" }
     { id: "boolean", name: { en: "Boolean" }, type: "boolean" }
-    { id: "1-2", name: { en: "T1->T2" }, type: "join", join: { fromTable: "t1", fromColumn: "primary", toTable: "t2", toColumn: "t1", op: "=", multiple: true }}
+    { id: "1-2", name: { en: "T1->T2" }, type: "join", join: { fromColumn: "primary", toTable: "t2", toColumn: "t1", type: "1-n" }}
   ]})
 
   schema = schema.addTable({ id: "t2", name: { en: "T2" }, primaryKey: "primary", ordering: "number", contents: [
     { id: "t1", name: { en: "T1" }, type: "uuid" }
     { id: "text", name: { en: "Text" }, type: "text" }
     { id: "number", name: { en: "Number" }, type: "number" }
-    { id: "2-1", name: { en: "T2->T1" }, type: "join", join: { fromTable: "t2", fromColumn: "t1", toTable: "t1", toColumn: "primary", op: "=", multiple: false }}
+    { id: "2-1", name: { en: "T2->T1" }, type: "join", join: { fromColumn: "t1", toTable: "t1", toColumn: "primary", type: "n-1" }}
   ]})
 
   # Fake data source
@@ -96,6 +96,28 @@ $ ->
 expr1 = { type: "comparison", table: "t1", op: "=", lhs: { type: "field", table: "t1", column: "number" }, rhs: { type: "literal", valueType: "integer", value: 4 } }
 expr2 = { type: "comparison", table: "t1", op: "=", lhs: { type: "field", table: "t1", column: "number" }, rhs: { type: "literal", valueType: "integer", value: 5 } }
 value = { type: "logical", table: "t1", op: "and", exprs: [expr1, expr2] }
+
+
+value = {
+  "type": "op",
+  "table": "t1",
+  "op": "=",
+  "exprs": [
+    {
+      "type": "scalar",
+      "table": "t1",
+      "joins": [
+        "1-2"
+      ],
+      "expr": {
+        "type": "field",
+        "table": "t2",
+        "column": "number"
+      }
+    },
+    null
+  ]
+}
 
 #   "type": "op",
 #   "table": "t1",

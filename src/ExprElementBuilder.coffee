@@ -148,8 +148,7 @@ module.exports = class ExprElementBuilder
   # Build a simple field component. Only remove option
   buildField: (expr, onChange, options = {}) ->
     return R(LinkComponent, 
-      dropdownItems: [{ id: "remove", name: "Remove" }]
-      onDropdownItemClicked: => onChange(null),
+      onRemove: => onChange(null),
       @exprUtils.summarizeExpr(expr))    
 
   # Build an id component. Displays table name. Only remove option
@@ -184,26 +183,30 @@ module.exports = class ExprElementBuilder
 
     # If just a field or id inside, add to string and make a simple link control
     if expr.expr and expr.expr.type in ["field", "id"]
-      # Summarize without aggr
-      joinsStr = @exprUtils.summarizeExpr(_.omit(expr, "aggr"))
-      return R(LinkComponent, 
-        dropdownItems: [{ id: "remove", name: "Remove" }]
-        onDropdownItemClicked: => onChange(null),
-        joinsStr)
+      # Summarize inner
+      summary = joinsStr + @exprUtils.summarizeExpr(expr.expr)
 
-    # Create inner expression onChange
-    innerOnChange = (value) =>
-      onChange(_.extend({}, expr, { expr: value }))
+      return H.div style: { display: "flex", alignItems: "baseline" },
+        # Aggregate dropdown
+        aggrElem
+        R(LinkComponent, 
+          onRemove: => onChange(null)
+          summary)
+    else
+      # Create inner expression onChange
+      innerOnChange = (value) =>
+        onChange(_.extend({}, expr, { expr: value }))
+
+      # TODO what about count special handling?
+      innerElem = @build(expr.expr, (if expr.expr then expr.expr.table), innerOnChange, { types: options.types })
 
     return H.div style: { display: "flex", alignItems: "baseline" },
       # Aggregate dropdown
       aggrElem
       R(LinkComponent, 
-        dropdownItems: [{ id: "remove", name: "Remove" }]
-        onDropdownItemClicked: => onChange(null),
+        onRemove: => onChange(null),
         joinsStr)
-      # TODO what about count special handling?
-      @build(expr.expr, (if expr.expr then expr.expr.table), innerOnChange, { types: options.types })
+      innerElem
 
   # Builds on op component
   buildOp: (expr, table, onChange, options = {}) ->
