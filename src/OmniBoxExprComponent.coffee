@@ -32,6 +32,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
     initialMode: React.PropTypes.oneOf(['formula', 'literal']) # Initial mode. Default formula
 
     includeCount: React.PropTypes.bool # Optionally include count at root level of a table. Returns id expression
+    allowCase: React.PropTypes.bool    # Allow case statements
 
   @defaultProps:
     noneLabel: "Select..."
@@ -242,8 +243,9 @@ module.exports = class OmniBoxExprComponent extends React.Component
   renderFormulaDropdown: ->
     dropdown = []
 
-    # Add if statement
-    dropdown.push(H.div(key: "special", H.a(onClick: @handleIfSelected, style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, "If/Then")))
+    # Add if statement (unless boolean only, in which case if/thens cause problems by returning null)
+    if @props.allowCase
+      dropdown.push(H.div(key: "special", H.a(onClick: @handleIfSelected, style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, "If/Then")))
 
     # Special handling for enum/enumset type required, as cannot select arbitrary enum if enum is only type allowed and values are specified
     noTree = @props.enumValues and (_.isEqual(@props.types, ["enum"]) or _.isEqual(@props.types, ["enumset"]))

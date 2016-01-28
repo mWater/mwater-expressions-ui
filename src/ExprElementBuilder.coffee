@@ -86,6 +86,8 @@ module.exports = class ExprElementBuilder
         onChange: innerOnChange
         # Allow any type for boolean due to wrapping
         types: if not booleanOnly then options.types
+        # Case statements only when not boolean
+        allowCase: not booleanOnly
         enumValues: options.enumValues
         initialMode: if options.preferLiteral then "literal"
         includeCount: options.includeCount
