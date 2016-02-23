@@ -22,7 +22,7 @@ module.exports = class DateTimePickerComponent extends React.Component
     timepicker: false
 
   onChange: (event) =>
-    @props.onChange?(event)
+    @props.onChange?(event.date)
 
   componentDidMount: ->
     node = ReactDOM.findDOMNode(this)

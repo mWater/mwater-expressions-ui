@@ -295,8 +295,13 @@ module.exports = class ExprElementBuilder
             onChange(_.extend({}, expr, { op: op }))
           , opItem.name)
 
-        return H.div style: { display: "flex", alignItems: "baseline", flexWrap: "wrap" },
-          lhsElem, opElem, rhsElem
+        # Some ops have prefix (e.g. "latitude of")
+        if opItem.prefix
+          return H.div style: { display: "flex", alignItems: "baseline", flexWrap: "wrap" },
+            opElem, lhsElem, rhsElem
+        else
+          return H.div style: { display: "flex", alignItems: "baseline", flexWrap: "wrap" },
+            lhsElem, opElem, rhsElem
 
   buildCase: (expr, onChange, options) ->
     # Style for labels "if", "then", "else"
