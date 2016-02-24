@@ -30,6 +30,17 @@ describe "ScalarExprTreeBuilder", ->
     nodes = new ScalarExprTreeBuilder(@schema).getTree(table: "t1")
     assert _.isEqual(nodes[1].value, { table: "t1", joins: ["c2"], expr: { type: "id", table: "t2" }}), JSON.stringify(nodes[1].value)
 
+  it "does not allow selection of single join as id type if idTable is wrong", ->
+    # Join single column
+    join = { fromCol: "c1", toTable: "t2", toCol: "c1", type: "n-1" }
+    @schema = @schema.addTable({ id: "t1", name: "T1", contents: [
+      { id: "c1", name: { en: "C1" }, type: "text" }
+      { id: "c2", name: { en: "C2" }, type: "join", join: join }
+    ]})
+
+    nodes = new ScalarExprTreeBuilder(@schema).getTree(table: "t1", idTable: "tx")
+    assert not nodes[1].value, JSON.stringify(nodes[1].value)
+
   it "returns table sections if present", ->
     @schema = new Schema()
     @schema = @schema.addTable({ id: "t1", contents: [

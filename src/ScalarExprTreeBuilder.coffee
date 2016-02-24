@@ -28,6 +28,7 @@ module.exports = class ScalarExprTreeBuilder
       table: options.table
       joins: []
       types: options.types
+      idTable: options.idTable
       includeCount: options.includeCount
       initialValue: options.initialValue
       filter: options.filter
@@ -39,6 +40,7 @@ module.exports = class ScalarExprTreeBuilder
   # table: table id to get nodes for
   # joins: joins for child nodes
   # types: types to limit to 
+  # idTable: table to limit to for id type
   # includeCount: to include an count (null) option that has null expr and name that is "Number of ..."
   # initialValue: initial value to flesh out TODO REMOVE
   # filter: filter regex
@@ -123,8 +125,8 @@ module.exports = class ScalarExprTreeBuilder
       joins.push(column.id)
       initVal = options.initialValue
       
-      # Single joins have a value of id
-      if column.join.type in ['n-1', '1-1'] and (not options.types or 'id' in options.types)
+      # Single joins have a value of id (if for correct table)
+      if column.join.type in ['n-1', '1-1'] and (not options.types or 'id' in options.types) and (not options.idTable or column.join.toTable == options.idTable)
         node.value = { table: options.startTable, joins: joins, expr: { type: "id", table: column.join.toTable } }
 
       node.children = =>

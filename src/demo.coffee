@@ -31,10 +31,14 @@ $ ->
   ]})
 
   schema = schema.addTable({ id: "t2", name: { en: "T2" }, primaryKey: "primary", ordering: "number", contents: [
-    { id: "t1", name: { en: "T1" }, type: "uuid" }
     { id: "text", name: { en: "Text" }, type: "text" }
     { id: "number", name: { en: "Number" }, type: "number" }
     { id: "2-1", name: { en: "T2->T1" }, type: "join", join: { fromColumn: "t1", toTable: "t1", toColumn: "primary", type: "n-1" }}
+  ]})
+
+  schema = schema.addTable({ id: "t3", name: { en: "T3" }, primaryKey: "primary", ordering: "number", contents: [
+    { id: "text", name: { en: "Text" }, type: "text" }
+    { id: "number", name: { en: "Number" }, type: "number" }
   ]})
 
   # Fake data source
@@ -79,11 +83,12 @@ $ ->
         #   type: "boolean"
         #   onChange: @handleValueChange
         # )
-        R(FilterExprComponent, 
+        R(ExprComponent, 
           schema: schema
           dataSource: dataSource
-          table: "t1"
-          # types: ['boolean']
+          table: "t2"
+          types: ['id']
+          idTable: "t4"
           value: @state.value
           onChange: @handleValueChange
         )
@@ -98,26 +103,27 @@ expr2 = { type: "comparison", table: "t1", op: "=", lhs: { type: "field", table:
 value = { type: "logical", table: "t1", op: "and", exprs: [expr1, expr2] }
 
 
-value = {
-  "type": "op",
-  "table": "t1",
-  "op": "=",
-  "exprs": [
-    {
-      "type": "scalar",
-      "table": "t1",
-      "joins": [
-        "1-2"
-      ],
-      "expr": {
-        "type": "field",
-        "table": "t2",
-        "column": "number"
-      }
-    },
-    null
-  ]
-}
+value = null
+#   {
+#   "type": "op",
+#   "table": "t1",
+#   "op": "=",
+#   "exprs": [
+#     {
+#       "type": "scalar",
+#       "table": "t1",
+#       "joins": [
+#         "1-2"
+#       ],
+#       "expr": {
+#         "type": "field",
+#         "table": "t2",
+#         "column": "number"
+#       }
+#     },
+#     null
+#   ]
+# }
 
 #   "type": "op",
 #   "table": "t1",

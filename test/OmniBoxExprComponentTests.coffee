@@ -123,7 +123,7 @@ describe "OmniBoxExprComponent", ->
 
   describe "if/then", ->
     beforeEach ->
-      @comp = @render({ types: null, value: null, onChange: @onChange })
+      @comp = @render({ types: null, value: null, allowCase: true, onChange: @onChange })
 
     it "adds if/then with single empty clause", ->
       # Open dropdown

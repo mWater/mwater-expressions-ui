@@ -89,6 +89,7 @@ module.exports = class ExprElementBuilder
         # Case statements only when not boolean
         allowCase: not booleanOnly
         enumValues: options.enumValues
+        idTable: options.idTable
         initialMode: if options.preferLiteral then "literal"
         includeCount: options.includeCount
         enumValues: options.enumValues)
@@ -176,12 +177,12 @@ module.exports = class ExprElementBuilder
         , aggr.name)
 
     # Get joins string
-    t = expr.table
+    destTable = expr.table
     joinsStr = ""
     for join in expr.joins
-      joinCol = @schema.getColumn(t, join)
+      joinCol = @schema.getColumn(destTable, join)
       joinsStr += ExprUtils.localizeString(joinCol.name, @locale) + " > "
-      t = joinCol.join.toTable
+      destTable = joinCol.join.toTable
 
     # If just a field or id inside, add to string and make a simple link control
     if expr.expr and expr.expr.type in ["field", "id"]
@@ -200,7 +201,7 @@ module.exports = class ExprElementBuilder
         onChange(_.extend({}, expr, { expr: value }))
 
       # TODO what about count special handling?
-      innerElem = @build(expr.expr, (if expr.expr then expr.expr.table), innerOnChange, { types: options.types })
+      innerElem = @build(expr.expr, destTable, innerOnChange, { types: options.types })
 
     return H.div style: { display: "flex", alignItems: "baseline" },
       # Aggregate dropdown
