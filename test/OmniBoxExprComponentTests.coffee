@@ -87,11 +87,7 @@ describe "OmniBoxExprComponent", ->
 
   describe "null with enum type with different enumValues", ->
     beforeEach ->
-      @comp = @render({ types: ["enum"], value: null, enumValues: [{ id: "aa", name: "AA"}, { id: "bb", name: "BB"}], onChange: @onChange })
-
-    it "allows searching for an enum", ->
-      TestComponent.click(@comp.findInput())
-      assert @comp.findComponentByText(/Enum/)
+      @comp = @render({ types: ["enum"], value: null, enumValues: [{ id: "aa", name: { en: "AA"} }, { id: "bb", name: { en: "BB"} }], onChange: @onChange })
 
     it "creates if/then with enum", ->
       TestComponent.click(@comp.findInput())
@@ -102,11 +98,37 @@ describe "OmniBoxExprComponent", ->
         type: "case"
         table: "t1"
         cases: [
-          { when: { type: "op", table: "t1", op: "contains", exprs: [{ type: "field", table: "t1", column: "enum"}, null] }, then: { type: "literal", valueType: "enum", value: "aa" } }
-          { when: { type: "op", table: "t1", op: "contains", exprs: [{ type: "field", table: "t1", column: "enum"}, null] }, then: { type: "literal", valueType: "enum", value: "bb" } }
+          { when: { type: "op", table: "t1", op: "= any", exprs: [{ type: "field", table: "t1", column: "enum"}, null] }, then: { type: "literal", valueType: "enum", value: "aa" } }
+          { when: { type: "op", table: "t1", op: "= any", exprs: [{ type: "field", table: "t1", column: "enum"}, null] }, then: { type: "literal", valueType: "enum", value: "bb" } }
         ]
         else: null
       })
+
+  describe "null with enum type with same named enumValues", ->
+    beforeEach ->
+      @comp = @render({ types: ["enum"], value: null, enumValues: [{ id: "aa", name: { en: "A" } }, { id: "bb", name: { en: "B"} }], onChange: @onChange })
+
+    it "creates if/then with enum, matching value names", ->
+      TestComponent.click(@comp.findInput())
+      TestComponent.click(@comp.findComponentByText(/Enum/))
+
+      # Make a series of compare statements
+      compare(@value, {
+        type: "case"
+        table: "t1"
+        cases: [
+          { 
+            when: { type: "op", table: "t1", op: "= any", exprs: [{ type: "field", table: "t1", column: "enum"}, { type: "literal", valueType: "enumset", value: ["a"] }] }
+            then: { type: "literal", valueType: "enum", value: "aa" } 
+          }
+          { 
+            when: { type: "op", table: "t1", op: "= any", exprs: [{ type: "field", table: "t1", column: "enum"}, { type: "literal", valueType: "enumset", value: ["b"] }] }
+            then: { type: "literal", valueType: "enum", value: "bb" } 
+          }
+        ]
+        else: null
+      })
+
 
   describe "null with enum type specified", ->
     it "allows searching for item"

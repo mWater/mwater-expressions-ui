@@ -179,8 +179,17 @@ module.exports = class OmniBoxExprComponent extends React.Component
         type: "case"
         table: expr.table
         cases: _.map(@props.enumValues, (ev) =>
-          { 
-            when: { type: "op", table: expr.table, op: "contains", exprs: [expr, null] }
+          # Find matching name (english)
+          fromEnumValues = exprUtils.getExprEnumValues(expr)
+          matchingEnumValue = _.find(fromEnumValues, (fev) -> fev.name.en == ev.name.en)
+
+          if matchingEnumValue
+            literal = { type: "literal", valueType: "enumset", value: [matchingEnumValue.id] }
+          else
+            literal = null
+
+          return { 
+            when: { type: "op", table: expr.table, op: "= any", exprs: [expr, literal] }
             then: { type: "literal", valueType: "enum", value: ev.id }
           }
         )
@@ -192,7 +201,6 @@ module.exports = class OmniBoxExprComponent extends React.Component
       # Simple field expression
       @props.onChange(expr)
     else
-      console.log expr
       @props.onChange({ type: "scalar", table: @props.table, joins: val.joins, expr: expr })
 
   handleModeChange: (mode, ev) => 

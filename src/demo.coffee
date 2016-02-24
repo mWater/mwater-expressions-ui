@@ -22,8 +22,8 @@ $ ->
   schema = schema.addTable({ id: "t1", name: { en: "T1" }, primaryKey: "primary", contents: [
     { id: "text", name: { en: "Text" }, type: "text" }
     { id: "number", name: { en: "Number" }, type: "number" }
-    { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: "A"}, { id: "b", name: "B"}] }
-    { id: "enumset", name: { en: "EnumSet" }, type: "enumset", enumValues: [{ id: "a", name: "A"}, { id: "b", name: "B"}] }
+    { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
+    { id: "enumset", name: { en: "EnumSet" }, type: "enumset", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
     { id: "date", name: { en: "Date" }, type: "date" }
     { id: "datetime", name: { en: "Datetime" }, type: "datetime" }
     { id: "boolean", name: { en: "Boolean" }, type: "boolean" }
@@ -86,9 +86,9 @@ $ ->
         R(ExprComponent, 
           schema: schema
           dataSource: dataSource
-          table: "t2"
+          table: "t1"
           types: ['enum']
-          enumValues: [{ id: "aa", name: "A"}, { id: "bb", name: "B"}] 
+          enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
           # idTable: "t4"
           value: @state.value
           onChange: @handleValueChange
