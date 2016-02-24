@@ -28,7 +28,8 @@ module.exports = class OmniBoxExprComponent extends React.Component
     types: React.PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
     enumValues: React.PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
 
-    noneLabel: React.PropTypes.string # What to display when no value. Default "Select..."
+    noFormulaPlaceholder: React.PropTypes.string # What to display when no formula. Default "Select..."
+    noLiteralPlaceholder: React.PropTypes.string # What to display when no literal. Default "Enter Value..."
     initialMode: React.PropTypes.oneOf(['formula', 'literal']) # Initial mode. Default formula
 
     idTable: React.PropTypes.string # If specified the table from which id-type expressions must come
@@ -37,7 +38,8 @@ module.exports = class OmniBoxExprComponent extends React.Component
     allowCase: React.PropTypes.bool    # Allow case statements
 
   @defaultProps:
-    noneLabel: "Select..."
+    noFormulaPlaceholder: "Select..."
+    noLiteralPlaceholder: "Enter Value..."
     initialMode: "formula"
 
   @contextTypes:
@@ -122,6 +124,9 @@ module.exports = class OmniBoxExprComponent extends React.Component
       # If text
       else if (@props.value and @props.value.valueType == "text") or "text" in (@props.types or [])
         @props.onChange({ type: "literal", valueType: "text", value: @state.inputText })
+      # If id (only allow if idTable is explicit)
+      else if "id" in (@props.types or []) and @props.idTable
+        @props.onChange({ type: "literal", valueType: "id", idTable: @props.idTable, value: @state.inputText })
       # If date
       else if (@props.value and @props.value.valueType == "date") or "date" in (@props.types or [])
         date = moment(@state.inputText, "l")
@@ -193,7 +198,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
     if @state.mode == "formula"
       if @props.types[0] == "number"
         label = "123"
-      else if @props.types[0] in ["text", "enum", "enumset", "date", "datetime"]
+      else if @props.types[0] in ["text", "enum", "enumset", "date", "datetime", "id"]
         label = "abc"
       else
         return
@@ -294,6 +299,6 @@ module.exports = class OmniBoxExprComponent extends React.Component
           onClick: @handleFocus
           onChange: @handleTextChange
           onKeyDown: @handleKeyDown
-          placeholder: @props.noneLabel
+          placeholder: if @state.mode == "literal" then @props.noLiteralPlaceholder else @props.noFormulaPlaceholder
 
   
