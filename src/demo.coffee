@@ -87,8 +87,9 @@ $ ->
           schema: schema
           dataSource: dataSource
           table: "t2"
-          types: ['id']
-          idTable: "t4"
+          types: ['enum']
+          enumValues: [{ id: "aa", name: "A"}, { id: "bb", name: "B"}] 
+          # idTable: "t4"
           value: @state.value
           onChange: @handleValueChange
         )

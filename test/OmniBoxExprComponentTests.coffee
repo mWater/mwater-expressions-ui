@@ -85,6 +85,29 @@ describe "OmniBoxExprComponent", ->
     it "respects literal initial mode"
     it "allows changing to formula mode"
 
+  describe "null with enum type with different enumValues", ->
+    beforeEach ->
+      @comp = @render({ types: ["enum"], value: null, enumValues: [{ id: "aa", name: "AA"}, { id: "bb", name: "BB"}], onChange: @onChange })
+
+    it "allows searching for an enum", ->
+      TestComponent.click(@comp.findInput())
+      assert @comp.findComponentByText(/Enum/)
+
+    it "creates if/then with enum", ->
+      TestComponent.click(@comp.findInput())
+      TestComponent.click(@comp.findComponentByText(/Enum/))
+
+      # Make a series of compare statements
+      compare(@value, {
+        type: "case"
+        table: "t1"
+        cases: [
+          { when: { type: "op", table: "t1", op: "contains", exprs: [{ type: "field", table: "t1", column: "enum"}, null] }, then: { type: "literal", valueType: "enum", value: "aa" } }
+          { when: { type: "op", table: "t1", op: "contains", exprs: [{ type: "field", table: "t1", column: "enum"}, null] }, then: { type: "literal", valueType: "enum", value: "bb" } }
+        ]
+        else: null
+      })
+
   describe "null with enum type specified", ->
     it "allows searching for item"
     it "does not show Enum field"

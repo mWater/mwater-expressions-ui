@@ -170,12 +170,30 @@ module.exports = class OmniBoxExprComponent extends React.Component
     # Loses focus when selection made
     @setState(focused: false)
 
+    expr = val.expr
+
+    # If expr is enum and enumValues specified, perform a mapping
+    exprUtils = new ExprUtils(@props.schema)
+    if exprUtils.getExprType(val.expr) == "enum" and @props.enumValues
+      expr = {
+        type: "case"
+        table: expr.table
+        cases: _.map(@props.enumValues, (ev) =>
+          { 
+            when: { type: "op", table: expr.table, op: "contains", exprs: [expr, null] }
+            then: { type: "literal", valueType: "enum", value: ev.id }
+          }
+        )
+        else: null
+      }
+
     # Make into expression
     if val.joins.length == 0 
       # Simple field expression
-      @props.onChange(val.expr)
+      @props.onChange(expr)
     else
-      @props.onChange({ type: "scalar", table: @props.table, joins: val.joins, expr: val.expr })
+      console.log expr
+      @props.onChange({ type: "scalar", table: @props.table, joins: val.joins, expr: expr })
 
   handleModeChange: (mode, ev) => 
     ev.stopPropagation()
@@ -254,8 +272,8 @@ module.exports = class OmniBoxExprComponent extends React.Component
     if @props.allowCase
       dropdown.push(H.div(key: "special", H.a(onClick: @handleIfSelected, style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, "If/Then")))
 
-    # Special handling for enum/enumset type required, as cannot select arbitrary enum if enum is only type allowed and values are specified
-    noTree = @props.enumValues and (_.isEqual(@props.types, ["enum"]) or _.isEqual(@props.types, ["enumset"]))
+    # Special handling for enumset type required with enumValues, as cannot select map anything now to enumset
+    noTree = @props.enumValues and _.isEqual(@props.types, ["enumset"])
     
     if not noTree
       # Escape regex for filter string

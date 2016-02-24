@@ -92,14 +92,14 @@ module.exports = class ExprElementBuilder
         idTable: options.idTable
         initialMode: if options.preferLiteral then "literal"
         includeCount: options.includeCount
-        enumValues: options.enumValues)
+      )
 
     else if expr.type == "op"
       elem = @buildOp(expr, table, innerOnChange, options)
     else if expr.type == "field"
       elem = @buildField(expr, innerOnChange, { key: options.key })
     else if expr.type == "scalar"
-      elem = @buildScalar(expr, innerOnChange, { key: options.key, types: options.types })
+      elem = @buildScalar(expr, innerOnChange, { key: options.key, types: options.types, enumValues: options.enumValues })
     else if expr.type == "case"
       elem = @buildCase(expr, innerOnChange, { key: options.key, types: options.types, enumValues: options.enumValues })
     else if expr.type == "id"
@@ -201,7 +201,7 @@ module.exports = class ExprElementBuilder
         onChange(_.extend({}, expr, { expr: value }))
 
       # TODO what about count special handling?
-      innerElem = @build(expr.expr, destTable, innerOnChange, { types: options.types })
+      innerElem = @build(expr.expr, destTable, innerOnChange, { types: options.types, idTable: options.idTable, enumValues: options.enumValues })
 
     return H.div style: { display: "flex", alignItems: "baseline" },
       # Aggregate dropdown
