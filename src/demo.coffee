@@ -87,8 +87,8 @@ $ ->
           schema: schema
           dataSource: dataSource
           table: "t1"
-          types: ['enum']
-          enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
+          types: ['boolean']
+          # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
           # idTable: "t4"
           value: @state.value
           onChange: @handleValueChange

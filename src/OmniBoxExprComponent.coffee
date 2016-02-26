@@ -233,13 +233,13 @@ module.exports = class OmniBoxExprComponent extends React.Component
     else
       return H.a(onClick: @handleModeChange.bind(null, "formula"), H.i(null, "f", H.sub(null, "x")))
 
-  handleDateSelected: (event) =>
-    @setState(inputText: event.date.format("l"))
+  handleDateSelected: (date) =>
+    @setState(inputText: date.format("l"))
     @refs.input.blur()
     @handleBlur()
 
-  handleDateTimeSelected: (event) =>
-    @setState(inputText: event.date.format("lll"))
+  handleDateTimeSelected: (datetime) =>
+    @setState(inputText: datetime.format("lll"))
     @refs.input.blur()
     @handleBlur()
 
