@@ -10,6 +10,7 @@ EnumSetComponent = require './EnumSetComponent'
 TextArrayComponent = require './TextArrayComponent'
 LinkComponent = require './LinkComponent'
 StackedComponent = require './StackedComponent'
+IdLiteralComponent = require './IdLiteralComponent'
 
 module.exports = class ExprElementBuilder 
   constructor: (schema, dataSource, locale) ->
@@ -59,7 +60,7 @@ module.exports = class ExprElementBuilder
     # Get current expression type
     exprType = @exprUtils.getExprType(expr)
 
-    # If text[] or enumset literal, use special component
+    # If text[], enumset or id literal, use special component
     if (expr and expr.type == "literal") or (not expr and options.preferLiteral)
       if exprType == "text[]" or _.isEqual(options.types, ["text[]"])
         return R(TextArrayComponent, 
@@ -75,6 +76,15 @@ module.exports = class ExprElementBuilder
           key: options.key, 
           value: expr, 
           enumValues: options.enumValues
+          onChange: onChange)
+
+      if exprType == "id" or _.isEqual(options.types, ["id"]) and options.idTable
+        return R(IdLiteralComponent, 
+          key: options.key, 
+          value: expr, 
+          idTable: options.idTable or @exprUtils.getExprIdTable(expr)
+          schema: @schema
+          dataSource: @dataSource
           onChange: onChange)
 
     # Handle empty and literals with OmniBox
@@ -270,9 +280,9 @@ module.exports = class ExprElementBuilder
 
           # Build rhs
           rhsElem = [
-            @build(expr.exprs[1], table, rhs1OnChange, types: [opItem.exprTypes[1]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
+            @build(expr.exprs[1], table, rhs1OnChange, types: [opItem.exprTypes[1]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
             "\u00A0and\u00A0"
-            @build(expr.exprs[2], table, rhs2OnChange, types: [opItem.exprTypes[2]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
+            @build(expr.exprs[2], table, rhs2OnChange, types: [opItem.exprTypes[2]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
           ]
         else if opItem.exprTypes.length > 1 # If has two expressions
           rhsOnChange = (newValue) =>
@@ -282,7 +292,7 @@ module.exports = class ExprElementBuilder
             # Set expr value
             onChange(_.extend({}, expr, { exprs: newExprs }))
 
-          rhsElem = @build(expr.exprs[1], table, rhsOnChange, types: [opItem.exprTypes[1]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
+          rhsElem = @build(expr.exprs[1], table, rhsOnChange, types: [opItem.exprTypes[1]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
 
         # Create op dropdown (finding matching type and lhs, not op)
         opItems = @exprUtils.findMatchingOpItems(resultTypes: options.types, lhsExpr: expr.exprs[0])

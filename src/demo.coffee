@@ -15,96 +15,149 @@ FilterExprComponent = require './FilterExprComponent'
 $ ->
   # $.getJSON "https://api.mwater.co/v3/jsonql/schema?formIds=f6d3b6deed734467932f4dca34af4175", (schemaJson) ->
   #   schema = new Schema(schemaJson)
-    # dataSource = new MWaterDataSource("https://api.mwater.co/v3/", null, false)
+  # dataSource = new MWaterDataSource("https://api.mwater.co/v3/", null, false)
     # # dataSource = new MWaterDataSource("http://localhost:1234/v3/", "e449acf016c362f19c4b65b52db23486", false)
 
-  schema = new Schema()
-  schema = schema.addTable({ id: "t1", name: { en: "T1" }, primaryKey: "primary", contents: [
-    { id: "text", name: { en: "Text" }, type: "text" }
-    { id: "number", name: { en: "Number" }, type: "number" }
-    { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
-    { id: "enumset", name: { en: "EnumSet" }, type: "enumset", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
-    { id: "date", name: { en: "Date" }, type: "date" }
-    { id: "datetime", name: { en: "Datetime" }, type: "datetime" }
-    { id: "boolean", name: { en: "Boolean" }, type: "boolean" }
-    { id: "1-2", name: { en: "T1->T2" }, type: "join", join: { fromColumn: "primary", toTable: "t2", toColumn: "t1", type: "1-n" }}
-  ]})
+  ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
 
-  schema = schema.addTable({ id: "t2", name: { en: "T2" }, primaryKey: "primary", ordering: "number", contents: [
-    { id: "text", name: { en: "Text" }, type: "text" }
-    { id: "number", name: { en: "Number" }, type: "number" }
-    { id: "2-1", name: { en: "T2->T1" }, type: "join", join: { fromColumn: "t1", toTable: "t1", toColumn: "primary", type: "n-1" }}
-  ]})
+class MockTestComponent extends React.Component
+  constructor: ->
+    super
+    @state = { 
+      value: value
+      schema: null
+      dataSource: null
+    }
 
-  schema = schema.addTable({ id: "t3", name: { en: "T3" }, primaryKey: "primary", ordering: "number", contents: [
-    { id: "text", name: { en: "Text" }, type: "text" }
-    { id: "number", name: { en: "Number" }, type: "number" }
-  ]})
+  componentWillMount: ->
+    schema = new Schema()
+    schema = schema.addTable({ id: "t1", name: { en: "T1" }, primaryKey: "primary", contents: [
+      { id: "text", name: { en: "Text" }, type: "text" }
+      { id: "number", name: { en: "Number" }, type: "number" }
+      { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
+      { id: "enumset", name: { en: "EnumSet" }, type: "enumset", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
+      { id: "date", name: { en: "Date" }, type: "date" }
+      { id: "datetime", name: { en: "Datetime" }, type: "datetime" }
+      { id: "boolean", name: { en: "Boolean" }, type: "boolean" }
+      { id: "1-2", name: { en: "T1->T2" }, type: "join", join: { fromColumn: "primary", toTable: "t2", toColumn: "t1", type: "1-n" }}
+    ]})
 
-  # Fake data source
-  dataSource = {
-    performQuery: (query, cb) =>
-      cb(null, [
-        { value: "abc" }
-        { value: "xyz" }
-        ])
-  }
+    schema = schema.addTable({ id: "t2", name: { en: "T2" }, primaryKey: "primary", ordering: "number", contents: [
+      { id: "text", name: { en: "Text" }, type: "text" }
+      { id: "number", name: { en: "Number" }, type: "number" }
+      { id: "2-1", name: { en: "T2->T1" }, type: "join", join: { fromColumn: "t1", toTable: "t1", toColumn: "primary", type: "n-1" }}
+    ]})
+
+    schema = schema.addTable({ id: "t3", name: { en: "T3" }, primaryKey: "primary", ordering: "number", contents: [
+      { id: "text", name: { en: "Text" }, type: "text" }
+      { id: "number", name: { en: "Number" }, type: "number" }
+    ]})
+
+    # Fake data source
+    dataSource = {
+      performQuery: (query, cb) =>
+        cb(null, [
+          { value: "abc" }
+          { value: "xyz" }
+          ])
+    }
+
+    @setState(schema: schema, dataSource: dataSource)
+
+  handleValueChange: (value) => 
+    value = new ExprCleaner(@state.schema).cleanExpr(value) #, { type: 'boolean' })
+    @setState(value: value)
+
+  render: ->
+    if not @state.schema
+      return null
+
+    H.div style: { padding: 10 },
+      R(ExprComponent, 
+        schema: @state.schema
+        dataSource: @state.dataSource
+        table: "t1"
+        # types: ['boolean']
+        # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
+        # idTable: "t4"
+        value: @state.value
+        onChange: @handleValueChange
+      )
+      H.br()
+      H.br()
+      H.pre null, JSON.stringify(@state.value, null, 2)
 
 
-  class TestComponent extends React.Component
-    constructor: ->
-      super
-      @state = { 
-        value: value
-      }
 
-    handleValueChange: (value) => 
-      value = new ExprCleaner(schema).cleanExpr(value) #, { type: 'boolean' })
-      @setState(value: value)
+class LiveTestComponent extends React.Component
+  constructor: ->
+    super
+    @state = { 
+      value: value
+      schema: null
+      dataSource: null
+    }
 
+  componentWillMount: ->
+    apiUrl = "http://localhost:1234/v3/"
+    $.getJSON apiUrl + "jsonql/schema", (schemaJson) =>
+      schema = new Schema(schemaJson)
+      dataSource = new MWaterDataSource(apiUrl, null, false)
 
-    render: ->
-      dataSource
-      H.div style: { padding: 10 },
-        # R(OmniBoxExprComponent, 
-        #     schema: schema
-        #     dataSource: dataSource
-        #     table: "responses:f6d3b6deed734467932f4dca34af4175"
-        #     value: @state.value
-        #     enumValues: [{ id: "a", name: "ABC"}, { id: "b", name: "BCD"}]
-        #     type: "enum"
-        #     initialMode: "literal"
-        #     onChange: @handleValueChange)
-        # R(ExprComponent, 
-        #   schema: schema
-        #   dataSource: dataSource
-        #   table: "t1"
-        #   value: @state.value
-        #   type: "boolean"
-        #   onChange: @handleValueChange
-        # )
-        R(ExprComponent, 
-          schema: schema
-          dataSource: dataSource
-          table: "t1"
-          # types: ['boolean']
-          # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
-          # idTable: "t4"
-          value: @state.value
-          onChange: @handleValueChange
-        )
-        H.br()
-        H.br()
-        H.pre null, JSON.stringify(@state.value, null, 2)
+      @setState(schema: schema, dataSource: dataSource)
 
-  ReactDOM.render(R(TestComponent), document.getElementById("main"))
+  handleValueChange: (value) => 
+    value = new ExprCleaner(@state.schema).cleanExpr(value) #, { type: 'boolean' })
+    @setState(value: value)
+
+  render: ->
+    if not @state.schema
+      return null
+      
+    H.div style: { padding: 10 },
+      R(ExprComponent, 
+        schema: @state.schema
+        dataSource: @state.dataSource
+        table: "entities.water_point"
+        types: ['boolean']
+        # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
+        # idTable: "t4"
+        value: @state.value
+        onChange: @handleValueChange
+      )
+      H.br()
+      H.br()
+      H.pre null, JSON.stringify(@state.value, null, 2)
 
 expr1 = { type: "comparison", table: "t1", op: "=", lhs: { type: "field", table: "t1", column: "number" }, rhs: { type: "literal", valueType: "integer", value: 4 } }
 expr2 = { type: "comparison", table: "t1", op: "=", lhs: { type: "field", table: "t1", column: "number" }, rhs: { type: "literal", valueType: "integer", value: 5 } }
 value = { type: "logical", table: "t1", op: "and", exprs: [expr1, expr2] }
 
 
-value = null
+value = {
+  "type": "op",
+  "table": "entities.water_point",
+  "op": "within",
+  "exprs": [
+    {
+      "type": "scalar",
+      "table": "entities.water_point",
+      "joins": [
+        "admin_region"
+      ],
+      "expr": {
+        "type": "id",
+        "table": "admin_regions"
+      }
+    },
+    {
+      "type": "literal",
+      "valueType": "id",
+      "idTable": "admin_regions",
+      "value": "dba202a4-95eb-47e2-8070-f872e08c3c84"
+    }
+  ]
+}
 #   {
 #   "type": "op",
 #   "table": "t1",
