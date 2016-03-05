@@ -41,7 +41,7 @@ module.exports = class ExprElementBuilder
       # If boolean and newExpr is not boolean, wrap with appropriate expression
       if booleanOnly and exprType and exprType != "boolean"
         # Find op item that matches
-        opItem = @exprUtils.findMatchingOpItems(resultType: "boolean", exprTypes: [exprType])[0]
+        opItem = @exprUtils.findMatchingOpItems(resultTypes: ["boolean"], lhsExpr: newExpr)[0]
 
         if opItem
           # Wrap in op to make it boolean
@@ -239,10 +239,9 @@ module.exports = class ExprElementBuilder
         R(StackedComponent, joinLabel: expr.op, items: items)
       else
         # Horizontal expression. Render each part
-        expr1Type = @exprUtils.getExprType(expr.exprs[0])
-        opItem = @exprUtils.findMatchingOpItems(op: expr.op, resultType: options.types, exprTypes: [expr1Type])[0]
+        opItem = @exprUtils.findMatchingOpItems(op: expr.op, resultTypes: options.types, lhsExpr: expr.exprs[0])[0]
         if not opItem
-          throw new Error("No opItem defined for op:#{expr.op}, resultType: #{options.types}, lhs:#{expr1Type}")
+          throw new Error("No opItem defined for op:#{expr.op}, resultType: #{options.types}, lhs:#{JSON.stringify(expr.exprs[0])}")
 
         lhsOnChange = (newValue) =>
           newExprs = expr.exprs.slice()
@@ -286,7 +285,7 @@ module.exports = class ExprElementBuilder
           rhsElem = @build(expr.exprs[1], table, rhsOnChange, types: [opItem.exprTypes[1]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
 
         # Create op dropdown (finding matching type and lhs, not op)
-        opItems = @exprUtils.findMatchingOpItems(resultType: options.types, exprTypes: [expr1Type])
+        opItems = @exprUtils.findMatchingOpItems(resultTypes: options.types, lhsExpr: expr.exprs[0])
 
         # Remove current op
         opItems = _.filter(opItems, (oi) -> oi.op != expr.op)

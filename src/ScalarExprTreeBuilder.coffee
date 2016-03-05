@@ -58,6 +58,12 @@ module.exports = class ScalarExprTreeBuilder
 
     table = @schema.getTable(options.table)
     nodes = nodes.concat(@createNodes(table.contents, options))
+
+    # TODO keep?
+    # # Add unique id if not including count
+    # if not options.includeCount and not options.types or "id" in options.types
+    #   nodes.push({ name: "Unique ID", value: { table: options.table, joins: options.joins, expr: { type: "id", table: options.table } } })
+
     return nodes
 
   createNodes: (contents, options) ->
