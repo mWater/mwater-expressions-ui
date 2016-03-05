@@ -197,7 +197,7 @@ module.exports = class ExprElementBuilder
     # If just a field or id inside, add to string and make a simple link control
     if expr.expr and expr.expr.type in ["field", "id"]
       # Summarize inner
-      summary = joinsStr + @exprUtils.summarizeExpr(expr.expr)
+      summary = @exprUtils.summarizeExpr(expr)
 
       return H.div style: { display: "flex", alignItems: "baseline" },
         # Aggregate dropdown
