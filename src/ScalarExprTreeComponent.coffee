@@ -48,6 +48,7 @@ class ScalarExprTreeLeafComponent extends React.Component
       padding: 4
       borderRadius: 4
       cursor: "pointer"
+      color: "#478"
     }
 
     H.div style: style, className: "hover-grey-background", onClick: @handleClick, 
@@ -88,9 +89,11 @@ class ScalarExprTreeNodeComponent extends React.Component
       children = H.div style: { paddingLeft: 25 }, key: "tree",
         React.createElement(ScalarExprTreeTreeComponent, tree: @props.item.children(), onChange: @props.onChange)
 
+    color = if @props.item.value then "#478" 
+
     H.div null,
       H.div style: { cursor: "pointer", padding: 4 }, key: "arrow",
         H.span style: { color: "#AAA", cursor: "pointer", paddingRight: 3 }, onClick: @handleArrowClick, arrow
-        H.span onClick: @handleItemClick, @props.item.name
+        H.span style: { color: color }, onClick: @handleItemClick, @props.item.name
       children
       

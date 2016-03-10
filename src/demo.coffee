@@ -99,7 +99,8 @@ class LiveTestComponent extends React.Component
     }
 
   componentWillMount: ->
-    apiUrl = "http://localhost:1234/v3/"
+    # apiUrl = "http://localhost:1234/v3/"
+    apiUrl = "https://api.mwater.co/v3/"
     $.getJSON apiUrl + "jsonql/schema", (schemaJson) =>
       schema = new Schema(schemaJson)
       dataSource = new MWaterDataSource(apiUrl, null, false)
@@ -119,7 +120,7 @@ class LiveTestComponent extends React.Component
         schema: @state.schema
         dataSource: @state.dataSource
         table: "entities.water_point"
-        types: ['boolean']
+        types: ['boolean', "text", "number"]
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         value: @state.value

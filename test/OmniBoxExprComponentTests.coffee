@@ -6,7 +6,7 @@ R = React.createElement
 canonical = require 'canonical-json'
 
 fixtures = require './fixtures'
-TestComponent = require './TestComponent'
+TestComponent = require('react-library/lib/TestComponent')
 
 OmniBoxExprComponent = require '../src/OmniBoxExprComponent'
 
