@@ -16,6 +16,7 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     text: React.PropTypes.string                # Text with embedded expressions as {0}, {1}, etc.
     exprs: React.PropTypes.array                # Expressions that correspond to {0}, {1}, etc.
     onChange: React.PropTypes.func.isRequired   # Called with (text, exprs)
+    multiline: React.PropTypes.bool             # Allow multiple lines
 
   handleInsertClick: => @refs.insertModal.open()
 
@@ -74,6 +75,10 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     # Strip word joiner used to allow editing at end of string
     text = text.replace(/\u2060/g, '')
 
+    # Enfore single line
+    if not @props.multiline
+      text = text.replace(/\r?\n/g, "")
+
     # console.log "onChange: #{text}"
     @props.onChange(text, exprs)
 
@@ -99,7 +104,8 @@ module.exports = class InlineExprsEditorComponent extends React.Component
       )
 
     # Keep CR (<br>)
-    html = html.replace(/\r?\n/g, "<br>")
+    if @props.multiline
+      html = html.replace(/\r?\n/g, "<br>")
 
     # console.log "createHtml: #{html}"
     return html
