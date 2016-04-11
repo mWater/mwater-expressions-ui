@@ -95,7 +95,7 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     # Limit length
     if summary.length > 50
       summary = summary.substr(0, 50) + "..."
-      
+
     # Add as div with a comment field that encodes the content
     return '<div class="inline-expr-block" contentEditable="false"><!--' + encodeURIComponent(JSON.stringify(expr)) + '-->' + _.escape(summary) + '</div>&#x2060;'
 
@@ -123,11 +123,13 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     R ExprInsertModalComponent, ref: "insertModal", schema: @props.schema, dataSource: @props.dataSource, table: @props.table, onInsert: @handleInsert
 
   render: ->
-    H.div null,
+    H.div style: { position: "relative" },
       @renderInsertModal()
-      R ContentEditableComponent, ref: "contentEditable", html: @createContentEditableHtml(), onChange: @handleChange
-      H.button type: "button", className: "btn btn-link btn-xs", onClick: @handleInsertClick, 
-        "Insert Expression"
+      H.div style: { paddingRight: 20 },
+        R ContentEditableComponent, ref: "contentEditable", html: @createContentEditableHtml(), onChange: @handleChange
+      H.a onClick: @handleInsertClick, style: { cursor: "pointer", position: "absolute", right: 5, top: 8, fontStyle: "italic", color: "#337ab7" },
+        "f"
+        H.sub null, "x"
 
 # Modal that displays an expression builder
 class ExprInsertModalComponent extends React.Component
