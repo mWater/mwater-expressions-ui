@@ -18,6 +18,9 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     onChange: React.PropTypes.func.isRequired   # Called with (text, exprs)
     multiline: React.PropTypes.bool             # Allow multiple lines
 
+  @defaultProps:
+    exprs: []
+
   handleInsertClick: => @refs.insertModal.open()
 
   handleInsert: (expr) =>
