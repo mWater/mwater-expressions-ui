@@ -9,8 +9,7 @@
   },
   "browserify": {
     "transform": [
-      "coffeeify",
-      "brfs"
+      "coffeeify"
     ]
   },
   "style": "src/index.css",
@@ -33,7 +32,6 @@
     "update-object": "^1.0.0"
   },
   "devDependencies": {
-    "brfs": "^1.4.1",
     "browser-sync": "^2.10.0",
     "browserify": "^12.0.1",
     "canonical-json": "0.0.4",
