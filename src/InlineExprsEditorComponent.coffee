@@ -1,30 +1,31 @@
 React = require 'react'
 H = React.DOM
+R = React.createElement
 ExprComponent = require './ExprComponent'
 ExprUtils = require("mwater-expressions").ExprUtils
 select = require('selection-range')
+ActionCancelModalComponent = require("react-library/lib/ActionCancelModalComponent")
 
 # Editor that is a text box with embeddable expressions
 module.exports = class InlineExprsEditorComponent extends React.Component
   @propTypes:
     schema: React.PropTypes.object.isRequired   # Schema to use
+    dataSource: React.PropTypes.object.isRequired # Data source to use to get values
+    table: React.PropTypes.string.isRequired    # Current table
+
     text: React.PropTypes.string                # Text with embedded expressions as {0}, {1}, etc.
     exprs: React.PropTypes.array                # Expressions that correspond to {0}, {1}, etc.
     onChange: React.PropTypes.func.isRequired   # Called with (text, exprs)
 
-  constructor: ->
-    super
+  handleInsertClick: => @refs.insertModal.open()
 
-    @state = {
-      insertingExpr: null
-    }
+  handleInsert: (expr) =>
+    if expr
+      @refs.contentEditable.pasteHTML(@createExprHtml(expr), false)
 
-  handleInsert: =>
-    @refs.contentEditable.pasteHTML(@createExprHtml({ type: "field", table: "t1", column: "number" }), false)
-
+  # Handle a change to the content editable element
   handleChange: (elem) => 
-    console.log "handleChange: #{elem.innerHTML}"
-
+    # console.log "handleChange: #{elem.innerHTML}"
     # Walk DOM tree, adding strings and expressions
     text = ""
     exprs = []
@@ -73,7 +74,7 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     # Strip word joiner used to allow editing at end of string
     text = text.replace(/\u2060/g, '')
 
-    console.log "onChange: #{text}"
+    # console.log "onChange: #{text}"
     @props.onChange(text, exprs)
 
   # Create html for an expression
@@ -84,7 +85,7 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     # Add as div with a comment field that encodes the content
     return '<div class="inline-expr-block" contentEditable="false"><!--' + encodeURIComponent(JSON.stringify(expr)) + '-->' + _.escape(exprUtils.summarizeExpr(expr)) + '</div>&#x2060;'
 
-  createHtml: ->
+  createContentEditableHtml: ->
     # Escape HTML
     html = _.escape(@props.text)
 
@@ -100,15 +101,58 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     # Keep CR (<br>)
     html = html.replace(/\r?\n/g, "<br>")
 
-    console.log "createHtml: #{html}"
+    # console.log "createHtml: #{html}"
     return html
+
+  renderInsertModal: ->
+    R ExprInsertModalComponent, ref: "insertModal", schema: @props.schema, dataSource: @props.dataSource, table: @props.table, onInsert: @handleInsert
 
   render: ->
     H.div null,
-      React.createElement ContentEditableComponent, ref: "contentEditable", html: @createHtml(), onChange: @handleChange
-      H.button type: "button", className: "btn btn-link btn-xs", onClick: @handleInsert, 
+      @renderInsertModal()
+      R ContentEditableComponent, ref: "contentEditable", html: @createContentEditableHtml(), onChange: @handleChange
+      H.button type: "button", className: "btn btn-link btn-xs", onClick: @handleInsertClick, 
         "Insert Expression"
 
+# Modal that displays an expression builder
+class ExprInsertModalComponent extends React.Component
+  @propTypes:
+    schema: React.PropTypes.object.isRequired   # Schema to use
+    dataSource: React.PropTypes.object.isRequired # Data source to use to get values
+    table: React.PropTypes.string.isRequired    # Current table
+    onInsert: React.PropTypes.func.isRequired   # Called with expr to insert
+
+  constructor: ->
+    super
+
+    @state = {
+      open: false
+      expr: null
+    }
+
+  open: ->
+    @setState(open: true, expr: null)
+
+  render: ->
+    if not @state.open
+      return null
+
+    R ActionCancelModalComponent, 
+      size: "large"
+      actionLabel: "Insert"
+      onAction: => 
+        @props.onInsert(@state.expr)
+        @setState(open: false)
+      onCancel: => @setState(open: false)
+      title: "Insert Expression",
+        R ExprComponent, 
+          schema: @props.schema
+          dataSource: @props.dataSource
+          table: @props.table
+          types: ['text', 'number']
+          value: @state.expr
+          onChange: (expr) => @setState(expr: expr)
+  
 # class TextWithExpressionsHtmlConverter
 
 # Content editable component with cursor restoring
@@ -124,6 +168,11 @@ class ContentEditableComponent extends React.Component
 
   pasteHTML: (html, selectPastedContent) ->
     @refs.editor.focus()
+
+    # Restore caret
+    if @range
+      select(@refs.editor, @range)
+
     pasteHtmlAtCaret(html, selectPastedContent)
 
   shouldComponentUpdate: (nextProps) ->
@@ -138,8 +187,9 @@ class ContentEditableComponent extends React.Component
     if @refs.editor and @props.html != @refs.editor.innerHTML
       @refs.editor.innerHTML = @props.html
 
-    # Restore caret
-    select(@refs.editor, @range)
+    # Restore caret if still focused
+    if document.activeElement == @refs.editor
+      select(@refs.editor, @range)
 
   render: ->
     H.div 

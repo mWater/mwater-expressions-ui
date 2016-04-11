@@ -79,6 +79,8 @@ class MockTestInlineExprsEditorComponent extends React.Component
     H.div style: { padding: 10 },
       R(InlineExprsEditorComponent, 
         schema: @state.schema
+        dataSource: @state.dataSource
+        table: "t1"
         text: @state.text
         exprs: @state.exprs
         onChange: @handleChange
