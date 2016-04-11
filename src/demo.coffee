@@ -11,6 +11,7 @@ ExprCompiler = require("mwater-expressions").ExprCompiler
 
 DataSource = require('mwater-expressions').DataSource
 FilterExprComponent = require './FilterExprComponent'
+InlineExprsEditorComponent = require './InlineExprsEditorComponent'
 
 $ ->
   # $.getJSON "https://api.mwater.co/v3/jsonql/schema?formIds=f6d3b6deed734467932f4dca34af4175", (schemaJson) ->
@@ -18,7 +19,74 @@ $ ->
   # dataSource = new MWaterDataSource("https://api.mwater.co/v3/", null, false)
     # # dataSource = new MWaterDataSource("http://localhost:1234/v3/", "e449acf016c362f19c4b65b52db23486", false)
 
-  ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+  ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
+
+class MockTestInlineExprsEditorComponent extends React.Component
+  constructor: ->
+    super
+
+    @state = { 
+      schema: null
+      dataSource: null
+
+      text: "This is a {0}"
+      exprs: [{ type: "field", table: "t1", column: "text" }]
+    }
+
+  componentWillMount: ->
+    schema = new Schema()
+    schema = schema.addTable({ id: "t1", name: { en: "T1" }, primaryKey: "primary", contents: [
+      { id: "text", name: { en: "Text" }, type: "text" }
+      { id: "number", name: { en: "Number" }, type: "number" }
+      { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
+      { id: "enumset", name: { en: "EnumSet" }, type: "enumset", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
+      { id: "date", name: { en: "Date" }, type: "date" }
+      { id: "datetime", name: { en: "Datetime" }, type: "datetime" }
+      { id: "boolean", name: { en: "Boolean" }, type: "boolean" }
+      { id: "1-2", name: { en: "T1->T2" }, type: "join", join: { fromColumn: "primary", toTable: "t2", toColumn: "t1", type: "1-n" }}
+    ]})
+
+    schema = schema.addTable({ id: "t2", name: { en: "T2" }, primaryKey: "primary", ordering: "number", contents: [
+      { id: "text", name: { en: "Text" }, type: "text" }
+      { id: "number", name: { en: "Number" }, type: "number" }
+      { id: "2-1", name: { en: "T2->T1" }, type: "join", join: { fromColumn: "t1", toTable: "t1", toColumn: "primary", type: "n-1" }}
+    ]})
+
+    schema = schema.addTable({ id: "t3", name: { en: "T3" }, primaryKey: "primary", ordering: "number", contents: [
+      { id: "text", name: { en: "Text" }, type: "text" }
+      { id: "number", name: { en: "Number" }, type: "number" }
+    ]})
+
+    # Fake data source
+    dataSource = {
+      performQuery: (query, cb) =>
+        cb(null, [
+          { value: "abc" }
+          { value: "xyz" }
+          ])
+    }
+
+    @setState(schema: schema, dataSource: dataSource)
+
+  handleChange: (text, exprs) => 
+    console.log "handleChange: #{text}"
+    @setState(text: text, exprs: exprs)
+
+  render: ->
+    if not @state.schema
+      return null
+
+    H.div style: { padding: 10 },
+      R(InlineExprsEditorComponent, 
+        schema: @state.schema
+        text: @state.text
+        exprs: @state.exprs
+        onChange: @handleChange
+      )
+      # H.br()
+      # H.br()
+      # H.pre null, JSON.stringify(@state.value, null, 2)
+
 
 class MockTestComponent extends React.Component
   constructor: ->

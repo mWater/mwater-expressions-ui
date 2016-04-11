@@ -22,13 +22,14 @@
     "lodash": "^3.10.1",
     "moment": "^2.10.6",
     "mwater-expressions": "git+ssh://github.com/mWater/mwater-expressions.git",
-    "react": "^0.14.1",
+    "react": "^15.0.1",
     "react-bootstrap-daterangepicker": "^1.0.3",
-    "react-dom": "^0.14.1",
+    "react-dom": "^15.0.1",
     "react-library": "github:mwater/react-library",
     "react-motion": "^0.3.1",
     "react-onclickout": "^2.0.4",
     "react-select": "^0.9.1",
+    "selection-range": "^1.1.0",
     "update-object": "^1.0.0"
   },
   "devDependencies": {
