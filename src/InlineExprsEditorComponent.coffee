@@ -171,11 +171,15 @@ class ContentEditableComponent extends React.Component
   @propTypes:
     html: React.PropTypes.string.isRequired
 
-  handleChange: (ev) => 
+  handleInput: (ev) => 
     if not @refs.editor
       return 
 
     @props.onChange(@refs.editor)
+
+  # Save selection for refocusing
+  handleBlur: =>
+    @range = select(@refs.editor)
 
   pasteHTML: (html, selectPastedContent) ->
     @refs.editor.focus()
@@ -208,8 +212,8 @@ class ContentEditableComponent extends React.Component
       spellCheck: false
       ref: "editor"
       style: { padding: "6px 12px", border: "1px solid #ccc", borderRadius: 4 }
-      onInput: @handleChange
-      onBlur: @handleChange
+      onInput: @handleInput
+      onBlur: @handleBlur
       dangerouslySetInnerHTML: { __html: @props.html }
 
 # http://stackoverflow.com/questions/6690752/insert-html-at-caret-in-a-contenteditable-div
