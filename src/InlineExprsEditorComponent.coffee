@@ -147,8 +147,10 @@ class ExprInsertModalComponent extends React.Component
       size: "large"
       actionLabel: "Insert"
       onAction: => 
-        @props.onInsert(@state.expr)
-        @setState(open: false)
+        # Close first to avoid strange effects when mixed with pojoviews
+        @setState(open: false, =>
+          @props.onInsert(@state.expr)
+        )
       onCancel: => @setState(open: false)
       title: "Insert Expression",
         R ExprComponent, 
@@ -200,7 +202,7 @@ class ContentEditableComponent extends React.Component
   render: ->
     H.div 
       contentEditable: true
-      spellcheck: "false" 
+      spellCheck: false
       ref: "editor"
       style: { padding: "6px 12px", border: "1px solid #ccc", borderRadius: 4 }
       onInput: @handleChange
