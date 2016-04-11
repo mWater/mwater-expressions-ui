@@ -90,8 +90,14 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     # Create expr utils
     exprUtils = new ExprUtils(@props.schema)
 
+    summary = exprUtils.summarizeExpr(expr)
+
+    # Limit length
+    if summary.length > 50
+      summary = summary.substr(0, 50) + "..."
+      
     # Add as div with a comment field that encodes the content
-    return '<div class="inline-expr-block" contentEditable="false"><!--' + encodeURIComponent(JSON.stringify(expr)) + '-->' + _.escape(exprUtils.summarizeExpr(expr)) + '</div>&#x2060;'
+    return '<div class="inline-expr-block" contentEditable="false"><!--' + encodeURIComponent(JSON.stringify(expr)) + '-->' + _.escape(summary) + '</div>&#x2060;'
 
   createContentEditableHtml: ->
     # Escape HTML
@@ -179,7 +185,11 @@ class ContentEditableComponent extends React.Component
 
   # Save selection for refocusing
   handleBlur: =>
+    if not @refs.editor
+      return 
+
     @range = select(@refs.editor)
+    @props.onChange(@refs.editor)
 
   pasteHTML: (html, selectPastedContent) ->
     @refs.editor.focus()
