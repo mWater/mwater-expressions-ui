@@ -201,6 +201,7 @@ class ContentEditableComponent extends React.Component
       select(@refs.editor, @range)
 
     pasteHtmlAtCaret(html, selectPastedContent)
+    @props.onChange(@refs.editor)
 
   shouldComponentUpdate: (nextProps) ->
     return not @refs.editor or nextProps.html != @refs.editor.innerHTML
