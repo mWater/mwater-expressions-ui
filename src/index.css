@@ -8,6 +8,7 @@
   position: relative;
   padding: 2px;
   border-radius: 5px;
+  margin-right: 5px;
 }
 
 .link-component:hover {

@@ -12,11 +12,9 @@ LinkComponent = require './LinkComponent'
 DateTimePickerComponent = require './DateTimePickerComponent'
 ExprUtils = require('mwater-expressions').ExprUtils
 
-
 # Box component that allows selecting if statements, scalars and literals, all in one place
 # Has a dropdown when needed and focused.
 # It has two modes: literal and formula. If a literal is being edited, it is by default in literal mode
-# When in literal mode, 
 module.exports = class OmniBoxExprComponent extends React.Component
   @propTypes:
     schema: React.PropTypes.object.isRequired
@@ -165,6 +163,15 @@ module.exports = class OmniBoxExprComponent extends React.Component
     }
     @props.onChange(ifExpr)
 
+  handleOpSelected: (op) =>
+    expr = {
+      type: "op"
+      table: @props.table
+      op: op
+      exprs: []
+    }
+    @props.onChange(expr)
+
   # Handle a selection in the scalar expression tree. Called with { table, joins, expr }
   handleTreeChange: (val) => 
     # Loses focus when selection made
@@ -276,9 +283,21 @@ module.exports = class OmniBoxExprComponent extends React.Component
   renderFormulaDropdown: ->
     dropdown = []
 
+    # Special links at the top
+    specials = []
+
     # Add if statement (unless boolean only, in which case if/thens cause problems by returning null)
     if @props.allowCase
-      dropdown.push(H.div(key: "special", H.a(onClick: @handleIfSelected, style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, "If/Then")))
+      specials.push(H.a(key: "case", onClick: @handleIfSelected, style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, "If/Then"))
+
+    # Add ops that are prefix ones (like "latitude of")
+    exprUtils = new ExprUtils(@props.schema)
+    opItems = _.where(exprUtils.findMatchingOpItems(resultTypes: @props.types), { prefix: true })
+    for opItem in opItems
+      specials.push(H.a(key: opItem.op, onClick: @handleOpSelected.bind(null, opItem.op), style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, opItem.name))
+
+    if specials.length > 0
+      dropdown.push(H.div(key: "specials", specials))
 
     # Special handling for enumset type required with enumValues, as cannot select map anything now to enumset
     noTree = @props.enumValues and _.isEqual(@props.types, ["enumset"])

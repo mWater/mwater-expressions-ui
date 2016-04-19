@@ -19,7 +19,8 @@ $ ->
   # dataSource = new MWaterDataSource("https://api.mwater.co/v3/", null, false)
     # # dataSource = new MWaterDataSource("http://localhost:1234/v3/", "e449acf016c362f19c4b65b52db23486", false)
 
-  ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
+  # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
+  ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
 
 class MockTestInlineExprsEditorComponent extends React.Component
   constructor: ->
@@ -109,6 +110,7 @@ class MockTestComponent extends React.Component
       { id: "date", name: { en: "Date" }, type: "date" }
       { id: "datetime", name: { en: "Datetime" }, type: "datetime" }
       { id: "boolean", name: { en: "Boolean" }, type: "boolean" }
+      { id: "geometry", name: { en: "Geometry" }, type: "geometry" }
       { id: "1-2", name: { en: "T1->T2" }, type: "join", join: { fromColumn: "primary", toTable: "t2", toColumn: "t1", type: "1-n" }}
     ]})
 
@@ -229,6 +231,8 @@ value = {
     }
   ]
 }
+
+value = null
 #   {
 #   "type": "op",
 #   "table": "t1",

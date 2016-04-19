@@ -12,6 +12,7 @@ LinkComponent = require './LinkComponent'
 StackedComponent = require './StackedComponent'
 IdLiteralComponent = require './IdLiteralComponent'
 
+# Builds a react element for an expression
 module.exports = class ExprElementBuilder 
   constructor: (schema, dataSource, locale) ->
     @schema = schema
@@ -292,23 +293,40 @@ module.exports = class ExprElementBuilder
             # Set expr value
             onChange(_.extend({}, expr, { exprs: newExprs }))
 
-          rhsElem = @build(expr.exprs[1], table, rhsOnChange, types: [opItem.exprTypes[1]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
+          rhsElem = @build(expr.exprs[1], table, rhsOnChange, types: [opItem.exprTypes[1]], {
+            enumValues: @exprUtils.getExprEnumValues(expr.exprs[0])
+            idTable: @exprUtils.getExprIdTable(expr.exprs[0])
+            refExpr: expr.exprs[0]
+            preferLiteral: opItem.rhsLiteral
+          })
 
         # Create op dropdown (finding matching type and lhs, not op)
         opItems = @exprUtils.findMatchingOpItems(resultTypes: options.types, lhsExpr: expr.exprs[0])
 
         # Remove current op
         opItems = _.filter(opItems, (oi) -> oi.op != expr.op)
+
+        # Prefix toggle must be the same as current expr
+        opItems = _.filter(opItems, (oi) -> oi.prefix == opItem.prefix)
+
+        # Keep distinct ops
+        opItems = _.uniq(opItems, "op")
+
         opElem = R(LinkComponent, 
           dropdownItems: _.map(opItems, (oi) -> { id: oi.op, name: oi.name }) 
           onDropdownItemClicked: (op) =>
             onChange(_.extend({}, expr, { op: op }))
+          onRemove: =>
+            onChange(null)
           , opItem.name)
 
         # Some ops have prefix (e.g. "latitude of")
         if opItem.prefix
           return H.div style: { display: "flex", alignItems: "baseline", flexWrap: "wrap" },
-            opElem, lhsElem, rhsElem
+            opElem
+            lhsElem
+            if opItem.joiner then H.span(style: { paddingLeft: 5, paddingRight: 5 }, opItem.joiner)
+            rhsElem
         else
           return H.div style: { display: "flex", alignItems: "baseline", flexWrap: "wrap" },
             lhsElem, opElem, rhsElem
