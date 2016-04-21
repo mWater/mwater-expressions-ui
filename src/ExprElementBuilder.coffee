@@ -293,7 +293,8 @@ module.exports = class ExprElementBuilder
             # Set expr value
             onChange(_.extend({}, expr, { exprs: newExprs }))
 
-          rhsElem = @build(expr.exprs[1], table, rhsOnChange, types: [opItem.exprTypes[1]], {
+          rhsElem = @build(expr.exprs[1], table, rhsOnChange, {
+            types: [opItem.exprTypes[1]]
             enumValues: @exprUtils.getExprEnumValues(expr.exprs[0])
             idTable: @exprUtils.getExprIdTable(expr.exprs[0])
             refExpr: expr.exprs[0]
