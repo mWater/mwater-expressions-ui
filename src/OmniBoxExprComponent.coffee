@@ -163,6 +163,15 @@ module.exports = class OmniBoxExprComponent extends React.Component
     }
     @props.onChange(ifExpr)
 
+  handleScoreSelected: =>
+    scoreExpr = {
+      type: "score"
+      table: @props.table
+      input: null
+      scores: {}
+    }
+    @props.onChange(scoreExpr)
+
   handleOpSelected: (op) =>
     expr = {
       type: "op"
@@ -289,6 +298,10 @@ module.exports = class OmniBoxExprComponent extends React.Component
     # Add if statement (unless boolean only, in which case if/thens cause problems by returning null)
     if @props.allowCase
       specials.push(H.a(key: "case", onClick: @handleIfSelected, style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, "If/Then"))
+
+    # Add score if has number possible
+    if not @props.types or 'number' in @props.types
+      specials.push(H.a(key: "score", onClick: @handleScoreSelected, style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, "Score"))
 
     # Add ops that are prefix ones (like "latitude of")
     exprUtils = new ExprUtils(@props.schema)

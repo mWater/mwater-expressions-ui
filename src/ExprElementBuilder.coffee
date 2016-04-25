@@ -11,6 +11,7 @@ TextArrayComponent = require './TextArrayComponent'
 LinkComponent = require './LinkComponent'
 StackedComponent = require './StackedComponent'
 IdLiteralComponent = require './IdLiteralComponent'
+ScoreExprComponent = require './ScoreExprComponent'
 
 # Builds a react element for an expression
 module.exports = class ExprElementBuilder 
@@ -115,6 +116,8 @@ module.exports = class ExprElementBuilder
       elem = @buildCase(expr, innerOnChange, { key: options.key, types: options.types, enumValues: options.enumValues })
     else if expr.type == "id"
       elem = @buildId(expr, innerOnChange, { key: options.key })
+    else if expr.type == "score"
+      elem = @buildScore(expr, innerOnChange, { key: options.key })
     else
       throw new Error("Unhandled expression type #{expr.type}")
 
@@ -381,6 +384,13 @@ module.exports = class ExprElementBuilder
 
     # Create stacked expression
     R(StackedComponent, items: items)
+
+  buildScore: (expr, onChange, options) ->
+    return R ScoreExprComponent,
+      schema: @schema
+      dataSource: @dataSource
+      value: expr
+      onChange: onChange
 
 # TODO DOC
 class WrappedLinkComponent extends React.Component
