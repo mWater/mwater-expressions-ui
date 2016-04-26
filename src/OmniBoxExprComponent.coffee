@@ -297,11 +297,11 @@ module.exports = class OmniBoxExprComponent extends React.Component
 
     # Add if statement (unless boolean only, in which case if/thens cause problems by returning null)
     if @props.allowCase
-      specials.push(H.a(key: "case", onClick: @handleIfSelected, style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, "If/Then"))
+      specials.push(H.a(key: "case", onClick: @handleIfSelected, style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, "if/then"))
 
     # Add score if has number possible
     if not @props.types or 'number' in @props.types
-      specials.push(H.a(key: "score", onClick: @handleScoreSelected, style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, "Score"))
+      specials.push(H.a(key: "score", onClick: @handleScoreSelected, style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, "score"))
 
     # Add ops that are prefix ones (like "latitude of")
     exprUtils = new ExprUtils(@props.schema)
