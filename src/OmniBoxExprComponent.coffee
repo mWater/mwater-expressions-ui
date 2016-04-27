@@ -101,12 +101,14 @@ module.exports = class OmniBoxExprComponent extends React.Component
     if @props.value and @props.value.valueType == "enum"
       @setState(inputText: "")
 
-  handleBlur: => 
+  handleClickOut: => 
     if not @state.focused
       return
 
     @setState(focused: false)
 
+  # Blur fires immediately while clickout is later
+  handleBlur: =>
     # Process literal if present
     if @state.mode == "literal"
       # Empty means no value
@@ -344,7 +346,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
         dropdown = @renderLiteralDropdown()
 
     # Close when clicked outside
-    R ClickOutHandler, onClickOut: @handleBlur,
+    R ClickOutHandler, onClickOut: @handleClickOut,
       R DropdownComponent, dropdown: dropdown,
         H.div style: { position: "absolute", right: 10, top: 8, cursor: "pointer" }, @renderModeSwitcher()
         H.input 
@@ -357,6 +359,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
           onClick: @handleFocus
           onChange: @handleTextChange
           onKeyDown: @handleKeyDown
+          onBlur: @handleBlur
           placeholder: if @state.mode == "literal" then @props.noLiteralPlaceholder else @props.noFormulaPlaceholder
 
   

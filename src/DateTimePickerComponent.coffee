@@ -35,7 +35,6 @@ module.exports = class DateTimePickerComponent extends React.Component
     if @props.defaultDate
       pickerOptions.defaultDate = @props.defaultDate
 
-    console.log pickerOptions
     picker = $(node).datetimepicker(pickerOptions)
 
     $(node).data("DateTimePicker").date(@props.date or null)

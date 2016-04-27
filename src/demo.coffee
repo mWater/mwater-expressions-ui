@@ -149,7 +149,7 @@ class MockTestComponent extends React.Component
         schema: @state.schema
         dataSource: @state.dataSource
         table: "t1"
-        # types: ['boolean']
+        types: ['number']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         value: @state.value
