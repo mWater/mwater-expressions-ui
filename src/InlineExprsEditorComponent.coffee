@@ -116,6 +116,10 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     if @props.multiline
       html = html.replace(/\r?\n/g, "<br>")
 
+    # If empty, put placeholder
+    if html.length == 0
+      html = '&#x2060;'
+
     # console.log "createHtml: #{html}"
     return html
 
