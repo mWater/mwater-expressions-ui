@@ -19,6 +19,7 @@ module.exports = class ScalarExprTreeBuilder
   # options are:
   #  table: starting table
   #  types: types to limit to 
+  #  idTable: id type table to limit to
   #  includeCount: to include an count (null) option that has null expr and name that is "Number of ..." at first table level
   #  initialValue: initial value to flesh out TODO REMOVE
   #  filter: filter regex
@@ -41,7 +42,7 @@ module.exports = class ScalarExprTreeBuilder
   # joins: joins for child nodes
   # types: types to limit to 
   # idTable: table to limit to for id type
-  # includeCount: to include an count (null) option that has null expr and name that is "Number of ..."
+  # includeCount: to include an count (id) option that has id as expr and name that is "Number of ..."
   # initialValue: initial value to flesh out TODO REMOVE
   # filter: filter regex
   # depth: current depth. First level is 0
@@ -51,6 +52,15 @@ module.exports = class ScalarExprTreeBuilder
     if options.includeCount
       node = {
         name: "Number of #{ExprUtils.localizeString(@schema.getTable(options.table).name, @locale)}"
+        value: { table: options.startTable, joins: options.joins, expr: { type: "id", table: options.table } }
+      }
+      if not options.filter or node.name.match(options.filter)
+        nodes.push(node)
+
+    # Create self (id) type if id type allowed and idTable specified
+    if not options.includeCount and options.idTable and (not options.types or "id" in options.types)
+      node = {
+        name: ExprUtils.localizeString(@schema.getTable(options.table).name, @locale)
         value: { table: options.startTable, joins: options.joins, expr: { type: "id", table: options.table } }
       }
       if not options.filter or node.name.match(options.filter)
