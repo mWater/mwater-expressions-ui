@@ -57,8 +57,8 @@ module.exports = class ScalarExprTreeBuilder
       if not options.filter or node.name.match(options.filter)
         nodes.push(node)
 
-    # Create self (id) type if id type allowed and idTable specified
-    if not options.includeCount and options.idTable and (not options.types or "id" in options.types)
+    # Create self (id) type if id type allowed and idTable matches
+    if not options.includeCount and options.idTable == options.table and (not options.types or "id" in options.types)
       node = {
         name: ExprUtils.localizeString(@schema.getTable(options.table).name, @locale)
         value: { table: options.startTable, joins: options.joins, expr: { type: "id", table: options.table } }
