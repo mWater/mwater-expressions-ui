@@ -40,7 +40,7 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     # Which index of expression is current
     index = 0
 
-    processNode = (node, isFirst) ->
+    processNode = (node, isFirst) =>
       if node.nodeType == 1 # Element
         # If br, add enter
         if node.tagName in ['br', 'BR']
@@ -70,8 +70,12 @@ module.exports = class InlineExprsEditorComponent extends React.Component
       else if node.nodeType == 3
         wasBr = false
 
-        # Append text
-        text += node.nodeValue
+        # Append text, stripping \r\n if not multiline
+        nodeText = node.nodeValue
+        if not @props.multiline
+          nodeText = nodeText.replace(/\r?\n/g, " ")
+
+        text += nodeText
    
     processNode(elem, true)
 
