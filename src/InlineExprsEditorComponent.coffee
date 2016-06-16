@@ -52,9 +52,10 @@ module.exports = class InlineExprsEditorComponent extends React.Component
         if node.className and node.className.match(/inline-expr-block/)
           # Get expression decoded from comment which is first child
           commentNode = _.find(node.childNodes, (subnode) -> subnode.nodeType == 8)
-          text += "{" + index + "}" 
-          exprs.push(JSON.parse(decodeURIComponent(commentNode.nodeValue)))
-          index += 1
+          if commentNode
+            text += "{" + index + "}" 
+            exprs.push(JSON.parse(decodeURIComponent(commentNode.nodeValue)))
+            index += 1
           return
 
         # If div, add enter if not initial div
