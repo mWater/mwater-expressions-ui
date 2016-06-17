@@ -24,6 +24,10 @@ module.exports = class ExprComponent extends React.Component
 
     preferLiteral: React.PropTypes.bool # True to prefer literal expressions
     includeCount: React.PropTypes.bool # true to include count (id) item at root level in expression selector
+    aggrStatuses: React.PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
+
+  @defaultProps:
+    aggrStatuses: ["individual", "literal"]
 
   @contextTypes:
     locale: React.PropTypes.string  # e.g. "en"
@@ -39,6 +43,7 @@ module.exports = class ExprComponent extends React.Component
       types: @props.types
       enumValueIds: if @props.enumValues then _.pluck(@props.enumValues, "id")
       idTable: @props.idTable
+      aggrStatuses: @props.aggrStatuses
     })
 
   render: ->
@@ -48,5 +53,6 @@ module.exports = class ExprComponent extends React.Component
       preferLiteral: @props.preferLiteral
       idTable: @props.idTable
       includeCount: @props.includeCount
+      aggrStatuses: @props.aggrStatuses
       })
 

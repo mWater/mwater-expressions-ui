@@ -52,7 +52,7 @@ module.exports = class ScalarExprTreeBuilder
     if options.includeCount
       node = {
         name: "Number of #{ExprUtils.localizeString(@schema.getTable(options.table).name, @locale)}"
-        value: { table: options.startTable, joins: options.joins, expr: { type: "id", table: options.table } }
+        value: { table: options.startTable, joins: options.joins, expr: { type: "op", op: "count", table: options.table, exprs: [{ type: "id", table: options.table }] }}
       }
       if not options.filter or node.name.match(options.filter)
         nodes.push(node)

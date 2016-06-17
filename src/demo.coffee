@@ -19,8 +19,8 @@ $ ->
   # dataSource = new MWaterDataSource("https://api.mwater.co/v3/", null, false)
     # # dataSource = new MWaterDataSource("http://localhost:1234/v3/", "e449acf016c362f19c4b65b52db23486", false)
 
-  ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
-  # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
+  # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
+  ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
 
 class MockTestInlineExprsEditorComponent extends React.Component
   constructor: ->

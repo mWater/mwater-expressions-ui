@@ -34,6 +34,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
 
     includeCount: React.PropTypes.bool # Optionally include count at root level of a table. Returns id expression
     allowCase: React.PropTypes.bool    # Allow case statements
+    aggrStatuses: React.PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
 
   @defaultProps:
     noFormulaPlaceholder: "Select..."
@@ -305,14 +306,19 @@ module.exports = class OmniBoxExprComponent extends React.Component
     if not @props.types or 'number' in @props.types
       specials.push(H.a(key: "score", onClick: @handleScoreSelected, style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, "score"))
 
+    # Only allow aggregate expressions if relevant
+    aggr = null
+    if "aggregate" not in @props.aggrStatuses
+      aggr = false
+
     # Add ops that are prefix ones (like "latitude of")
     exprUtils = new ExprUtils(@props.schema)
-    opItems = _.where(exprUtils.findMatchingOpItems(resultTypes: @props.types), { prefix: true })
+    opItems = exprUtils.findMatchingOpItems(resultTypes: @props.types, prefix: true, aggr: aggr)
     for opItem in opItems
       specials.push(H.a(key: opItem.op, onClick: @handleOpSelected.bind(null, opItem.op), style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, opItem.name))
 
     if specials.length > 0
-      dropdown.push(H.div(key: "specials", specials))
+      dropdown.push(H.div(key: "specials", style: { padding: 5 }, specials))
 
     # Special handling for enumset type required with enumValues, as cannot select map anything now to enumset
     noTree = @props.enumValues and _.isEqual(@props.types, ["enumset"])

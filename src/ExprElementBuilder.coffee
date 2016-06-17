@@ -24,15 +24,20 @@ module.exports = class ExprElementBuilder
 
   # Build the tree for an expression
   # Options include:
-  #  types: required value types of expression e.g. ['boolean']
-  #  key: key of the resulting element
-  #  enumValues: array of { id, name } for the enumerable values to display
-  #  idTable: the table from which id-type expressions must come
-  #  refExpr: expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
-  #  preferLiteral: to preferentially choose literal expressions (used for RHS of expressions)
-  #  suppressWrapOps: pass ops to *not* offer to wrap in
-  #  includeCount: true to include count (id) item at root level in expression selector
+  #   types: required value types of expression e.g. ['boolean']
+  #   key: key of the resulting element
+  #   enumValues: array of { id, name } for the enumerable values to display
+  #   idTable: the table from which id-type expressions must come
+  #   refExpr: expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
+  #   preferLiteral: to preferentially choose literal expressions (used for RHS of expressions)
+  #   suppressWrapOps: pass ops to *not* offer to wrap in
+  #   includeCount: true to include count (id) item at root level in expression selector
+  #   aggrStatuses: statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
   build: (expr, table, onChange, options = {}) ->
+    _.defaults(options, {
+      aggrStatuses: ["individual", "literal"]
+      })
+
     # True if a boolean expression is required
     booleanOnly = options.types and options.types.length == 1 and options.types[0] == "boolean" 
 
@@ -104,6 +109,7 @@ module.exports = class ExprElementBuilder
         idTable: options.idTable
         initialMode: if options.preferLiteral then "literal"
         includeCount: options.includeCount
+        aggrStatuses: options.aggrStatuses
       )
 
     else if expr.type == "op"
@@ -175,21 +181,7 @@ module.exports = class ExprElementBuilder
       onDropdownItemClicked: => onChange(null),
       @exprUtils.summarizeExpr(expr)) 
 
-  # Display aggr if present
   buildScalar: (expr, onChange, options = {}) ->
-    # Get aggregations possible on inner expression
-    if expr.aggr
-      aggrs = @exprUtils.getAggrs(expr.expr)
-
-      # Get current aggr
-      aggr = _.findWhere(aggrs, id: expr.aggr)
-
-      aggrElem = R(LinkComponent, 
-        dropdownItems: _.map(aggrs, (ag) -> { id: ag.id, name: ag.name }) 
-        onDropdownItemClicked: (aggr) =>
-          onChange(_.extend({}, expr, { aggr: aggr }))
-        , aggr.name)
-
     # Get joins string
     destTable = expr.table
     joinsStr = ""
@@ -205,7 +197,6 @@ module.exports = class ExprElementBuilder
 
       return H.div style: { display: "flex", alignItems: "baseline" },
         # Aggregate dropdown
-        aggrElem
         R(LinkComponent, 
           onRemove: => onChange(null)
           summary)
@@ -214,12 +205,14 @@ module.exports = class ExprElementBuilder
       innerOnChange = (value) =>
         onChange(_.extend({}, expr, { expr: value }))
 
+      # Determine if can allow aggregation
+      multipleJoins = @exprUtils.isMultipleJoins(expr.table, expr.joins)
+      innerAggrStatuses = if multipleJoins then ["literal", "aggregate"] else ["literal", "individual"]
+
       # TODO what about count special handling?
-      innerElem = @build(expr.expr, destTable, innerOnChange, { types: options.types, idTable: options.idTable, enumValues: options.enumValues })
+      innerElem = @build(expr.expr, destTable, innerOnChange, { types: options.types, idTable: options.idTable, enumValues: options.enumValues, aggrStatuses: innerAggrStatuses })
 
     return H.div style: { display: "flex", alignItems: "baseline" },
-      # Aggregate dropdown
-      aggrElem
       R(LinkComponent, 
         onRemove: => onChange(null),
         joinsStr)
@@ -257,6 +250,8 @@ module.exports = class ExprElementBuilder
         if not opItem
           throw new Error("No opItem defined for op:#{expr.op}, resultType: #{options.types}, lhs:#{JSON.stringify(expr.exprs[0])}")
 
+        innerAggrStatuses = if opItem.aggr then ["literal", "individual"] else options.aggrStatuses
+
         lhsOnChange = (newValue) =>
           newExprs = expr.exprs.slice()
           newExprs[0] = newValue
@@ -264,7 +259,7 @@ module.exports = class ExprElementBuilder
           # Set expr value
           onChange(_.extend({}, expr, { exprs: newExprs }))
         
-        lhsElem = @build(expr.exprs[0], table, lhsOnChange, types: [opItem.exprTypes[0]])
+        lhsElem = @build(expr.exprs[0], table, lhsOnChange, types: [opItem.exprTypes[0]], aggrStatuses: innerAggrStatuses)
 
         # Special case for between 
         if expr.op == "between"
@@ -284,9 +279,9 @@ module.exports = class ExprElementBuilder
 
           # Build rhs
           rhsElem = [
-            @build(expr.exprs[1], table, rhs1OnChange, types: [opItem.exprTypes[1]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
+            @build(expr.exprs[1], table, rhs1OnChange, types: [opItem.exprTypes[1]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true, aggrStatuses: innerAggrStatuses)
             "\u00A0and\u00A0"
-            @build(expr.exprs[2], table, rhs2OnChange, types: [opItem.exprTypes[2]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true)
+            @build(expr.exprs[2], table, rhs2OnChange, types: [opItem.exprTypes[2]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true, aggrStatuses: innerAggrStatuses)
           ]
         else if opItem.exprTypes.length > 1 # If has two expressions
           rhsOnChange = (newValue) =>
@@ -302,10 +297,15 @@ module.exports = class ExprElementBuilder
             idTable: @exprUtils.getExprIdTable(expr.exprs[0])
             refExpr: expr.exprs[0]
             preferLiteral: opItem.rhsLiteral
+            aggrStatuses: innerAggrStatuses            
           })
 
-        # Create op dropdown (finding matching type and lhs, not op)
-        opItems = @exprUtils.findMatchingOpItems(resultTypes: options.types, lhsExpr: expr.exprs[0])
+        # Create op dropdown (finding matching type and lhs, not op). Allow aggregates if appropriate
+        aggr = null
+        if "aggregate" not in options.aggrStatuses
+          aggr = false
+
+        opItems = @exprUtils.findMatchingOpItems(resultTypes: options.types, lhsExpr: expr.exprs[0], aggr: aggr)
 
         # Remove current op
         opItems = _.filter(opItems, (oi) -> oi.op != expr.op)
