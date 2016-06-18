@@ -38,6 +38,9 @@ module.exports = class ExprElementBuilder
       aggrStatuses: ["individual", "literal"]
       })
 
+    # True if a boolean expression is required
+    booleanOnly = options.types and options.types.length == 1 and options.types[0] == "boolean" 
+    
     # Get current expression type
     exprType = @exprUtils.getExprType(expr)
 
