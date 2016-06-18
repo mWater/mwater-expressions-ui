@@ -23,7 +23,6 @@ module.exports = class ExprComponent extends React.Component
     idTable: React.PropTypes.string # If specified the table from which id-type expressions must come
 
     preferLiteral: React.PropTypes.bool # True to prefer literal expressions
-    includeCount: React.PropTypes.bool # true to include count (id) item at root level in expression selector
     aggrStatuses: React.PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
 
   @defaultProps:
@@ -52,7 +51,7 @@ module.exports = class ExprComponent extends React.Component
       enumValues: @props.enumValues 
       preferLiteral: @props.preferLiteral
       idTable: @props.idTable
-      includeCount: @props.includeCount
+      includeCount: "aggregate" in @props.aggrStatuses
       aggrStatuses: @props.aggrStatuses
       })
 

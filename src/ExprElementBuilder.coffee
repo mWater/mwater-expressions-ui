@@ -38,32 +38,6 @@ module.exports = class ExprElementBuilder
       aggrStatuses: ["individual", "literal"]
       })
 
-    # True if a boolean expression is required
-    booleanOnly = options.types and options.types.length == 1 and options.types[0] == "boolean" 
-
-    # Create new onChange function. If a boolean type is required and the expression given is not, 
-    # it will wrap it with an expression
-    innerOnChange = (newExpr) =>
-      exprType = @exprUtils.getExprType(newExpr)
-
-      # If boolean and newExpr is not boolean, wrap with appropriate expression
-      if booleanOnly and exprType and exprType != "boolean"
-        # Find op item that matches
-        opItem = @exprUtils.findMatchingOpItems(resultTypes: ["boolean"], lhsExpr: newExpr)[0]
-
-        if opItem
-          # Wrap in op to make it boolean
-          newExpr = { type: "op", table: table, op: opItem.op, exprs: [newExpr] }
-
-          # Determine number of arguments to append
-          args = opItem.exprTypes.length - 1
-
-          # Add extra nulls for other arguments
-          for i in [1..args]
-            newExpr.exprs.push(null)
-
-      onChange(newExpr)
-
     # Get current expression type
     exprType = @exprUtils.getExprType(expr)
 
@@ -100,7 +74,7 @@ module.exports = class ExprElementBuilder
         schema: @schema
         table: table
         value: expr
-        onChange: innerOnChange
+        onChange: onChange
         # Allow any type for boolean due to wrapping
         types: if not booleanOnly then options.types
         # Case statements only when not boolean
@@ -113,17 +87,17 @@ module.exports = class ExprElementBuilder
       )
 
     else if expr.type == "op"
-      elem = @buildOp(expr, table, innerOnChange, options)
+      elem = @buildOp(expr, table, onChange, options)
     else if expr.type == "field"
-      elem = @buildField(expr, innerOnChange, { key: options.key })
+      elem = @buildField(expr, onChange, { key: options.key })
     else if expr.type == "scalar"
-      elem = @buildScalar(expr, innerOnChange, { key: options.key, types: options.types, enumValues: options.enumValues })
+      elem = @buildScalar(expr, onChange, { key: options.key, types: options.types, enumValues: options.enumValues })
     else if expr.type == "case"
-      elem = @buildCase(expr, innerOnChange, { key: options.key, types: options.types, enumValues: options.enumValues })
+      elem = @buildCase(expr, onChange, { key: options.key, types: options.types, enumValues: options.enumValues })
     else if expr.type == "id"
-      elem = @buildId(expr, innerOnChange, { key: options.key })
+      elem = @buildId(expr, onChange, { key: options.key })
     else if expr.type == "score"
-      elem = @buildScore(expr, innerOnChange, { key: options.key })
+      elem = @buildScore(expr, onChange, { key: options.key })
     else
       throw new Error("Unhandled expression type #{expr.type}")
 
@@ -135,13 +109,13 @@ module.exports = class ExprElementBuilder
       if op not in (options.suppressWrapOps or [])
         # Prevent nesting when simple adding would work
         if expr.op != op or binaryOnly
-          links.push({ label: name, onClick: => innerOnChange({ type: "op", op: op, table: table, exprs: [expr, null] }) })
+          links.push({ label: name, onClick: => onChange({ type: "op", op: op, table: table, exprs: [expr, null] }) })
         else
           # Just add extra element
           links.push({ label: name, onClick: => 
             exprs = expr.exprs.slice()
             exprs.push(null)
-            innerOnChange(_.extend({}, expr, { exprs: exprs }))
+            onChange(_.extend({}, expr, { exprs: exprs }))
           })
 
     if exprType == "boolean"
@@ -159,7 +133,7 @@ module.exports = class ExprElementBuilder
       links.push({ label: "+ If", onClick: => 
         cases = expr.cases.slice()
         cases.push({ when: null, then: null })
-        innerOnChange(_.extend({}, expr, { cases: cases }))
+        onChange(_.extend({}, expr, { cases: cases }))
       })
 
     # links.push({ label: "Remove", onClick: => onChange(null) })
