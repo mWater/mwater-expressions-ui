@@ -40,7 +40,7 @@ module.exports = class ExprElementBuilder
 
     # True if a boolean expression is required
     booleanOnly = options.types and options.types.length == 1 and options.types[0] == "boolean" 
-    
+
     # Get current expression type
     exprType = @exprUtils.getExprType(expr)
 
@@ -226,6 +226,13 @@ module.exports = class ExprElementBuilder
         opItem = @exprUtils.findMatchingOpItems(op: expr.op, resultTypes: options.types, lhsExpr: expr.exprs[0])[0]
         if not opItem
           throw new Error("No opItem defined for op:#{expr.op}, resultType: #{options.types}, lhs:#{JSON.stringify(expr.exprs[0])}")
+
+        # Special case for no expressions
+        if opItem.exprTypes.length == 0
+          return R(LinkComponent, 
+            onRemove: =>
+              onChange(null)
+            , @exprUtils.summarizeExpr(expr, @locale))
 
         innerAggrStatuses = if opItem.aggr then ["literal", "individual"] else options.aggrStatuses
 
