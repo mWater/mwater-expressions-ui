@@ -41,6 +41,9 @@ module.exports = class ExprElementBuilder
     # True if a boolean expression is required
     booleanOnly = options.types and options.types.length == 1 and options.types[0] == "boolean" 
 
+    # True if a number or boolean is required, in which case any expression can be transformed into it
+    anyTypeAllowed = not options.types or "boolean" in options.types or "number" in options.types
+
     # Get current expression type
     exprType = @exprUtils.getExprType(expr)
 
@@ -78,8 +81,8 @@ module.exports = class ExprElementBuilder
         table: table
         value: expr
         onChange: onChange
-        # Allow any type for boolean due to wrapping
-        types: if not booleanOnly then options.types
+        # Allow any type if transformable
+        types: if not anyTypeAllowed then options.types
         # Case statements only when not boolean
         allowCase: not booleanOnly
         enumValues: options.enumValues

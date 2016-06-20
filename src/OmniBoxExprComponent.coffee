@@ -314,7 +314,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
     # Add ops that are prefix ones (like "latitude of")
     exprUtils = new ExprUtils(@props.schema)
     opItems = exprUtils.findMatchingOpItems(resultTypes: @props.types, prefix: true, aggr: aggr)
-    for opItem in opItems
+    for opItem in _.uniq(opItems, "op")
       specials.push(H.a(key: opItem.op, onClick: @handleOpSelected.bind(null, opItem.op), style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, opItem.name))
 
     if specials.length > 0

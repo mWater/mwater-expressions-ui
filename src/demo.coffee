@@ -139,7 +139,7 @@ class MockTestComponent extends React.Component
     @setState(schema: schema, dataSource: dataSource)
 
   handleValueChange: (value) => 
-    value = new ExprCleaner(@state.schema).cleanExpr(value) #, { type: 'boolean' })
+    # value = new ExprCleaner(@state.schema).cleanExpr(value) #, { type: 'boolean' })
     @setState(value: value)
 
   render: ->
@@ -156,6 +156,7 @@ class MockTestComponent extends React.Component
         # idTable: "t4"
         value: @state.value
         onChange: @handleValueChange
+        aggrStatuses: ["aggregate", "literal"]
       )
       H.br()
       H.br()
