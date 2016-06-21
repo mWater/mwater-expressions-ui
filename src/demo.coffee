@@ -118,6 +118,7 @@ class MockTestComponent extends React.Component
 
     schema = schema.addTable({ id: "t2", name: { en: "T2" }, primaryKey: "primary", ordering: "number", contents: [
       { id: "text", name: { en: "Text" }, type: "text" }
+      { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
       { id: "number", name: { en: "Number" }, type: "number" }
       { id: "2-1", name: { en: "T2->T1" }, type: "join", join: { fromColumn: "t1", toTable: "t1", toColumn: "primary", type: "n-1" }}
     ]})
@@ -236,6 +237,41 @@ value = {
 }
 
 value = null
+
+value = {
+  "type": "op",
+  "table": "t1",
+  "op": "percent where",
+  "exprs": [
+    {
+      "type": "op",
+      "table": "t1",
+      "op": "= any",
+      "exprs": [
+        {
+          "type": "scalar",
+          "table": "t1",
+          "joins": [
+            "1-2"
+          ],
+          "expr": {
+            "type": "op",
+            "op": "last",
+            "table": "t2",
+            "exprs": [
+              {
+                "type": "field",
+                "table": "t2",
+                "column": "enum"
+              }
+            ]
+          }
+        },
+        null
+      ]
+    }
+  ]
+}
 #   {
 #   "type": "op",
 #   "table": "t1",

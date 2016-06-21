@@ -41,8 +41,8 @@ module.exports = class ExprElementBuilder
     # True if a boolean expression is required
     booleanOnly = options.types and options.types.length == 1 and options.types[0] == "boolean" 
 
-    # True if a number or boolean is required, in which case any expression can be transformed into it
-    anyTypeAllowed = not options.types or "boolean" in options.types or "number" in options.types
+    # True if an aggregate number or individual boolean is required, in which case any expression can be transformed into it
+    anyTypeAllowed = not options.types or ("boolean" in options.types and "individual" in options.aggrStatuses) or ("number" in options.types and "aggregate" in options.aggrStatuses)
 
     # Get current expression type
     exprType = @exprUtils.getExprType(expr)
@@ -214,7 +214,7 @@ module.exports = class ExprElementBuilder
             onChange(_.extend({}, expr, { exprs: newExprs }))
 
           types = if expr.op in ['and', 'or'] then ["boolean"] else ["number"]
-          elem = @build(innerExpr, table, innerElemOnChange, types: types, suppressWrapOps: [expr.op])
+          elem = @build(innerExpr, table, innerElemOnChange, types: types, suppressWrapOps: [expr.op], key: "expr#{i}")
           handleRemove = =>
             exprs = expr.exprs.slice()
             exprs.splice(i, 1)
@@ -246,7 +246,7 @@ module.exports = class ExprElementBuilder
           # Set expr value
           onChange(_.extend({}, expr, { exprs: newExprs }))
         
-        lhsElem = @build(expr.exprs[0], table, lhsOnChange, types: [opItem.exprTypes[0]], aggrStatuses: innerAggrStatuses)
+        lhsElem = @build(expr.exprs[0], table, lhsOnChange, types: [opItem.exprTypes[0]], aggrStatuses: innerAggrStatuses, key: "lhs")
 
         # Special case for between 
         if expr.op == "between"
@@ -266,9 +266,9 @@ module.exports = class ExprElementBuilder
 
           # Build rhs
           rhsElem = [
-            @build(expr.exprs[1], table, rhs1OnChange, types: [opItem.exprTypes[1]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true, aggrStatuses: innerAggrStatuses)
+            @build(expr.exprs[1], table, rhs1OnChange, types: [opItem.exprTypes[1]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true, aggrStatuses: innerAggrStatuses, key: "expr1")
             "\u00A0and\u00A0"
-            @build(expr.exprs[2], table, rhs2OnChange, types: [opItem.exprTypes[2]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true, aggrStatuses: innerAggrStatuses)
+            @build(expr.exprs[2], table, rhs2OnChange, types: [opItem.exprTypes[2]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true, aggrStatuses: innerAggrStatuses, key: "expr2")
           ]
         else if opItem.exprTypes.length > 1 # If has two expressions
           rhsOnChange = (newValue) =>
@@ -279,6 +279,7 @@ module.exports = class ExprElementBuilder
             onChange(_.extend({}, expr, { exprs: newExprs }))
 
           rhsElem = @build(expr.exprs[1], table, rhsOnChange, {
+            key: "rhs"
             types: [opItem.exprTypes[1]]
             enumValues: @exprUtils.getExprEnumValues(expr.exprs[0])
             idTable: @exprUtils.getExprIdTable(expr.exprs[0])
@@ -304,7 +305,7 @@ module.exports = class ExprElementBuilder
         opItems = _.uniq(opItems, "op")
 
         opElem = R(LinkComponent, 
-          dropdownItems: _.map(opItems, (oi) -> { id: oi.op, name: oi.name }) 
+          dropdownItems: if opItems.length > 0 then _.map(opItems, (oi) -> { id: oi.op, name: oi.name }) 
           onDropdownItemClicked: (op) =>
             onChange(_.extend({}, expr, { op: op }))
           onRemove: =>
