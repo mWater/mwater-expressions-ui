@@ -112,8 +112,8 @@ module.exports = class ScalarExprTreeBuilder
         else
           column = @schema.getColumn(options.table, item.id)
 
-          # Gracefully handle missing columns
-          if column
+          # Gracefully handle missing/deprecated columns
+          if column and not column.deprecated
             node = @createColumnNode(_.extend(options, column: column))
             if node
               nodes.push(node)
