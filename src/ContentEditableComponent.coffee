@@ -1,7 +1,7 @@
 React = require 'react'
 H = React.DOM
 R = React.createElement
-select = require('selection-range')
+selection = require './saveSelection'
 
 # Content editable component with cursor restoring
 module.exports = class ContentEditableComponent extends React.Component
@@ -26,7 +26,7 @@ module.exports = class ContentEditableComponent extends React.Component
     if not @refs.editor
       return 
 
-    @range = select(@refs.editor)
+    @range = selection.save(@refs.editor)
     @props.onChange(@refs.editor)
 
   handleFocus: (ev) =>
@@ -40,18 +40,27 @@ module.exports = class ContentEditableComponent extends React.Component
 
     # Restore caret
     if @range
-      select(@refs.editor, @range)
+      selection.restore(@refs.editor, @range)
 
     pasteHtmlAtCaret(html, selectPastedContent)
     @props.onChange(@refs.editor)
 
   shouldComponentUpdate: (nextProps) ->
     # Update if prop html has changed, or if inner html has changed
-    return not @refs.editor or nextProps.html != @props.html or @refs.editor.innerHTML != @lastInnerHTML
+    changed = not @refs.editor or nextProps.html != @props.html or @refs.editor.innerHTML != @lastInnerHTML
+    if changed
+      console.log nextProps.html
+      console.log @props.html 
+      console.log @refs.editor.innerHTML 
+      console.log @lastInnerHTML
+    return changed
  
   componentWillUpdate: ->
     # Save caret
-    @range = select(@refs.editor)
+    @range = selection.save(@refs.editor)
+
+    console.log "willUpdate"
+    console.log @range
     
   componentDidMount: ->
     if @refs.editor
@@ -65,9 +74,12 @@ module.exports = class ContentEditableComponent extends React.Component
       @refs.editor.innerHTML = @props.html
       @lastInnerHTML = @refs.editor.innerHTML
 
+    console.log "didUpdate"
+    console.log @range
+
     # Restore caret if still focused
     if document.activeElement == @refs.editor and @range
-      select(@refs.editor, @range)
+      selection.restore(@refs.editor, @range)
 
   render: ->
     H.div 
@@ -79,6 +91,7 @@ module.exports = class ContentEditableComponent extends React.Component
       onInput: @handleInput
       onFocus: @handleFocus
       onBlur: @handleBlur
+
 
 # http://stackoverflow.com/questions/6690752/insert-html-at-caret-in-a-contenteditable-div
 pasteHtmlAtCaret = (html, selectPastedContent) ->
