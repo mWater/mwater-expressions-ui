@@ -3,8 +3,8 @@ H = React.DOM
 R = React.createElement
 ExprComponent = require './ExprComponent'
 ExprUtils = require("mwater-expressions").ExprUtils
-select = require('selection-range')
 ActionCancelModalComponent = require("react-library/lib/ActionCancelModalComponent")
+ContentEditableComponent = require './ContentEditableComponent'
 
 # Editor that is a text box with embeddable expressions
 module.exports = class InlineExprsEditorComponent extends React.Component
@@ -135,7 +135,11 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     H.div style: { position: "relative" },
       @renderInsertModal()
       H.div style: { paddingRight: 20 },
-        R ContentEditableComponent, ref: "contentEditable", html: @createContentEditableHtml(), onChange: @handleChange
+        R ContentEditableComponent, 
+          ref: "contentEditable", 
+          html: @createContentEditableHtml(), 
+          style: { padding: "6px 12px", border: "1px solid #ccc", borderRadius: 4 }
+          onChange: @handleChange
       H.a onClick: @handleInsertClick, style: { cursor: "pointer", position: "absolute", right: 5, top: 8, fontStyle: "italic", color: "#337ab7" },
         "f"
         H.sub null, "x"
@@ -181,102 +185,3 @@ class ExprInsertModalComponent extends React.Component
           value: @state.expr
           onChange: (expr) => @setState(expr: expr)
   
-# class TextWithExpressionsHtmlConverter
-
-# Content editable component with cursor restoring
-class ContentEditableComponent extends React.Component
-  @propTypes:
-    html: React.PropTypes.string.isRequired
-
-  handleInput: (ev) => 
-    if not @refs.editor
-      return 
-
-    @props.onChange(@refs.editor)
-
-  # Save selection for refocusing
-  handleBlur: =>
-    if not @refs.editor
-      return 
-
-    @range = select(@refs.editor)
-    @props.onChange(@refs.editor)
-
-  pasteHTML: (html, selectPastedContent) ->
-    @refs.editor.focus()
-
-    # Restore caret
-    if @range
-      select(@refs.editor, @range)
-
-    pasteHtmlAtCaret(html, selectPastedContent)
-    @props.onChange(@refs.editor)
-
-  shouldComponentUpdate: (nextProps) ->
-    return not @refs.editor or nextProps.html != @refs.editor.innerHTML
- 
-  componentWillUpdate: ->
-    # Save caret
-    @range = select(@refs.editor)
-    
-  componentDidUpdate: ->
-    # Sometimes update fails, so be sure it is updated
-    if @refs.editor and @props.html != @refs.editor.innerHTML
-      @refs.editor.innerHTML = @props.html
-
-    # Restore caret if still focused
-    if document.activeElement == @refs.editor
-      select(@refs.editor, @range)
-
-  render: ->
-    H.div 
-      contentEditable: true
-      spellCheck: false
-      ref: "editor"
-      style: { padding: "6px 12px", border: "1px solid #ccc", borderRadius: 4 }
-      onInput: @handleInput
-      onBlur: @handleBlur
-      dangerouslySetInnerHTML: { __html: @props.html }
-
-# http://stackoverflow.com/questions/6690752/insert-html-at-caret-in-a-contenteditable-div
-pasteHtmlAtCaret = (html, selectPastedContent) ->
-  sel = undefined
-  range = undefined
-  if window.getSelection
-    # IE9 and non-IE
-    sel = window.getSelection()
-    if sel.getRangeAt and sel.rangeCount
-      range = sel.getRangeAt(0)
-      range.deleteContents()
-      # Range.createContextualFragment() would be useful here but is
-      # only relatively recently standardized and is not supported in
-      # some browsers (IE9, for one)
-      el = document.createElement('div')
-      el.innerHTML = html
-      frag = document.createDocumentFragment()
-      node = undefined
-      lastNode = undefined
-      while node = el.firstChild
-        lastNode = frag.appendChild(node)
-      firstNode = frag.firstChild
-      range.insertNode frag
-      # Preserve the selection
-      if lastNode
-        range = range.cloneRange()
-        range.setStartAfter lastNode
-        if selectPastedContent
-          range.setStartBefore firstNode
-        else
-          range.collapse true
-        sel.removeAllRanges()
-        sel.addRange range
-  else if (sel = document.selection) and sel.type != 'Control'
-    # IE < 9
-    originalRange = sel.createRange()
-    originalRange.collapse true
-    sel.createRange().pasteHTML html
-    if selectPastedContent
-      range = sel.createRange()
-      range.setEndPoint 'StartToStart', originalRange
-      range.select()
-  return
