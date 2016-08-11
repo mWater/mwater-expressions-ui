@@ -48,19 +48,16 @@ module.exports = class ContentEditableComponent extends React.Component
   shouldComponentUpdate: (nextProps) ->
     # Update if prop html has changed, or if inner html has changed
     changed = not @refs.editor or nextProps.html != @props.html or @refs.editor.innerHTML != @lastInnerHTML
-    if changed
-      console.log nextProps.html
-      console.log @props.html 
-      console.log @refs.editor.innerHTML 
-      console.log @lastInnerHTML
+    # if changed
+    #   console.log nextProps.html
+    #   console.log @props.html 
+    #   console.log @refs.editor.innerHTML 
+    #   console.log @lastInnerHTML
     return changed
  
   componentWillUpdate: ->
     # Save caret
     @range = selection.save(@refs.editor)
-
-    console.log "willUpdate"
-    console.log @range
     
   componentDidMount: ->
     if @refs.editor
@@ -73,9 +70,6 @@ module.exports = class ContentEditableComponent extends React.Component
       # Set inner html
       @refs.editor.innerHTML = @props.html
       @lastInnerHTML = @refs.editor.innerHTML
-
-    console.log "didUpdate"
-    console.log @range
 
     # Restore caret if still focused
     if document.activeElement == @refs.editor and @range
