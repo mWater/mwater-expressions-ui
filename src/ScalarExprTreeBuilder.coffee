@@ -82,39 +82,39 @@ module.exports = class ScalarExprTreeBuilder
     for item in contents
       do (item) =>
         if item.type == "section"
-          # Determine if matches
-          name = ExprUtils.localizeString(item.name, @locale)
+          # Avoid if deprecated
+          if not item.deprecated
+            # Determine if matches
+            name = ExprUtils.localizeString(item.name, @locale)
 
-          matches = not options.filter or name.match(options.filter)
+            matches = not options.filter or name.match(options.filter)
 
-          childOptions = _.extend({}, options)
+            childOptions = _.extend({}, options)
 
-          # Strip filter if matches to allow all sub-items
-          if matches
-            childOptions.filter = null
+            # Strip filter if matches to allow all sub-items
+            if matches
+              childOptions.filter = null
 
-          # Increment depth
-          childOptions.depth += 1
+            # Increment depth
+            childOptions.depth += 1
 
-          node = {
-            name: name
-            children: =>
-              @createNodes(item.contents, childOptions)
-          }
+            node = {
+              name: name
+              children: =>
+                @createNodes(item.contents, childOptions)
+            }
 
-          # If depth is 0 and searching, leave open
-          if options.depth == 0 and options.filter
-            node.initiallyOpen = true
+            # If depth is 0 and searching, leave open
+            if options.depth == 0 and options.filter
+              node.initiallyOpen = true
 
-          # Add if non-empty
-          if node.children().length > 0
-            nodes.push(node)
+            # Add if non-empty
+            if node.children().length > 0
+              nodes.push(node)
         else
-          column = @schema.getColumn(options.table, item.id)
-
-          # Gracefully handle missing/deprecated columns
-          if column and not column.deprecated
-            node = @createColumnNode(_.extend(options, column: column))
+          # Gracefully handle deprecated columns
+          if not item.deprecated
+            node = @createColumnNode(_.extend(options, column: item))
             if node
               nodes.push(node)
 
