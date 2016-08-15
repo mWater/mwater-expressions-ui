@@ -12,8 +12,8 @@ AsyncLoadComponent = require 'react-library/lib/AsyncLoadComponent'
 
 module.exports = class IdLiteralComponent extends AsyncLoadComponent
   @propTypes: 
-    value: React.PropTypes.object # Literal { type: "literal", valueType: "id", idTable: <some table id>, value: <primary key> }
-    onChange: React.PropTypes.func.isRequired 
+    value: React.PropTypes.string # String value of primary key
+    onChange: React.PropTypes.func.isRequired  
     idTable: React.PropTypes.string.isRequired # Array of id and name (localized string)
     schema: React.PropTypes.object.isRequired # Schema of the database
     dataSource: React.PropTypes.object.isRequired # Data source to use to get values
@@ -51,7 +51,7 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
         op: "="
         exprs: [
           idColumn
-          props.value.value
+          props.value
         ]
       }
     }
@@ -65,10 +65,7 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
       callback(currentValue: { label: rows[0].label, value: rows[0].value })
 
   handleChange: (value) =>
-    if value
-      @props.onChange({ type: "literal", valueType: "id", idTable: @props.idTable, value: value })
-    else
-      @props.onChange(null)
+    @props.onChange(value or null)
 
   getOptions: (input, cb) =>
     # If no input, or just displaying current value
