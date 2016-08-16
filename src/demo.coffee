@@ -97,7 +97,7 @@ class MockTestComponent extends React.Component
   constructor: ->
     super
     @state = { 
-      value: value
+      value: null
       schema: null
       dataSource: null
     }
@@ -152,12 +152,12 @@ class MockTestComponent extends React.Component
         schema: @state.schema
         dataSource: @state.dataSource
         table: "t1"
-        types: ['number']
+        types: ['enum', 'text', 'boolean', 'number']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         value: @state.value
         onChange: @handleValueChange
-        aggrStatuses: ["aggregate", "literal"]
+        aggrStatuses: ["individual", "literal"]
       )
       H.br()
       H.br()

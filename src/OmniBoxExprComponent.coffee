@@ -118,18 +118,18 @@ module.exports = class OmniBoxExprComponent extends React.Component
           @props.onChange(null)
         return
 
-      if (@props.value and @props.value.valueType == "number") or "number" in (@props.types or [])
+      # If text
+      if (@props.value and @props.value.valueType == "text") or "text" in (@props.types or ['text'])
+        @props.onChange({ type: "literal", valueType: "text", value: @state.inputText })
+      else if (@props.value and @props.value.valueType == "number") or "number" in (@props.types or ['number'])
         value = parseFloat(@state.inputText)
         if _.isFinite(value)
           @props.onChange({ type: "literal", valueType: "number", value: value })
-      # If text
-      else if (@props.value and @props.value.valueType == "text") or "text" in (@props.types or [])
-        @props.onChange({ type: "literal", valueType: "text", value: @state.inputText })
       # If id (only allow if idTable is explicit)
-      else if "id" in (@props.types or []) and @props.idTable
+      else if "id" in (@props.types or ['id']) and @props.idTable
         @props.onChange({ type: "literal", valueType: "id", idTable: @props.idTable, value: @state.inputText })
       # If date
-      else if (@props.value and @props.value.valueType == "date") or "date" in (@props.types or [])
+      else if (@props.value and @props.value.valueType == "date") or "date" in (@props.types or ['date'])
         date = moment(@state.inputText, "l")
         if date.isValid()
           @props.onChange({ type: "literal", valueType: "date", value: date.format("YYYY-MM-DD") })
@@ -137,7 +137,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
           # TODO make red instead
           @setState(inputText: "")
       # If datetime
-      else if (@props.value and @props.value.valueType == "datetime") or "datetime" in (@props.types or [])
+      else if (@props.value and @props.value.valueType == "datetime") or "datetime" in (@props.types or ['datetime'])
         date = moment(@state.inputText, "lll")
         if date.isValid()
           @props.onChange({ type: "literal", valueType: "datetime", value: date.toISOString() })
