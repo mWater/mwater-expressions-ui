@@ -143,7 +143,10 @@ module.exports = class ScalarExprTreeBuilder
       
       # Single joins have a value of id (if for correct table)
       if column.join.type in ['n-1', '1-1'] and (not options.types or 'id' in options.types) and (not options.idTable or column.join.toTable == options.idTable)
-        node.value = { table: options.startTable, joins: joins, expr: { type: "id", table: column.join.toTable } }
+        node.value = { table: options.startTable, joins: options.joins, expr: { type: "field", table: options.table, column: column.id } }
+      # Multiple joins have a value of id[] (if for correct table)
+      if column.join.type in ['n-n', '1-n'] and (not options.types or 'id[]' in options.types) and (not options.idTable or column.join.toTable == options.idTable)
+        node.value = { table: options.startTable, joins: options.joins, expr: { type: "field", table: options.table, column: column.id } }
 
       node.children = =>
         # Determine if to include count. True if aggregated

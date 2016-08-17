@@ -49,9 +49,10 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
       where: {
         type: "op"
         op: "="
+        modifier: "any"
         exprs: [
           idColumn
-          props.value
+          if props.multi then { type: "literal", value: [props.value] } else props.value
         ]
       }
     }
@@ -61,11 +62,17 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
       if err or not rows[0]
         callback(currentValue: null)
         return 
-
-      callback(currentValue: { label: rows[0].label, value: rows[0].value })
+      if not @props.multi
+        callback(currentValue: { label: rows[0].label, value: rows[0].value })
+      else
+        callback(currentValue: rows)
 
   handleChange: (value) =>
-    @props.onChange(value or null)
+    if @props.multi
+      value = if value then value.split("\n") else []
+      @props.onChange(value)
+    else
+      @props.onChange(value or null)
 
   getOptions: (input, cb) =>
     # If no input, or just displaying current value
@@ -123,12 +130,15 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     return
 
   render: ->
+    value = @state.currentValue or ""
+
     H.div style: { width: "100%" },
       React.createElement(ReactSelect, { 
-        value: if @state.currentValue then @state.currentValue else "" #else (if @props.value and @props.value.value then @props.value.value else "")
+        value: value
         placeholder: "Select"
         asyncOptions: @getOptions
+        multi: @props.multi
+        delimiter: "\n"
         isLoading: @state.loading
         onChange: @handleChange
       })
-

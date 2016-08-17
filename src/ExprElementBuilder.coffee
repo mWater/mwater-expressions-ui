@@ -75,6 +75,17 @@ module.exports = class ExprElementBuilder
           dataSource: @dataSource
           onChange: (value) => onChange(if value then { type: "literal", valueType: "id", idTable: idTable, value: value } else null))
 
+      if exprType == "id[]" or _.isEqual(options.types, ["id[]"]) and options.idTable
+        idTable = options.idTable or @exprUtils.getExprIdTable(expr)
+        return R(IdLiteralComponent, 
+          key: options.key
+          value: expr?.value
+          idTable: idTable
+          schema: @schema
+          dataSource: @dataSource
+          multi: true
+          onChange: (value) => onChange(if value then { type: "literal", valueType: "id[]", idTable: idTable, value: value } else null))
+
     # Handle empty and literals with OmniBox
     if not expr or not expr.type or expr.type == "literal"
       elem = R(OmniBoxExprComponent,
