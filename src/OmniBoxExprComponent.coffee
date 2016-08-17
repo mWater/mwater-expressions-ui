@@ -241,9 +241,9 @@ module.exports = class OmniBoxExprComponent extends React.Component
 
     # If in formula, render literal
     if @state.mode == "formula"
-      if @props.types[0] == "number"
+      if @props.types?[0] == "number"
         label = "123"
-      else if @props.types[0] in ["text", "enum", "enumset", "date", "datetime", "id"]
+      else if @props.types?[0] in ["text", "enum", "enumset", "date", "datetime", "id"]
         label = "abc"
       else
         return
