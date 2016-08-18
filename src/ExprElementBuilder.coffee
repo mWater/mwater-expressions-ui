@@ -33,6 +33,7 @@ module.exports = class ExprElementBuilder
   #   suppressWrapOps: pass ops to *not* offer to wrap in
   #   includeCount: true to include count (id) item at root level in expression selector
   #   aggrStatuses: statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
+  #   placeholder: empty placeholder
   build: (expr, table, onChange, options = {}) ->
     _.defaults(options, {
       aggrStatuses: ["individual", "literal"]
@@ -102,6 +103,8 @@ module.exports = class ExprElementBuilder
         initialMode: if options.preferLiteral then "literal"
         includeCount: options.includeCount
         aggrStatuses: options.aggrStatuses
+        noFormulaPlaceholder: options.placeholder
+        noLiteralPlaceholder: options.placeholder
       )
 
     else if expr.type == "op"
@@ -258,7 +261,7 @@ module.exports = class ExprElementBuilder
           # Set expr value
           onChange(_.extend({}, expr, { exprs: newExprs }))
         
-        lhsElem = @build(expr.exprs[0], table, lhsOnChange, types: [opItem.exprTypes[0]], aggrStatuses: innerAggrStatuses, key: "lhs")
+        lhsElem = @build(expr.exprs[0], table, lhsOnChange, types: [opItem.exprTypes[0]], aggrStatuses: innerAggrStatuses, key: "lhs", placeholder: opItem.lhsPlaceholder)
 
         # Special case for between 
         if expr.op == "between"
@@ -298,6 +301,7 @@ module.exports = class ExprElementBuilder
             refExpr: expr.exprs[0]
             preferLiteral: opItem.rhsLiteral
             aggrStatuses: innerAggrStatuses            
+            placeholder: opItem.rhsPlaceholder
           })
 
         # Create op dropdown (finding matching type and lhs, not op). Allow aggregates if appropriate

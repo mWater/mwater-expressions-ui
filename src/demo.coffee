@@ -20,8 +20,8 @@ $ ->
     # # dataSource = new MWaterDataSource("http://localhost:1234/v3/", "e449acf016c362f19c4b65b52db23486", false)
 
   # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
-  # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
-  ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+  ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
+  # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
 
 class MockTestInlineExprsEditorComponent extends React.Component
   constructor: ->
@@ -98,7 +98,7 @@ class MockTestComponent extends React.Component
   constructor: ->
     super
     @state = { 
-      value: { type: "field", table: "t1", column: "1-2" }
+      value: null # { type: "field", table: "t1", column: "1-2" }
       schema: null
       dataSource: null
     }
@@ -153,12 +153,12 @@ class MockTestComponent extends React.Component
         schema: @state.schema
         dataSource: @state.dataSource
         table: "t1"
-        types: ['boolean']
+        types: ['number']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         value: @state.value
         onChange: @handleValueChange
-        aggrStatuses: ["individual", "literal"]
+        aggrStatuses: ["individual", "aggregate"]
       )
       H.br()
       H.br()
