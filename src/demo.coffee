@@ -158,7 +158,7 @@ class MockTestComponent extends React.Component
         # idTable: "t4"
         value: @state.value
         onChange: @handleValueChange
-        aggrStatuses: ["individual", "aggregate"]
+        aggrStatuses: ["individual", "literal"]
       )
       H.br()
       H.br()

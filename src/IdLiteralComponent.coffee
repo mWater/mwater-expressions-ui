@@ -52,7 +52,7 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
         modifier: "any"
         exprs: [
           idColumn
-          if props.multi then { type: "literal", value: [props.value] } else props.value
+          { type: "literal", value: (if props.multi then props.value else [props.value]) }
         ]
       }
     }
