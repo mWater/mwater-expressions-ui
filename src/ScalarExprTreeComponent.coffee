@@ -25,13 +25,13 @@ class ScalarExprTreeTreeComponent extends React.Component
   render: ->
     elems = []
     # Get tree
-    for item in @props.tree
+    for item, i in @props.tree
       if item.children
         elems.push(
-          React.createElement(ScalarExprTreeNodeComponent, key: item.name, item: item, onChange: @props.onChange))
+          React.createElement(ScalarExprTreeNodeComponent, key: item.name + "(#{i})", item: item, onChange: @props.onChange))
       else 
         elems.push(
-           React.createElement(ScalarExprTreeLeafComponent, key: item.name, item: item, onChange: @props.onChange))
+           React.createElement(ScalarExprTreeLeafComponent, key: item.name + "(#{i})", item: item, onChange: @props.onChange))
 
     H.div null, 
       elems
