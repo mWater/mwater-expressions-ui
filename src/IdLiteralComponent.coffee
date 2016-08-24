@@ -25,7 +25,7 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
   # Call callback with state changes
   load: (props, prevProps, callback) ->
     # Create query to get current value
-    if not props.value
+    if not props.value 
       callback(currentValue: null)
       return
 
@@ -69,7 +69,7 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
 
   handleChange: (value) =>
     if @props.multi
-      value = if value then value.split("\n") else []
+      value = if value then value.split("\n") else null
       @props.onChange(value)
     else
       @props.onChange(value or null)
