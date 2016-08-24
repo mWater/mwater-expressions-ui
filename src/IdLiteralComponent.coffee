@@ -17,6 +17,8 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     idTable: React.PropTypes.string.isRequired # Array of id and name (localized string)
     schema: React.PropTypes.object.isRequired # Schema of the database
     dataSource: React.PropTypes.object.isRequired # Data source to use to get values
+    placeholder: React.PropTypes.string
+    orderBy: React.PropTypes.array   # Optional extra orderings. Put "main" as tableAlias. JSONQL
 
   # Override to determine if a load is needed. Not called on mounting
   isLoadNeeded: (newProps, oldProps) -> 
@@ -113,6 +115,10 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
       limit: 50
     }
 
+    # Add custom orderings
+    if @props.orderBy
+      query.orderBy = @props.orderBy.concat(query.orderBy)
+
     # Execute query
     @props.dataSource.performQuery query, (err, rows) =>
       if err
@@ -135,7 +141,7 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     H.div style: { width: "100%" },
       React.createElement(ReactSelect, { 
         value: value
-        placeholder: "Select"
+        placeholder: @props.placeholder or "Select"
         asyncOptions: @getOptions
         multi: @props.multi
         delimiter: "\n"
