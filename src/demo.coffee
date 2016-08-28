@@ -88,6 +88,8 @@ class MockTestInlineExprsEditorComponent extends React.Component
         text: @state.text
         exprs: @state.exprs
         onChange: @handleChange
+        types: ['number']
+        aggrStatuses: ["aggregate", "literal"]
       )
       # H.br()
       # H.br()
@@ -106,7 +108,7 @@ class MockTestComponent extends React.Component
   componentWillMount: ->
     schema = new Schema()
     schema = schema.addTable({ id: "t1", name: { en: "T1" }, primaryKey: "primary", contents: [
-      { id: "text", name: { en: "Text" }, type: "text" }
+      { id: "text", name: { en: "Text" }, desc: { en: "Text is a bunch of characters" }, type: "text" }
       { id: "number", name: { en: "Number" }, type: "number" }
       { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
       { id: "enumset", name: { en: "EnumSet" }, type: "enumset", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
@@ -153,12 +155,13 @@ class MockTestComponent extends React.Component
         schema: @state.schema
         dataSource: @state.dataSource
         table: "t1"
-        types: ['number']
+        types: ["text", "enum", "boolean", "date", "number", "datetime"]
+        # types: ['number']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         value: @state.value
         onChange: @handleValueChange
-        aggrStatuses: ["individual", "literal"]
+        aggrStatuses: ["aggregate", "literal"]
       )
       H.br()
       H.br()

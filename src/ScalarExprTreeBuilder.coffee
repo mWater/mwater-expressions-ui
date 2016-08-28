@@ -86,8 +86,9 @@ module.exports = class ScalarExprTreeBuilder
           if not item.deprecated
             # Determine if matches
             name = ExprUtils.localizeString(item.name, @locale)
+            desc = ExprUtils.localizeString(item.desc, @locale)
 
-            matches = not options.filter or name.match(options.filter)
+            matches = not options.filter or name.match(options.filter) or (desc and desc.match(options.filter))
 
             childOptions = _.extend({}, options)
 
@@ -100,6 +101,7 @@ module.exports = class ScalarExprTreeBuilder
 
             node = {
               name: name
+              desc: desc
               children: =>
                 @createNodes(item.contents, childOptions)
             }
@@ -132,7 +134,7 @@ module.exports = class ScalarExprTreeBuilder
     }
 
     # Determine if matches
-    matches = not options.filter or node.name.match(options.filter)
+    matches = not options.filter or node.name.match(options.filter) or (node.desc and node.desc.match(options.filter))
 
     # If join, add children
     if column.type == "join"

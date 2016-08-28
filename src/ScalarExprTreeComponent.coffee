@@ -53,6 +53,11 @@ class ScalarExprTreeLeafComponent extends React.Component
 
     H.div style: style, className: "hover-grey-background", onClick: @handleClick, 
       @props.item.name
+      if @props.item.desc
+        [
+          H.br()
+          H.span className: "text-muted", style: { fontSize: 12, paddingLeft: 3 }, @props.item.desc
+        ]
 
 class ScalarExprTreeNodeComponent extends React.Component
   @propTypes:
