@@ -100,5 +100,10 @@ class ScalarExprTreeNodeComponent extends React.Component
       H.div style: { cursor: "pointer", padding: 4 }, key: "arrow",
         H.span style: { color: "#AAA", cursor: "pointer", paddingRight: 3 }, onClick: @handleArrowClick, arrow
         H.span style: { color: color }, onClick: @handleItemClick, @props.item.name
+        if @props.item.desc
+          [
+            H.br()
+            H.span className: "text-muted", style: { fontSize: 12, paddingLeft: 3 }, @props.item.desc
+          ]
       children
       
