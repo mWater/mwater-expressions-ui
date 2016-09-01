@@ -12,7 +12,9 @@ getNodeOffset = function(start, dest) {
 
     // Go into children
     if (node.firstChild) {
-      offset += 1;
+      // Going into first one doesn't count
+      if (node !== start)
+        offset += 1;
       stack.push(node);
       node = node.firstChild;
     }
@@ -50,6 +52,42 @@ getNodeOffset = function(start, dest) {
   }
 }
 
+// Calculate the total offsets of a node
+calculateNodeOffset = function(node) {
+  var offset = 0;
+
+  // If text, count length
+  if (node.nodeType === 3)
+    offset += node.nodeValue.length + 1;
+  else
+    offset += 1;
+
+  if (node.childNodes) {
+    for (var i=0;i<node.childNodes.length;i++) {
+      offset += calculateNodeOffset(node.childNodes[i]);
+    }
+  }
+
+  return offset;
+}
+
+// Determine total offset length from returned offset from ranges
+totalOffsets = function(parentNode, offset) {
+  if (parentNode.nodeType == 3)
+    return offset;
+
+  if (parentNode.nodeType == 1) {
+    total = 0;
+    // Get child nodes
+    for (var i=0;i<offset;i++) {
+      total += calculateNodeOffset(parentNode.childNodes[i]);
+    }
+    return total;
+  }
+
+  return 0;
+}
+
 getNodeAndOffsetAt = function(start, offset) {
   var node = start;
   var stack = [];
@@ -63,9 +101,10 @@ getNodeAndOffsetAt = function(start, offset) {
     if (node.nodeType == 3 && (offset <= node.nodeValue.length))
       return { node: node, offset: Math.min(offset, node.nodeValue.length) };
 
-    // Go into children
+    // Go into children (first one doesn't count)
     if (node.firstChild) {
-      offset -= 1;
+      if (node !== start)
+        offset -= 1;
       stack.push(node);
       node = node.firstChild;
     }
@@ -113,7 +152,11 @@ exports.save = function(containerEl) {
   var selection = window.getSelection();
   if (selection.rangeCount > 0) {
     var range = selection.getRangeAt(0);
-    return { start: getNodeOffset(containerEl, range.startContainer) + range.startOffset, end: getNodeOffset(containerEl, range.endContainer) + range.endOffset };
+    console.log(containerEl.innerHTML);
+    return { 
+      start: getNodeOffset(containerEl, range.startContainer) + totalOffsets(range.startContainer, range.startOffset), 
+      end: getNodeOffset(containerEl, range.endContainer) + totalOffsets(range.endContainer, range.endOffset)
+    };
   }
   else
     return null;

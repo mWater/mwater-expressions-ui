@@ -12,6 +12,7 @@ ExprCompiler = require("mwater-expressions").ExprCompiler
 DataSource = require('mwater-expressions').DataSource
 FilterExprComponent = require './FilterExprComponent'
 InlineExprsEditorComponent = require './InlineExprsEditorComponent'
+ContentEditableComponent = require './ContentEditableComponent'
 
 $ ->
   # $.getJSON "https://api.mwater.co/v3/jsonql/schema?formIds=f6d3b6deed734467932f4dca34af4175", (schemaJson) ->
@@ -21,7 +22,37 @@ $ ->
 
   # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
   # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
-  ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+  # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+  ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
+
+class ContentEditableTestComponent extends React.Component
+  constructor: ->
+    super
+
+    @state = { 
+      html: "World Water Week"
+    }
+
+  render: ->
+    H.div null,
+      H.div null, "Sdfsdfsd"
+      H.div null, "Sdfsdfsd"
+      H.div null, "Sdfsdfsd"
+      R ContentEditableComponent,
+        ref: "editor"
+        html: @state.html
+        onChange: (elem) => 
+          console.log elem
+          @setState(html: elem.innerHTML)
+      H.button 
+        onClick: => 
+          @refs.editor.pasteHTML("HELLO!", false)
+        type: "button",
+        "Paste"
+
+  pasteHTML: (html, selectPastedContent) ->
+    @refs.editor.focus()
+
 
 class MockTestInlineExprsEditorComponent extends React.Component
   constructor: ->

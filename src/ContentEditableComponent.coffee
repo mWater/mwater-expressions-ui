@@ -43,6 +43,7 @@ module.exports = class ContentEditableComponent extends React.Component
       selection.restore(@refs.editor, @range)
 
     pasteHtmlAtCaret(html, selectPastedContent)
+
     @props.onChange(@refs.editor)
 
   shouldComponentUpdate: (nextProps) ->
@@ -88,44 +89,32 @@ module.exports = class ContentEditableComponent extends React.Component
 
 
 # http://stackoverflow.com/questions/6690752/insert-html-at-caret-in-a-contenteditable-div
+# TODO selectPastedContent doesn't work
 pasteHtmlAtCaret = (html, selectPastedContent) ->
-  sel = undefined
   range = undefined
-  if window.getSelection
-    # IE9 and non-IE
-    sel = window.getSelection()
-    if sel.getRangeAt and sel.rangeCount
-      range = sel.getRangeAt(0)
-      range.deleteContents()
-      # Range.createContextualFragment() would be useful here but is
-      # only relatively recently standardized and is not supported in
-      # some browsers (IE9, for one)
-      el = document.createElement('div')
-      el.innerHTML = html
-      frag = document.createDocumentFragment()
-      node = undefined
-      lastNode = undefined
-      while node = el.firstChild
-        lastNode = frag.appendChild(node)
-      firstNode = frag.firstChild
-      range.insertNode frag
-      # Preserve the selection
-      if lastNode
-        range = range.cloneRange()
-        range.setStartAfter lastNode
-        if selectPastedContent
-          range.setStartBefore firstNode
-        else
-          range.collapse true
-        sel.removeAllRanges()
-        sel.addRange range
-  else if (sel = document.selection) and sel.type != 'Control'
-    # IE < 9
-    originalRange = sel.createRange()
-    originalRange.collapse true
-    sel.createRange().pasteHTML html
-    if selectPastedContent
-      range = sel.createRange()
-      range.setEndPoint 'StartToStart', originalRange
-      range.select()
-  return
+  sel = window.getSelection()
+
+  if sel.getRangeAt and sel.rangeCount
+    range = sel.getRangeAt(0)
+    range.deleteContents()
+
+    # Create fragment to insert  
+    el = document.createElement('div')
+    el.innerHTML = html
+    frag = document.createDocumentFragment()
+    node = undefined
+    lastNode = undefined
+    while node = el.firstChild
+      lastNode = frag.appendChild(node)
+    firstNode = frag.firstChild
+
+    range = range.cloneRange()
+    range.insertNode(frag)
+    range.collapse(true)
+    sel.removeAllRanges()
+    sel.addRange(range)
+
+    # if selectPastedContent
+    #       range.setStartBefore firstNode
+    #     else
+    #       range.collapse true
