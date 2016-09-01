@@ -19,18 +19,29 @@ module.exports = class ContentEditableComponent extends React.Component
 
     @props.onChange(@refs.editor)
 
-  # Save selection for refocusing
   handleBlur: (ev) =>
     @props.onBlur?(ev)
+
+    # Cancel timer
+    if @selSaver
+      clearTimeout @selSaver
+      @selSaver = null
 
     if not @refs.editor
       return 
 
-    @range = selection.save(@refs.editor)
     @props.onChange(@refs.editor)
 
   handleFocus: (ev) =>
     @props.onFocus?(ev)
+
+    # Start selection saver (blur is not reliable in Firefox)
+    saveRange = =>
+      @range = selection.save(@refs.editor)
+      @selSaver = setTimeout saveRange, 200
+
+    if not @selSaver
+      saveRange()
 
   focus: ->
     @refs.editor.focus()
@@ -75,6 +86,12 @@ module.exports = class ContentEditableComponent extends React.Component
     # Restore caret if still focused
     if document.activeElement == @refs.editor and @range
       selection.restore(@refs.editor, @range)
+
+  componentWillUnmount: ->
+    # Cancel timer
+    if @selSaver
+      clearTimeout @selSaver
+      @selSaver = null
 
   render: ->
     H.div 

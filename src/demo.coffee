@@ -46,6 +46,7 @@ class ContentEditableTestComponent extends React.Component
           @setState(html: elem.innerHTML)
       H.button 
         onClick: => 
+          console.log "click!"
           @refs.editor.pasteHTML("HELLO!", false)
         type: "button",
         "Paste"
