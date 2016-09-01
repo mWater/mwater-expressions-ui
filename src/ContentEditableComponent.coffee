@@ -41,7 +41,7 @@ module.exports = class ContentEditableComponent extends React.Component
       @selSaver = setTimeout saveRange, 200
 
     if not @selSaver
-      saveRange()
+      @selSaver = setTimeout saveRange, 200
 
   focus: ->
     @refs.editor.focus()
