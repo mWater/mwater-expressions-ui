@@ -208,7 +208,7 @@ module.exports = class ScalarExprTreeBuilder
           if _.intersection(types, options.types).length == 0
             return
         else
-          if @exprUtils.getExprType(fieldExprd) not in options.types
+          if @exprUtils.getExprType(fieldExpr) not in options.types
             return 
 
       node.value = { table: options.startTable, joins: options.joins, expr: fieldExpr }
