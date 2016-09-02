@@ -21,8 +21,8 @@ $ ->
     # # dataSource = new MWaterDataSource("http://localhost:1234/v3/", "e449acf016c362f19c4b65b52db23486", false)
 
   # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
-  # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
-  ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+  ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
+  # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
   # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
 
 class ContentEditableTestComponent extends React.Component
@@ -149,6 +149,12 @@ class MockTestComponent extends React.Component
       { id: "boolean", name: { en: "Boolean" }, type: "boolean" }
       { id: "geometry", name: { en: "Geometry" }, type: "geometry" }
       { id: "1-2", name: { en: "T1->T2" }, type: "join", join: { fromColumn: "primary", toTable: "t2", toColumn: "t1", type: "1-n" }}
+
+      # Expressions
+      { id: "expr_enum", name: { en: "Expr Enum"}, type: "expr", expr: { type: "field", table: "t1", column: "enum" } }
+      { id: "expr_number", name: { en: "Expr Number"}, type: "expr", expr: { type: "field", table: "t1", column: "number" } }
+      { id: "expr_id", name: { en: "Expr Id"}, type: "expr", expr: { type: "id", table: "t1" } }
+      { id: "expr_sum", name: { en: "Expr Sum"}, type: "expr", expr: { type: "op", op: "sum", exprs: [{ type: "field", table: "t1", column: "number" }] }}
     ]})
 
     schema = schema.addTable({ id: "t2", name: { en: "T2" }, primaryKey: "primary", ordering: "number", contents: [
@@ -193,7 +199,7 @@ class MockTestComponent extends React.Component
         # idTable: "t4"
         value: @state.value
         onChange: @handleValueChange
-        aggrStatuses: ["aggregate", "literal", "individual"]
+        aggrStatuses: ["literal", "individual"]
       )
       H.br()
       H.br()

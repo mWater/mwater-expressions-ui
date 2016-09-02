@@ -51,7 +51,7 @@ module.exports = class ExprComponent extends React.Component
       enumValues: @props.enumValues 
       preferLiteral: @props.preferLiteral
       idTable: @props.idTable
-      includeCount: "aggregate" in @props.aggrStatuses
+      includeAggr: "aggregate" in @props.aggrStatuses
       aggrStatuses: @props.aggrStatuses
       })
 

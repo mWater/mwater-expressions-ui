@@ -21,7 +21,7 @@ module.exports = class ScalarExprTreeBuilder
   #  table: starting table
   #  types: types to limit to 
   #  idTable: id type table to limit to
-  #  includeCount: to include an count() option that has name that is "Number of ..." at first table level
+  #  includeAggr: to include aggregate expressions, including an count() option that has name that is "Number of ..." at first table level
   #  initialValue: initial value to flesh out TODO REMOVE
   #  filter: filter regex
   getTree: (options = {}) ->
@@ -31,7 +31,7 @@ module.exports = class ScalarExprTreeBuilder
       joins: []
       types: options.types
       idTable: options.idTable
-      includeCount: options.includeCount
+      includeAggr: options.includeAggr
       initialValue: options.initialValue
       filter: options.filter
       depth: 0
@@ -43,14 +43,14 @@ module.exports = class ScalarExprTreeBuilder
   # joins: joins for child nodes
   # types: types to limit to 
   # idTable: table to limit to for id type
-  # includeCount: to include an count() option that has and name that is "Number of ..."
+  # includeAggr: to include an count() option that has and name that is "Number of ..."
   # initialValue: initial value to flesh out TODO REMOVE
   # filter: filter regex
   # depth: current depth. First level is 0
   createTableChildNodes: (options) ->
     nodes = []
     # Create count node if any joins
-    if options.includeCount
+    if options.includeAggr
       node = {
         name: "Number of #{ExprUtils.localizeString(@schema.getTable(options.table).name, @locale)}"
         value: { table: options.startTable, joins: options.joins, expr: { type: "op", op: "count", table: options.table, exprs: [] }}
@@ -59,7 +59,7 @@ module.exports = class ScalarExprTreeBuilder
         nodes.push(node)
 
     # Create self (id) type if id type allowed and idTable matches
-    if not options.includeCount and options.idTable == options.table and (not options.types or "id" in options.types)
+    if not options.includeAggr and options.idTable == options.table and (not options.types or "id" in options.types)
       node = {
         name: ExprUtils.localizeString(@schema.getTable(options.table).name, @locale)
         desc: ExprUtils.localizeString(@schema.getTable(options.table).desc, @locale) 
@@ -73,7 +73,7 @@ module.exports = class ScalarExprTreeBuilder
 
     # TODO keep?
     # # Add unique id if not including count
-    # if not options.includeCount and not options.types or "id" in options.types
+    # if not options.includeAggr and not options.types or "id" in options.types
     #   nodes.push({ name: "Unique ID", value: { table: options.table, joins: options.joins, expr: { type: "id", table: options.table } } })
 
     return nodes
@@ -155,7 +155,7 @@ module.exports = class ScalarExprTreeBuilder
 
       node.children = =>
         # Determine if to include count. True if aggregated
-        includeCount = @exprUtils.isMultipleJoins(options.startTable, joins)
+        includeAggr = @exprUtils.isMultipleJoins(options.startTable, joins)
 
         # Determine whether to include filter. If matches, do not include filter so that subtree will show
         if not matches
@@ -168,7 +168,7 @@ module.exports = class ScalarExprTreeBuilder
           table: column.join.toTable
           joins: joins
           types: options.types
-          includeCount: includeCount
+          includeAggr: includeAggr
           initialValue: initVal
           filter: filter
           depth: options.depth + 1
@@ -194,6 +194,11 @@ module.exports = class ScalarExprTreeBuilder
         return
 
       fieldExpr = { type: "field", table: options.table, column: column.id }
+
+      # Skip if aggregate and not aggr allowed
+      if not @exprUtils.isMultipleJoins(options.startTable, options.joins) and @exprUtils.getExprAggrStatus(fieldExpr) == "aggregate" and not options.includeAggr
+        return
+
       if options.types 
         # If aggregated
         if @exprUtils.isMultipleJoins(options.startTable, options.joins)
@@ -203,8 +208,7 @@ module.exports = class ScalarExprTreeBuilder
           if _.intersection(types, options.types).length == 0
             return
         else
-          # Skip if wrong type
-          if @exprUtils.getExprType({ type: "field", table: options.table, column: column.id }) not in options.types
+          if @exprUtils.getExprType(fieldExprd) not in options.types
             return 
 
       node.value = { table: options.startTable, joins: options.joins, expr: fieldExpr }

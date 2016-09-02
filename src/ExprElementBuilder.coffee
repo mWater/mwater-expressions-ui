@@ -31,7 +31,7 @@ module.exports = class ExprElementBuilder
   #   refExpr: expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
   #   preferLiteral: to preferentially choose literal expressions (used for RHS of expressions)
   #   suppressWrapOps: pass ops to *not* offer to wrap in
-  #   includeCount: true to include count (id) item at root level in expression selector
+  #   includeAggr: true to include count (id) item at root level in expression selector
   #   aggrStatuses: statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
   #   placeholder: empty placeholder
   build: (expr, table, onChange, options = {}) ->
@@ -101,7 +101,7 @@ module.exports = class ExprElementBuilder
         enumValues: options.enumValues
         idTable: options.idTable
         initialMode: if options.preferLiteral then "literal"
-        includeCount: options.includeCount
+        includeAggr: options.includeAggr
         aggrStatuses: options.aggrStatuses
         noFormulaPlaceholder: options.placeholder
         noLiteralPlaceholder: options.placeholder

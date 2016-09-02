@@ -32,7 +32,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
 
     idTable: React.PropTypes.string # If specified the table from which id-type expressions must come
 
-    includeCount: React.PropTypes.bool # Optionally include count at root level of a table. Returns id expression
+    includeAggr: React.PropTypes.bool # Optionally include aggregate expressions and count at root level of a table
     allowCase: React.PropTypes.bool    # Allow case statements
     aggrStatuses: React.PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
 
@@ -332,7 +332,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
 
       # Create tree 
       treeBuilder = new ScalarExprTreeBuilder(@props.schema, @context.locale)
-      tree = treeBuilder.getTree(table: @props.table, types: @props.types, idTable: @props.idTable, includeCount: @props.includeCount, filter: filter)
+      tree = treeBuilder.getTree(table: @props.table, types: @props.types, idTable: @props.idTable, includeAggr: @props.includeAggr, filter: filter)
 
       # Create tree component with value of table and path
       dropdown.push(R(ScalarExprTreeComponent, 
