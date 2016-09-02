@@ -40,6 +40,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
     noFormulaPlaceholder: "Select..."
     noLiteralPlaceholder: "Enter Value..."
     initialMode: "formula"
+    aggrStatuses: ['individual', 'literal']
 
   @contextTypes:
     locale: React.PropTypes.string  # e.g. "en"

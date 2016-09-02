@@ -22,8 +22,8 @@ $ ->
 
   # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
   # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
-  # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
-  ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
+  ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+  # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
 
 class ContentEditableTestComponent extends React.Component
   constructor: ->
@@ -187,13 +187,13 @@ class MockTestComponent extends React.Component
         schema: @state.schema
         dataSource: @state.dataSource
         table: "t1"
-        types: ["text", "enum", "boolean", "date", "number", "datetime"]
+        # types: ["text", "enum", "boolean", "date", "number", "datetime"]
         # types: ['number']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         value: @state.value
         onChange: @handleValueChange
-        aggrStatuses: ["aggregate", "literal"]
+        aggrStatuses: ["aggregate", "literal", "individual"]
       )
       H.br()
       H.br()

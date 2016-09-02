@@ -7,6 +7,7 @@ module.exports = class ScalarExprTreeBuilder
   constructor: (schema, locale) ->
     @schema = schema
     @locale = locale
+    @exprUtils = new ExprUtils(@schema)
 
   # Returns array of 
   # { 
@@ -107,12 +108,15 @@ module.exports = class ScalarExprTreeBuilder
                 @createNodes(item.contents, childOptions)
             }
 
-            # If depth is 0 and searching, leave open
-            if options.depth == 0 and options.filter
+            # If depth is 0, 1 and searching and doesn't match, leave open
+            if options.depth < 2 and options.filter and not matches
               node.initiallyOpen = true
 
-            # Add if non-empty
-            if node.children().length > 0
+            if not options.filter
+              nodes.push(node)
+            else if matches
+              nodes.push(node)
+            else if options.depth < 2 and node.children().length > 0
               nodes.push(node)
         else
           # Gracefully handle deprecated columns
@@ -125,8 +129,6 @@ module.exports = class ScalarExprTreeBuilder
 
   # Include column, startTable, joins, initialValue, table, types
   createColumnNode: (options) ->
-    exprUtils = new ExprUtils(@schema)
-
     column = options.column
 
     node = { 
@@ -153,11 +155,13 @@ module.exports = class ScalarExprTreeBuilder
 
       node.children = =>
         # Determine if to include count. True if aggregated
-        includeCount = exprUtils.isMultipleJoins(options.startTable, joins)
+        includeCount = @exprUtils.isMultipleJoins(options.startTable, joins)
 
         # Determine whether to include filter. If matches, do not include filter so that subtree will show
         if not matches
           filter = options.filter
+        else 
+          filter = null
 
         return @createTableChildNodes({
           startTable: options.startTable
@@ -174,9 +178,17 @@ module.exports = class ScalarExprTreeBuilder
       if initVal and initVal.joins and _.isEqual(initVal.joins.slice(0, joins.length), joins)
         node.initiallyOpen = true
 
-      # If depth is 0 and searching, leave open
-      if options.depth == 0 and options.filter
+      # If depth is 0, 1 and searching, leave open
+      if options.depth < 2 and options.filter and not matches
         node.initiallyOpen = true
+
+      if not options.filter
+        return node
+      else if matches
+        return node
+      else if options.depth < 2 and node.children().length > 0
+        return node
+      return null
     else
       if not matches
         return
@@ -184,15 +196,15 @@ module.exports = class ScalarExprTreeBuilder
       fieldExpr = { type: "field", table: options.table, column: column.id }
       if options.types 
         # If aggregated
-        if exprUtils.isMultipleJoins(options.startTable, options.joins)
+        if @exprUtils.isMultipleJoins(options.startTable, options.joins)
           # Get types that this can become through aggregation
-          types = exprUtils.getAggrTypes(fieldExpr)
+          types = @exprUtils.getAggrTypes(fieldExpr)
           # Skip if wrong type
           if _.intersection(types, options.types).length == 0
             return
         else
           # Skip if wrong type
-          if column.type not in options.types
+          if @exprUtils.getExprType({ type: "field", table: options.table, column: column.id }) not in options.types
             return 
 
       node.value = { table: options.startTable, joins: options.joins, expr: fieldExpr }
