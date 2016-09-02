@@ -108,15 +108,15 @@ module.exports = class ScalarExprTreeBuilder
                 @createNodes(item.contents, childOptions)
             }
 
-            # If depth is 0, 1 and searching and doesn't match, leave open
-            if options.depth < 2 and options.filter and not matches
+            # If depth is 0 and searching and doesn't match, leave open
+            if options.depth < 1 and options.filter and not matches
               node.initiallyOpen = true
 
             if not options.filter
               nodes.push(node)
             else if matches
               nodes.push(node)
-            else if options.depth < 2 and node.children().length > 0
+            else if options.depth < 1 and node.children().length > 0
               nodes.push(node)
         else
           # Gracefully handle deprecated columns
@@ -178,15 +178,15 @@ module.exports = class ScalarExprTreeBuilder
       if initVal and initVal.joins and _.isEqual(initVal.joins.slice(0, joins.length), joins)
         node.initiallyOpen = true
 
-      # If depth is 0, 1 and searching, leave open
-      if options.depth < 2 and options.filter and not matches
+      # If depth is 0 and searching, leave open
+      if options.depth < 1 and options.filter and not matches
         node.initiallyOpen = true
 
       if not options.filter
         return node
       else if matches
         return node
-      else if options.depth < 2 and node.children().length > 0
+      else if options.depth < 1 and node.children().length > 0
         return node
       return null
     else
