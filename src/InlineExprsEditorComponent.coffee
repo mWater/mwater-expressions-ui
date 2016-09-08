@@ -19,6 +19,7 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     exprs: React.PropTypes.array                # Expressions that correspond to {0}, {1}, etc.
     onChange: React.PropTypes.func.isRequired   # Called with (text, exprs)
     multiline: React.PropTypes.bool             # Allow multiple lines
+    rows: React.PropTypes.number                # Optional number of lines
 
   @defaultProps:
     exprs: []
@@ -151,7 +152,7 @@ module.exports = class InlineExprsEditorComponent extends React.Component
         R ContentEditableComponent, 
           ref: "contentEditable", 
           html: @createContentEditableHtml(), 
-          style: { padding: "6px 12px", border: "1px solid #ccc", borderRadius: 4 }
+          style: { padding: "6px 12px", border: "1px solid #ccc", borderRadius: 4, minHeight: (if @props.multiline and @props.rows then "#{@props.rows * 2.5}ex") }
           onChange: @handleChange
       H.a onClick: @handleInsertClick, style: { cursor: "pointer", position: "absolute", right: 5, top: 8, fontStyle: "italic", color: "#337ab7" },
         "f"
