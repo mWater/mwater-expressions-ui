@@ -6,6 +6,8 @@ ExprUtils = require("mwater-expressions").ExprUtils
 ActionCancelModalComponent = require("react-library/lib/ActionCancelModalComponent")
 ContentEditableComponent = require './ContentEditableComponent'
 
+# TODO perhaps use http://wadmiraal.net/lore/2012/06/14/contenteditable-hacks-returning-like-a-pro/
+
 # Editor that is a text box with embeddable expressions
 module.exports = class InlineExprsEditorComponent extends React.Component
   @propTypes:
@@ -30,6 +32,7 @@ module.exports = class InlineExprsEditorComponent extends React.Component
   # Handle a change to the content editable element
   handleChange: (elem) => 
     # console.log "handleChange: #{elem.innerHTML}"
+
     # Walk DOM tree, adding strings and expressions
     text = ""
     exprs = []
@@ -56,6 +59,12 @@ module.exports = class InlineExprsEditorComponent extends React.Component
             text += "{" + index + "}" 
             exprs.push(JSON.parse(decodeURIComponent(commentNode.nodeValue)))
             index += 1
+          return
+
+        # <div><br><div> is just simple \n
+        if node.tagName.toLowerCase() == "div" and node.innerHTML.toLowerCase() == "<br>"
+          text += "\n"
+          wasBr = false
           return
 
         # If div, add enter if not initial div
@@ -117,9 +126,13 @@ module.exports = class InlineExprsEditorComponent extends React.Component
       return ""
       )
 
-    # Keep CR (<br>)
+    # Keep CR 
     if @props.multiline
       html = html.replace(/\r?\n/g, "<br>")
+
+    # Special case of trailing br (Chrome behaviour won't render)
+    html = html.replace(/<br>$/, "<div><br></div>")
+    # html = html.replace(/^<br>/, "<div><br></div>")
 
     # If empty, put placeholder
     if html.length == 0
