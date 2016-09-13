@@ -241,7 +241,8 @@ module.exports = class ExprElementBuilder
         R(StackedComponent, joinLabel: expr.op, items: items)
       else
         # Horizontal expression. Render each part
-        opItem = @exprUtils.findMatchingOpItems(op: expr.op, resultTypes: options.types, lhsExpr: expr.exprs[0])[0]
+        opItems = @exprUtils.findMatchingOpItems(op: expr.op, resultTypes: options.types, lhsExpr: expr.exprs[0])
+        opItem = opItems[0]
         if not opItem
           throw new Error("No opItem defined for op:#{expr.op}, resultType: #{options.types}, lhs:#{JSON.stringify(expr.exprs[0])}")
 
@@ -261,7 +262,14 @@ module.exports = class ExprElementBuilder
           # Set expr value
           onChange(_.extend({}, expr, { exprs: newExprs }))
         
-        lhsElem = @build(expr.exprs[0], table, lhsOnChange, types: [opItem.exprTypes[0]], aggrStatuses: innerAggrStatuses, key: "lhs", placeholder: opItem.lhsPlaceholder)
+        # lhs type is matching op item
+        lhsTypes = [opItem.exprTypes[0]]
+
+        # However, if there are multiple possibilities and there is no existing lhs, allow all (as in days difference can take date or datetime)
+        if not expr.exprs[0]
+          lhsTypes = _.map(opItems, (oi) -> oi.exprTypes[0])
+
+        lhsElem = @build(expr.exprs[0], table, lhsOnChange, types: lhsTypes, aggrStatuses: innerAggrStatuses, key: "lhs", placeholder: opItem.lhsPlaceholder)
 
         # Special case for between 
         if expr.op == "between"
