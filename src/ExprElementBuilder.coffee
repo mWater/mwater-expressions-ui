@@ -334,7 +334,7 @@ module.exports = class ExprElementBuilder
             onChange(_.extend({}, expr, { op: op }))
           onRemove: =>
             onChange(null)
-          , opItem.name)
+          , opItem.prefixLabel or opItem.name)
 
         # Some ops have prefix (e.g. "latitude of")
         if opItem.prefix
