@@ -49,15 +49,6 @@ module.exports = class ScalarExprTreeBuilder
   # depth: current depth. First level is 0
   createTableChildNodes: (options) ->
     nodes = []
-    # Create count node if any joins
-    if options.includeAggr
-      node = {
-        name: "Number of #{ExprUtils.localizeString(@schema.getTable(options.table).name, @locale)}"
-        value: { table: options.startTable, joins: options.joins, expr: { type: "op", op: "count", table: options.table, exprs: [] }}
-      }
-      if not options.filter or node.name.match(options.filter)
-        nodes.push(node)
-
     # Create self (id) type if id type allowed and idTable matches
     if not options.includeAggr and options.idTable == options.table and (not options.types or "id" in options.types)
       node = {
@@ -75,6 +66,15 @@ module.exports = class ScalarExprTreeBuilder
     # # Add unique id if not including count
     # if not options.includeAggr and not options.types or "id" in options.types
     #   nodes.push({ name: "Unique ID", value: { table: options.table, joins: options.joins, expr: { type: "id", table: options.table } } })
+
+    # Create count node if any joins
+    if options.includeAggr
+      node = {
+        name: "Number of #{ExprUtils.localizeString(@schema.getTable(options.table).name, @locale)}"
+        value: { table: options.startTable, joins: options.joins, expr: { type: "op", op: "count", table: options.table, exprs: [] }}
+      }
+      if not options.filter or node.name.match(options.filter)
+        nodes.push(node)
 
     return nodes
 
