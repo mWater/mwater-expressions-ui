@@ -64,6 +64,9 @@ module.exports = class OmniBoxExprComponent extends React.Component
       throw new Error("Cannot display expression type #{props.value.type}")
 
   componentWillReceiveProps: (newProps) ->
+    if _.isEqual(newProps.value, @props.value)
+      return
+
     # Mode is literal if value is literal
     if newProps.value and newProps.value.type == "literal"
       @setState(mode: "literal", inputText: @stringifyLiteral(newProps, newProps.value))

@@ -21,8 +21,8 @@ $ ->
     # # dataSource = new MWaterDataSource("http://localhost:1234/v3/", "e449acf016c362f19c4b65b52db23486", false)
 
   # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
-  ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
-  # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+  # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
+  ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
   # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
 
 class ContentEditableTestComponent extends React.Component
@@ -219,8 +219,8 @@ class LiveTestComponent extends React.Component
     }
 
   componentWillMount: ->
-    apiUrl = "http://localhost:1234/v3/"
-    # apiUrl = "https://api.mwater.co/v3/"
+    # apiUrl = "http://localhost:1234/v3/"
+    apiUrl = "https://api.mwater.co/v3/"
     $.getJSON apiUrl + "jsonql/schema", (schemaJson) =>
       schema = new Schema(schemaJson)
       dataSource = new MWaterDataSource(apiUrl, null, false)
@@ -240,8 +240,8 @@ class LiveTestComponent extends React.Component
         schema: @state.schema
         dataSource: @state.dataSource
         table: "entities.water_point"
-        types: ['enum']
-        aggrStatuses: ['individual', 'literal']
+        types: ['text', 'number', 'enum', 'date', 'datetime', 'boolean', 'enumset']
+        aggrStatuses: ['individual', 'literal', 'aggregate']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         value: @state.value
