@@ -229,7 +229,7 @@ module.exports = class ExprElementBuilder
             onChange(_.extend({}, expr, { exprs: newExprs }))
 
           types = if expr.op in ['and', 'or'] then ["boolean"] else ["number"]
-          elem = @build(innerExpr, table, innerElemOnChange, types: types, suppressWrapOps: [expr.op], key: "expr#{i}")
+          elem = @build(innerExpr, table, innerElemOnChange, types: types, aggrStatuses: options.aggrStatuses, suppressWrapOps: [expr.op], key: "expr#{i}")
           handleRemove = =>
             exprs = expr.exprs.slice()
             exprs.splice(i, 1)

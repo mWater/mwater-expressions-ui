@@ -228,7 +228,7 @@ class LiveTestComponent extends React.Component
       @setState(schema: schema, dataSource: dataSource)
 
   handleValueChange: (value) => 
-    value = new ExprCleaner(@state.schema).cleanExpr(value) #, { type: 'boolean' })
+    value = new ExprCleaner(@state.schema).cleanExpr(value, { aggrStatuses: ['literal', 'aggregate']}) #, { type: 'boolean' })
     @setState(value: value)
 
   render: ->
@@ -240,8 +240,8 @@ class LiveTestComponent extends React.Component
         schema: @state.schema
         dataSource: @state.dataSource
         table: "entities.water_point"
-        types: ['text', 'number', 'enum', 'date', 'datetime', 'boolean', 'enumset']
-        aggrStatuses: ['individual', 'literal', 'aggregate']
+        types: ['number']
+        aggrStatuses: ['literal', 'aggregate']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         value: @state.value
