@@ -21,8 +21,8 @@ $ ->
     # # dataSource = new MWaterDataSource("http://localhost:1234/v3/", "e449acf016c362f19c4b65b52db23486", false)
 
   # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
-  # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
-  ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+  ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
+  # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
   # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
 
 class ContentEditableTestComponent extends React.Component
@@ -159,7 +159,7 @@ class MockTestComponent extends React.Component
       { id: "expr_sum", name: { en: "Expr Sum"}, type: "expr", expr: { type: "op", op: "sum", exprs: [{ type: "field", table: "t1", column: "number" }] }}
     ]})
 
-    schema = schema.addTable({ id: "t2", name: { en: "T2" }, primaryKey: "primary", ordering: "number", contents: [
+    schema = schema.addTable({ id: "t2", name: { en: "T2" }, primaryKey: "primary", contents: [
       { id: "text", name: { en: "Text" }, type: "text" }
       { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
       { id: "number", name: { en: "Number" }, type: "number" }
@@ -196,7 +196,7 @@ class MockTestComponent extends React.Component
         dataSource: @state.dataSource
         table: "t1"
         # types: ["text", "enum", "boolean", "date", "number", "datetime"]
-        # types: ['number']
+        # types: ['boolean']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         value: @state.value

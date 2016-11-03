@@ -122,13 +122,13 @@ module.exports = class OmniBoxExprComponent extends React.Component
           @props.onChange(null)
         return
 
-      # If text
-      if (@props.value and @props.value.valueType == "text") or "text" in (@props.types or ['text'])
-        @props.onChange({ type: "literal", valueType: "text", value: @state.inputText })
-      else if (@props.value and @props.value.valueType == "number") or "number" in (@props.types or ['number'])
+      # Prefer number over text if can be parsed as number
+      if ((@props.value and @props.value.valueType == "number") or "number" in (@props.types or ['number'])) and @state.inputText.match(/^-?\d+(\.\d+)?$/)
         value = parseFloat(@state.inputText)
-        if _.isFinite(value)
-          @props.onChange({ type: "literal", valueType: "number", value: value })
+        @props.onChange({ type: "literal", valueType: "number", value: value })
+      # If text
+      else if (@props.value and @props.value.valueType == "text") or "text" in (@props.types or ['text'])
+        @props.onChange({ type: "literal", valueType: "text", value: @state.inputText })
       # If id (only allow if idTable is explicit)
       else if "id" in (@props.types or ['id']) and @props.idTable
         @props.onChange({ type: "literal", valueType: "id", idTable: @props.idTable, value: @state.inputText })
