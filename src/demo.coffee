@@ -190,7 +190,7 @@ class MockTestComponent extends React.Component
     if not @state.schema
       return null
 
-    H.div style: { padding: 10 },
+    H.div style: { padding: 10, height: 100, overflow: "hidden", marginTop: 0 },
       R(ExprComponent, 
         schema: @state.schema
         dataSource: @state.dataSource

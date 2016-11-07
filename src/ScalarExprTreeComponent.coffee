@@ -86,9 +86,9 @@ class ScalarExprTreeNodeComponent extends React.Component
   render: ->
     arrow = null
     if @state.collapse == "closed"
-      arrow = H.span className: "glyphicon glyphicon-triangle-right"
+      arrow = H.span className: "glyphicon glyphicon-triangle-right scalar-arrow"
     else if @state.collapse == "open"
-      arrow = H.span className: "glyphicon glyphicon-triangle-bottom"
+      arrow = H.span className: "glyphicon glyphicon-triangle-bottom scalar-arrow"
 
     if @state.collapse == "open"
       children = H.div style: { paddingLeft: 25 }, key: "tree",

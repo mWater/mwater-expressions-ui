@@ -2,8 +2,10 @@ _ = require 'lodash'
 React = require 'react'
 R = React.createElement
 H = React.DOM
-ClickOutHandler = require('react-onclickout')
 moment = require 'moment'
+
+ClickOutHandler = require('react-onclickout')
+FloatAffixed = require 'react-float-affixed'
 
 ScalarExprTreeComponent = require './ScalarExprTreeComponent'
 ScalarExprTreeBuilder = require './ScalarExprTreeBuilder'
@@ -106,8 +108,12 @@ module.exports = class OmniBoxExprComponent extends React.Component
     if @props.value and @props.value.valueType == "enum"
       @setState(inputText: "")
 
-  handleClickOut: => 
+  handleClickOut: (ev) => 
     if not @state.focused
+      return
+
+    # Make sure not in dropdown element
+    if @dropdown and isDescendant(@dropdown, ev.target)
       return
 
     @setState(focused: false)
@@ -346,6 +352,10 @@ module.exports = class OmniBoxExprComponent extends React.Component
 
     return dropdown
 
+  # Save dropdown element
+  refDropdown: (elem) =>
+    @dropdown = elem
+
   render: ->
     # If focused
     if @state.focused
@@ -355,9 +365,18 @@ module.exports = class OmniBoxExprComponent extends React.Component
       else if @state.mode == "literal" 
         dropdown = @renderLiteralDropdown()
 
+      # Wrap dropdown (can be array) in div
+      if dropdown
+        dropdown = 
+          R FloatAffixed, null,
+            H.div 
+              style: { backgroundColor: "white", border: "solid 1px #AAA", borderRadius: 4, width: 600, boxShadow: "0 6px 12px rgba(0, 0, 0, .175)" }
+              ref: @refDropdown, 
+                dropdown
+
     # Close when clicked outside
     R ClickOutHandler, onClickOut: @handleClickOut,
-      R DropdownComponent, dropdown: dropdown,
+      H.div style: { marginRight: 1 }, # Hack for https://github.com/warrenfalk/react-float-affixed/issues/1
         H.div style: { position: "absolute", right: 10, top: 8, cursor: "pointer" }, @renderModeSwitcher()
         H.input 
           type: "text"
@@ -371,5 +390,14 @@ module.exports = class OmniBoxExprComponent extends React.Component
           onKeyDown: @handleKeyDown
           onBlur: @handleBlur
           placeholder: if @state.mode == "literal" then @props.noLiteralPlaceholder else @props.noFormulaPlaceholder
+        dropdown
 
-  
+ 
+# Checks element containment 
+isDescendant = (parent, child) ->
+  node = child.parentNode
+  while (node != null) 
+    if node == parent
+      return true;
+    node = node.parentNode
+  return false
