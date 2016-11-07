@@ -9,7 +9,6 @@ FloatAffixed = require 'react-float-affixed'
 
 ScalarExprTreeComponent = require './ScalarExprTreeComponent'
 ScalarExprTreeBuilder = require './ScalarExprTreeBuilder'
-DropdownComponent = require './DropdownComponent'
 LinkComponent = require './LinkComponent'
 DateTimePickerComponent = require './DateTimePickerComponent'
 ExprUtils = require('mwater-expressions').ExprUtils
