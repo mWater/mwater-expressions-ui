@@ -283,22 +283,22 @@ module.exports = class OmniBoxExprComponent extends React.Component
         name = ExprUtils.localizeString(ev.name, @context.locale)
         if filter and not name.match(filter)
           return null
-        H.li key: ev.id, 
-          H.a 
-            onClick: @handleEnumSelected.bind(null, ev.id),
-            name
+        R HoverLinkComponent, key: ev.id, onClick: @handleEnumSelected.bind(null, ev.id),
+          name
 
       # Add none selection
-      dropdown.unshift(H.li(key: "_null", H.a(onClick: @handleEnumSelected.bind(null, null), H.i(null, "None"))))
-      return dropdown
+      dropdown.unshift(R(HoverLinkComponent, key: "_null", onClick: @handleEnumSelected.bind(null, null), H.i(null, "None")))
+
+      return H.div ref: @refDropdown, style: { backgroundColor: "white", border: "solid 1px #AAA", borderRadius: 4, minWidth: 300, boxShadow: "0 6px 12px rgba(0, 0, 0, .175)" },
+        dropdown
 
     # If date type, display dropdown
     if (@props.value and @props.value.valueType == "date") or "date" in (@props.types or [])
-      return R DateTimePickerComponent, {onChange: @handleDateSelected, defaultDate: @state.inputText}
+      return R DateTimePickerComponent, onChange: @handleDateSelected, defaultDate: @state.inputText, ref: @refDropdown
 
     # If datetime type, display dropdown
     if (@props.value and @props.value.valueType == "datetime") or "datetime" in (@props.types or [])
-      return R DateTimePickerComponent, {timepicker: true, onChange: @handleDateTimeSelected, defaultDate: @state.inputText}
+      return R DateTimePickerComponent, timepicker: true, onChange: @handleDateTimeSelected, defaultDate: @state.inputText, ref: @refDropdown
 
   # Renders a dropdown that allows formula building (mostly scalar expression choosing)
   renderFormulaDropdown: ->
@@ -349,6 +349,12 @@ module.exports = class OmniBoxExprComponent extends React.Component
         onChange: @handleTreeChange
         height: 350))
 
+    # Put in box
+    dropdown = H.div 
+      style: { backgroundColor: "white", border: "solid 1px #AAA", borderRadius: 4, width: 600, boxShadow: "0 6px 12px rgba(0, 0, 0, .175)" }
+      ref: @refDropdown, 
+        dropdown
+
     return dropdown
 
   # Save dropdown element
@@ -364,14 +370,9 @@ module.exports = class OmniBoxExprComponent extends React.Component
       else if @state.mode == "literal" 
         dropdown = @renderLiteralDropdown()
 
-      # Wrap dropdown (can be array) in div
+      # Wrap dropdown to make float
       if dropdown
-        dropdown = 
-          R FloatAffixed, null,
-            H.div 
-              style: { backgroundColor: "white", border: "solid 1px #AAA", borderRadius: 4, width: 600, boxShadow: "0 6px 12px rgba(0, 0, 0, .175)" }
-              ref: @refDropdown, 
-                dropdown
+        dropdown = R FloatAffixed, null, dropdown
 
     # Close when clicked outside
     R ClickOutHandler, onClickOut: @handleClickOut,
@@ -400,3 +401,9 @@ isDescendant = (parent, child) ->
       return true;
     node = node.parentNode
   return false
+
+
+class HoverLinkComponent extends React.Component
+  render: ->
+    H.div className: "hover-grey-background", style: { padding: 5, cursor: "pointer" }, onClick: @props.onClick,
+      @props.children

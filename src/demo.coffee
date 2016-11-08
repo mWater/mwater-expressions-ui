@@ -196,8 +196,8 @@ class MockTestComponent extends React.Component
         dataSource: @state.dataSource
         table: "t1"
         # types: ["text", "enum", "boolean", "date", "number", "datetime"]
-        # types: ['boolean']
-        # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
+        types: ['enum']
+        enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         value: @state.value
         onChange: @handleValueChange
