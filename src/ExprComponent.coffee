@@ -24,6 +24,7 @@ module.exports = class ExprComponent extends React.Component
 
     preferLiteral: React.PropTypes.bool # True to prefer literal expressions
     aggrStatuses: React.PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
+    placeholder: React.PropTypes.string # placeholder for empty value
 
   @defaultProps:
     aggrStatuses: ["individual", "literal"]
@@ -53,5 +54,6 @@ module.exports = class ExprComponent extends React.Component
       idTable: @props.idTable
       includeAggr: "aggregate" in @props.aggrStatuses
       aggrStatuses: @props.aggrStatuses
+      placeholder: @props.placeholder
       })
 

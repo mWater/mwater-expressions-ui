@@ -376,7 +376,7 @@ module.exports = class OmniBoxExprComponent extends React.Component
 
     # Close when clicked outside
     R ClickOutHandler, onClickOut: @handleClickOut,
-      H.div style: { marginRight: 1 }, # Hack for https://github.com/warrenfalk/react-float-affixed/issues/1
+      H.div style: { marginRight: 1, position: "relative" }, # Hack for https://github.com/warrenfalk/react-float-affixed/issues/1
         H.div style: { position: "absolute", right: 10, top: 8, cursor: "pointer" }, @renderModeSwitcher()
         H.input 
           type: "text"
