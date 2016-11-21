@@ -142,6 +142,7 @@ module.exports = class ExprElementBuilder
     if exprType == "boolean"
       createWrapOp("and", "+ And", false)
       createWrapOp("or", "+ Or", false)
+      createWrapOp("not", "Not", false)
 
     if exprType == "number"
       createWrapOp("+", "+", false)

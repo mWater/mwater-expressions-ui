@@ -120,8 +120,8 @@ class MockTestInlineExprsEditorComponent extends React.Component
         text: @state.text
         exprs: @state.exprs
         onChange: @handleChange
-        types: ['number']
-        aggrStatuses: ["aggregate", "literal"]
+        types: ['boolean']
+        aggrStatuses: ["individual", "literal"]
         multiline: true
         rows: 5
       )
@@ -190,13 +190,13 @@ class MockTestComponent extends React.Component
     if not @state.schema
       return null
 
-    H.div style: { padding: 10, height: 100, overflow: "hidden", marginTop: 0 },
+    H.div style: { padding: 10, marginTop: 0 },
       R(ExprComponent, 
         schema: @state.schema
         dataSource: @state.dataSource
         table: "t1"
         # types: ["text", "enum", "boolean", "date", "number", "datetime"]
-        types: ['enum']
+        types: ['boolean']
         enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         value: @state.value
