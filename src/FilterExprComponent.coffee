@@ -70,7 +70,7 @@ module.exports = class FilterExprComponent extends React.Component
 
   renderAddFilter: ->
     H.div null, 
-      H.a onClick: @handleAddFilter, "+ " + @props.addLabel
+      H.a onClick: @handleAddFilter, @props.addLabel
 
   render: ->
     expr = @cleanExpr(@props.value)
