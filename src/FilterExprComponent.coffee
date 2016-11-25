@@ -9,7 +9,7 @@ ExprElementBuilder = require './ExprElementBuilder'
 StackedComponent = require './StackedComponent'
 RemovableComponent = require './RemovableComponent'
 
-# Displays a boolean filter expression. Just shows "+ Add filter" when empty
+# Displays a boolean filter expression. Just shows "+ Add filter" (or other add label) when empty
 module.exports = class FilterExprComponent extends React.Component
   @propTypes:
     schema: React.PropTypes.object.isRequired
@@ -19,9 +19,13 @@ module.exports = class FilterExprComponent extends React.Component
 
     value: React.PropTypes.object   # Current value
     onChange: React.PropTypes.func  # Called with new expression
+    addLabel: React.PropTypes.string # Label for adding item
 
   @contextTypes:
     locale: React.PropTypes.string  # e.g. "en"
+
+  @defaultProps:
+    addLabel: "Add Filter"
 
   constructor: ->
     super
@@ -66,7 +70,7 @@ module.exports = class FilterExprComponent extends React.Component
 
   renderAddFilter: ->
     H.div null, 
-      H.a onClick: @handleAddFilter, "+ Add Filter"
+      H.a onClick: @handleAddFilter, "+ " + @props.addLabel
 
   render: ->
     expr = @cleanExpr(@props.value)
