@@ -19,13 +19,13 @@ module.exports = class FilterExprComponent extends React.Component
 
     value: React.PropTypes.object   # Current value
     onChange: React.PropTypes.func  # Called with new expression
-    addLabel: React.PropTypes.string # Label for adding item
+    addLabel: React.PropTypes.node  # Label for adding item. Default "+ Add Label"
 
   @contextTypes:
     locale: React.PropTypes.string  # e.g. "en"
 
   @defaultProps:
-    addLabel: "Add Filter"
+    addLabel: "+ Add Filter"
 
   constructor: ->
     super
