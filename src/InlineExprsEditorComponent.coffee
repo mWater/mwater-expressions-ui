@@ -195,7 +195,7 @@ class ExprInsertModalComponent extends React.Component
           schema: @props.schema
           dataSource: @props.dataSource
           table: @props.table
-          types: ['text', 'number']
+          types: ['text', 'number', 'enum', 'date', 'datetime']
           value: @state.expr
           onChange: (expr) => @setState(expr: expr)
   
