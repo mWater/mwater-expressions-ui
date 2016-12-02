@@ -12,6 +12,7 @@ LinkComponent = require './LinkComponent'
 StackedComponent = require './StackedComponent'
 IdLiteralComponent = require './IdLiteralComponent'
 ScoreExprComponent = require './ScoreExprComponent'
+BuildEnumsetExprComponent = require './BuildEnumsetExprComponent'
 
 # Builds a react element for an expression
 module.exports = class ExprElementBuilder 
@@ -119,6 +120,8 @@ module.exports = class ExprElementBuilder
       elem = @buildId(expr, onChange, { key: options.key })
     else if expr.type == "score"
       elem = @buildScore(expr, onChange, { key: options.key })
+    else if expr.type == "build enumset"
+      elem = @buildBuildEnumset(expr, onChange, { key: options.key, enumValues: options.enumValues })
     else
       throw new Error("Unhandled expression type #{expr.type}")
 
@@ -403,6 +406,14 @@ module.exports = class ExprElementBuilder
       schema: @schema
       dataSource: @dataSource
       value: expr
+      onChange: onChange
+
+  buildBuildEnumset: (expr, onChange, options) ->
+    return R BuildEnumsetExprComponent,
+      schema: @schema
+      dataSource: @dataSource
+      value: expr
+      enumValues: options.enumValues
       onChange: onChange
 
 # TODO DOC

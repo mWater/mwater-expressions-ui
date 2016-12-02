@@ -184,6 +184,14 @@ module.exports = class OmniBoxExprComponent extends React.Component
     }
     @props.onChange(scoreExpr)
 
+  handleBuildEnumsetSelected: =>
+    expr = {
+      type: "build enumset"
+      table: @props.table
+      values: {}
+    }
+    @props.onChange(expr)
+
   handleOpSelected: (op) =>
     expr = {
       type: "op"
@@ -199,9 +207,9 @@ module.exports = class OmniBoxExprComponent extends React.Component
     @setState(focused: false)
 
     expr = val.expr
+    exprUtils = new ExprUtils(@props.schema)
 
     # If expr is enum and enumValues specified, perform a mapping
-    exprUtils = new ExprUtils(@props.schema)
     if exprUtils.getExprType(val.expr) == "enum" and @props.enumValues
       expr = {
         type: "case"
@@ -223,6 +231,28 @@ module.exports = class OmniBoxExprComponent extends React.Component
         )
         else: null
       }
+
+    # If expr is enumset and enumValues specified, perform a mapping building an enumset
+    if exprUtils.getExprType(val.expr) == "enumset" and @props.enumValues
+      buildExpr = {
+        type: "build enumset"
+        table: expr.table
+        values: {}
+      }
+
+      for ev in @props.enumValues
+        # Find matching name (english)
+        fromEnumValues = exprUtils.getExprEnumValues(expr)
+        matchingEnumValue = _.find(fromEnumValues, (fev) -> fev.name.en == ev.name.en)
+
+        if matchingEnumValue
+          literal = { type: "literal", valueType: "enumset", value: [matchingEnumValue.id] }
+        else
+          literal = null
+
+        buildExpr.values[ev.id] = { type: "op", table: expr.table, op: "contains", exprs: [expr, literal] }
+
+      expr = buildExpr 
 
     # Make into expression
     if val.joins.length == 0 
@@ -315,6 +345,10 @@ module.exports = class OmniBoxExprComponent extends React.Component
     if not @props.types or 'number' in @props.types
       specials.push(H.a(key: "score", onClick: @handleScoreSelected, style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, "score"))
 
+    # Add build enumset if has enumset possible and has values
+    if (not @props.types or 'enumset' in @props.types) and @props.enumValues and @props.enumValues.length > 0
+      specials.push(H.a(key: "build enumset", onClick: @handleBuildEnumsetSelected, style: { fontSize: "80%", paddingLeft: 10, cursor: "pointer" }, "build enumset"))
+
     # Only allow aggregate expressions if relevant
     aggr = null
     if "aggregate" not in @props.aggrStatuses
@@ -329,25 +363,21 @@ module.exports = class OmniBoxExprComponent extends React.Component
     if specials.length > 0
       dropdown.push(H.div(key: "specials", style: { padding: 5 }, specials))
 
-    # Special handling for enumset type required with enumValues, as cannot select map anything now to enumset
-    noTree = @props.enumValues and _.isEqual(@props.types, ["enumset"])
-    
-    if not noTree
-      # Escape regex for filter string
-      escapeRegex = (s) -> return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
-      if @state.inputText 
-        filter = new RegExp(escapeRegex(@state.inputText), "i")
+    # Escape regex for filter string
+    escapeRegex = (s) -> return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+    if @state.inputText 
+      filter = new RegExp(escapeRegex(@state.inputText), "i")
 
-      # Create tree 
-      treeBuilder = new ScalarExprTreeBuilder(@props.schema, @context.locale)
-      tree = treeBuilder.getTree(table: @props.table, types: @props.types, idTable: @props.idTable, includeAggr: @props.includeAggr, filter: filter)
+    # Create tree 
+    treeBuilder = new ScalarExprTreeBuilder(@props.schema, @context.locale)
+    tree = treeBuilder.getTree(table: @props.table, types: @props.types, idTable: @props.idTable, includeAggr: @props.includeAggr, filter: filter)
 
-      # Create tree component with value of table and path
-      dropdown.push(R(ScalarExprTreeComponent, 
-        key: "scalar_tree"
-        tree: tree,
-        onChange: @handleTreeChange
-        height: 350))
+    # Create tree component with value of table and path
+    dropdown.push(R(ScalarExprTreeComponent, 
+      key: "scalar_tree"
+      tree: tree,
+      onChange: @handleTreeChange
+      height: 350))
 
     # Put in box
     dropdown = H.div 
