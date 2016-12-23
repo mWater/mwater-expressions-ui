@@ -96,7 +96,7 @@ module.exports = class ContentEditableComponent extends React.Component
   render: ->
     H.div 
       contentEditable: true
-      spellCheck: false
+      spellCheck: true
       ref: "editor"
       onClick: @props.onClick
       style: @props.style
