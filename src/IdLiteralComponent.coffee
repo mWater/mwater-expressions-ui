@@ -18,7 +18,8 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     schema: React.PropTypes.object.isRequired # Schema of the database
     dataSource: React.PropTypes.object.isRequired # Data source to use to get values
     placeholder: React.PropTypes.string
-    orderBy: React.PropTypes.array   # Optional extra orderings. Put "main" as tableAlias. JSONQL
+    orderBy: React.PropTypes.array   # Optional extra orderings. Put "main" as tableAlias. JsonQL
+    multi: React.PropTypes.bool      # Allow multiple values (id[] type)
 
   # Override to determine if a load is needed. Not called on mounting
   isLoadNeeded: (newProps, oldProps) -> 

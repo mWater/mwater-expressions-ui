@@ -7,10 +7,10 @@ module.exports = class ScalarExprTreeComponent extends React.Component
   @propTypes: 
     tree: React.PropTypes.array.isRequired    # Tree from ScalarExprTreeBuilder
     onChange: React.PropTypes.func.isRequired # Called with newly selected value
-    height: React.PropTypes.number.isRequired # Render height of the component
+    height: React.PropTypes.number            # Render height of the component
 
   render: ->
-    H.div style: { overflowY: "auto", height: @props.height },
+    H.div style: { overflowY: (if @props.height then "auto"), height: @props.height },
       React.createElement(ScalarExprTreeTreeComponent,
         tree: @props.tree,
         onChange: @props.onChange
@@ -46,18 +46,16 @@ class ScalarExprTreeLeafComponent extends React.Component
   render: ->
     style = {
       padding: 4
+      marginLeft: 15
       borderRadius: 4
       cursor: "pointer"
       color: "#478"
     }
 
-    H.div style: style, className: "hover-grey-background", onClick: @handleClick, 
+    H.div style: style, className: "hover-grey-background", onClick: @handleClick,
       @props.item.name
       if @props.item.desc
-        [
-          H.br()
-          H.span className: "text-muted", style: { fontSize: 12, paddingLeft: 3 }, @props.item.desc
-        ]
+        H.span className: "text-muted", style: { fontSize: 12, paddingLeft: 3 }, " - " + @props.item.desc
 
 class ScalarExprTreeNodeComponent extends React.Component
   @propTypes:
@@ -86,24 +84,26 @@ class ScalarExprTreeNodeComponent extends React.Component
   render: ->
     arrow = null
     if @state.collapse == "closed"
-      arrow = H.span className: "glyphicon glyphicon-triangle-right scalar-arrow"
+      arrow = H.i className: "fa fa-plus-square-o", style: { width: 15 }
     else if @state.collapse == "open"
-      arrow = H.span className: "glyphicon glyphicon-triangle-bottom scalar-arrow"
+      arrow = H.i className: "fa fa-minus-square-o", style: { width: 15 }
 
     if @state.collapse == "open"
-      children = H.div style: { paddingLeft: 25 }, key: "tree",
+      children = H.div style: { paddingLeft: 18 }, key: "tree",
         React.createElement(ScalarExprTreeTreeComponent, tree: @props.item.children(), onChange: @props.onChange)
 
     color = if @props.item.value then "#478" 
 
     H.div null,
-      H.div style: { cursor: "pointer", padding: 4 }, key: "arrow",
-        H.span style: { color: "#AAA", cursor: "pointer", paddingRight: 3 }, onClick: @handleArrowClick, arrow
-        H.span style: { color: color }, onClick: @handleItemClick, @props.item.name
-        if @props.item.desc
-          [
-            H.br()
-            H.span className: "text-muted", style: { fontSize: 12, paddingLeft: 3 }, @props.item.desc
-          ]
+      H.div style: { cursor: "pointer", padding: 4, marginLeft: 15, position: "relative" }, key: "item", className: (if @props.item.value then "hover-grey-background"),
+        H.span style: { color: "#478", cursor: "pointer", position: "absolute", left: -15 }, onClick: @handleArrowClick, arrow
+        H.div style: { color: color, display: "inline-block" }, onClick: @handleItemClick, 
+          if @props.item.childrenType == "section"
+            H.i className: "fa fa-folder-open-o", style: { paddingRight: 5 }
+          @props.item.name
+          if @props.item.childrenType == "join"
+            H.i className: "fa fa-link", style: { paddingRight: 5, paddingLeft: 5 }
+          if @props.item.desc
+            H.span className: "text-muted", style: { fontSize: 12, paddingLeft: 3 }, " - " + @props.item.desc
       children
       

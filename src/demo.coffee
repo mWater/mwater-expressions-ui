@@ -21,8 +21,8 @@ $ ->
     # # dataSource = new MWaterDataSource("http://localhost:1234/v3/", "e449acf016c362f19c4b65b52db23486", false)
 
   # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
-  ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
-  # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+  # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
+  ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
   # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
 
 class ContentEditableTestComponent extends React.Component
@@ -146,8 +146,10 @@ class MockTestComponent extends React.Component
       { id: "number", name: { en: "Number" }, type: "number" }
       { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
       { id: "enumset", name: { en: "EnumSet" }, type: "enumset", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
-      { id: "date", name: { en: "Date" }, type: "date" }
-      { id: "datetime", name: { en: "Datetime" }, type: "datetime" }
+      { type: "section", name: { en: "Section"}, contents: [
+        { id: "date", name: { en: "Date" }, type: "date" }
+        { id: "datetime", name: { en: "Datetime" }, type: "datetime" }
+        ]}
       { id: "boolean", name: { en: "Boolean" }, type: "boolean" }
       { id: "geometry", name: { en: "Geometry" }, type: "geometry" }
       { id: "1-2", name: { en: "T1->T2" }, type: "join", join: { fromColumn: "primary", toTable: "t2", toColumn: "t1", type: "1-n" }}
@@ -196,7 +198,7 @@ class MockTestComponent extends React.Component
         dataSource: @state.dataSource
         table: "t1"
         # types: ["text", "enum", "boolean", "date", "number", "datetime"]
-        types: ['enumset']
+        # types: ['enumset']
         enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         value: @state.value
@@ -228,7 +230,7 @@ class LiveTestComponent extends React.Component
       @setState(schema: schema, dataSource: dataSource)
 
   handleValueChange: (value) => 
-    value = new ExprCleaner(@state.schema).cleanExpr(value, { aggrStatuses: ['literal', 'aggregate']}) #, { type: 'boolean' })
+    # value = new ExprCleaner(@state.schema).cleanExpr(value, { aggrStatuses: ['literal', 'aggregate']}) #, { type: 'boolean' })
     @setState(value: value)
 
   render: ->
@@ -240,8 +242,8 @@ class LiveTestComponent extends React.Component
         schema: @state.schema
         dataSource: @state.dataSource
         table: "entities.water_point"
-        types: ['number']
-        aggrStatuses: ['literal', 'aggregate']
+        types: ['boolean']
+        aggrStatuses: ['individual', 'literal', 'aggregate']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         value: @state.value

@@ -17,7 +17,10 @@ module.exports = class EnumSetComponent extends React.Component
   handleChange: (val) =>
     value = if val then val.split("\n") else []
     value = _.map(value, JSON.parse)
-    @props.onChange({ type: "literal", valueType: "enumset", value: value })
+    if value.length > 0
+      @props.onChange({ type: "literal", valueType: "enumset", value: value })
+    else
+      @props.onChange(null)
 
   render: ->
     value = null

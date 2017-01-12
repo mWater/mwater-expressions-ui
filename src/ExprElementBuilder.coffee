@@ -5,7 +5,6 @@ H = React.DOM
 
 ExprUtils = require("mwater-expressions").ExprUtils
 OmniBoxExprComponent = require './OmniBoxExprComponent'
-ExprUtils = require("mwater-expressions").ExprUtils
 EnumSetComponent = require './EnumSetComponent'
 TextArrayComponent = require './TextArrayComponent'
 LinkComponent = require './LinkComponent'
@@ -13,6 +12,7 @@ StackedComponent = require './StackedComponent'
 IdLiteralComponent = require './IdLiteralComponent'
 ScoreExprComponent = require './ScoreExprComponent'
 BuildEnumsetExprComponent = require './BuildEnumsetExprComponent'
+ExprLinkComponent = require './ExprLinkComponent'
 
 # Builds a react element for an expression
 module.exports = class ExprElementBuilder 
@@ -49,49 +49,11 @@ module.exports = class ExprElementBuilder
     # Get current expression type
     exprType = @exprUtils.getExprType(expr)
 
-    # If text[], enumset or id literal, use special component
-    if (expr and expr.type == "literal") or (not expr and options.preferLiteral)
-      if exprType == "text[]" or _.isEqual(options.types, ["text[]"])
-        return R(TextArrayComponent, 
-          key: options.key
-          value: expr
-          refExpr: options.refExpr
-          schema: @schema
-          dataSource: @dataSource
-          onChange: onChange)
-
-      if exprType == "enumset" or _.isEqual(options.types, ["enumset"])
-        return R(EnumSetComponent, 
-          key: options.key, 
-          value: expr, 
-          enumValues: options.enumValues
-          onChange: onChange)
-
-      if exprType == "id" or _.isEqual(options.types, ["id"]) and options.idTable
-        idTable = options.idTable or @exprUtils.getExprIdTable(expr)
-        return R(IdLiteralComponent, 
-          key: options.key
-          value: expr?.value
-          idTable: idTable
-          schema: @schema
-          dataSource: @dataSource
-          onChange: (value) => onChange(if value then { type: "literal", valueType: "id", idTable: idTable, value: value } else null))
-
-      if exprType == "id[]" or _.isEqual(options.types, ["id[]"]) and options.idTable
-        idTable = options.idTable or @exprUtils.getExprIdTable(expr)
-        return R(IdLiteralComponent, 
-          key: options.key
-          value: expr?.value
-          idTable: idTable
-          schema: @schema
-          dataSource: @dataSource
-          multi: true
-          onChange: (value) => onChange(if value then { type: "literal", valueType: "id[]", idTable: idTable, value: value } else null))
-
-    # Handle empty and literals with OmniBox
-    if not expr or not expr.type or expr.type == "literal"
-      elem = R(OmniBoxExprComponent,
+    # Handle empty and literals and fields with ExprLinkComponent
+    if not expr or not expr.type or expr.type == "literal" or expr.type == "field"
+      elem = R ExprLinkComponent,
         schema: @schema
+        dataSource: @dataSource
         table: table
         value: expr
         onChange: onChange
@@ -104,14 +66,13 @@ module.exports = class ExprElementBuilder
         initialMode: if options.preferLiteral then "literal"
         includeAggr: options.includeAggr
         aggrStatuses: options.aggrStatuses
-        noFormulaPlaceholder: options.placeholder
-        noLiteralPlaceholder: options.placeholder
-      )
+        placeholder: options.placeholder
+        refExpr: options.refExpr
 
     else if expr.type == "op"
       elem = @buildOp(expr, table, onChange, options)
-    else if expr.type == "field"
-      elem = @buildField(expr, onChange, { key: options.key })
+    # else if expr.type == "field"
+    #   elem = @buildField(expr, onChange, { key: options.key })
     else if expr.type == "scalar"
       elem = @buildScalar(expr, onChange, { key: options.key, types: options.types, enumValues: options.enumValues })
     else if expr.type == "case"
@@ -167,12 +128,6 @@ module.exports = class ExprElementBuilder
 
     return elem
 
-  # Build a simple field component. Only remove option
-  buildField: (expr, onChange, options = {}) ->
-    return R(LinkComponent, 
-      onRemove: => onChange(null),
-      @exprUtils.summarizeExpr(expr))    
-
   # Build an id component. Displays table name. Only remove option
   buildId: (expr, onChange, options = {}) ->
     return R(LinkComponent, 
@@ -197,7 +152,8 @@ module.exports = class ExprElementBuilder
       return H.div style: { display: "flex", alignItems: "baseline" },
         # Aggregate dropdown
         R(LinkComponent, 
-          onRemove: => onChange(null)
+          dropdownItems: [{ id: "remove", name: "Remove" }]
+          onDropdownItemClicked: => onChange(null),
           summary)
     else
       # Create inner expression onChange
@@ -333,11 +289,12 @@ module.exports = class ExprElementBuilder
         opItems = _.uniq(opItems, "op")
 
         opElem = R(LinkComponent, 
-          dropdownItems: if opItems.length > 0 then _.map(opItems, (oi) -> { id: oi.op, name: oi.name }) 
+          dropdownItems: _.map(opItems, (oi) -> { id: oi.op, name: oi.name }).concat([{ id: "_remove", name: [H.i(className: "fa fa-remove"), " Remove"] }])
           onDropdownItemClicked: (op) =>
-            onChange(_.extend({}, expr, { op: op }))
-          onRemove: =>
-            onChange(null)
+            if op == "_remove"
+              onChange(null)
+            else
+              onChange(_.extend({}, expr, { op: op }))
           , opItem.prefixLabel or opItem.name)
 
         # Some ops have prefix (e.g. "latitude of")
