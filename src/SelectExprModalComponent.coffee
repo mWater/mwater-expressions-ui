@@ -78,6 +78,7 @@ module.exports = class SelectExprModalComponent extends React.Component
         elem: R SelectLiteralExprComponent,
           value: @props.value
           onChange: @props.onSelect
+          onCancel: @props.onCancel
           schema: @props.schema
           dataSource: @props.dataSource
           table: @props.table

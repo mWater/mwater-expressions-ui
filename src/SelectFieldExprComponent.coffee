@@ -115,6 +115,6 @@ module.exports = class SelectFieldExprComponent extends React.Component
       # Create tree component with value of table and path
       H.div style: { paddingTop: 10 },
         R ScalarExprTreeComponent, 
-          key: "scalar_tree"
+          key: "scalar_tree:#{@state.searchText}"
           tree: tree,
           onChange: @handleTreeChange

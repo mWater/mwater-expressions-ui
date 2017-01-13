@@ -14,6 +14,7 @@ module.exports = class SelectLiteralExprComponent extends React.Component
   @propTypes:
     value: React.PropTypes.object   # Current expression value
     onChange: React.PropTypes.func.isRequired # Called with new expression
+    onCancel: React.PropTypes.func.isRequired # Called to cancel
 
     schema: React.PropTypes.object.isRequired
     dataSource: React.PropTypes.object.isRequired
@@ -146,11 +147,14 @@ module.exports = class SelectLiteralExprComponent extends React.Component
     
   render: ->
     H.div null,
-      @renderInput()
-      H.div style: { paddingTop: 10 }, 
+      H.div style: { paddingBottom: 10 }, 
         H.button type: "button", className: "btn btn-primary", onClick: @handleAccept, disabled: not @state.changed,
           H.i className: "fa fa-check"
           " OK"
+        " "
+        H.button type: "button", className: "btn btn-default", onClick: @props.onCancel,
+          "Cancel"
+      @renderInput()
 
 # Component which displays an enum as a list
 class EnumAsListComponent extends React.Component
@@ -173,10 +177,9 @@ class EnumAsListComponent extends React.Component
 
     itemStyle = {
       padding: 4
-      marginLeft: 15
+      marginLeft: 5
       borderRadius: 4
       cursor: "pointer"
-      color: "#478"
     }
 
     H.div null,
@@ -216,10 +219,9 @@ class EnumsetAsListComponent extends React.Component
 
     itemStyle = {
       padding: 4
-      marginLeft: 15
+      marginLeft: 5
       borderRadius: 4
       cursor: "pointer"
-      color: "#478"
     }
 
     H.div null,

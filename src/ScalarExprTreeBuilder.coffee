@@ -61,12 +61,6 @@ module.exports = class ScalarExprTreeBuilder
         nodes.push(node)
 
     table = @schema.getTable(options.table)
-    nodes = nodes.concat(@createNodes(table.contents, options))
-
-    # TODO keep?
-    # # Add unique id if not including count
-    # if not options.includeAggr and not options.types or "id" in options.types
-    #   nodes.push({ name: "Unique ID", value: { table: options.table, joins: options.joins, expr: { type: "id", table: options.table } } })
 
     # Create count node if any joins
     if options.includeAggr
@@ -76,6 +70,13 @@ module.exports = class ScalarExprTreeBuilder
       }
       if not options.filter or node.name.match(options.filter)
         nodes.push(node)
+    
+    nodes = nodes.concat(@createNodes(table.contents, options))
+
+    # TODO keep?
+    # # Add unique id if not including count
+    # if not options.includeAggr and not options.types or "id" in options.types
+    #   nodes.push({ name: "Unique ID", value: { table: options.table, joins: options.joins, expr: { type: "id", table: options.table } } })
 
     return nodes
 

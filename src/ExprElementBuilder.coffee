@@ -288,7 +288,7 @@ module.exports = class ExprElementBuilder
         opItems = _.uniq(opItems, "op")
 
         opElem = R(LinkComponent, 
-          dropdownItems: _.map(opItems, (oi) -> { id: oi.op, name: oi.name }).concat([{ id: "_remove", name: [H.i(className: "fa fa-remove text-muted"), " Remove"] }])
+          dropdownItems: [{ id: "_remove", name: [H.i(className: "fa fa-remove text-muted"), " Remove"] }].concat(_.map(opItems, (oi) -> { id: oi.op, name: oi.name }))
           onDropdownItemClicked: (op) =>
             if op == "_remove"
               onChange(null)
