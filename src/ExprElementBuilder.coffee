@@ -4,7 +4,6 @@ R = React.createElement
 H = React.DOM
 
 ExprUtils = require("mwater-expressions").ExprUtils
-OmniBoxExprComponent = require './OmniBoxExprComponent'
 EnumSetComponent = require './EnumSetComponent'
 TextArrayComponent = require './TextArrayComponent'
 LinkComponent = require './LinkComponent'
@@ -131,7 +130,7 @@ module.exports = class ExprElementBuilder
   # Build an id component. Displays table name. Only remove option
   buildId: (expr, onChange, options = {}) ->
     return R(LinkComponent, 
-      dropdownItems: [{ id: "remove", name: "Remove" }]
+      dropdownItems: [{ id: "remove", name: [H.i(className: "fa fa-remove text-muted"), " Remove"] }]
       onDropdownItemClicked: => onChange(null),
       @exprUtils.summarizeExpr(expr)) 
 
@@ -152,7 +151,7 @@ module.exports = class ExprElementBuilder
       return H.div style: { display: "flex", alignItems: "baseline" },
         # Aggregate dropdown
         R(LinkComponent, 
-          dropdownItems: [{ id: "remove", name: "Remove" }]
+          dropdownItems: [{ id: "remove", name: [H.i(className: "fa fa-remove text-muted"), " Remove"] }]
           onDropdownItemClicked: => onChange(null),
           summary)
     else
@@ -289,7 +288,7 @@ module.exports = class ExprElementBuilder
         opItems = _.uniq(opItems, "op")
 
         opElem = R(LinkComponent, 
-          dropdownItems: _.map(opItems, (oi) -> { id: oi.op, name: oi.name }).concat([{ id: "_remove", name: [H.i(className: "fa fa-remove"), " Remove"] }])
+          dropdownItems: _.map(opItems, (oi) -> { id: oi.op, name: oi.name }).concat([{ id: "_remove", name: [H.i(className: "fa fa-remove text-muted"), " Remove"] }])
           onDropdownItemClicked: (op) =>
             if op == "_remove"
               onChange(null)

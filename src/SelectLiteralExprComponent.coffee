@@ -4,7 +4,6 @@ R = React.createElement
 H = React.DOM
 
 ExprUtils = require('mwater-expressions').ExprUtils
-OmniBoxExprComponent = require './OmniBoxExprComponent'
 
 DateTimePickerComponent = require './DateTimePickerComponent'
 EnumSetComponent = require './EnumSetComponent'
@@ -101,13 +100,13 @@ module.exports = class SelectLiteralExprComponent extends React.Component
         onChange: @handleChange)
 
     if exprType == "enum" or _.isEqual(@props.types, ["enum"])
-      return R(EnumComponent, 
+      return R(EnumAsListComponent, 
         value: expr
         enumValues: @props.enumValues
         onChange: @handleChange)
 
     if exprType == "enumset" or _.isEqual(@props.types, ["enumset"])
-      return R(EnumSetComponent, 
+      return R(EnumsetAsListComponent, 
         value: expr
         enumValues: @props.enumValues
         onChange: @handleChange)
@@ -153,7 +152,87 @@ module.exports = class SelectLiteralExprComponent extends React.Component
           H.i className: "fa fa-check"
           " OK"
 
-# Component which displays an enum
+# Component which displays an enum as a list
+class EnumAsListComponent extends React.Component
+  @propTypes: 
+    value: React.PropTypes.object
+    onChange: React.PropTypes.func.isRequired 
+    enumValues: React.PropTypes.array.isRequired # Array of id and name (localized string)
+
+  @contextTypes:
+    locale: React.PropTypes.string  # e.g. "en"
+
+  handleChange: (val) =>
+    if not val
+      @props.onChange(null)
+    else
+      @props.onChange({ type: "literal", valueType: "enum", value: val })
+
+  render: ->
+    value = @props.value?.value
+
+    itemStyle = {
+      padding: 4
+      marginLeft: 15
+      borderRadius: 4
+      cursor: "pointer"
+      color: "#478"
+    }
+
+    H.div null,
+      _.map @props.enumValues, (val) => 
+        H.div key: val.id, className: "hover-grey-background", style: itemStyle, onClick: @handleChange.bind(null, val.id),
+          if val.id == value
+            H.i className: "fa fa-fw fa-check", style: { color: "#2E6DA4" }
+          else
+            H.i className: "fa fa-fw"
+          " "
+          ExprUtils.localizeString(val.name, @context.locale)
+
+# Component which displays an enumset as a list
+class EnumsetAsListComponent extends React.Component
+  @propTypes: 
+    value: React.PropTypes.object
+    onChange: React.PropTypes.func.isRequired 
+    enumValues: React.PropTypes.array.isRequired # Array of id and name (localized string)
+
+  @contextTypes:
+    locale: React.PropTypes.string  # e.g. "en"
+
+  handleToggle: (val) =>
+    items = @props.value?.value or []
+    if val in items
+      items = _.without(items, val)
+    else
+      items = items.concat([val])
+
+    if items.length == 0
+      @props.onChange(null)
+    else
+      @props.onChange({ type: "literal", valueType: "enumset", value: items })
+
+  render: ->
+    items = @props.value?.value or []
+
+    itemStyle = {
+      padding: 4
+      marginLeft: 15
+      borderRadius: 4
+      cursor: "pointer"
+      color: "#478"
+    }
+
+    H.div null,
+      _.map @props.enumValues, (val) => 
+        H.div key: val.id, className: "hover-grey-background", style: itemStyle, onClick: @handleToggle.bind(null, val.id),
+          if val.id in items
+            H.i className: "fa fa-fw fa-check-square", style: { color: "#2E6DA4" }
+          else
+            H.i className: "fa fa-fw fa-square", style: { color: "#DDDDDD" }
+          " "
+          ExprUtils.localizeString(val.name, @context.locale)
+
+# Component which displays an enum dropdown
 class EnumComponent extends React.Component
   @propTypes: 
     value: React.PropTypes.object

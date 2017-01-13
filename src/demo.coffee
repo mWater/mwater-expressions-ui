@@ -6,7 +6,6 @@ Schema = require("mwater-expressions").Schema
 
 ExprComponent = require './ExprComponent'
 ExprCleaner = require("mwater-expressions").ExprCleaner
-OmniBoxExprComponent = require './OmniBoxExprComponent'
 ExprCompiler = require("mwater-expressions").ExprCompiler
 
 DataSource = require('mwater-expressions').DataSource

@@ -57,7 +57,7 @@ module.exports = class ExprLinkComponent extends React.Component
     exprUtils = new ExprUtils(@props.schema)
 
     R LinkComponent, 
-      dropdownItems: [{ id: "edit", name: [H.i(className: "fa fa-pencil"), " Edit"] }, { id: "remove", name: [H.i(className: "fa fa-remove"), " Remove"] }]
+      dropdownItems: [{ id: "edit", name: [H.i(className: "fa fa-pencil text-muted"), " Edit"] }, { id: "remove", name: [H.i(className: "fa fa-remove text-muted"), " Remove"] }]
       onDropdownItemClicked: ((id) => 
         if id == "edit"
           @setState(modalVisible: true)
@@ -67,7 +67,7 @@ module.exports = class ExprLinkComponent extends React.Component
 
   renderLiteral: =>
     R LinkComponent, 
-      dropdownItems: [{ id: "edit", name: [H.i(className: "fa fa-pencil"), " Edit"] }, { id: "remove", name: [H.i(className: "fa fa-remove"), " Remove"] }]
+      dropdownItems: [{ id: "edit", name: [H.i(className: "fa fa-pencil text-muted"), " Edit"] }, { id: "remove", name: [H.i(className: "fa fa-remove text-muted"), " Remove"] }]
       onDropdownItemClicked: ((id) => 
         if id == "edit"
           @setState(modalVisible: true)
