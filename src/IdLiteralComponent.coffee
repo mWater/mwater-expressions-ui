@@ -13,7 +13,7 @@ AsyncLoadComponent = require 'react-library/lib/AsyncLoadComponent'
 module.exports = class IdLiteralComponent extends AsyncLoadComponent
   @propTypes: 
     value: React.PropTypes.string # String value of primary key
-    onChange: React.PropTypes.func.isRequired  
+    onChange: React.PropTypes.func.isRequired  # Called with primary key or array of primary keys
     idTable: React.PropTypes.string.isRequired # Array of id and name (localized string)
     schema: React.PropTypes.object.isRequired # Schema of the database
     dataSource: React.PropTypes.object.isRequired # Data source to use to get values

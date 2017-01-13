@@ -1,6 +1,7 @@
 React = require 'react'
 ReactDOM = require 'react-dom'
 H = React.DOM
+R = React.createElement
 
 # Shows a tree that selects table + joins + expr of a scalar expression
 module.exports = class ScalarExprTreeComponent extends React.Component 
@@ -11,7 +12,7 @@ module.exports = class ScalarExprTreeComponent extends React.Component
 
   render: ->
     H.div style: { overflowY: (if @props.height then "auto"), height: @props.height },
-      React.createElement(ScalarExprTreeTreeComponent,
+      R(ScalarExprTreeTreeComponent,
         tree: @props.tree,
         onChange: @props.onChange
         frame: this
@@ -21,6 +22,7 @@ class ScalarExprTreeTreeComponent extends React.Component
   @propTypes:
     tree: React.PropTypes.array.isRequired    # Tree from ScalarExprTreeBuilder
     onChange: React.PropTypes.func.isRequired # Called with newly selected value
+    prefix: React.PropTypes.string            # String to prefix names with
 
   render: ->
     elems = []
@@ -28,10 +30,10 @@ class ScalarExprTreeTreeComponent extends React.Component
     for item, i in @props.tree
       if item.children
         elems.push(
-          React.createElement(ScalarExprTreeNodeComponent, key: item.name + "(#{i})", item: item, onChange: @props.onChange))
+          R(ScalarExprTreeNodeComponent, key: item.name + "(#{i})", item: item, prefix: @props.prefix, onChange: @props.onChange))
       else 
         elems.push(
-           React.createElement(ScalarExprTreeLeafComponent, key: item.name + "(#{i})", item: item, onChange: @props.onChange))
+           R(ScalarExprTreeLeafComponent, key: item.name + "(#{i})", item: item, prefix: @props.prefix, onChange: @props.onChange))
 
     H.div null, 
       elems
@@ -39,6 +41,7 @@ class ScalarExprTreeTreeComponent extends React.Component
 class ScalarExprTreeLeafComponent extends React.Component
   @propTypes:
     item: React.PropTypes.object.isRequired # Contains item "name" and "value"
+    prefix: React.PropTypes.string            # String to prefix names with
   
   handleClick: =>
     @props.onChange(@props.item.value)
@@ -53,6 +56,8 @@ class ScalarExprTreeLeafComponent extends React.Component
     }
 
     H.div style: style, className: "hover-grey-background", onClick: @handleClick,
+      if @props.prefix
+        H.span className: "text-muted", @props.prefix
       @props.item.name
       if @props.item.desc
         H.span className: "text-muted", style: { fontSize: 12, paddingLeft: 3 }, " - " + @props.item.desc
@@ -89,8 +94,13 @@ class ScalarExprTreeNodeComponent extends React.Component
       arrow = H.i className: "fa fa-minus-square-o", style: { width: 15 }
 
     if @state.collapse == "open"
+      # Compute new prefix, adding when going into joins
+      prefix = @props.prefix or ""
+      if @props.item.childrenType == "join"
+        prefix = prefix + @props.item.name + " > "
+
       children = H.div style: { paddingLeft: 18 }, key: "tree",
-        React.createElement(ScalarExprTreeTreeComponent, tree: @props.item.children(), onChange: @props.onChange)
+        R(ScalarExprTreeTreeComponent, prefix: prefix, tree: @props.item.children(), onChange: @props.onChange)
 
     color = if @props.item.value then "#478" 
 
@@ -100,9 +110,11 @@ class ScalarExprTreeNodeComponent extends React.Component
         H.div style: { color: color, display: "inline-block" }, onClick: @handleItemClick, 
           if @props.item.childrenType == "section"
             H.i className: "fa fa-folder-open-o", style: { paddingRight: 5 }
+          if @props.prefix
+            H.span className: "text-muted", @props.prefix
           @props.item.name
-          if @props.item.childrenType == "join"
-            H.i className: "fa fa-link", style: { paddingRight: 5, paddingLeft: 5 }
+          # if @props.item.childrenType == "join"
+          #   H.i className: "fa fa-link", style: { paddingRight: 5, paddingLeft: 5 }
           if @props.item.desc
             H.span className: "text-muted", style: { fontSize: 12, paddingLeft: 3 }, " - " + @props.item.desc
       children
