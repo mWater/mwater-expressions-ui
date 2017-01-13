@@ -21,6 +21,9 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     orderBy: React.PropTypes.array   # Optional extra orderings. Put "main" as tableAlias. JsonQL
     multi: React.PropTypes.bool      # Allow multiple values (id[] type)
 
+  focus: ->
+    @refs.select.focus()
+
   # Override to determine if a load is needed. Not called on mounting
   isLoadNeeded: (newProps, oldProps) -> 
     return newProps.value != oldProps.value or newProps.idTable != oldProps.idTable
@@ -141,6 +144,7 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
 
     H.div style: { width: "100%" },
       React.createElement(ReactSelect, { 
+        ref: "select"
         value: value
         placeholder: @props.placeholder or "Select"
         asyncOptions: @getOptions

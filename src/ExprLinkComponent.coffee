@@ -44,6 +44,10 @@ module.exports = class ExprLinkComponent extends React.Component
       modalVisible: false
     }
 
+  # Opens the editor modal
+  showModal: =>
+    @setState(modalVisible: true)
+
   handleClick: =>
     @setState(modalVisible: true)
 

@@ -8,6 +8,7 @@ ExprCleaner = require("mwater-expressions").ExprCleaner
 ExprElementBuilder = require './ExprElementBuilder'
 StackedComponent = require './StackedComponent'
 RemovableComponent = require './RemovableComponent'
+ExprLinkComponent = require './ExprLinkComponent'
 
 # Displays a boolean filter expression. Just shows "+ Add filter" (or other add label) when empty
 module.exports = class FilterExprComponent extends React.Component
@@ -44,7 +45,7 @@ module.exports = class FilterExprComponent extends React.Component
       @props.onChange({ type: "op", op: "and", table: @props.table, exprs: [@props.value, null] })
       return
 
-    @setState(displayNull: true)
+    @setState(displayNull: true, => @refs.newExpr?.showModal())
 
   # Clean expression and pass up
   handleChange: (expr) =>
@@ -92,7 +93,7 @@ module.exports = class FilterExprComponent extends React.Component
         if _.last(expr.exprs) != null
           @renderAddFilter()
 
-    else if expr or @state.displayNull
+    else if expr 
       return H.div null,
         R RemovableComponent, 
           onRemove: @handleRemove,
@@ -103,8 +104,13 @@ module.exports = class FilterExprComponent extends React.Component
           })
 
         # Only display add if has a value
-        if expr
-          @renderAddFilter()
-
+        @renderAddFilter()
+    else if @state.displayNull
+      R ExprLinkComponent, 
+        ref: "newExpr"
+        schema: @props.schema
+        dataSource: @props.dataSource
+        table: @props.table
+        onChange: @handleChange
     else
       @renderAddFilter()

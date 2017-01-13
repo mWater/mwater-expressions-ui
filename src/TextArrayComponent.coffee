@@ -12,6 +12,9 @@ module.exports = class TextArrayComponent extends React.Component
     schema: React.PropTypes.object.isRequired # Schema of the database
     dataSource: React.PropTypes.object.isRequired # Data source to use to get values
 
+  focus: ->
+    @refs.select.focus()
+
   handleChange: (val) =>
     value = if val then val.split("\n") else []
     @props.onChange({ type: "literal", valueType: "text[]", value: value })
@@ -67,6 +70,7 @@ module.exports = class TextArrayComponent extends React.Component
 
     H.div style: { width: "100%" },
       React.createElement(ReactSelect, { 
+        ref: "select"
         value: value
         multi: true
         delimiter: "\n"

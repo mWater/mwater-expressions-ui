@@ -94,6 +94,7 @@ module.exports = class SelectLiteralExprComponent extends React.Component
     # If text[], enumset or id literal, use special component
     if exprType == "text[]" or _.isEqual(@props.types, ["text[]"])
       return R(TextArrayComponent, 
+        ref: "input"
         value: expr
         refExpr: @props.refExpr
         schema: @props.schema
@@ -115,6 +116,7 @@ module.exports = class SelectLiteralExprComponent extends React.Component
     if exprType == "id" or _.isEqual(@props.types, ["id"]) and @props.idTable
       idTable = @props.idTable or exprUtils.getExprIdTable(expr)
       return R(IdLiteralComponent, 
+        ref: "input"
         value: expr?.value
         idTable: idTable
         schema: @props.schema
@@ -124,6 +126,7 @@ module.exports = class SelectLiteralExprComponent extends React.Component
     if exprType == "id[]" or _.isEqual(@props.types, ["id[]"]) and @props.idTable
       idTable = @props.idTable or exprUtils.getExprIdTable(expr)
       return R(IdLiteralComponent, 
+        ref: "input"
         value: expr?.value
         idTable: idTable
         schema: @props.schema
