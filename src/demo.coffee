@@ -248,6 +248,13 @@ class LiveTestComponent extends React.Component
         value: @state.value
         onChange: @handleValueChange
       )
+      # R(FilterExprComponent, 
+      #   schema: @state.schema
+      #   dataSource: @state.dataSource
+      #   table: "entities.water_point"
+      #   value: @state.value
+      #   onChange: @handleValueChange
+      # )
       H.br()
       H.br()
       H.pre null, JSON.stringify(@state.value, null, 2)
