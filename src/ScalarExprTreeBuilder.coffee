@@ -17,6 +17,8 @@ module.exports = class ScalarExprTreeBuilder
   #   children: function which returns children nodes
   #   initiallyOpen: true if children should display initially
   #   childrenType: "section", "join"
+  #   tableId: table id of current item if applicable
+  #   item: column/section object of current item if applicable
   # }
   # options are:
   #  table: starting table
@@ -56,6 +58,7 @@ module.exports = class ScalarExprTreeBuilder
         name: ExprUtils.localizeString(@schema.getTable(options.table).name, @locale)
         desc: ExprUtils.localizeString(@schema.getTable(options.table).desc, @locale) 
         value: { table: options.startTable, joins: options.joins, expr: { type: "id", table: options.table } }
+        tableId: options.table
       }
       if not options.filter or node.name.match(options.filter)
         nodes.push(node)
@@ -67,6 +70,7 @@ module.exports = class ScalarExprTreeBuilder
       node = {
         name: "Number of #{ExprUtils.localizeString(@schema.getTable(options.table).name, @locale)}"
         value: { table: options.startTable, joins: options.joins, expr: { type: "op", op: "count", table: options.table, exprs: [] }}
+        tableId: options.tableId
       }
       if not options.filter or node.name.match(options.filter)
         nodes.push(node)
@@ -108,7 +112,8 @@ module.exports = class ScalarExprTreeBuilder
               desc: desc
               children: =>
                 @createNodes(item.contents, childOptions)
-              childrenType: "section"
+              tableId: options.table
+              item: item
             }
 
             # If empty, do not show if searching
@@ -140,6 +145,8 @@ module.exports = class ScalarExprTreeBuilder
     node = { 
       name: ExprUtils.localizeString(column.name, @locale)
       desc: ExprUtils.localizeString(column.desc, @locale)
+      tableId: options.table
+      item: column
     }
 
     # Determine if matches
@@ -187,8 +194,6 @@ module.exports = class ScalarExprTreeBuilder
       # If depth is 0 and searching, leave open
       if options.depth < 1 and options.filter and not matches
         node.initiallyOpen = true
-
-      node.childrenType = "join"
 
       if not options.filter
         return node

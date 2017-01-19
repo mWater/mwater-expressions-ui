@@ -67,6 +67,11 @@ class ScalarExprTreeNodeComponent extends React.Component
     item: React.PropTypes.object.isRequired # Item to display
     onChange: React.PropTypes.func.isRequired # Called when item is selected
 
+  @contextTypes:
+    # Function to decorate the children component of a section. Passed { children: React element of children, tableId: id of table, section: section object from schema }
+    # Should return decorated element
+    decorateScalarExprTreeSectionChildren: React.PropTypes.func 
+
   constructor: (props) ->
     super
     @state = { 
@@ -96,11 +101,18 @@ class ScalarExprTreeNodeComponent extends React.Component
     if @state.collapse == "open"
       # Compute new prefix, adding when going into joins
       prefix = @props.prefix or ""
-      if @props.item.childrenType == "join"
+      if @props.item.item.type == "join"
         prefix = prefix + @props.item.name + " > "
 
+      children = R(ScalarExprTreeTreeComponent, prefix: prefix, tree: @props.item.children(), onChange: @props.onChange)
+
+      # Decorate children if section
+      if @context.decorateScalarExprTreeSectionChildren and @props.item.item.type == "section"
+        children = @context.decorateScalarExprTreeSectionChildren({ children: children, tableId: @props.item.tableId, section: @props.item.item })
+
+      # Pad left and give key
       children = H.div style: { paddingLeft: 18 }, key: "tree",
-        R(ScalarExprTreeTreeComponent, prefix: prefix, tree: @props.item.children(), onChange: @props.onChange)
+        children
 
     color = if @props.item.value then "#478" 
 
@@ -108,12 +120,12 @@ class ScalarExprTreeNodeComponent extends React.Component
       H.div style: { cursor: "pointer", padding: 4, marginLeft: 15, position: "relative" }, key: "item", className: (if @props.item.value then "hover-grey-background"),
         H.span style: { color: "#478", cursor: "pointer", position: "absolute", left: -15 }, onClick: @handleArrowClick, arrow
         H.div style: { color: color, display: "inline-block" }, onClick: @handleItemClick, 
-          if @props.item.childrenType == "section"
+          if @props.item.item.type == "section"
             H.i className: "fa fa-folder-open-o", style: { paddingRight: 5 }
           if @props.prefix
             H.span className: "text-muted", @props.prefix
           @props.item.name
-          # if @props.item.childrenType == "join"
+          # if @props.item.item.type == "join"
           #   H.i className: "fa fa-link", style: { paddingRight: 5, paddingLeft: 5 }
           if @props.item.desc
             H.span className: "text-muted", style: { fontSize: 12, paddingLeft: 3 }, " - " + @props.item.desc
