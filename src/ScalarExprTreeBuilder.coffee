@@ -113,9 +113,9 @@ module.exports = class ScalarExprTreeBuilder
 
             # If empty, do not show
             if node.children().length > 0
-              # # If depth is 0 and searching and doesn't match, leave open
-              # if options.depth < 1 and options.filter and not matches
-              node.initiallyOpen = true
+              # If depth is 0 and searching and doesn't match, leave open
+              if options.depth == 0 and options.filter and not matches
+                node.initiallyOpen = true
 
               if not options.filter
                 nodes.push(node)
