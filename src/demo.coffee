@@ -467,9 +467,13 @@ properties = [
       "_base": "en",
       "en": "Water.org Program Type"
     },
+    "description": {
+      "_base": "en",
+      "en": "Water.org Program Type"
+    },
     "physical_quantity": null,
     "ref_entity_type": null,
-    "deprecated": true,
+    "deprecated": false,
     "limited": null,
     "limited_subst": null,
     "enumValues": [
@@ -503,10 +507,14 @@ properties = [
   },
   {
     "_id": "c64df46b-96c3-4539-a5c4-f902c1cbf06c",
-    "type": "text",
+    "type": "boolean",
     "entity_type": "water_point",
     "code": "wpdx_converted_fields",
     "name": {
+      "_base": "en",
+      "en": "WPDX Converted fields"
+    },
+    "description": {
       "_base": "en",
       "en": "WPDX Converted fields"
     },
@@ -531,16 +539,20 @@ properties = [
   },
   {
     "_id": "cfb1147d-54af-405c-818d-e94510177fd9",
-    "type": "text",
+    "type": "geometry",
     "entity_type": "water_point",
     "code": "wpdx_country",
     "name": {
       "_base": "en",
       "en": "WPDX Country (ISO 2-letter code)"
     },
+    "description": {
+      "_base": "en",
+      "en": "WPDX Country (ISO 2-letter code)"
+    },
     "physical_quantity": null,
     "ref_entity_type": null,
-    "deprecated": true,
+    "deprecated": false,
     "limited": null,
     "limited_subst": null,
     "values": null,
@@ -563,6 +575,10 @@ properties = [
     "entity_type": "water_point",
     "code": "wpdx_data_source",
     "name": {
+      "_base": "en",
+      "en": "WPDX Data source"
+    },
+    "description": {
       "_base": "en",
       "en": "WPDX Data source"
     },
@@ -594,9 +610,13 @@ properties = [
       "_base": "en",
       "en": "Date of data inventory"
     },
+    "description": {
+      "_base": "en",
+      "en": "Date of data inventory"
+    },
     "physical_quantity": null,
     "ref_entity_type": null,
-    "deprecated": true,
+    "deprecated": false,
     "limited": null,
     "limited_subst": null,
     "values": null,
@@ -624,7 +644,10 @@ properties = [
         "_base": "en",
         "en": "Sample Section"
       },
-      "description": "k akjsd aksjdasudha sd aksjd aksjdha k",
+      "description": {
+        "_base": "en",
+        "en": "k akjsd aksjdasudha sd aksjd aksjdha k"
+      },
       "contents": [
         {
           "_id": "a384e163-41a5-4986-bba2-b82bab31063e",
@@ -634,6 +657,10 @@ properties = [
           "name": {
             "_base": "en",
             "en": "WPDX Installer"
+          },
+          "description": {
+            "_base": "en",
+            "en": "Description for WPDX Installer"
           },
           "physical_quantity": null,
           "ref_entity_type": null,
@@ -667,9 +694,13 @@ properties = [
             "_base": "en",
             "en": "WPDX Management structure"
           },
+          "description": {
+            "_base": "en",
+            "en": "WPDX Management structure"
+          },
           "physical_quantity": null,
           "ref_entity_type": null,
-          "deprecated": true,
+          "deprecated": false,
           "limited": null,
           "limited_subst": null,
           "enumValues": [
@@ -731,9 +762,13 @@ properties = [
             "_base": "en",
             "en": "WPDX Management Structure - Other (please specify) text"
           },
+          "description": {
+            "_base": "en",
+            "en": "WPDX Management Structure - Other (please specify) text"
+          },
           "physical_quantity": null,
           "ref_entity_type": null,
-          "deprecated": true,
+          "deprecated": false,
           "limited": null,
           "limited_subst": null,
           "values": null,
@@ -758,10 +793,14 @@ properties = [
   },
   {
     "_id": "e32580ab-c877-40e0-a7b6-6e0fd00322f3",
-    "type": "text",
+    "type": "image",
     "entity_type": "water_point",
     "code": "wpdx_id",
     "name": {
+      "_base": "en",
+      "en": "WPDX Water point ID"
+    },
+    "description": {
       "_base": "en",
       "en": "WPDX Water point ID"
     },

@@ -169,9 +169,15 @@ class PropertyComponent extends React.Component
     listId: React.PropTypes.string
   
   @iconMap:
-    text: "glyphicon-property-type-text"
-    number: "glyphicon-property-type-number"
-    enum: "glyphicon-menu-hamburger"
+    text: "glyphicon glyphicon-property-type-text"
+    number: "glyphicon glyphicon-property-type-number"
+    enum: "fa fa-check-square-o"
+    enumset: "fa fa-dot-circle-o"
+    date: "fa fa-calendar-check-o"
+    datetime: "fa fa-calendar-check-o"
+    image: "fa fa-file-image-o"
+    geometry: "glyphicon glyphicon-map-marker"
+    boolean: "glyphicon glyphicon-property-type-boolean"
     
   @contextTypes:
     clipboard: React.PropTypes.object
@@ -192,8 +198,18 @@ class PropertyComponent extends React.Component
         H.a className: "pl-item-control", onClick: (() => @props.onPaste(@props.listId, @props.property._id)), "Paste"
       H.a className: "pl-item-control", onClick: (() => @props.onDelete()), "Delete"
   
+  renderEnumValues: (values) =>
+    names = _.map values, (value) ->
+      value.name[value._base or "en"]
+      
+    H.span null, "#{names.join(" / ")}"
+  
   render:->
-    H.div className: "pl-property",
+    
+    classNames = ["pl-property"]
+    if @props.property.deprecated 
+      classNames.push("deprecated")
+    H.div className: "#{ classNames.join(" ")}",
       if @state.editing
         R ActionCancelModalComponent, { 
           size: "large"
@@ -221,33 +237,45 @@ class PropertyComponent extends React.Component
                 features: @props.features
                 createRoleEditElem: @props.createRoleEditElem
       @renderControls()  
+      if @props.property.deprecated
+          H.div className: "pl-item-deprecated-overlay", ""
       H.div className: "pl-item", 
         H.div className: "pl-item-detail",
-          H.div className: "indicator",
-            H.span className: "glyphicon #{PropertyComponent.iconMap[@props.property.type] or "glyphicon-property-type-number"} pull-left", ""
-          H.div className: "name",
-            R LocalizedStringComponent, value: @props.property.name, className: ""
+          H.div className: "pl-item-detail-indicator",
+            H.span className: "#{PropertyComponent.iconMap[@props.property.type] or "glyphicon glyphicon-property-type-number"} pull-left", ""
+          H.div null,
+            H.div className: "pl-item-detail-name",
+              if _.includes @props.features, PropertyListEditorComponent.features.idField
+                H.small null, "[ #{@props.property._id} ]"
+              R LocalizedStringComponent, value: @props.property.name
+            if @props.property.description
+              H.div className: "pl-item-detail-description",
+                R LocalizedStringComponent, value: @props.property.description
+            if @props.property.sql
+              H.div className: "pl-item-detail-sql text-muted", @props.property.sql
+            if @props.property.type in ["enum", "enumset"] and @props.property.enumValues.length > 0
+              H.div className: "pl-item-detail-enum text-muted", @renderEnumValues(@props.property.enumValues)
             # if @props.createRoleDisplayElem and @props.property._roles
             #   H.div className: "roles", @props.createRoleDisplayElem(@props.property._roles)
-        if @props.property.type == "section"
-          H.div className: "pl-item-section",
-            R PropertyListComponent, 
-              properties: @props.property.contents
-              features: @props.features
-              schema: @props.schema
-              dataSource: @props.dataSource
-              table: @props.table
-              createRoleEditElem: @props.createRoleEditElem
-              createRoleDisplayElem: @props.createRoleDisplayElem
-              onCut: @props.onCut
-              onCopy: @props.onCopy
-              onPaste: @props.onPaste
-              listId: @props.property._id
-              onChange: (list) => 
-                # list has been modified
-                # update the list and call onChange
-                newProperty = _.cloneDeep(@props.property)
-                newProperty.contents = list
-                @props.onChange(newProperty)
+      if @props.property.type == "section"
+        H.div className: "pl-item-section",
+          R PropertyListComponent, 
+            properties: @props.property.contents or []
+            features: @props.features
+            schema: @props.schema
+            dataSource: @props.dataSource
+            table: @props.table
+            createRoleEditElem: @props.createRoleEditElem
+            createRoleDisplayElem: @props.createRoleDisplayElem
+            onCut: @props.onCut
+            onCopy: @props.onCopy
+            onPaste: @props.onPaste
+            listId: @props.property._id
+            onChange: (list) => 
+              # list has been modified
+              # update the list and call onChange
+              newProperty = _.cloneDeep(@props.property)
+              newProperty.contents = list
+              @props.onChange(newProperty)
         
 module.exports = NestedListClipboardEnhancement(PropertyListComponent)

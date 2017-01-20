@@ -87,16 +87,33 @@
   padding: 6px;
 }
 
+.pl-container .pl-item-section {
+  padding: 6px;
+}
+
 .pl-container .pl-item-detail {
   display: flex;
 }
 
-.pl-container .pl-item .name {
+.pl-container .pl-item .pl-item-detail-name {
+  font-weight: bold;
 }
 
-.pl-container .pl-item .indicator {
-  margin-right: 6px;
+.pl-container .pl-item .pl-item-detail-sql {
+  font-size: 12px;
+}
+.pl-container .pl-item .pl-item-detail-enum {
+  font-size: 12px;
+}
+
+.pl-container .pl-item .pl-item-detail-indicator {
+  margin-right: 8px;
   color: #aeaeae;
+}
+.pl-container .pl-item .pl-item-detail-indicator .glyphicon,
+.pl-container .pl-item .pl-item-detail-indicator .fa {
+  width: 25.2px;
+  text-align: center;
 }
 
 .pl-container .pl-item-controls {
@@ -110,6 +127,18 @@
   position: absolute;
   top: 0;
   right: 0;
+  z-index: 2;
+}
+
+.pl-container .pl-item-deprecated-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #f2f2f2;
+  opacity: 0.8;
+  z-index: 1;
 }
 
 .pl-container .pl-property:hover > .pl-item-controls {
@@ -133,4 +162,8 @@
 .glyphicon-property-type-number:before{
   font-family: monospace;
   content: "123" 
+}
+.glyphicon-property-type-boolean:before{
+  font-family: monospace;
+  content: "y/n" 
 }
