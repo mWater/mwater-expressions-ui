@@ -115,7 +115,7 @@ class MockTestInlineExprsEditorComponent extends React.Component
       { id: "text", name: { en: "Text" }, type: "text" }
       { id: "number", name: { en: "Number" }, type: "number" }
       { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
-      { id: "enumset", name: { en: "EnumSet" }, type: "enumset", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
+      { id: "", name: { en: "EnumSet" }, type: "enumset", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
       { id: "date", name: { en: "Date" }, type: "date" }
       { id: "datetime", name: { en: "Datetime" }, type: "datetime" }
       { id: "boolean", name: { en: "Boolean" }, type: "boolean" }
@@ -467,7 +467,7 @@ properties = [
       "_base": "en",
       "en": "Water.org Program Type"
     },
-    "description": {
+    "desc": {
       "_base": "en",
       "en": "Water.org Program Type"
     },
@@ -514,7 +514,7 @@ properties = [
       "_base": "en",
       "en": "WPDX Converted fields"
     },
-    "description": {
+    "desc": {
       "_base": "en",
       "en": "WPDX Converted fields"
     },
@@ -546,7 +546,7 @@ properties = [
       "_base": "en",
       "en": "WPDX Country (ISO 2-letter code)"
     },
-    "description": {
+    "desc": {
       "_base": "en",
       "en": "WPDX Country (ISO 2-letter code)"
     },
@@ -578,7 +578,7 @@ properties = [
       "_base": "en",
       "en": "WPDX Data source"
     },
-    "description": {
+    "desc": {
       "_base": "en",
       "en": "WPDX Data source"
     },
@@ -610,7 +610,7 @@ properties = [
       "_base": "en",
       "en": "Date of data inventory"
     },
-    "description": {
+    "desc": {
       "_base": "en",
       "en": "Date of data inventory"
     },
@@ -644,7 +644,7 @@ properties = [
         "_base": "en",
         "en": "Sample Section"
       },
-      "description": {
+      "desc": {
         "_base": "en",
         "en": "k akjsd aksjdasudha sd aksjd aksjdha k"
       },
@@ -658,7 +658,7 @@ properties = [
             "_base": "en",
             "en": "WPDX Installer"
           },
-          "description": {
+          "desc": {
             "_base": "en",
             "en": "Description for WPDX Installer"
           },
@@ -694,7 +694,7 @@ properties = [
             "_base": "en",
             "en": "WPDX Management structure"
           },
-          "description": {
+          "desc": {
             "_base": "en",
             "en": "WPDX Management structure"
           },
@@ -762,7 +762,7 @@ properties = [
             "_base": "en",
             "en": "WPDX Management Structure - Other (please specify) text"
           },
-          "description": {
+          "desc": {
             "_base": "en",
             "en": "WPDX Management Structure - Other (please specify) text"
           },
@@ -800,7 +800,7 @@ properties = [
       "_base": "en",
       "en": "WPDX Water point ID"
     },
-    "description": {
+    "desc": {
       "_base": "en",
       "en": "WPDX Water point ID"
     },

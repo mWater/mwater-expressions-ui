@@ -33,7 +33,7 @@ module.exports = class PropertyListEditorComponent extends React.Component
       if _.includes @props.features, PropertyListEditorComponent.features.idField
         R FormGroupComponent, label: "ID",
           H.input type: "text", className: "form-control", value: @props.property._id, onChange: (ev) => @props.onChange(_.extend({}, @props.property, id: ev.target.value))
-          H.p className: "help-block", "Letters lowercase, numbers and _ only. No spaces or uppercase"
+          H.p className: "help-block", "Letters lowercase only."
       R FormGroupComponent, label: "Code",
         H.input type: "text", className: "form-control", value: @props.property.code, onChange: (ev) => @props.onChange(_.extend({}, @props.property, code: ev.target.value))
       R FormGroupComponent, label: "Name",
@@ -182,7 +182,7 @@ class EnumValueEditorComponent extends React.Component
               style: { width: "10em" }
               value: @props.value.id
               onChange: (ev) => @props.onChange(_.extend({}, @props.value, id: ev.target.value))
-            H.p className: "help-block", "Letters lowercase, numbers and _ only. No spaces or uppercase"
+            H.p className: "help-block", "Letters lowercase only."
         H.div className: "col-md-6",
           R FormGroupComponent, label: "Code",
             H.input 

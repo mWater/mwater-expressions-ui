@@ -30,7 +30,7 @@ class PropertyListComponent extends React.Component
     
     # function that returns the UI of the roles for editing, gets passed two arguments
     # 1. the array containing roles
-    # 2. The callback function that should be called when the roles chang
+    # 2. The callback function that should be called when the roles change
     createRoleEditElem: React.PropTypes.func
     
     onCut: React.PropTypes.func # supplied by NestedListClipboardEnhancement
@@ -116,16 +116,15 @@ class PropertyListComponent extends React.Component
             property: @state.addingItem
             onChange: (updatedProperty) => @setState(addingItem: updatedProperty)
             features: @props.features
-          # H.pre null, JSON.stringify(@state.addingItem, null, 2)
         else
           R PropertyListEditorComponent,
-          property: @state.addingItem
-          schema: @props.schema
-          dataSource: @props.dataSource
-          table: @props.table
-          onChange: (updatedProperty) => @setState(addingItem: updatedProperty)
-          features: @props.features
-          createRoleEditElem: @props.createRoleEditElem
+            property: @state.addingItem
+            schema: @props.schema
+            dataSource: @props.dataSource
+            table: @props.table
+            onChange: (updatedProperty) => @setState(addingItem: updatedProperty)
+            features: @props.features
+            createRoleEditElem: @props.createRoleEditElem
     
   renderProperty: (item, index, connectDragSource, connectDragPreview, connectDropTarget) =>
     elem = H.div key: index,
@@ -176,6 +175,7 @@ class PropertyComponent extends React.Component
     date: "fa fa-calendar-check-o"
     datetime: "fa fa-calendar-check-o"
     image: "fa fa-file-image-o"
+    section: "fa fa-folder"
     geometry: "glyphicon glyphicon-map-marker"
     boolean: "glyphicon glyphicon-property-type-boolean"
     
@@ -248,9 +248,9 @@ class PropertyComponent extends React.Component
               if _.includes @props.features, PropertyListEditorComponent.features.idField
                 H.small null, "[ #{@props.property._id} ]"
               R LocalizedStringComponent, value: @props.property.name
-            if @props.property.description
+            if @props.property.desc
               H.div className: "pl-item-detail-description",
-                R LocalizedStringComponent, value: @props.property.description
+                R LocalizedStringComponent, value: @props.property.desc
             if @props.property.sql
               H.div className: "pl-item-detail-sql text-muted", @props.property.sql
             if @props.property.type in ["enum", "enumset"] and @props.property.enumValues.length > 0
