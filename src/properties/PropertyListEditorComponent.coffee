@@ -2,6 +2,7 @@ React = require 'react'
 R = React.createElement
 H = React.DOM
 _ = require 'lodash'
+className = require 'classnames'
 
 LocalizedStringEditorComp = require '../LocalizedStringEditorComp'
 ExprComponent = require '../ExprComponent'
@@ -31,9 +32,9 @@ module.exports = class PropertyListEditorComponent extends React.Component
     H.div null,
       # todo: validate id
       if _.includes @props.features, PropertyListEditorComponent.features.idField
-        R FormGroupComponent, label: "ID",
-          H.input type: "text", className: "form-control", value: @props.property._id, onChange: (ev) => @props.onChange(_.extend({}, @props.property, id: ev.target.value))
-          H.p className: "help-block", "Letters lowercase only."
+        R IdFieldComponent, 
+          value: @props.property._id
+          onChange: (value) => @props.onChange(_.extend({}, @props.property, _id: value))
       R FormGroupComponent, label: "Code",
         H.input type: "text", className: "form-control", value: @props.property.code, onChange: (ev) => @props.onChange(_.extend({}, @props.property, code: ev.target.value))
       R FormGroupComponent, label: "Name",
@@ -99,6 +100,32 @@ module.exports = class PropertyListEditorComponent extends React.Component
           @props.createRoleEditElem(@props.property._roles or [], (roles) => @props.onChange(_.extend({}, @props.property, _roles: roles)) )
       
       # H.pre null, JSON.stringify(@props.property, null, 2)
+
+class IdFieldComponent extends React.Component
+  @propTypes: 
+    value: React.PropTypes.string  # The value
+    onChange: React.PropTypes.func.isRequired  # Called with new value
+    
+  constructor: (props) ->
+    super(props)
+    @state = {
+      value: @props.value
+      valid: @isValid(props.value)
+    }
+    
+  isValid: (string) =>
+    return /^[a-z\-]+$/.test(string)
+    
+  handleChange: (ev) =>
+    @setState(value:ev.target.value, valid: @isValid(ev.target.value))  
+    
+    if @state.valid
+      @props.onChange(ev.target.value)
+    
+  render: ->
+    R FormGroupComponent, label: "ID", hasErrors: not @state.valid,
+      H.input type: "text", className: "form-control", value: @state.value, onChange: @handleChange
+      H.p className: "help-block", "Letters lowercase only."
 
 # Edits join
 class JoinEditorComponent extends React.Component
@@ -174,15 +201,18 @@ class EnumValueEditorComponent extends React.Component
     H.div null,
       H.div className: "row",
         H.div className: "col-md-6",
-          R FormGroupComponent, label: "ID",
-            H.input 
-              type: "text"
-              className: "form-control"
-              placeholder: "ID"
-              style: { width: "10em" }
-              value: @props.value.id
-              onChange: (ev) => @props.onChange(_.extend({}, @props.value, id: ev.target.value))
-            H.p className: "help-block", "Letters lowercase only."
+          R IdFieldComponent, 
+            value: @props.value.id
+            onChange: (value) => @props.onChange(_.extend({}, @props.value, id: value))
+          # R FormGroupComponent, label: "ID",
+          #   H.input 
+          #     type: "text"
+          #     className: "form-control"
+          #     placeholder: "ID"
+          #     style: { width: "10em" }
+          #     value: @props.value.id
+          #     onChange: (ev) => @props.onChange(_.extend({}, @props.value, id: ev.target.value))
+          #   H.p className: "help-block", "Letters lowercase only."
         H.div className: "col-md-6",
           R FormGroupComponent, label: "Code",
             H.input 
@@ -204,6 +234,12 @@ class EnumValueEditorComponent extends React.Component
     
 class FormGroupComponent extends React.Component
   render: ->
-    H.div className: "form-group",
+    classes = {
+      "form-group": true
+      "has-error": @props.hasErrors
+      "has-warning": @props.hasWarnings
+      "has-success": @props.hasSuccess
+    }
+    H.div className: className(classes),
       H.label null, @props.label
       @props.children

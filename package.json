@@ -17,6 +17,7 @@
   "license": "",
   "dependencies": {
     "async": "^1.5.0",
+    "classnames": "^2.2.5",
     "eonasdan-bootstrap-datetimepicker": "^4.15.35",
     "lodash": "^3.10.1",
     "moment": "^2.10.6",

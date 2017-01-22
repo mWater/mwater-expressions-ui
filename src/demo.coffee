@@ -49,6 +49,7 @@ class PropertyListContainerComponent extends React.Component
             dataSource: @props.dataSource
             table: @props.table
             features: [
+              PropertyListEditorComponent.features.idField
               PropertyListEditorComponent.features.sql
               PropertyListEditorComponent.features.joinType
               PropertyListEditorComponent.features.idType
