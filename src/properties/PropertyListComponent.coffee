@@ -255,8 +255,6 @@ class PropertyComponent extends React.Component
               H.div className: "pl-item-detail-sql text-muted", @props.property.sql
             if @props.property.type in ["enum", "enumset"] and @props.property.enumValues.length > 0
               H.div className: "pl-item-detail-enum text-muted", @renderEnumValues(@props.property.enumValues)
-            # if @props.createRoleDisplayElem and @props.property._roles
-            #   H.div className: "roles", @props.createRoleDisplayElem(@props.property._roles)
       if @props.property.type == "section"
         H.div className: "pl-item-section",
           R PropertyListComponent, 
@@ -272,8 +270,6 @@ class PropertyComponent extends React.Component
             onPaste: @props.onPaste
             listId: @props.property._id
             onChange: (list) => 
-              # list has been modified
-              # update the list and call onChange
               newProperty = _.cloneDeep(@props.property)
               newProperty.contents = list
               @props.onChange(newProperty)

@@ -30,7 +30,6 @@ module.exports = class PropertyListEditorComponent extends React.Component
   
   render: ->
     H.div null,
-      # todo: validate id
       if _.includes @props.features, PropertyListEditorComponent.features.idField
         R IdFieldComponent, 
           value: @props.property._id
@@ -63,7 +62,6 @@ module.exports = class PropertyListEditorComponent extends React.Component
             H.option key: "join", value: "join", "Join"
       if @props.property.type in ["enum", "enumset"]
         R FormGroupComponent, label: "Values",
-          # todo: This is visually confusing
           R EnumValuesEditorComponent, value: @props.property.enumValues, onChange: ((value) => @props.onChange(_.extend({}, @props.property, enumValues: value)))
       
       if @props.property.type == "expr"
@@ -98,8 +96,6 @@ module.exports = class PropertyListEditorComponent extends React.Component
       if @props.createRoleEditElem
         R FormGroupComponent, label: "Roles",
           @props.createRoleEditElem(@props.property._roles or [], (roles) => @props.onChange(_.extend({}, @props.property, _roles: roles)) )
-      
-      # H.pre null, JSON.stringify(@props.property, null, 2)
 
 class IdFieldComponent extends React.Component
   @propTypes: 
@@ -154,7 +150,6 @@ class JoinEditorComponent extends React.Component
         H.div className: "col-md-12",
           R FormGroupComponent, label: "To Column",
             H.input type: 'text', className: "form-control", value: @props.value?.toColumn, onChange: ((ev) => @props.onChange(_.extend({}, @props.value, toColumn: ev.target.value)))
-            # R LocalizedStringEditorComp, value: @props.value.name, onChange: (value) => @props.onChange(_.extend({}, @props.value, type: value))
 
 # reusable table select Component
 class TableSelectComponent extends React.Component
@@ -204,15 +199,7 @@ class EnumValueEditorComponent extends React.Component
           R IdFieldComponent, 
             value: @props.value.id
             onChange: (value) => @props.onChange(_.extend({}, @props.value, id: value))
-          # R FormGroupComponent, label: "ID",
-          #   H.input 
-          #     type: "text"
-          #     className: "form-control"
-          #     placeholder: "ID"
-          #     style: { width: "10em" }
-          #     value: @props.value.id
-          #     onChange: (ev) => @props.onChange(_.extend({}, @props.value, id: ev.target.value))
-          #   H.p className: "help-block", "Letters lowercase only."
+
         H.div className: "col-md-6",
           R FormGroupComponent, label: "Code",
             H.input 
