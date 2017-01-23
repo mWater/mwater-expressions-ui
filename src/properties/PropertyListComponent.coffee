@@ -243,7 +243,7 @@ class PropertyComponent extends React.Component
       @renderControls()  
       if @props.property.deprecated
           H.div className: "pl-item-deprecated-overlay", ""
-      H.div className: "pl-item", 
+      H.div className: "pl-item", onDoubleClick: @handleEdit, 
         H.div className: "pl-item-detail",
           H.div className: "pl-item-detail-indicator",
             H.span className: "#{PropertyComponent.iconMap[@props.property.type] or "glyphicon glyphicon-property-type-number"} pull-left", ""
