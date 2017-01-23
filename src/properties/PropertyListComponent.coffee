@@ -75,6 +75,7 @@ class PropertyListComponent extends React.Component
   handleNewSection: () =>
     section = {
       type: "section"
+      contents: []
     }
     
     @setState(addingItem: section)
