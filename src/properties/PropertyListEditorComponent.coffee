@@ -47,6 +47,7 @@ module.exports = class PropertyListEditorComponent extends React.Component
           H.option key: "text[]", value: "text[]", "Text Array"
           H.option key: "image", value: "image", "Image"
           H.option key: "imagelist", value: "imagelist", "Imagelist"
+          H.option key: "json", value: "json", "JSON"
           H.option key: "expr", value: "expr", "Expression"
           if _.includes @props.features, "idType"
             H.option key: "id", value: "id", "Reference"

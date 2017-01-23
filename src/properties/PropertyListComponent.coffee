@@ -208,8 +208,7 @@ class PropertyComponent extends React.Component
       
     H.span null, "#{names.join(" / ")}"
   
-  render:->
-    
+  render: ->
     classNames = ["pl-property"]
     if @props.property.deprecated 
       classNames.push("deprecated")
@@ -259,6 +258,9 @@ class PropertyComponent extends React.Component
               H.div className: "pl-item-detail-sql text-muted", @props.property.sql
             if @props.property.type in ["enum", "enumset"] and @props.property.enumValues.length > 0
               H.div className: "pl-item-detail-enum text-muted", @renderEnumValues(@props.property.enumValues)
+            if @props.property.roles and @props.createRoleDisplayElem
+              @props.createRoleDisplayElem(@props.property.roles)
+
       if @props.property.type == "section"
         H.div className: "pl-item-section",
           R PropertyListComponent, 
