@@ -27,7 +27,7 @@ module.exports = class PropertyListEditorComponent extends React.Component
         R IdFieldComponent, 
           value: @props.property.id
           onChange: (value) => @props.onChange(_.extend({}, @props.property, id: value))
-      if _.includes(@props.features, "idField")
+      if _.includes(@props.features, "code")
         R FormGroupComponent, label: "Code",
           H.input type: "text", className: "form-control", value: @props.property.code, onChange: (ev) => @props.onChange(_.extend({}, @props.property, code: ev.target.value))
       R FormGroupComponent, label: "Name",
