@@ -27,6 +27,7 @@ class PropertyListComponent extends React.Component
     # uniqueCode: allow uniqueCode flag on properties
     # idType: allow id-type fields
     # joinType: allow join-type fields
+    # code: show code of properties
     features: React.PropTypes.array
     
     # function that returns the UI of the roles, called with a single argument, the array containing roles

@@ -23,12 +23,13 @@ module.exports = class PropertyListEditorComponent extends React.Component
     
   render: ->
     H.div null,
-      if _.includes @props.features, "idField"
+      if _.includes(@props.features, "idField")
         R IdFieldComponent, 
           value: @props.property.id
           onChange: (value) => @props.onChange(_.extend({}, @props.property, id: value))
-      R FormGroupComponent, label: "Code",
-        H.input type: "text", className: "form-control", value: @props.property.code, onChange: (ev) => @props.onChange(_.extend({}, @props.property, code: ev.target.value))
+      if _.includes(@props.features, "idField")
+        R FormGroupComponent, label: "Code",
+          H.input type: "text", className: "form-control", value: @props.property.code, onChange: (ev) => @props.onChange(_.extend({}, @props.property, code: ev.target.value))
       R FormGroupComponent, label: "Name",
         R LocalizedStringEditorComp, value: @props.property.name, onChange: (value) => @props.onChange(_.extend({}, @props.property, name: value))
       R FormGroupComponent, label: "Description",
