@@ -67,21 +67,15 @@ class PropertyListComponent extends React.Component
       type: "text"
     }
     
-    if _.includes(@props.features, "idField") and @props.propertyIdGenerator
+    if @props.propertyIdGenerator
       property["id"] = @props.propertyIdGenerator()
-    else
-      property["id"] = uuid.v4()
+
     @setState(addingItem: property)
     
   handleNewSection: () =>
     section = {
       type: "section"
     }
-    
-    if _.includes(@props.features, "idField") and @props.propertyIdGenerator
-      section["id"] = @props.propertyIdGenerator()
-    else
-      section["id"] = uuid.v4()
     
     @setState(addingItem: section)
     

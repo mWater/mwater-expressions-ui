@@ -19,10 +19,11 @@ module.exports = class SectionEditorComponent extends React.Component
   render: ->
     H.div null,
       # todo: validate id
-      if _.includes @props.features, "idField"
-        R FormGroupComponent, label: "ID",
-          H.input type: "text", className: "form-control", value: @props.property._id, onChange: (ev) => @props.onChange(_.extend({}, @props.property, id: ev.target.value))
-          H.p className: "help-block", "Letters lowercase, numbers and _ only. No spaces or uppercase"
+      # Sections generally don't have id
+      # if _.includes @props.features, "idField"
+      #   R FormGroupComponent, label: "ID",
+      #     H.input type: "text", className: "form-control", value: @props.property.id, onChange: (ev) => @props.onChange(_.extend({}, @props.property, id: ev.target.value))
+      #     H.p className: "help-block", "Letters lowercase, numbers and _ only. No spaces or uppercase"
       if _.includes @props.features, "code"
         R FormGroupComponent, label: "Code",
           H.input type: "text", className: "form-control", value: @props.property.code, onChange: (ev) => @props.onChange(_.extend({}, @props.property, code: ev.target.value))

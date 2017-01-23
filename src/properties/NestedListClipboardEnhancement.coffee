@@ -36,21 +36,22 @@ module.exports = (WrappedComponent) ->
       return find(listId, itemId, (_.filter value, {type: "section"}))
     
     handleCopy: (listId, itemId, cut = false) =>
-      
+      # TODO why is value computed here?
       value = _.cloneDeep @props.properties
       property = @findItemById(listId, itemId)
-      
-      if _.includes(@props.features, "idField") and @props.propertyIdGenerator
+
+      # TODO this mutates the original property!
+      # TODO maybe add a number on to end instead of UUIDing for copying?      
+      if @props.propertyIdGenerator
         property.id = @props.propertyIdGenerator()
-      else
-        property.id = uuid.v4()
+      # TODO I removed uuid as we don't need it for anything right now and I'd rather force specifying id generator
       
       @setState(clipboard: {
-          listId: listId
-          itemId: itemId
-          property: property
-          cut: cut
-        })
+        listId: listId
+        itemId: itemId
+        property: property
+        cut: cut
+      })
         
     handlePaste: (listId, itemId) =>
       if not @state.clipboard
