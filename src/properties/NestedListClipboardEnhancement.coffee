@@ -20,15 +20,15 @@ module.exports = (WrappedComponent) ->
       
     findItemById: (listId, itemId) =>
       value = _.cloneDeep @props.properties
-      list = _.find value, { _id: itemId }
+      list = _.find value, { id: itemId }
       
       if list # check in the root array first
         return list
         
       find = (listId, itemId, items) ->  
         for property in items
-          if property._id == listId
-            return _.find property.contents, { _id: itemId }
+          if property.id == listId
+            return _.find property.contents, { id: itemId }
           else 
             return find(listId, itemId, (_.filter property.contents, {type: "section"}))
       
@@ -40,10 +40,10 @@ module.exports = (WrappedComponent) ->
       value = _.cloneDeep @props.properties
       property = @findItemById(listId, itemId)
       
-      if _.includes @props.features, PropertyListEditorComponent.features.idField and @props.propertyIdGenerator
-        property._id = @props.propertyIdGenerator()
+      if _.includes(@props.features, "idField") and @props.propertyIdGenerator
+        property.id = @props.propertyIdGenerator()
       else
-        property._id = uuid.v4()
+        property.id = uuid.v4()
       
       @setState(clipboard: {
           listId: listId
@@ -57,7 +57,7 @@ module.exports = (WrappedComponent) ->
         return
         
       value = _.cloneDeep @props.properties
-      pasteIndex = _.findIndex value, { _id: itemId } # check in the root array first
+      pasteIndex = _.findIndex value, { id: itemId } # check in the root array first
       
       if pasteIndex > -1
         value.splice(pasteIndex, 0, @state.clipboard.property)
@@ -65,15 +65,15 @@ module.exports = (WrappedComponent) ->
       else
         paste = (listId, itemId, items) =>
           for property in items
-            if property._id == listId
-              pasteIndex = _.findIndex property.contents, { _id: itemId }
+            if property.id == listId
+              pasteIndex = _.findIndex property.contents, { id: itemId }
               property.contents.splice(pasteIndex, 0, @state.clipboard.property)
             else 
               paste(listId, itemId, (_.filter property.contents, {type: "section"}))
         paste(listId, itemId, (_.filter value, {type: "section"}))
         
       if @state.clipboard.cut
-        cutIndex = _.findIndex value, { _id: @state.clipboard.itemId }
+        cutIndex = _.findIndex value, { id: @state.clipboard.itemId }
         
         if cutIndex > -1
           _.pullAt value, cutIndex
@@ -81,8 +81,8 @@ module.exports = (WrappedComponent) ->
         else 
           cut = (listId, itemId, items) => 
             for property in items
-              if property._id == listId
-                cutIndex = _.findIndex property.contents, { _id: @state.clipboard.itemId }
+              if property.id == listId
+                cutIndex = _.findIndex property.contents, { id: @state.clipboard.itemId }
                 _.pullAt property.contents, cutIndex
               else 
                 cut(listId, itemId, (_.filter property.contents, {type: "section"}))

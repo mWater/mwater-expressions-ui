@@ -21,8 +21,12 @@ class PropertyListComponent extends React.Component
     table: React.PropTypes.string.isRequired    # Table that properties are of
     propertyIdGenerator: React.PropTypes.func # Function to generate the ID of the property
     
-    # Array of features to be enabled apart from the defaults
-    # see PropertyListEditorComponent.features for available features
+    # Array of features to be enabled apart from the defaults. Features are:
+    # sql: include raw SQL editor
+    # idField: show id field for properties
+    # uniqueCode: allow uniqueCode flag on properties
+    # idType: allow id-type fields
+    # joinType: allow join-type fields
     features: React.PropTypes.array
     
     # function that returns the UI of the roles, called with a single argument, the array containing roles
@@ -40,7 +44,7 @@ class PropertyListComponent extends React.Component
     
   @contextTypes:
     clipboard: React.PropTypes.object
-    
+  
   constructor: (props) ->
     super(props)
     @state = {
@@ -62,10 +66,10 @@ class PropertyListComponent extends React.Component
       type: "text"
     }
     
-    if _.includes @props.features, PropertyListEditorComponent.features.idField and @props.propertyIdGenerator
-      property["_id"] = @props.propertyIdGenerator()
+    if _.includes(@props.features, "idField") and @props.propertyIdGenerator
+      property["id"] = @props.propertyIdGenerator()
     else
-      property["_id"] = uuid.v4()
+      property["id"] = uuid.v4()
     @setState(addingItem: property)
     
   handleNewSection: () =>
@@ -73,10 +77,10 @@ class PropertyListComponent extends React.Component
       type: "section"
     }
     
-    if _.includes @props.features, PropertyListEditorComponent.features.idField and @props.propertyIdGenerator
-      section["_id"] = @props.propertyIdGenerator()
+    if _.includes(@props.features, "idField") and @props.propertyIdGenerator
+      section["id"] = @props.propertyIdGenerator()
     else
-      section["_id"] = uuid.v4()
+      section["id"] = uuid.v4()
     
     @setState(addingItem: section)
     
@@ -150,7 +154,7 @@ class PropertyListComponent extends React.Component
         items: @props.properties
         onReorder: (list) => @props.onChange(list)
         renderItem: @renderProperty
-        getItemId: (item) => item._id
+        getItemId: (item) => item.id
         element: H.div className: 'pl-container'
       @renderControls()
 
@@ -192,10 +196,10 @@ class PropertyComponent extends React.Component
   renderControls: ->
     H.div className: "pl-item-controls",
       H.a className: "pl-item-control", onClick: @handleEdit, "Edit"
-      H.a className: "pl-item-control", onClick: (() => @props.onCopy(@props.listId, @props.property._id)), "Copy"
-      H.a className: "pl-item-control", onClick: (() => @props.onCut(@props.listId, @props.property._id)), "Cut"
+      H.a className: "pl-item-control", onClick: (() => @props.onCopy(@props.listId, @props.property.id)), "Copy"
+      H.a className: "pl-item-control", onClick: (() => @props.onCut(@props.listId, @props.property.id)), "Cut"
       if @context.clipboard
-        H.a className: "pl-item-control", onClick: (() => @props.onPaste(@props.listId, @props.property._id)), "Paste"
+        H.a className: "pl-item-control", onClick: (() => @props.onPaste(@props.listId, @props.property.id)), "Paste"
       H.a className: "pl-item-control", onClick: (() => @props.onDelete()), "Delete"
   
   renderEnumValues: (values) =>
@@ -245,8 +249,8 @@ class PropertyComponent extends React.Component
             H.span className: "#{PropertyComponent.iconMap[@props.property.type] or "glyphicon glyphicon-property-type-number"} pull-left", ""
           H.div null,
             H.div className: "pl-item-detail-name",
-              if _.includes @props.features, PropertyListEditorComponent.features.idField
-                H.small null, "[ #{@props.property._id} ]"
+              if _.includes(@props.features, "idField") and @props.property.id
+                H.small null, "[#{@props.property.id}] "
               R LocalizedStringComponent, value: @props.property.name
             if @props.property.desc
               H.div className: "pl-item-detail-description",
@@ -268,7 +272,7 @@ class PropertyComponent extends React.Component
             onCut: @props.onCut
             onCopy: @props.onCopy
             onPaste: @props.onPaste
-            listId: @props.property._id
+            listId: @props.property.id
             onChange: (list) => 
               newProperty = _.cloneDeep(@props.property)
               newProperty.contents = list

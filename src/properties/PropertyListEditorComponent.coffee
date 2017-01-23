@@ -21,19 +21,12 @@ module.exports = class PropertyListEditorComponent extends React.Component
   @defaultProps:
     features: []
     
-  @features:
-    sql: "sql"
-    idField: "idField"
-    uniqueCode: "uniqueCode"
-    idType: "idType"
-    joinType: "joinType"
-  
   render: ->
     H.div null,
-      if _.includes @props.features, PropertyListEditorComponent.features.idField
+      if _.includes @props.features, "idField"
         R IdFieldComponent, 
-          value: @props.property._id
-          onChange: (value) => @props.onChange(_.extend({}, @props.property, _id: value))
+          value: @props.property.id
+          onChange: (value) => @props.onChange(_.extend({}, @props.property, id: value))
       R FormGroupComponent, label: "Code",
         H.input type: "text", className: "form-control", value: @props.property.code, onChange: (ev) => @props.onChange(_.extend({}, @props.property, code: ev.target.value))
       R FormGroupComponent, label: "Name",
@@ -54,11 +47,10 @@ module.exports = class PropertyListEditorComponent extends React.Component
           H.option key: "text[]", value: "text[]", "Text Array"
           H.option key: "image", value: "image", "Image"
           H.option key: "imagelist", value: "imagelist", "Imagelist"
-          # H.option key: "id", value: "id", "Reference"
           H.option key: "expr", value: "expr", "Expression"
-          if _.includes @props.features, PropertyListEditorComponent.features.idType
+          if _.includes @props.features, "idType"
             H.option key: "id", value: "id", "Reference"
-          if _.includes @props.features, PropertyListEditorComponent.features.joinType
+          if _.includes @props.features, "joinType"
             H.option key: "join", value: "join", "Join"
       if @props.property.type in ["enum", "enumset"]
         R FormGroupComponent, label: "Values",
@@ -85,17 +77,17 @@ module.exports = class PropertyListEditorComponent extends React.Component
       R FormGroupComponent, label: "Deprecated",
         H.input type: 'checkbox', checked: @props.property.deprecated, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, deprecated: ev.target.checked)))
       
-      if _.includes @props.features, PropertyListEditorComponent.features.uniqueCode and @props.property.type == "text"
+      if _.includes @props.features, "uniqueCode" and @props.property.type == "text"
         R FormGroupComponent, label: "Unique Code?",
           H.input type: 'checkbox', checked: @props.property.uniqueCode, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, uniqueCode: ev.target.checked)))
       
-      if _.includes @props.features, PropertyListEditorComponent.features.sql
+      if _.includes @props.features, "sql"
         R FormGroupComponent, label: "SQL",
           H.input type: 'text', className: "form-control", value: @props.property.sql, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, sql: ev.target.value)))
       
       if @props.createRoleEditElem
         R FormGroupComponent, label: "Roles",
-          @props.createRoleEditElem(@props.property._roles or [], (roles) => @props.onChange(_.extend({}, @props.property, _roles: roles)) )
+          @props.createRoleEditElem(@props.property.roles or [], (roles) => @props.onChange(_.extend({}, @props.property, roles: roles)) )
 
 class IdFieldComponent extends React.Component
   @propTypes: 
@@ -110,7 +102,7 @@ class IdFieldComponent extends React.Component
     }
     
   isValid: (string) =>
-    return /^[a-z\-]+$/.test(string)
+    return /^[a-z][a-z_0-9]*$/.test(string)
     
   handleChange: (ev) =>
     @setState(value:ev.target.value, valid: @isValid(ev.target.value))  
@@ -121,7 +113,7 @@ class IdFieldComponent extends React.Component
   render: ->
     R FormGroupComponent, label: "ID", hasErrors: not @state.valid,
       H.input type: "text", className: "form-control", value: @state.value, onChange: @handleChange
-      H.p className: "help-block", "Letters lowercase only."
+      H.p className: "help-block", "Lowercase, numbers and underscores"
 
 # Edits join
 class JoinEditorComponent extends React.Component
