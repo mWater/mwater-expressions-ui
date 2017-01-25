@@ -2,10 +2,11 @@ React = require 'react'
 R = React.createElement
 H = React.DOM
 _ = require 'lodash'
-className = require 'classnames'
 
 LocalizedStringEditorComp = require '../LocalizedStringEditorComp'
 ExprComponent = require '../ExprComponent'
+FormGroupComponent = require './FormGroupComponent'
+IdFieldComponent = require './IdFieldComponent'
 
 # edit properties
 module.exports = class PropertyListEditorComponent extends React.Component
@@ -91,31 +92,6 @@ module.exports = class PropertyListEditorComponent extends React.Component
         R FormGroupComponent, label: "Roles",
           @props.createRoleEditElem(@props.property.roles or [], (roles) => @props.onChange(_.extend({}, @props.property, roles: roles)) )
 
-class IdFieldComponent extends React.Component
-  @propTypes: 
-    value: React.PropTypes.string  # The value
-    onChange: React.PropTypes.func.isRequired  # Called with new value
-    
-  constructor: (props) ->
-    super(props)
-    @state = {
-      value: @props.value
-      valid: @isValid(props.value)
-    }
-    
-  isValid: (string) =>
-    return /^[a-z][a-z_0-9]*$/.test(string)
-    
-  handleChange: (ev) =>
-    @setState(value:ev.target.value, valid: @isValid(ev.target.value))  
-    
-    if @state.valid
-      @props.onChange(ev.target.value)
-    
-  render: ->
-    R FormGroupComponent, label: "ID", hasErrors: not @state.valid,
-      H.input type: "text", className: "form-control", value: @state.value, onChange: @handleChange
-      H.p className: "help-block", "Lowercase, numbers and underscores"
 
 # Edits join
 class JoinEditorComponent extends React.Component
@@ -213,14 +189,3 @@ class EnumValueEditorComponent extends React.Component
             R LocalizedStringEditorComp, value: @props.value.desc, onChange: (value) => @props.onChange(_.extend({}, @props.value, desc: value))
 
     
-class FormGroupComponent extends React.Component
-  render: ->
-    classes = {
-      "form-group": true
-      "has-error": @props.hasErrors
-      "has-warning": @props.hasWarnings
-      "has-success": @props.hasSuccess
-    }
-    H.div className: className(classes),
-      H.label null, @props.label
-      @props.children
