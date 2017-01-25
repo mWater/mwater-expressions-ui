@@ -1,6 +1,6 @@
 {
   "name": "mwater-expressions-ui",
-  "version": "3.1.4",
+  "version": "3.1.5",
   "description": "Expression UI library",
   "repository": "git@github.com:mWater/mwater-expressions-ui.git",
   "main": "lib/index.js",
