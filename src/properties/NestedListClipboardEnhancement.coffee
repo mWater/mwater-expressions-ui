@@ -24,13 +24,17 @@ module.exports = (WrappedComponent) ->
       
       if list # check in the root array first
         return list
-        
+      
+      found = null  
       find = (listId, itemId, items) ->  
         for property in items
           if property.id == listId
             return _.find property.contents, { id: itemId }
-          else 
-            return find(listId, itemId, (_.filter property.contents, {type: "section"}))
+          else
+            found = find(listId, itemId, (_.filter property.contents, {type: "section"})) 
+            if found 
+              return found
+            
       
       # if not root then only iterate through section type properties
       return find(listId, itemId, (_.filter value, {type: "section"}))
