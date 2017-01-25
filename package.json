@@ -1,6 +1,6 @@
 {
   "name": "mwater-expressions-ui",
-  "version": "2.16.0",
+  "version": "3.1.5",
   "description": "Expression UI library",
   "repository": "git@github.com:mWater/mwater-expressions-ui.git",
   "main": "lib/index.js",
@@ -17,6 +17,7 @@
   "license": "",
   "dependencies": {
     "async": "^1.5.0",
+    "classnames": "^2.2.5",
     "eonasdan-bootstrap-datetimepicker": "^4.15.35",
     "lodash": "^3.10.1",
     "moment": "^2.10.6",
@@ -29,7 +30,8 @@
     "react-motion": "^0.3.1",
     "react-onclickout": "^2.0.4",
     "react-select": "^0.9.1",
-    "update-object": "^1.0.0"
+    "update-object": "^1.0.0",
+    "uuid": "^3.0.1"
   },
   "devDependencies": {
     "browser-sync": "^2.10.0",
@@ -42,6 +44,7 @@
     "gulp-concat": "^2.6.0",
     "gulp-rework": "^1.0.3",
     "gulp-util": "^3.0.7",
+    "gulp-watch": "^4.3.11",
     "karma": "^0.13.14",
     "karma-browserify": "^4.4.0",
     "karma-chrome-launcher": "^0.2.1",

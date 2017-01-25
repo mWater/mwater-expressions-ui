@@ -10,6 +10,7 @@ browserSync = require 'browser-sync'
 reload = browserSync.reload
 coffee = require 'gulp-coffee' 
 watchify = require 'watchify'
+watch = require 'gulp-watch'
 
 # Compile coffeescript to js in lib/
 gulp.task 'coffee', ->
@@ -83,24 +84,27 @@ gulp.task "demo", gulp.parallel([
 
 gulp.task 'watch', gulp.series([
   'demo', 
-  ->
-    b = makeBrowserifyBundle()
-    w = watchify(b)
+  gulp.parallel([
+    -> watch("./src/*.css", gulp.series([ 'index_css', -> browserSync.reload()] ))
+    ->
+      b = makeBrowserifyBundle()
+      w = watchify(b)
 
-    first = true
-    w.on 'bytes', ->
-      if first
-        browserSync({ server: "./dist", startPath: "/demo.html", ghostMode: false,  notify: false })
-        first = false
-      else
-        browserSync.reload()
+      first = true
+      w.on 'bytes', ->
+        if first
+          browserSync({ server: "./dist", startPath: "/demo.html", ghostMode: false,  notify: false })
+          first = false
+        else
+          browserSync.reload()
 
-    # Needs to be run at least once
-    bundleDemoJs(w)
-
-    # Redo on update
-    w.on 'update', ->
+      # Needs to be run at least once
       bundleDemoJs(w)
+
+      # Redo on update
+      w.on 'update', ->
+        bundleDemoJs(w)
+    ])  
   ])
 
 gulp.task "default", gulp.series("copy", "coffee")

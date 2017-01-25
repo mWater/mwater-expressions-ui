@@ -60,7 +60,7 @@ module.exports = class ScalarExprTreeBuilder
         value: { table: options.startTable, joins: options.joins, expr: { type: "id", table: options.table } }
         tableId: options.table
       }
-      if not options.filter or node.name.match(options.filter)
+      if not options.filter or (node.name and node.name.match(options.filter))
         nodes.push(node)
 
     table = @schema.getTable(options.table)
@@ -72,7 +72,7 @@ module.exports = class ScalarExprTreeBuilder
         value: { table: options.startTable, joins: options.joins, expr: { type: "op", op: "count", table: options.table, exprs: [] }}
         tableId: options.tableId
       }
-      if not options.filter or node.name.match(options.filter)
+      if not options.filter or (node.name and node.name.match(options.filter))
         nodes.push(node)
     
     nodes = nodes.concat(@createNodes(table.contents, options))
@@ -150,7 +150,7 @@ module.exports = class ScalarExprTreeBuilder
     }
 
     # Determine if matches
-    matches = not options.filter or node.name.match(options.filter) or (node.desc and node.desc.match(options.filter))
+    matches = not options.filter or (node.name and node.name.match(options.filter)) or (node.desc and node.desc.match(options.filter))
 
     # If join, add children
     if column.type == "join"

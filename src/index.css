@@ -58,3 +58,107 @@
   border: solid 1px rgba(0, 126, 255, 0.24);
   color: rgba(0,126,255, 0.8)
 }
+
+
+/* Property editor */
+.pl-editor-container .pl-controls .btn{ 
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  top: -1px;
+}
+
+.pl-container > div {
+  border-bottom: 1px solid #aeaeae;
+  border-left: 1px solid #aeaeae;
+  border-right: 1px solid #aeaeae;
+  position: relative;
+}
+
+.pl-container > div:first-child{
+  border-top: 1px solid #aeaeae;
+}
+
+.pl-container .pl-item {
+  padding: 6px;
+}
+
+.pl-container .pl-item-section {
+  padding: 6px;
+}
+
+.pl-container .pl-item-detail {
+  display: flex;
+}
+
+.pl-container .pl-item .pl-item-detail-name {
+  font-weight: bold;
+}
+
+.pl-container .pl-item .pl-item-detail-sql {
+  font-size: 12px;
+}
+.pl-container .pl-item .pl-item-detail-enum {
+  font-size: 12px;
+}
+
+.pl-container .pl-item .pl-item-detail-indicator {
+  margin-right: 8px;
+  color: #aeaeae;
+}
+.pl-container .pl-item .pl-item-detail-indicator .glyphicon,
+.pl-container .pl-item .pl-item-detail-indicator .fa {
+  width: 25.2px;
+  text-align: center;
+}
+
+.pl-container .pl-item-controls {
+  font-size: 12px;
+  padding: 4px 8px;
+  background: #f5f5f5;
+  border-bottom-left-radius: 4px;
+  border-left: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+}
+
+.pl-container .pl-item-deprecated-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.pl-container .pl-property:hover > .pl-item-controls {
+  font-size: 12px;
+  display: block;
+}
+
+.pl-container .pl-item-controls .pl-item-control{
+  margin-right: 8px;
+} 
+
+.pl-container .pl-item-controls .pl-item-control:last-child{
+  margin-right: 0;
+}
+
+.glyphicon-property-type-text:before{
+  font-family: monospace;
+  content: "abc" 
+}
+
+.glyphicon-property-type-number:before{
+  font-family: monospace;
+  content: "123" 
+}
+.glyphicon-property-type-boolean:before{
+  font-family: monospace;
+  content: "y/n" 
+}

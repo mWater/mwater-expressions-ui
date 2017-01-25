@@ -12,6 +12,8 @@ DataSource = require('mwater-expressions').DataSource
 FilterExprComponent = require './FilterExprComponent'
 InlineExprsEditorComponent = require './InlineExprsEditorComponent'
 ContentEditableComponent = require './ContentEditableComponent'
+PropertyListComponent = require './properties/PropertyListComponent'
+PropertyListEditorComponent = require './properties/PropertyListEditorComponent'
 
 $ ->
   # $.getJSON "https://api.mwater.co/v3/jsonql/schema?formIds=f6d3b6deed734467932f4dca34af4175", (schemaJson) ->
@@ -20,9 +22,43 @@ $ ->
     # # dataSource = new MWaterDataSource("http://localhost:1234/v3/", "e449acf016c362f19c4b65b52db23486", false)
 
   # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
-  # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
-  ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+  ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
+  # ReactDOM.render(R(PropertyListContainerComponent), document.getElementById("main"))
+  # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
   # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
+
+class PropertyListContainerComponent extends React.Component
+  @propTypes:
+    schema: React.PropTypes.object.isRequired # schema of all data
+    dataSource: React.PropTypes.object.isRequired # data source
+    table: React.PropTypes.string.isRequired    # Table that properties are of
+  constructor: ->
+    super
+
+    @state = { 
+      properties: properties
+    }
+  render: ->
+    H.div className: "row",
+      H.div className: "col-md-6",
+        H.div style: {padding: 20, border: "1px solid #aeaeae", width: 600},
+          R PropertyListComponent, 
+            properties: @state.properties
+            schema: @props.schema
+            dataSource: @props.dataSource
+            table: @props.table
+            features: ["idField", "sql", "joinType", "idType"]
+            onChange: (properties) => @setState(properties: properties) 
+            createRoleDisplayElem: (roles) => H.span null, JSON.stringify(roles)
+            createRoleEditElem: (roles, onChange) => 
+              H.input className: "form-control", value: JSON.stringify(roles), onChange: (ev) -> onChange(JSON.parse(ev.target.value))
+      H.div className: "col-md-6",
+        H.pre null, JSON.stringify(@state.properties, null, 2)
+          
+    # H.div style: {padding: 20, border: "1px solid #aeaeae", width: 600},
+    #   R PropertyListEditorComponent, 
+    #     properties: @state.properties
+    #     onChange: (properties) => @setState(properties: properties) 
 
 class ContentEditableTestComponent extends React.Component
   constructor: ->
@@ -74,7 +110,7 @@ class MockTestInlineExprsEditorComponent extends React.Component
       { id: "text", name: { en: "Text" }, type: "text" }
       { id: "number", name: { en: "Number" }, type: "number" }
       { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
-      { id: "enumset", name: { en: "EnumSet" }, type: "enumset", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
+      { id: "", name: { en: "EnumSet" }, type: "enumset", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
       { id: "date", name: { en: "Date" }, type: "date" }
       { id: "datetime", name: { en: "Datetime" }, type: "datetime" }
       { id: "boolean", name: { en: "Boolean" }, type: "boolean" }
@@ -190,6 +226,13 @@ class MockTestComponent extends React.Component
   render: ->
     if not @state.schema
       return null
+      
+    # R PropertyListContainerComponent, 
+    #   schema: @state.schema
+    #   dataSource: @state.dataSource
+    #   table: "t1"
+      
+
 
     H.div style: { padding: 10, marginTop: 0 },
       R(ExprComponent, 
@@ -417,3 +460,372 @@ class MWaterDataSource extends DataSource
         cb(null, rows)
       .fail (xhr) =>
         cb(new Error(xhr.responseText))
+
+
+properties = [
+  {
+    "legacyId": "7f88d07d-4dab-4d32-94df-d39d55549f90",
+    "type": "enum",
+    "entity_type": "water_point",
+    "id": "wo_program_type",
+    "name": {
+      "_base": "en",
+      "en": "Water.org Program Type"
+    },
+    "desc": {
+      "_base": "en",
+      "en": "Water.org Program Type"
+    },
+    "physical_quantity": null,
+    "ref_entity_type": null,
+    "deprecated": false,
+    "limited": null,
+    "limited_subst": null,
+    "enumValues": [
+      {
+        "id": "watercredit",
+        "name": {
+          "en": "WaterCredit",
+          "_base": "en"
+        }
+      },
+      {
+        "id": "directimpact",
+        "name": {
+          "en": "Direct Impact",
+          "_base": "en"
+        }
+      }
+    ],
+    "units": null,
+    "unique_code": null,
+    "roles": [
+      {
+        "id": "group:Water.org Water Quality",
+        "role": "edit"
+      },
+      {
+        "id": "user:admin",
+        "role": "admin"
+      }
+    ]
+  },
+  {
+    "legacyId": "c64df46b-96c3-4539-a5c4-f902c1cbf06c",
+    "type": "boolean",
+    "entity_type": "water_point",
+    "id": "wpdx_converted_fields",
+    "name": {
+      "_base": "en",
+      "en": "WPDX Converted fields"
+    },
+    "desc": {
+      "_base": "en",
+      "en": "WPDX Converted fields"
+    },
+    "physical_quantity": null,
+    "ref_entity_type": null,
+    "deprecated": true,
+    "limited": null,
+    "limited_subst": null,
+    "values": null,
+    "units": null,
+    "unique_code": null,
+    "roles": [
+      {
+        "id": "all",
+        "role": "edit"
+      },
+      {
+        "id": "user:admin",
+        "role": "admin"
+      }
+    ]
+  },
+  {
+    "legacyId": "cfb1147d-54af-405c-818d-e94510177fd9",
+    "type": "geometry",
+    "entity_type": "water_point",
+    "id": "wpdx_country",
+    "name": {
+      "_base": "en",
+      "en": "WPDX Country (ISO 2-letter code)"
+    },
+    "desc": {
+      "_base": "en",
+      "en": "WPDX Country (ISO 2-letter code)"
+    },
+    "physical_quantity": null,
+    "ref_entity_type": null,
+    "deprecated": false,
+    "limited": null,
+    "limited_subst": null,
+    "values": null,
+    "units": null,
+    "unique_code": null,
+    "roles": [
+      {
+        "id": "all",
+        "role": "edit"
+      },
+      {
+        "id": "user:admin",
+        "role": "admin"
+      }
+    ]
+  },
+  {
+    "legacyId": "b9fc3ed5-f830-4aa8-8824-965f287dbc44",
+    "type": "text",
+    "entity_type": "water_point",
+    "id": "wpdx_data_source",
+    "name": {
+      "_base": "en",
+      "en": "WPDX Data source"
+    },
+    "desc": {
+      "_base": "en",
+      "en": "WPDX Data source"
+    },
+    "physical_quantity": null,
+    "ref_entity_type": null,
+    "deprecated": true,
+    "limited": null,
+    "limited_subst": null,
+    "values": null,
+    "units": null,
+    "unique_code": null,
+    "roles": [
+      {
+        "id": "all",
+        "role": "edit"
+      },
+      {
+        "id": "user:admin",
+        "role": "admin"
+      }
+    ]
+  },
+  {
+    "legacyId": "84a5557f-d531-4438-bb9d-801acffd7272",
+    "type": "date",
+    "entity_type": "water_point",
+    "id": "wpdx_date_of_data_inventory",
+    "name": {
+      "_base": "en",
+      "en": "Date of data inventory"
+    },
+    "desc": {
+      "_base": "en",
+      "en": "Date of data inventory"
+    },
+    "physical_quantity": null,
+    "ref_entity_type": null,
+    "deprecated": false,
+    "limited": null,
+    "limited_subst": null,
+    "values": null,
+    "units": null,
+    "unique_code": null,
+    "roles": [
+      {
+        "id": "all",
+        "role": "edit"
+      },
+      {
+        "id": "group:mWater Staff",
+        "role": "admin"
+      },
+      {
+        "id": "user:admin",
+        "role": "admin"
+      }
+    ]
+  },
+  {
+      "legacyId": "a384e163-41a5-4986-bba2-b82bab31063asd",
+      "type": "section",
+      "name": {
+        "_base": "en",
+        "en": "Sample Section"
+      },
+      "desc": {
+        "_base": "en",
+        "en": "k akjsd aksjdasudha sd aksjd aksjdha k"
+      },
+      "contents": [
+        {
+          "legacyId": "a384e163-41a5-4986-bba2-b82bab31063e",
+          "type": "text",
+          "entity_type": "water_point",
+          "id": "wpdx_installer",
+          "name": {
+            "_base": "en",
+            "en": "WPDX Installer"
+          },
+          "desc": {
+            "_base": "en",
+            "en": "Description for WPDX Installer"
+          },
+          "physical_quantity": null,
+          "ref_entity_type": null,
+          "deprecated": true,
+          "limited": null,
+          "limited_subst": null,
+          "values": null,
+          "units": null,
+          "unique_code": null,
+          "roles": [
+            {
+              "id": "all",
+              "role": "edit"
+            },
+            {
+              "id": "group:mWater Staff",
+              "role": "admin"
+            },
+            {
+              "id": "user:admin",
+              "role": "admin"
+            }
+          ]
+        },
+        {
+          "legacyId": "8a40fd46-205e-48eb-88bf-77dce043dc85",
+          "type": "enum",
+          "entity_type": "water_point",
+          "id": "wpdx_management_structure",
+          "name": {
+            "_base": "en",
+            "en": "WPDX Management structure"
+          },
+          "desc": {
+            "_base": "en",
+            "en": "WPDX Management structure"
+          },
+          "physical_quantity": null,
+          "ref_entity_type": null,
+          "deprecated": false,
+          "limited": null,
+          "limited_subst": null,
+          "enumValues": [
+            {
+              "id": "direct_gov",
+              "name": {
+                "en": "Direct government operation",
+                "_base": "en"
+              }
+            },
+            {
+              "id": "private_operator",
+              "name": {
+                "en": "Private operator/delegated management",
+                "_base": "en"
+              }
+            },
+            {
+              "id": "community",
+              "name": {
+                "en": "Community management",
+                "_base": "en"
+              }
+            },
+            {
+              "id": "institutional",
+              "name": {
+                "en": "Institutional management",
+                "_base": "en"
+              }
+            },
+            {
+              "id": "other",
+              "name": {
+                "en": "Other",
+                "_base": "en"
+              }
+            }
+          ],
+          "units": null,
+          "unique_code": null,
+          "roles": [
+            {
+              "id": "all",
+              "role": "edit"
+            },
+            {
+              "id": "user:admin",
+              "role": "admin"
+            }
+          ]
+        },
+        {
+          "legacyId": "09d1c4d9-7273-47eb-a46e-8dffb593e32d",
+          "type": "text",
+          "entity_type": "water_point",
+          "id": "wpdx_management_structure_other",
+          "name": {
+            "_base": "en",
+            "en": "WPDX Management Structure - Other (please specify) text"
+          },
+          "desc": {
+            "_base": "en",
+            "en": "WPDX Management Structure - Other (please specify) text"
+          },
+          "physical_quantity": null,
+          "ref_entity_type": null,
+          "deprecated": false,
+          "limited": null,
+          "limited_subst": null,
+          "values": null,
+          "units": null,
+          "unique_code": null,
+          "roles": [
+            {
+              "id": "all",
+              "role": "edit"
+            },
+            {
+              "id": "group:mWater Staff",
+              "role": "admin"
+            },
+            {
+              "id": "user:admin",
+              "role": "admin"
+            }
+          ]
+        }
+      ]
+  },
+  {
+    "legacyId": "e32580ab-c877-40e0-a7b6-6e0fd00322f3",
+    "type": "image",
+    "entity_type": "water_point",
+    "id": "wpdx_id",
+    "name": {
+      "_base": "en",
+      "en": "WPDX Water point ID"
+    },
+    "desc": {
+      "_base": "en",
+      "en": "WPDX Water point ID"
+    },
+    "physical_quantity": null,
+    "ref_entity_type": null,
+    "deprecated": true,
+    "limited": null,
+    "limited_subst": null,
+    "values": null,
+    "units": null,
+    "unique_code": null,
+    "roles": [
+      {
+        "id": "all",
+        "role": "edit"
+      },
+      {
+        "id": "user:admin",
+        "role": "admin"
+      }
+    ]
+  }
+]
