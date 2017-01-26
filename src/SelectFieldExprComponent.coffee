@@ -113,7 +113,7 @@ module.exports = class SelectFieldExprComponent extends React.Component
         onChange: @handleSearchTextChange
 
       # Create tree component with value of table and path
-      H.div style: { paddingTop: 10 },
+      H.div style: { paddingTop: 10, paddingBottom: 200 },
         R ScalarExprTreeComponent, 
           # Include search text so that searching resets the collapsed state
           key: "scalar_tree:#{@state.searchText}"
