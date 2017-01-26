@@ -200,8 +200,8 @@ class PropertyComponent extends React.Component
       if @context.clipboard
         H.a className: "pl-item-control", onClick: (() => @props.onPaste(@props.listId, @props.property.id)), "Paste"
       
-        if @props.property.type == "section"  
-          H.a className: "pl-item-control", onClick: (() => @props.onPasteInto(@props.listId, @props.property.id)), "Paste Into"
+      if @context.clipboard and @props.property.type == "section"  
+        H.a className: "pl-item-control", onClick: (() => @props.onPasteInto(@props.listId, @props.property.id)), "Paste Into"
       
       H.a className: "pl-item-control", onClick: (() => @props.onDelete()), "Delete"
   
