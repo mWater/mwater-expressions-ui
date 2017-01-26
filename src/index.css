@@ -74,7 +74,7 @@
   position: relative;
 }
 
-.pl-container > div:first-child{
+.pl-container > div:first-child {
   border-top: 1px solid #aeaeae;
 }
 
@@ -82,8 +82,13 @@
   padding: 6px;
 }
 
+.pl-container .pl-item-type-section {
+  background-color: #eee;
+}
+
 .pl-container .pl-item-section {
-  padding: 6px;
+  margin-left: 30px;
+  background-color: white;
 }
 
 .pl-container .pl-item-detail {
@@ -102,8 +107,7 @@
 }
 
 .pl-container .pl-item .pl-item-detail-indicator {
-  margin-right: 8px;
-  color: #aeaeae;
+  color: #888;
 }
 .pl-container .pl-item .pl-item-detail-indicator .glyphicon,
 .pl-container .pl-item .pl-item-detail-indicator .fa {
@@ -147,18 +151,4 @@
 
 .pl-container .pl-item-controls .pl-item-control:last-child{
   margin-right: 0;
-}
-
-.glyphicon-property-type-text:before{
-  font-family: monospace;
-  content: "abc" 
-}
-
-.glyphicon-property-type-number:before{
-  font-family: monospace;
-  content: "123" 
-}
-.glyphicon-property-type-boolean:before{
-  font-family: monospace;
-  content: "y/n" 
 }

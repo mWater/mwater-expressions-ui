@@ -22,7 +22,7 @@ $ ->
     # # dataSource = new MWaterDataSource("http://localhost:1234/v3/", "e449acf016c362f19c4b65b52db23486", false)
 
   # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
-  ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
+  ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
   # ReactDOM.render(R(PropertyListContainerComponent), document.getElementById("main"))
   # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
   # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
@@ -251,7 +251,72 @@ class MockTestComponent extends React.Component
       H.br()
       H.pre null, JSON.stringify(@state.value, null, 2)
 
+class MockPropertyEditorTestComponent extends React.Component
+  constructor: ->
+    super
+    @state = { 
+      value: null # { type: "field", table: "t1", column: "1-2" }
+      schema: null
+      dataSource: null
+    }
 
+  componentWillMount: ->
+    schema = new Schema()
+    schema = schema.addTable({ id: "t1", name: { en: "T1" }, primaryKey: "primary", contents: [
+      { id: "text", name: { en: "Text" }, desc: { en: "Text is a bunch of characters" }, type: "text" }
+      { id: "number", name: { en: "Number" }, type: "number" }
+      { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
+      { id: "enumset", name: { en: "EnumSet" }, type: "enumset", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
+      { type: "section", name: { en: "Section"}, contents: [
+        { id: "date", name: { en: "Date" }, type: "date" }
+        { id: "datetime", name: { en: "Datetime" }, type: "datetime" }
+        ]}
+      { id: "boolean", name: { en: "Boolean" }, type: "boolean" }
+      { id: "geometry", name: { en: "Geometry" }, type: "geometry" }
+      { id: "1-2", name: { en: "T1->T2" }, type: "join", join: { fromColumn: "primary", toTable: "t2", toColumn: "t1", type: "1-n" }}
+
+      # Expressions
+      { id: "expr_enum", name: { en: "Expr Enum"}, type: "expr", expr: { type: "field", table: "t1", column: "enum" } }
+      { id: "expr_number", name: { en: "Expr Number"}, type: "expr", expr: { type: "field", table: "t1", column: "number" } }
+      { id: "expr_id", name: { en: "Expr Id"}, type: "expr", expr: { type: "id", table: "t1" } }
+      { id: "expr_sum", name: { en: "Expr Sum"}, type: "expr", expr: { type: "op", op: "sum", exprs: [{ type: "field", table: "t1", column: "number" }] }}
+    ]})
+
+    schema = schema.addTable({ id: "t2", name: { en: "T2" }, primaryKey: "primary", contents: [
+      { id: "text", name: { en: "Text" }, type: "text" }
+      { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
+      { id: "number", name: { en: "Number" }, type: "number" }
+      { id: "2-1", name: { en: "T2->T1" }, type: "join", join: { fromColumn: "t1", toTable: "t1", toColumn: "primary", type: "n-1" }}
+    ]})
+
+    schema = schema.addTable({ id: "t3", name: { en: "T3" }, primaryKey: "primary", ordering: "number", contents: [
+      { id: "text", name: { en: "Text" }, type: "text" }
+      { id: "number", name: { en: "Number" }, type: "number" }
+    ]})
+
+    # Fake data source
+    dataSource = {
+      performQuery: (query, cb) =>
+        cb(null, [
+          { value: "abc", label: "ABC" }
+          { value: "xyz", label: "XYZ" }
+          ])
+    }
+
+    @setState(schema: schema, dataSource: dataSource)
+
+  handleValueChange: (value) => 
+    # value = new ExprCleaner(@state.schema).cleanExpr(value) #, { type: 'boolean' })
+    @setState(value: value)
+
+  render: ->
+    if not @state.schema
+      return null
+      
+    R PropertyListContainerComponent, 
+      schema: @state.schema
+      dataSource: @state.dataSource
+      table: "t1"
 
 class LiveTestComponent extends React.Component
   constructor: ->

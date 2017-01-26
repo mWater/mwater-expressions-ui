@@ -172,16 +172,19 @@ class PropertyComponent extends React.Component
     listId: React.PropTypes.string
   
   @iconMap:
-    text: "glyphicon glyphicon-property-type-text"
-    number: "glyphicon glyphicon-property-type-number"
-    enum: "fa fa-check-square-o"
-    enumset: "fa fa-dot-circle-o"
+    text: "fa fa-font"
+    number: "fa fa-calculator"
+    enum: "fa fa-check-circle-o"
+    enumset: "fa fa-check-square-o"
     date: "fa fa-calendar-check-o"
     datetime: "fa fa-calendar-check-o"
     image: "fa fa-file-image-o"
+    imagelist: "fa fa-file-image-o"
     section: "fa fa-folder"
-    geometry: "glyphicon glyphicon-map-marker"
-    boolean: "glyphicon glyphicon-property-type-boolean"
+    geometry: "fa fa-map-marker"
+    boolean: "fa fa-toggle-on"
+    id: "fa fa-arrow-right"
+    join: "fa fa-link"
     
   @contextTypes:
     clipboard: React.PropTypes.object
@@ -216,7 +219,7 @@ class PropertyComponent extends React.Component
     classNames = ["pl-property"]
     if @props.property.deprecated 
       classNames.push("deprecated")
-    H.div className: "#{ classNames.join(" ")}",
+    H.div className: "#{ classNames.join(" ")} pl-item-type-#{@props.property.type}",
       if @state.editing
         R ActionCancelModalComponent, { 
           size: "large"
@@ -248,8 +251,8 @@ class PropertyComponent extends React.Component
           H.div className: "pl-item-deprecated-overlay", ""
       H.div className: "pl-item", onDoubleClick: @handleEdit, 
         H.div className: "pl-item-detail",
-          H.div className: "pl-item-detail-indicator",
-            H.span className: "#{PropertyComponent.iconMap[@props.property.type] or "glyphicon glyphicon-property-type-number"} pull-left", ""
+          H.span className: "pl-item-detail-indicator",
+            H.i className: "#{PropertyComponent.iconMap[@props.property.type]} fa-fw"
           H.div null,
             H.div className: "pl-item-detail-name",
               if _.includes(@props.features, "idField") and @props.property.id
