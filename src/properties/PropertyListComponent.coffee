@@ -41,6 +41,7 @@ class PropertyListComponent extends React.Component
     onCut: React.PropTypes.func # supplied by NestedListClipboardEnhancement
     onCopy: React.PropTypes.func # supplied by NestedListClipboardEnhancement
     onPaste: React.PropTypes.func # supplied by NestedListClipboardEnhancement
+    onPasteInto: React.PropTypes.func # supplied by NestedListClipboardEnhancement
     listId: React.PropTypes.string # used internally
     
   @contextTypes:
@@ -139,6 +140,7 @@ class PropertyListComponent extends React.Component
         onCut: @props.onCut
         onCopy: @props.onCopy
         onPaste: @props.onPaste
+        onPasteInto: @props.onPasteInto
         createRoleEditElem: @props.createRoleEditElem
         createRoleDisplayElem: @props.createRoleDisplayElem
         listId: @props.listId
@@ -164,6 +166,7 @@ class PropertyComponent extends React.Component
     onCut: React.PropTypes.func.isRequired
     onCopy: React.PropTypes.func.isRequired
     onPaste: React.PropTypes.func.isRequired
+    onPasteInto: React.PropTypes.func.isRequired
     onDelete: React.PropTypes.func.isRequired
     listId: React.PropTypes.string
   
@@ -196,6 +199,10 @@ class PropertyComponent extends React.Component
       H.a className: "pl-item-control", onClick: (() => @props.onCut(@props.listId, @props.property.id)), "Cut"
       if @context.clipboard
         H.a className: "pl-item-control", onClick: (() => @props.onPaste(@props.listId, @props.property.id)), "Paste"
+      
+      if @context.clipboard and @props.property.type == "section"  
+        H.a className: "pl-item-control", onClick: (() => @props.onPasteInto(@props.listId, @props.property.id)), "Paste Into"
+      
       H.a className: "pl-item-control", onClick: (() => @props.onDelete()), "Delete"
   
   renderEnumValues: (values) =>
@@ -270,6 +277,7 @@ class PropertyComponent extends React.Component
             onCut: @props.onCut
             onCopy: @props.onCopy
             onPaste: @props.onPaste
+            onPasteInto: @props.onPasteInto
             listId: @props.property.id
             onChange: (list) => 
               newProperty = _.cloneDeep(@props.property)
