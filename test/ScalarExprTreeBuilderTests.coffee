@@ -104,6 +104,33 @@ describe "ScalarExprTreeBuilder", ->
       nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: /xyz/ })
       assert.deepEqual _.pluck(nodes, "name"), ["xyz"]
 
+    it "filters by level 1 name", ->
+      @schema = new Schema({ tables: [{ id: "t1", contents: [
+        { id: "c1", name: { en: "c1" }, type: "text" }
+        { id: "c2", name: { en: "c2" }, type: "section", contents: [
+          { id: "c3", name: { en: "c3" }, type: "text" }
+        ]}
+      ]}]})
+
+      nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: /c3/ })
+      assert.deepEqual _.pluck(nodes, "name"), ["c2"]
+      assert.deepEqual _.pluck(nodes[0].children(), "name"), ["c3"]
+
+    it.only "filters by level 2 name", ->
+      @schema = new Schema({ tables: [{ id: "t1", contents: [
+        { id: "c1", name: { en: "c1" }, type: "text" }
+        { id: "c2", name: { en: "c2" }, type: "section", contents: [
+          { id: "c3", name: { en: "c3" }, type: "section", contents: [
+            { id: "c4", name: { en: "c4" }, type: "text" }
+          ]}
+        ]}
+      ]}]})
+
+      nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: /c4/ })
+      assert.deepEqual _.pluck(nodes, "name"), ["c2"]
+      assert.deepEqual _.pluck(nodes[0].children(), "name"), ["c3"]
+      assert.deepEqual _.pluck(nodes[0].children()[0].children(), "name"), ["c4"]
+
   it "follows joins", ->
     # Join column
     join = { fromCol: "c1", toTable: "t2", toCol: "c1", type: "n-1" }

@@ -119,15 +119,15 @@ module.exports = class ScalarExprTreeBuilder
             # If empty, do not show if searching
             numChildren = node.children().length
             if numChildren > 0 or not options.filter
-              # If depth is 0 and searching and doesn't match, leave open
-              if options.depth == 0 and options.filter and not matches
+              # If depth is 0-1 and searching and doesn't match, leave open
+              if options.depth < 2 and options.filter and not matches
                 node.initiallyOpen = true
 
               if not options.filter
                 nodes.push(node)
               else if matches
                 nodes.push(node)
-              else if options.depth < 1 and numChildren.length > 0
+              else if options.depth < 2 and numChildren
                 nodes.push(node)
         else
           # Gracefully handle deprecated columns
