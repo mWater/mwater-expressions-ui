@@ -14,8 +14,8 @@ module.exports = class PropertyListEditorComponent extends React.Component
     property: React.PropTypes.object.isRequired # The property being edited
     onChange: React.PropTypes.func.isRequired # Function called when anything is changed in the editor
     features: React.PropTypes.array # Features to be enabled apart from the default features
-    schema: React.PropTypes.object.isRequired # schema of all data
-    dataSource: React.PropTypes.object.isRequired # data source
+    schema: React.PropTypes.object   # schema of all data
+    dataSource: React.PropTypes.object   # data source
     table: React.PropTypes.string.isRequired    # Table that properties are of
     createRoleEditElem: React.PropTypes.func
     
@@ -50,7 +50,8 @@ module.exports = class PropertyListEditorComponent extends React.Component
           H.option key: "image", value: "image", "Image"
           H.option key: "imagelist", value: "imagelist", "Imagelist"
           H.option key: "json", value: "json", "JSON"
-          H.option key: "expr", value: "expr", "Expression"
+          if _.includes @props.features, "exprType"
+            H.option key: "expr", value: "expr", "Expression"
           if _.includes @props.features, "idType"
             H.option key: "id", value: "id", "Reference"
           if _.includes @props.features, "joinType"
@@ -71,7 +72,7 @@ module.exports = class PropertyListEditorComponent extends React.Component
       
       if @props.property.type == "join"
         R FormGroupComponent, label: "Join",
-          R JoinEditorComponent, value: @props.property.join, schema: @props.schema, onChange: ((join) => @props.onChange(_.extend({}, @props.property, join: join)))
+          R JoinEditorComponent, value: @props.property.join, onChange: ((join) => @props.onChange(_.extend({}, @props.property, join: join)))
       
       if @props.property.type == "id"
         R FormGroupComponent, label: "ID Table",
@@ -97,7 +98,6 @@ module.exports = class PropertyListEditorComponent extends React.Component
 class JoinEditorComponent extends React.Component
   @propTypes: 
     value: React.PropTypes.object  # The join object
-    schema: React.PropTypes.object.isRequired # schema of all data
     onChange: React.PropTypes.func.isRequired  # Called with new value
   
   render: ->
@@ -112,8 +112,8 @@ class JoinEditorComponent extends React.Component
               H.option key: "n-n", value: "n-n", "Many to many"
               H.option key: "1-1", value: "1-1", "one to one"
         H.div className: "col-md-12",
-          R FormGroupComponent, label: "To table",
-            R TableSelectComponent, value: @props.value?.toTable, schema: @props.schema, onChange: ((table) => @props.onChange(_.extend({}, @props.value, toTable: table))),
+          R FormGroupComponent, label: "To Table",
+            H.input type: 'text', className: "form-control", value: @props.value?.toTable, onChange: ((ev) => @props.onChange(_.extend({}, @props.value, toTable: ev.target.value)))
         H.div className: "col-md-12",
           R FormGroupComponent, label: "From Column",
             H.input type: 'text', className: "form-control", value: @props.value?.fromColumn, onChange: ((ev) => @props.onChange(_.extend({}, @props.value, fromColumn: ev.target.value)))
@@ -121,7 +121,7 @@ class JoinEditorComponent extends React.Component
           R FormGroupComponent, label: "To Column",
             H.input type: 'text', className: "form-control", value: @props.value?.toColumn, onChange: ((ev) => @props.onChange(_.extend({}, @props.value, toColumn: ev.target.value)))
 
-# reusable table select Component
+# Reusable table select Component
 class TableSelectComponent extends React.Component
   @propTypes: 
     value: React.PropTypes.string  # The selected table

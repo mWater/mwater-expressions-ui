@@ -16,8 +16,8 @@ class PropertyListComponent extends React.Component
   @propTypes:
     properties: React.PropTypes.array.isRequired # array of properties
     onChange: React.PropTypes.func.isRequired 
-    schema: React.PropTypes.object.isRequired # schema of all data
-    dataSource: React.PropTypes.object.isRequired # data source
+    schema: React.PropTypes.object # schema of all data. Needed for idType and exprType features
+    dataSource: React.PropTypes.object # data source. Needed for exprType feature
     table: React.PropTypes.string.isRequired    # Table that properties are of
     propertyIdGenerator: React.PropTypes.func # Function to generate the ID of the property
     
@@ -28,6 +28,7 @@ class PropertyListComponent extends React.Component
     # idType: allow id-type fields
     # joinType: allow join-type fields
     # code: show code of properties
+    # exprType: allow expr=type fields
     features: React.PropTypes.array
     
     # function that returns the UI of the roles, called with a single argument, the array containing roles
