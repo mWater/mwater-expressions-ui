@@ -28,7 +28,7 @@ describe "ScalarExprTreeBuilder", ->
     ]})
 
     nodes = new ScalarExprTreeBuilder(@schema).getTree(table: "t1")
-    assert _.isEqual(nodes[1].value, { table: "t1", joins: ["c2"], expr: { type: "id", table: "t2" }}), JSON.stringify(nodes[1].value)
+    assert _.isEqual(nodes[1].value, { table: "t1", joins: [], expr: { type: "field", table: "t1", column: "c2" }}), JSON.stringify(nodes[1].value)
 
   it "does not allow selection of single join as id type if idTable is wrong", ->
     # Join single column
@@ -56,11 +56,11 @@ describe "ScalarExprTreeBuilder", ->
     assert.equal nodes[1].children().length, 2
     assert.equal nodes[1].children()[0].name, "C4"
 
-  it "returns id expr as first if includeCount is true", ->
+  it "returns count expr as first if includeAggr is true", ->
     # Should not add root node
-    nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", includeCount: true })
+    nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", includeAggr: true })
     assert.deepEqual _.pluck(nodes, "name"), ["Number of T1", "C1"]
-    assert.deepEqual nodes[0].value.expr, { type: "id", table: "t1" }, JSON.stringify(nodes[0].value)
+    assert.deepEqual nodes[0].value, { table: "t1", joins: [], expr: { type: "op", op: "count", table: "t1", exprs: [] } }, JSON.stringify(nodes[0].value)
 
   describe "filtering", ->
     it "filters by name", ->
@@ -84,7 +84,7 @@ describe "ScalarExprTreeBuilder", ->
       nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: /Cd/i })
       assert.equal nodes[0].children()[0].name, "xyz"
 
-    it "has level 1 initially open when filtering", ->
+    it "has level 1 initially closed when filtering matches the section", ->
       @schema = new Schema({ tables: [{ id: "t1", contents: [
         { id: "c1", name: { en: "abc" }, type: "text" } # Not a match
         { id: "c2", name: { en: "BCD" }, type: "section", contents: [
@@ -93,7 +93,16 @@ describe "ScalarExprTreeBuilder", ->
       ]}]})
 
       nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: /Cd/i })
-      assert.isTrue nodes[0].initiallyOpen
+      assert not nodes[0].initiallyOpen
+
+    it "filters by level 0 name", ->
+      @schema = new Schema({ tables: [{ id: "t1", contents: [
+        { id: "c1", name: { en: "abc" }, type: "text" }
+        { id: "c2", name: { en: "xyz" }, type: "text" }
+      ]}]})
+
+      nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: /xyz/ })
+      assert.deepEqual _.pluck(nodes, "name"), ["xyz"]
 
   it "follows joins", ->
     # Join column
@@ -145,4 +154,4 @@ describe "ScalarExprTreeBuilder", ->
       assert.equal nodes.length, 1, "Should include id"
 
       assert.equal nodes[0].name, "Number of T2"
-      assert.deepEqual nodes[0].value.expr, { type: "id", table: "t2" }
+      assert.deepEqual nodes[0].value.expr, { type: "op", op:"count", table: "t2", exprs: [] }, JSON.stringify(nodes[0].value.expr)
