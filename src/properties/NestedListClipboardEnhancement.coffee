@@ -39,8 +39,6 @@ module.exports = (WrappedComponent) ->
       return find(listId, itemId, (_.filter value, {type: "section"}))
     
     handleCopy: (listId, itemId, cut = false) =>
-      # TODO why is value computed here?
-      value = _.cloneDeep @props.properties
       property = @findItemById(listId, itemId)
 
       # TODO this mutates the original property!
@@ -61,20 +59,24 @@ module.exports = (WrappedComponent) ->
         return
         
       value = _.cloneDeep @props.properties
+      didPaste = false
+      didCut = false
       
       if @state.clipboard.cut
         cutIndex = _.findIndex value, { id: @state.clipboard.itemId }
         
         if cutIndex > -1
           _.pullAt value, cutIndex
+          didCut = true
         else 
-          @cut(@state.clipboard.listId, @state.clipboard.itemId, (_.filter value, {type: "section"}))
+          didCut = @cut(@state.clipboard.listId, @state.clipboard.itemId, (_.filter value, {type: "section"}))
           
       pasteIndex = _.findIndex value, { id: itemId } # check in the root array first
       if pasteIndex > -1
         if not value[pasteIndex].contents
           value[pasteIndex].contents = []
         value[pasteIndex].contents.push(@state.clipboard.property)
+        didPaste = true
       else
         pasteInto = (listId, itemId, items) =>
           for property in items
@@ -83,29 +85,40 @@ module.exports = (WrappedComponent) ->
               if not property.contents[pasteIndex].contents
                 property.contents[pasteIndex].contents = []
               property.contents[pasteIndex].contents.push(@state.clipboard.property)
+              didPaste = true
             else 
-              paste(listId, itemId, (_.filter property.contents, {type: "section"}))
+              didPaste = paste(listId, itemId, (_.filter property.contents, {type: "section"}))
         pasteInto(listId, itemId, (_.filter value, {type: "section"}))
       
-      @setState(clipboard: null)
-      @props.onChange(value)
+      if didPaste
+        if @state.clipboard.cut and not didCut
+          return
+          
+        @setState(clipboard: null)
+        @props.onChange(value)
         
         
     cut: (listId, itemId, items) =>
+      didCut = false
       for property in items
         if property.id == listId
           cutIndex = _.findIndex property.contents, { id: @state.clipboard.itemId }
           _.pullAt property.contents, cutIndex
+          didCut = true
         else 
-          @cut(listId, itemId, (_.filter property.contents, {type: "section"}))
+          didCut = @cut(listId, itemId, (_.filter property.contents, {type: "section"}))
+      return didCut
           
     paste: (listId, itemId, items) =>
-          for property in items
-            if property.id == listId
-              pasteIndex = _.findIndex property.contents, { id: itemId }
-              property.contents.splice(pasteIndex, 0, @state.clipboard.property)
-            else 
-              @paste(listId, itemId, (_.filter property.contents, {type: "section"}))
+      didPaste = false
+      for property in items
+        if property.id == listId
+          pasteIndex = _.findIndex property.contents, { id: itemId }
+          property.contents.splice(pasteIndex, 0, @state.clipboard.property)
+          didPaste = true
+        else 
+          didPaste = @paste(listId, itemId, (_.filter property.contents, {type: "section"}))
+      return didPaste
           
     handlePaste: (listId, itemId) =>
       if not @state.clipboard
@@ -113,23 +126,30 @@ module.exports = (WrappedComponent) ->
         
       value = _.cloneDeep @props.properties
       
+      didPaste = false
+      didCut = false
+      
       if @state.clipboard.cut
         cutIndex = _.findIndex value, { id: @state.clipboard.itemId }
-        
         if cutIndex > -1
           _.pullAt value, cutIndex
+          didCut = true
         else 
-          @cut(@state.clipboard.listId, @state.clipboard.itemId, (_.filter value, {type: "section"}))
+          didCut = @cut(@state.clipboard.listId, @state.clipboard.itemId, (_.filter value, {type: "section"}))
       
       pasteIndex = _.findIndex value, { id: itemId } # check in the root array first
       if pasteIndex > -1
         value.splice(pasteIndex, 0, @state.clipboard.property)
+        didPaste = true
       else
-        @paste(listId, itemId, (_.filter value, {type: "section"}))
+        didPaste = @paste(listId, itemId, (_.filter value, {type: "section"}))
       
-      
-      @setState(clipboard: null)
-      @props.onChange(value)
+      if didPaste
+        if @state.clipboard.cut and not didCut
+          return
+          
+        @setState(clipboard: null)
+        @props.onChange(value)
     
     getChildContext: =>
       return {

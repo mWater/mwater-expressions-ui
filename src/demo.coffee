@@ -227,29 +227,29 @@ class MockTestComponent extends React.Component
     if not @state.schema
       return null
       
-    # R PropertyListContainerComponent, 
-    #   schema: @state.schema
-    #   dataSource: @state.dataSource
-    #   table: "t1"
+    R PropertyListContainerComponent, 
+      schema: @state.schema
+      dataSource: @state.dataSource
+      table: "t1"
       
 
 
-    H.div style: { padding: 10, marginTop: 0 },
-      R(ExprComponent, 
-        schema: @state.schema
-        dataSource: @state.dataSource
-        table: "t1"
-        # types: ["text", "enum", "boolean", "date", "number", "datetime"]
-        # types: ['enumset']
-        enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
-        # idTable: "t4"
-        value: @state.value
-        onChange: @handleValueChange
-        aggrStatuses: ["literal", "individual"]
-      )
-      H.br()
-      H.br()
-      H.pre null, JSON.stringify(@state.value, null, 2)
+    # H.div style: { padding: 10, marginTop: 0 },
+    #   R(ExprComponent, 
+    #     schema: @state.schema
+    #     dataSource: @state.dataSource
+    #     table: "t1"
+    #     # types: ["text", "enum", "boolean", "date", "number", "datetime"]
+    #     # types: ['enumset']
+    #     enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
+    #     # idTable: "t4"
+    #     value: @state.value
+    #     onChange: @handleValueChange
+    #     aggrStatuses: ["literal", "individual"]
+    #   )
+    #   H.br()
+    #   H.br()
+    #   H.pre null, JSON.stringify(@state.value, null, 2)
 
 
 
@@ -645,6 +645,7 @@ properties = [
   {
       "legacyId": "a384e163-41a5-4986-bba2-b82bab31063asd",
       "type": "section",
+      "id": "sasda3234",
       "name": {
         "_base": "en",
         "en": "Sample Section"
