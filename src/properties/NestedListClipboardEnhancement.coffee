@@ -99,7 +99,7 @@ module.exports = (WrappedComponent) ->
               property.contents[pasteIndex].contents.push(@state.clipboard.property)
               didPaste = true
             else 
-              didPaste = paste(listId, itemId, (_.filter property.contents, {type: "section"}))
+              didPaste = @paste(listId, itemId, (_.filter property.contents, {type: "section"}))
         pasteInto(listId, itemId, (_.filter value, {type: "section"}))
       
       # Dont update state untill all required operations are successfull
