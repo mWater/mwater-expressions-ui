@@ -4,10 +4,22 @@ uuid = require 'uuid'
 
 PropertyListEditorComponent = require './PropertyListEditorComponent'
 
+# A wrapper for nested list for property editor
+#  
+# The problem with nested list is that the the item component will need to render the list component
+# passing back all the required props. Also, the events in the nensted list would need to 
+# be propagated back to the all the parent nodes.  
+#
+# What this HOC does is to wrap the outermost list node, which will eventually handle the cut/copy/paste
+# operation for the entire tree, so the children and nested nodes will just get the 
+# cut/copy/paste handlers provided by this one.
+# 
+# Also exposes a clipboard context, which can be accessed by the child nodes.
+#
 module.exports = (WrappedComponent) ->
   return class NestedListClipboardEnhancement extends React.Component
     @childContextTypes:
-      clipboard: React.PropTypes.object
+      clipboard: React.PropTypes.object # Clipboard accessible to the children
     
     constructor: (props) ->
       super(props)
@@ -41,11 +53,11 @@ module.exports = (WrappedComponent) ->
     handleCopy: (listId, itemId, cut = false) =>
       property = @findItemById(listId, itemId)
 
-      # TODO this mutates the original property!
-      # TODO maybe add a number on to end instead of UUIDing for copying?      
+      # Id is used as key, so the id needs to be regenerated
       if @props.propertyIdGenerator
         property.id = @props.propertyIdGenerator()
-      # TODO I removed uuid as we don't need it for anything right now and I'd rather force specifying id generator
+      else 
+        property.id = uuid.v4().split("-")[0]
       
       @setState(clipboard: {
         listId: listId
@@ -90,6 +102,8 @@ module.exports = (WrappedComponent) ->
               didPaste = paste(listId, itemId, (_.filter property.contents, {type: "section"}))
         pasteInto(listId, itemId, (_.filter value, {type: "section"}))
       
+      # Dont update state untill all required operations are successfull
+      # Required to avoid the conditions where user would cut and copy an item into its own children
       if didPaste
         if @state.clipboard.cut and not didCut
           return
@@ -144,6 +158,8 @@ module.exports = (WrappedComponent) ->
       else
         didPaste = @paste(listId, itemId, (_.filter value, {type: "section"}))
       
+      # Dont update state untill all required operations are successfull
+      # Required to avoid the conditions where user would cut and copy an item into its own children
       if didPaste
         if @state.clipboard.cut and not didCut
           return
@@ -162,4 +178,5 @@ module.exports = (WrappedComponent) ->
         onCopy: @handleCopy
         onPaste: @handlePaste
         onPasteInto: @handlePasteInto
+      # Inject cut/copy/paste/pasteInto handlers and render the outermost list component
       R WrappedComponent, _.assign({}, @props, newProps)
