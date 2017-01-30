@@ -49,7 +49,6 @@ class ScalarExprTreeLeafComponent extends React.Component
   render: ->
     style = {
       padding: 4
-      marginLeft: 15
       borderRadius: 4
       cursor: "pointer"
       color: "#478"
@@ -117,11 +116,9 @@ class ScalarExprTreeNodeComponent extends React.Component
     color = if @props.item.value then "#478" 
 
     H.div null,
-      H.div style: { cursor: "pointer", padding: 4, marginLeft: 15, position: "relative" }, key: "item", className: (if @props.item.value then "hover-grey-background"),
+      H.div style: { cursor: "pointer", padding: 4, marginLeft: 20, position: "relative" }, key: "item", className: (if @props.item.value then "hover-grey-background"),
         H.span style: { color: "#478", cursor: "pointer", position: "absolute", left: -15 }, onClick: @handleArrowClick, arrow
         H.div style: { color: color, display: "inline-block" }, onClick: @handleItemClick, 
-          if @props.item.item.type == "section"
-            H.i className: "fa fa-folder-open-o", style: { paddingRight: 5 }
           if @props.prefix
             H.span className: "text-muted", @props.prefix
           @props.item.name
