@@ -24,7 +24,8 @@ $ ->
   # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
   # ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
   # ReactDOM.render(R(PropertyListContainerComponent), document.getElementById("main"))
-  ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+  # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+  ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
   # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
 
 class PropertyListContainerComponent extends React.Component
@@ -227,29 +228,28 @@ class MockTestComponent extends React.Component
     if not @state.schema
       return null
       
-    R PropertyListContainerComponent, 
-      schema: @state.schema
-      dataSource: @state.dataSource
-      table: "t1"
+    # R PropertyListContainerComponent, 
+    #   schema: @state.schema
+    #   dataSource: @state.dataSource
+    #   table: "t1"
       
 
-
-    # H.div style: { padding: 10, marginTop: 0 },
-    #   R(ExprComponent, 
-    #     schema: @state.schema
-    #     dataSource: @state.dataSource
-    #     table: "t1"
-    #     # types: ["text", "enum", "boolean", "date", "number", "datetime"]
-    #     # types: ['enumset']
-    #     enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
-    #     # idTable: "t4"
-    #     value: @state.value
-    #     onChange: @handleValueChange
-    #     aggrStatuses: ["literal", "individual"]
-    #   )
-    #   H.br()
-    #   H.br()
-    #   H.pre null, JSON.stringify(@state.value, null, 2)
+    H.div style: { padding: 10, marginTop: 0 },
+      R(ExprComponent, 
+        schema: @state.schema
+        dataSource: @state.dataSource
+        table: "t1"
+        # types: ["text", "enum", "boolean", "date", "number", "datetime"]
+        types: ['number']
+        # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
+        # idTable: "t4"
+        value: @state.value
+        onChange: @handleValueChange
+        aggrStatuses: ["literal", "aggregate"]
+      )
+      H.br()
+      H.br()
+      H.pre null, JSON.stringify(@state.value, null, 2)
 
 class MockPropertyEditorTestComponent extends React.Component
   constructor: ->
