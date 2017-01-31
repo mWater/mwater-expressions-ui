@@ -53,11 +53,13 @@ module.exports = (WrappedComponent) ->
     handleCopy: (listId, itemId, cut = false) =>
       property = @findItemById(listId, itemId)
 
-      # Id is used as key, so the id needs to be regenerated
-      if @props.propertyIdGenerator
-        property.id = @props.propertyIdGenerator()
-      else 
-        property.id = uuid.v4().split("-")[0]
+      # Only change id if copy
+      if not cut
+        # Id is used as key, so the id needs to be regenerated
+        if @props.propertyIdGenerator
+          property.id = @props.propertyIdGenerator()
+        else 
+          property.id = uuid.v4().split("-")[0]
       
       @setState(clipboard: {
         listId: listId
