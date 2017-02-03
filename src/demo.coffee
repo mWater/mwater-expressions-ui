@@ -240,12 +240,13 @@ class MockTestComponent extends React.Component
         dataSource: @state.dataSource
         table: "t1"
         # types: ["text", "enum", "boolean", "date", "number", "datetime"]
-        types: ['number']
+        # types: ['enumset']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
+        types: ['boolean']
         value: @state.value
         onChange: @handleValueChange
-        aggrStatuses: ["literal", "aggregate"]
+        aggrStatuses: ["literal", "individual"]
       )
       H.br()
       H.br()

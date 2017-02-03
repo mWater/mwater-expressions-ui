@@ -3,6 +3,8 @@ React = require 'react'
 R = React.createElement
 H = React.DOM
 
+moment = require 'moment'
+
 ExprUtils = require('mwater-expressions').ExprUtils
 
 DateTimePickerComponent = require './DateTimePickerComponent'
@@ -45,6 +47,18 @@ module.exports = class SelectLiteralExprComponent extends React.Component
 
   handleChange: (value) =>
     @setState(value: value, changed: true)
+
+  handleDateSelected: (date) =>
+    if date
+      @setState(value: { type: "literal", valueType: "date", value: date.format("YYYY-MM-DD") }, changed: true)
+    else
+      @setState(value: null, changed: true)
+
+  handleDateTimeSelected: (datetime) =>
+    if datetime
+      @setState(value: { type: "literal", valueType: "datetime", value: datetime.toISOString() }, changed: true)
+    else
+      @setState(value: null, changed: true)
 
   handleAccept: =>
     # Parse text value if text
@@ -138,13 +152,18 @@ module.exports = class SelectLiteralExprComponent extends React.Component
     if exprType in ['text', 'number'] or not @props.types or "text" in @props.types or "number" in @props.types 
       return @renderTextBox()
 
-    # If date type, display dropdown
+    # If date type, display control
     if (@props.value and @props.value.valueType == "date") or "date" in (@props.types or [])
-      return R DateTimePickerComponent, onChange: @handleDateSelected, defaultDate: @state.inputText, ref: @refDropdown
+      return R DateTimePickerComponent, 
+        date: if @state.value then moment(@state.value.value, moment.ISO_8601)
+        onChange: @handleDateSelected
 
-    # If datetime type, display dropdown
+    # If datetime type, display control
     if (@props.value and @props.value.valueType == "datetime") or "datetime" in (@props.types or [])
-      return R DateTimePickerComponent, timepicker: true, onChange: @handleDateTimeSelected, defaultDate: @state.inputText, ref: @refDropdown
+      return R DateTimePickerComponent, 
+        date: if @state.value then moment(@state.value.value, moment.ISO_8601)
+        timepicker: true
+        onChange: @handleDateTimeSelected
 
     return H.div className: "text-warning", "Literal input not supported for this type"
     

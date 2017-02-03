@@ -11,11 +11,14 @@ module.exports = class DateTimePickerComponent extends React.Component
     timepicker: React.PropTypes.bool
 
     # callback on date change
-    # argument: {date: moment object for currently selected datetime, oldDate: moment object for previous datetime}
+    # argument: moment object for currently selected datetime
     onChange: React.PropTypes.func
 
     # date as moment
     date: React.PropTypes.object
+
+    # default date as moment 
+    defaultDate: React.PropTypes.object
 
   @defaultProps:
     timepicker: false
