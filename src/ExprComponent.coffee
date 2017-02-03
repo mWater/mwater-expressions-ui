@@ -32,9 +32,9 @@ module.exports = class ExprComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string  # e.g. "en"
 
-  # If expression is blank, open the editor
-  editIfBlank: =>
-    @refs.emptyExprLink?.showModal()
+  # Opens the editor popup. Only works if expression is blank
+  openEditor: =>
+    @refs.exprLink?.showModal()
 
   # Clean expression and pass up
   handleChange: (expr) =>
@@ -63,6 +63,6 @@ module.exports = class ExprComponent extends React.Component
       aggrStatuses: @props.aggrStatuses
       placeholder: @props.placeholder
       # If no expression, pass a ref to use so that the expression editor can be opened
-      exprLinkRef: if not expr then "emptyExprLink"
+      exprLinkRef: if not expr then "exprLink"
       })
 
