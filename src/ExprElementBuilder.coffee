@@ -34,6 +34,7 @@ module.exports = class ExprElementBuilder
   #   includeAggr: true to include count (id) item at root level in expression selector
   #   aggrStatuses: statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
   #   placeholder: empty placeholder
+  #   exprLinkRef: ref to put on expr link component
   build: (expr, table, onChange, options = {}) ->
     _.defaults(options, {
       aggrStatuses: ["individual", "literal"]
@@ -67,6 +68,7 @@ module.exports = class ExprElementBuilder
         aggrStatuses: options.aggrStatuses
         placeholder: options.placeholder
         refExpr: options.refExpr
+        ref: options.exprLinkRef
 
     else if expr.type == "op"
       elem = @buildOp(expr, table, onChange, options)

@@ -32,6 +32,10 @@ module.exports = class ExprComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string  # e.g. "en"
 
+  # If expression is blank, open the editor
+  editIfBlank: =>
+    @refs.emptyExprLink?.showModal()
+
   # Clean expression and pass up
   handleChange: (expr) =>
     @props.onChange(@cleanExpr(expr))
@@ -46,8 +50,11 @@ module.exports = class ExprComponent extends React.Component
       aggrStatuses: @props.aggrStatuses
     })
 
+
   render: ->
-    new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(@cleanExpr(@props.value), @props.table, @handleChange, { 
+    expr = @cleanExpr(@props.value)
+
+    new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(expr, @props.table, @handleChange, { 
       types: @props.types
       enumValues: @props.enumValues 
       preferLiteral: @props.preferLiteral
@@ -55,5 +62,7 @@ module.exports = class ExprComponent extends React.Component
       includeAggr: "aggregate" in @props.aggrStatuses
       aggrStatuses: @props.aggrStatuses
       placeholder: @props.placeholder
+      # If no expression, pass a ref to use so that the expression editor can be opened
+      exprLinkRef: if not expr then "emptyExprLink"
       })
 
