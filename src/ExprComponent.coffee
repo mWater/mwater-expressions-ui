@@ -50,7 +50,6 @@ module.exports = class ExprComponent extends React.Component
       aggrStatuses: @props.aggrStatuses
     })
 
-
   render: ->
     expr = @cleanExpr(@props.value)
 

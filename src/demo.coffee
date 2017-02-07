@@ -111,7 +111,7 @@ class MockTestInlineExprsEditorComponent extends React.Component
       { id: "text", name: { en: "Text" }, type: "text" }
       { id: "number", name: { en: "Number" }, type: "number" }
       { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
-      { id: "", name: { en: "EnumSet" }, type: "enumset", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
+      { id: "enumset", name: { en: "EnumSet" }, type: "enumset", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
       { id: "date", name: { en: "Date" }, type: "date" }
       { id: "datetime", name: { en: "Datetime" }, type: "datetime" }
       { id: "boolean", name: { en: "Boolean" }, type: "boolean" }
@@ -121,6 +121,7 @@ class MockTestInlineExprsEditorComponent extends React.Component
     schema = schema.addTable({ id: "t2", name: { en: "T2" }, primaryKey: "primary", ordering: "number", contents: [
       { id: "text", name: { en: "Text" }, type: "text" }
       { id: "number", name: { en: "Number" }, type: "number" }
+      { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
       { id: "2-1", name: { en: "T2->T1" }, type: "join", join: { fromColumn: "t1", toTable: "t1", toColumn: "primary", type: "n-1" }}
     ]})
 
@@ -197,7 +198,7 @@ class MockTestComponent extends React.Component
       { id: "expr_sum", name: { en: "Expr Sum"}, type: "expr", expr: { type: "op", op: "sum", exprs: [{ type: "field", table: "t1", column: "number" }] }}
     ]})
 
-    schema = schema.addTable({ id: "t2", name: { en: "T2" }, primaryKey: "primary", contents: [
+    schema = schema.addTable({ id: "t2", name: { en: "T2" }, primaryKey: "primary", ordering: "date", contents: [
       { id: "text", name: { en: "Text" }, type: "text" }
       { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
       { id: "number", name: { en: "Number" }, type: "number" }
@@ -243,10 +244,10 @@ class MockTestComponent extends React.Component
         # types: ['enumset']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
-        types: ['boolean']
+        types: ['number', 'boolean', 'date', 'datetime', 'text', 'enum']
         value: @state.value
         onChange: @handleValueChange
-        aggrStatuses: ["literal", "individual"]
+        aggrStatuses: ["literal", "aggregate"]
       )
       H.br()
       H.br()

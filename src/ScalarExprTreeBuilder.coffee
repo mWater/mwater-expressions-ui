@@ -77,6 +77,15 @@ module.exports = class ScalarExprTreeBuilder
     
     nodes = nodes.concat(@createNodes(table.contents, options))
 
+    # Include advanced option (null expression with only joins that can be customized)
+    if options.includeAggr and options.depth > 0
+      nodes.push({
+        name: "Advanced..."
+        desc: "Use to create an advanced function here"
+        value: { table: options.startTable, joins: options.joins, expr: null }
+        tableId: options.tableId
+        })
+
     # TODO keep?
     # # Add unique id if not including count
     # if not options.includeAggr and not options.types or "id" in options.types

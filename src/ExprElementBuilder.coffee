@@ -165,8 +165,16 @@ module.exports = class ExprElementBuilder
       multipleJoins = @exprUtils.isMultipleJoins(expr.table, expr.joins)
       innerAggrStatuses = if multipleJoins then ["literal", "aggregate"] else ["literal", "individual"]
 
+      # True if an individual boolean is required, in which case any expression can be transformed into it
+      anyTypeAllowed = not options.types or ("boolean" in options.types and options.types.length == 1)
+
       # TODO what about count special handling?
-      innerElem = @build(expr.expr, destTable, innerOnChange, { types: options.types, idTable: options.idTable, enumValues: options.enumValues, aggrStatuses: innerAggrStatuses })
+      innerElem = @build(expr.expr, destTable, innerOnChange, { 
+        types: if not anyTypeAllowed then options.types
+        idTable: options.idTable
+        enumValues: options.enumValues
+        aggrStatuses: innerAggrStatuses 
+      })
 
     return H.div style: { display: "flex", alignItems: "baseline" },
       R(LinkComponent, 
