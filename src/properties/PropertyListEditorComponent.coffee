@@ -52,9 +52,9 @@ module.exports = class PropertyListEditorComponent extends React.Component
           H.option key: "json", value: "json", "JSON"
           if _.includes @props.features, "exprType"
             H.option key: "expr", value: "expr", "Expression"
-          if _.includes @props.features, "idType"
+          if _.includes @props.features, "idType" and @props.schema
             H.option key: "id", value: "id", "Reference"
-          if _.includes @props.features, "idType"
+          if _.includes @props.features, "idType" and @props.schema
             H.option key: "id[]", value: "id[]", "Reference List"
           if _.includes @props.features, "joinType"
             H.option key: "join", value: "join", "Join"
@@ -76,7 +76,7 @@ module.exports = class PropertyListEditorComponent extends React.Component
         R FormGroupComponent, label: "Join",
           R JoinEditorComponent, value: @props.property.join, onChange: ((join) => @props.onChange(_.extend({}, @props.property, join: join)))
       
-      if @props.property.type == "id"
+      if @props.property.type in ["id", "id[]"]
         R FormGroupComponent, label: "ID Table",
           R TableSelectComponent, value: @props.property.idTable, schema: @props.schema, onChange: ((table) => @props.onChange(_.extend({}, @props.property, idTable: table))),
       
