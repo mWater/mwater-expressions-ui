@@ -50,13 +50,13 @@ module.exports = class PropertyListEditorComponent extends React.Component
           H.option key: "image", value: "image", "Image"
           H.option key: "imagelist", value: "imagelist", "Imagelist"
           H.option key: "json", value: "json", "JSON"
-          if _.includes @props.features, "exprType"
+          if _.includes(@props.features, "exprType")
             H.option key: "expr", value: "expr", "Expression"
-          if _.includes @props.features, "idType" and @props.schema
+          if _.includes(@props.features, "idType") and @props.schema
             H.option key: "id", value: "id", "Reference"
-          if _.includes @props.features, "idType" and @props.schema
+          if _.includes(@props.features, "idType") and @props.schema
             H.option key: "id[]", value: "id[]", "Reference List"
-          if _.includes @props.features, "joinType"
+          if _.includes(@props.features, "joinType")
             H.option key: "join", value: "join", "Join"
       if @props.property.type in ["enum", "enumset"]
         R FormGroupComponent, label: "Values",
