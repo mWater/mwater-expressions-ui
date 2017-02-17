@@ -5,7 +5,6 @@ H = React.DOM
 
 ExprUtils = require("mwater-expressions").ExprUtils
 EnumSetComponent = require './EnumSetComponent'
-TextArrayComponent = require './TextArrayComponent'
 LinkComponent = require './LinkComponent'
 StackedComponent = require './StackedComponent'
 IdLiteralComponent = require './IdLiteralComponent'
