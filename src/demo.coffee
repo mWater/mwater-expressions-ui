@@ -247,7 +247,7 @@ class MockTestComponent extends React.Component
         types: ['number', 'boolean', 'date', 'datetime', 'text', 'enum']
         value: @state.value
         onChange: @handleValueChange
-        aggrStatuses: ["literal", "aggregate"]
+        aggrStatuses: ["literal", "aggregate", "individual"]
       )
       H.br()
       H.br()

@@ -89,30 +89,37 @@ module.exports = class ExprElementBuilder
     # Wrap element with hover links to build more complex expressions or to clear it
     links = []
 
-    # If boolean, add and/or link
-    createWrapOp = (op, name, binaryOnly) =>
+    # Create a link to wrap the expression with an op. type is "n" for +/* that can take n, "binary" for -//, "unary" for sum, etc.
+    createWrapOp = (op, name, type = "unary") =>
       if op not in (options.suppressWrapOps or [])
+        if type == "unary"
+          links.push({ label: name, onClick: => onChange({ type: "op", op: op, table: table, exprs: [expr] }) })
         # Prevent nesting when simple adding would work
-        if expr.op != op or binaryOnly
+        else if expr.op != op or type == "binary"
           links.push({ label: name, onClick: => onChange({ type: "op", op: op, table: table, exprs: [expr, null] }) })
         else
-          # Just add extra element
+          # Just add extra element for n items
           links.push({ label: name, onClick: => 
             exprs = expr.exprs.slice()
             exprs.push(null)
             onChange(_.extend({}, expr, { exprs: exprs }))
           })
 
+    # If boolean, add and/or link. 
     if exprType == "boolean"
-      createWrapOp("and", "+ And", false)
-      createWrapOp("or", "+ Or", false)
-      createWrapOp("not", "Not", false)
+      createWrapOp("and", "+ And", "n")
+      createWrapOp("or", "+ Or", "n")
+      createWrapOp("not", "Not", "unary")
 
     if exprType == "number"
-      createWrapOp("+", "+", false)
-      createWrapOp("-", "-", true)
-      createWrapOp("*", "*", false)
-      createWrapOp("/", "/", true)
+      createWrapOp("+", "+", "n")
+      createWrapOp("-", "-", "binary")
+      createWrapOp("*", "*", "n")
+      createWrapOp("/", "/", "binary")
+
+      # If option to wrap in sum
+      if "aggregate" in options.aggrStatuses and @exprUtils.getExprAggrStatus(expr) == "individual"
+        createWrapOp("sum", "Total", "unary")
 
     # Add + If
     if expr and expr.type == "case"
