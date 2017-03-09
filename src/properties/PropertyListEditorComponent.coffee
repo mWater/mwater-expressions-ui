@@ -151,10 +151,15 @@ class EnumValuesEditorComponent extends React.Component
     value.push({ id: "", name: {} })
     @props.onChange(value)
 
+  handleRemove: (i) =>
+    value = (@props.value or []).slice()
+    value.splice(i, 1)
+    @props.onChange(value)    
+
   render: ->
     H.div null,
       _.map @props.value or [], (value, i) =>
-        R EnumValueEditorComponent, key: i, value: value, onChange: @handleChange.bind(null, i)
+        R EnumValueEditorComponent, key: i, value: value, onChange: @handleChange.bind(null, i), onRemove: @handleRemove.bind(null, i)
       H.button type: "button", className: "btn btn-link", onClick: @handleAdd,
         "+ Add Value"    
 
@@ -163,6 +168,7 @@ class EnumValueEditorComponent extends React.Component
   @propTypes: 
     value: React.PropTypes.object 
     onChange: React.PropTypes.func.isRequired  # Called with new value
+    onRemove: React.PropTypes.func
 
   render: ->
     H.div null,
@@ -189,5 +195,10 @@ class EnumValueEditorComponent extends React.Component
         H.div className: "col-md-12",
           R FormGroupComponent, label: "Description",
             R LocalizedStringEditorComp, value: @props.value.desc, onChange: (value) => @props.onChange(_.extend({}, @props.value, desc: value))
+      if @props.onRemove
+        H.div key: "remove",
+          H.button className: "btn btn-link btn-xs", onClick: @props.onRemove, 
+            "Remove"
+
 
     
