@@ -174,7 +174,6 @@ module.exports = class ExprElementBuilder
       # True if an individual boolean is required, in which case any expression can be transformed into it
       anyTypeAllowed = not options.types or ("boolean" in options.types and options.types.length == 1)
 
-      # TODO what about count special handling?
       innerElem = @build(expr.expr, destTable, innerOnChange, { 
         types: if not anyTypeAllowed then options.types
         idTable: options.idTable
@@ -184,7 +183,8 @@ module.exports = class ExprElementBuilder
 
     return H.div style: { display: "flex", alignItems: "baseline" },
       R(LinkComponent, 
-        onRemove: => onChange(null),
+        dropdownItems: [{ id: "remove", name: [H.i(className: "fa fa-remove text-muted"), " Remove"] }]
+        onDropdownItemClicked: => onChange(null),
         joinsStr)
       innerElem
 
