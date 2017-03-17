@@ -224,9 +224,9 @@ module.exports = class ExprElementBuilder
         # Special case for no expressions
         if opItem.exprTypes.length == 0
           return R(LinkComponent, 
-            onRemove: =>
-              onChange(null)
-            , @exprUtils.summarizeExpr(expr, @locale))
+            dropdownItems: [{ id: "remove", name: [H.i(className: "fa fa-remove text-muted"), " Remove"] }]
+            onDropdownItemClicked: (=> onChange(null)),
+              @exprUtils.summarizeExpr(expr, @locale))
 
         innerAggrStatuses = if opItem.aggr then ["literal", "individual"] else options.aggrStatuses
 
