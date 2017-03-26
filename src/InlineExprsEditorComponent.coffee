@@ -30,6 +30,18 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     if expr
       @refs.contentEditable.pasteHTML(@createExprHtml(expr), false)
 
+  handleUpdate: (expr, index) =>
+    exprs = @props.exprs.slice()
+    exprs[index] = expr
+    @props.onChange(@props.text, exprs)
+
+  handleClick: (ev) =>
+    # Get index of expression
+    index = ev.target.dataset["index"]
+    if index and index.match(/^\d+$/)
+      index = parseInt(index)
+      @refs.updateModal.open(@props.exprs[index], index)
+
   # Handle a change to the content editable element
   handleChange: (elem) => 
     # console.log "handleChange: #{elem.innerHTML}"
@@ -101,7 +113,7 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     @props.onChange(text, exprs)
 
   # Create html for an expression
-  createExprHtml: (expr) ->
+  createExprHtml: (expr, index) ->
     # Create expr utils
     exprUtils = new ExprUtils(@props.schema)
 
@@ -112,7 +124,7 @@ module.exports = class InlineExprsEditorComponent extends React.Component
       summary = summary.substr(0, 50) + "..."
 
     # Add as div with a comment field that encodes the content
-    return '<div class="inline-expr-block" contentEditable="false"><!--' + encodeURIComponent(JSON.stringify(expr)) + '-->' + _.escape(summary) + '</div>&#x2060;'
+    return '<div class="inline-expr-block" contentEditable="false" data-index="' + index + '"><!--' + encodeURIComponent(JSON.stringify(expr)) + '-->' + _.escape(summary) + '</div>&#x2060;'
 
   createContentEditableHtml: ->
     # Escape HTML
@@ -123,7 +135,7 @@ module.exports = class InlineExprsEditorComponent extends React.Component
       index = parseInt(index)
       expr = @props.exprs[index]
       if expr
-        return @createExprHtml(expr)
+        return @createExprHtml(expr, index)
       return ""
       )
 
@@ -145,15 +157,20 @@ module.exports = class InlineExprsEditorComponent extends React.Component
   renderInsertModal: ->
     R ExprInsertModalComponent, ref: "insertModal", schema: @props.schema, dataSource: @props.dataSource, table: @props.table, onInsert: @handleInsert
 
+  renderUpdateModal: ->
+    R ExprUpdateModalComponent, ref: "updateModal", schema: @props.schema, dataSource: @props.dataSource, table: @props.table, onUpdate: @handleUpdate
+
   render: ->
     H.div style: { position: "relative" },
       @renderInsertModal()
+      @renderUpdateModal()
       H.div style: { paddingRight: 20 },
         R ContentEditableComponent, 
           ref: "contentEditable", 
           html: @createContentEditableHtml(), 
           style: { padding: "6px 12px", border: "1px solid #ccc", borderRadius: 4, minHeight: (if @props.multiline and @props.rows then "#{@props.rows * 2.5}ex") }
           onChange: @handleChange
+          onClick: @handleClick
       H.a onClick: @handleInsertClick, style: { cursor: "pointer", position: "absolute", right: 5, top: 8, fontStyle: "italic", color: "#337ab7" },
         "f"
         H.sub null, "x"
@@ -191,11 +208,55 @@ class ExprInsertModalComponent extends React.Component
         )
       onCancel: => @setState(open: false)
       title: "Insert Expression",
-        R ExprComponent, 
-          schema: @props.schema
-          dataSource: @props.dataSource
-          table: @props.table
-          types: ['text', 'number', 'enum', 'date', 'datetime']
-          value: @state.expr
-          onChange: (expr) => @setState(expr: expr)
+        H.div style: { paddingBottom: 200 },
+          R ExprComponent, 
+            schema: @props.schema
+            dataSource: @props.dataSource
+            table: @props.table
+            types: ['text', 'number', 'enum', 'date', 'datetime']
+            value: @state.expr
+            onChange: (expr) => @setState(expr: expr)
+  
+# Modal that displays an expression builder
+class ExprUpdateModalComponent extends React.Component
+  @propTypes:
+    schema: React.PropTypes.object.isRequired   # Schema to use
+    dataSource: React.PropTypes.object.isRequired # Data source to use to get values
+    table: React.PropTypes.string.isRequired    # Current table
+    onUpdate: React.PropTypes.func.isRequired   # Called with expr to update
+
+  constructor: ->
+    super
+
+    @state = {
+      open: false
+      expr: null
+      index: null
+    }
+
+  open: (expr, index) ->
+    @setState(open: true, expr: expr, index: index)
+
+  render: ->
+    if not @state.open
+      return null
+
+    R ActionCancelModalComponent, 
+      size: "large"
+      actionLabel: "Update"
+      onAction: => 
+        # Close first to avoid strange effects when mixed with pojoviews
+        @setState(open: false, =>
+          @props.onUpdate(@state.expr, @state.index)
+        )
+      onCancel: => @setState(open: false)
+      title: "Update Expression",
+        H.div style: { paddingBottom: 200 },
+          R ExprComponent, 
+            schema: @props.schema
+            dataSource: @props.dataSource
+            table: @props.table
+            types: ['text', 'number', 'enum', 'date', 'datetime']
+            value: @state.expr
+            onChange: (expr) => @setState(expr: expr)
   
