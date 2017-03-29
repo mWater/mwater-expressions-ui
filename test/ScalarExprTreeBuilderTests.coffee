@@ -2,6 +2,10 @@ assert = require('chai').assert
 _ = require 'lodash'
 ScalarExprTreeBuilder = require '../src/ScalarExprTreeBuilder'
 Schema = require("mwater-expressions").Schema
+canonical = require 'canonical-json'
+
+compare = (actual, expected) ->
+  assert.equal canonical(actual), canonical(expected), "\n" + canonical(actual) + "\n" + canonical(expected) + "\n"
 
 describe "ScalarExprTreeBuilder", ->
   beforeEach ->
@@ -10,7 +14,7 @@ describe "ScalarExprTreeBuilder", ->
       { id: "c1", name: { en: "C1" }, type: "text" }
     ]})
 
-    @schema = @schema.addTable({ id: "t2", name: "T2", contents: [
+    @schema = @schema.addTable({ id: "t2", name: "T2", label: "c1", contents: [
       { id: "c1", name: { en: "C1" }, type: "text" }
     ]})
 
@@ -28,7 +32,8 @@ describe "ScalarExprTreeBuilder", ->
     ]})
 
     nodes = new ScalarExprTreeBuilder(@schema).getTree(table: "t1")
-    assert _.isEqual(nodes[1].value, { table: "t1", joins: [], expr: { type: "field", table: "t1", column: "c2" }}), JSON.stringify(nodes[1].value)
+    console.log JSON.stringify(nodes)
+    compare nodes[1].value, { table: "t1", joins: [], expr: { type: "field", table: "t1", column: "c2" }}
 
   it "does not allow selection of single join as id type if idTable is wrong", ->
     # Join single column
@@ -116,7 +121,7 @@ describe "ScalarExprTreeBuilder", ->
       assert.deepEqual _.pluck(nodes, "name"), ["c2"]
       assert.deepEqual _.pluck(nodes[0].children(), "name"), ["c3"]
 
-    it.only "filters by level 2 name", ->
+    it "filters by level 2 name", ->
       @schema = new Schema({ tables: [{ id: "t1", contents: [
         { id: "c1", name: { en: "c1" }, type: "text" }
         { id: "c2", name: { en: "c2" }, type: "section", contents: [
@@ -177,8 +182,5 @@ describe "ScalarExprTreeBuilder", ->
       # Go to 2nd child, children
       nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", types: ["number"] })[0].children()
       
-      # Should include id field, because can be aggregated to number via count
-      assert.equal nodes.length, 1, "Should include id"
-
       assert.equal nodes[0].name, "Number of T2"
       assert.deepEqual nodes[0].value.expr, { type: "op", op:"count", table: "t2", exprs: [] }, JSON.stringify(nodes[0].value.expr)

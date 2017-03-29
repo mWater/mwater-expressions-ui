@@ -117,7 +117,7 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     # Create expr utils
     exprUtils = new ExprUtils(@props.schema)
 
-    summary = exprUtils.summarizeExpr(expr)
+    summary = exprUtils.summarizeExpr(expr) or ""
 
     # Limit length
     if summary.length > 50
