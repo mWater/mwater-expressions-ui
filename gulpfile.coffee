@@ -11,6 +11,9 @@ reload = browserSync.reload
 coffee = require 'gulp-coffee' 
 watchify = require 'watchify'
 watch = require 'gulp-watch'
+webpack = require 'webpack'
+WebpackDevServer = require 'webpack-dev-server'
+path = require 'path'
 
 # Compile coffeescript to js in lib/
 gulp.task 'coffee', ->
@@ -106,6 +109,20 @@ gulp.task 'watch', gulp.series([
         bundleDemoJs(w)
     ])  
   ])
+
+gulp.task "test", gulp.series([
+  "copy_assets"
+  ->
+    webpackConfig = require './webpack.config.tests.js'
+    compiler = webpack(webpackConfig)
+
+    new WebpackDevServer(compiler, { }).listen 8081, "localhost", (err) =>
+      if err 
+        throw new gutil.PluginError("webpack-dev-server", err)
+
+      # Server listening
+      gutil.log("[webpack-dev-server]", "http://localhost:8081/mocha.html")
+])
 
 gulp.task "default", gulp.series("copy", "coffee")
 
