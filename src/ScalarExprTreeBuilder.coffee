@@ -163,12 +163,13 @@ module.exports = class ScalarExprTreeBuilder
 
     # If join, add children
     if column.type == "join"
-      # Do not allow looping (selecting a->b->a) by getting a list of all tables visited so far
-      visitedTables = []
-      for i in [0..options.joins.length]
-        visitedTables = _.union(visitedTables, [@exprUtils.followJoins(options.startTable, _.take(options.joins, i))])
-      if column.join.toTable in visitedTables
-        return
+      # Allow looping now as it prevents some useful calculations
+      # # Do not allow looping (selecting a->b->a) by getting a list of all tables visited so far
+      # visitedTables = []
+      # for i in [0..options.joins.length]
+      #   visitedTables = _.union(visitedTables, [@exprUtils.followJoins(options.startTable, _.take(options.joins, i))])
+      # if column.join.toTable in visitedTables
+      #   return
 
       # Add column to joins
       joins = options.joins.slice()
