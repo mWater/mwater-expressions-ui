@@ -110,6 +110,7 @@ module.exports = class ExprElementBuilder
       createWrapOp("and", "+ And", "n")
       createWrapOp("or", "+ Or", "n")
       createWrapOp("not", "Not", "unary")
+      createWrapOp("is null", "Is blank", "unary")
 
     if exprType == "number"
       createWrapOp("+", "+", "n")
