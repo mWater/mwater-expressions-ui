@@ -1,6 +1,7 @@
 {
   "name": "mwater-expressions-ui",
   "version": "4.10.8",
+  "private": true,
   "description": "Expression UI library",
   "repository": "git@github.com:mWater/mwater-expressions-ui.git",
   "main": "lib/index.js",
@@ -29,7 +30,7 @@
     "react-library": "github:mwater/react-library",
     "react-motion": "^0.3.1",
     "react-onclickout": "^2.0.4",
-    "react-select": "^0.9.1",
+    "react-select": "github:mwater/react-select#fix_690",
     "update-object": "^1.0.0",
     "uuid": "^3.0.1"
   },
