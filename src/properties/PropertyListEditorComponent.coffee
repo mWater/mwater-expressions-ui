@@ -83,11 +83,11 @@ module.exports = class PropertyListEditorComponent extends React.Component
       R FormGroupComponent, label: "Deprecated",
         H.input type: 'checkbox', checked: @props.property.deprecated, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, deprecated: ev.target.checked)))
       
-      if _.includes @props.features, "uniqueCode" and @props.property.type == "text"
+      if _.includes(@props.features, "uniqueCode") and @props.property.type == "text"
         R FormGroupComponent, label: "Unique Code?",
           H.input type: 'checkbox', checked: @props.property.uniqueCode, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, uniqueCode: ev.target.checked)))
       
-      if _.includes @props.features, "sql"
+      if _.includes(@props.features, "sql")
         R FormGroupComponent, label: "SQL",
           H.input type: 'text', className: "form-control", value: @props.property.sql, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, sql: ev.target.value)))
       
