@@ -244,7 +244,8 @@ class MockTestComponent extends React.Component
         # types: ['enumset']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
-        types: ['number', 'boolean', 'date', 'datetime', 'text', 'enum']
+        # types: ['number', 'boolean', 'date', 'datetime', 'text', 'enum']
+        types: ['enumset']
         value: @state.value
         onChange: @handleValueChange
         aggrStatuses: ["literal", "aggregate", "individual"]

@@ -68,6 +68,7 @@ module.exports = class SelectExprModalComponent extends React.Component
           types: @props.types
           allowCase: @props.allowCase
           aggrStatuses: @props.aggrStatuses
+          enumValues: @props.enumValues
       }
     ]
 
