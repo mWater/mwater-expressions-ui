@@ -3,9 +3,10 @@ R = React.createElement
 H = React.DOM
 _ = require 'lodash'
 
+ui = require 'react-library/lib/bootstrap'
+
 LocalizedStringEditorComp = require '../LocalizedStringEditorComp'
 ExprComponent = require '../ExprComponent'
-FormGroupComponent = require './FormGroupComponent'
 IdFieldComponent = require './IdFieldComponent'
 
 # edit properties
@@ -29,13 +30,13 @@ module.exports = class PropertyListEditorComponent extends React.Component
           value: @props.property.id
           onChange: (value) => @props.onChange(_.extend({}, @props.property, id: value))
       if _.includes(@props.features, "code")
-        R FormGroupComponent, label: "Code",
+        R ui.FormGroup, label: "Code",
           H.input type: "text", className: "form-control", value: @props.property.code, onChange: (ev) => @props.onChange(_.extend({}, @props.property, code: ev.target.value))
-      R FormGroupComponent, label: "Name",
+      R ui.FormGroup, label: "Name",
         R LocalizedStringEditorComp, value: @props.property.name, onChange: (value) => @props.onChange(_.extend({}, @props.property, name: value))
-      R FormGroupComponent, label: "Description",
+      R ui.FormGroup, label: "Description",
         R LocalizedStringEditorComp, value: @props.property.desc, onChange: (value) => @props.onChange(_.extend({}, @props.property, desc: value))
-      R FormGroupComponent, label: "Type",
+      R ui.FormGroup, label: "Type",
         H.select className: "form-control", value: @props.property.type, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, type: ev.target.value))),
           H.option key: "", value: "", ""
           H.option key: "text", value: "text", "Text"
@@ -50,8 +51,6 @@ module.exports = class PropertyListEditorComponent extends React.Component
           H.option key: "image", value: "image", "Image"
           H.option key: "imagelist", value: "imagelist", "Imagelist"
           H.option key: "json", value: "json", "JSON"
-          if _.includes(@props.features, "exprType")
-            H.option key: "expr", value: "expr", "Expression"
           if _.includes(@props.features, "idType") and @props.schema
             H.option key: "id", value: "id", "Reference"
           if _.includes(@props.features, "idType") and @props.schema
@@ -59,40 +58,43 @@ module.exports = class PropertyListEditorComponent extends React.Component
           if _.includes(@props.features, "joinType")
             H.option key: "join", value: "join", "Join"
       if @props.property.type in ["enum", "enumset"]
-        R FormGroupComponent, label: "Values",
+        R ui.FormGroup, label: "Values",
           R EnumValuesEditorComponent, value: @props.property.enumValues, onChange: ((value) => @props.onChange(_.extend({}, @props.property, enumValues: value)))
       
-      if @props.property.type == "expr"
-        R FormGroupComponent, label: "Expression",
+      if _.includes(@props.features, "expr") and @props.property.type
+        R ui.FormGroup, label: "Expression", hint: "Leave blank unless this property is an expression", 
           R ExprComponent, 
             schema: @props.schema
             dataSource: @props.dataSource
             table: @props.table 
             value: @props.property.expr
+            types: [@props.property.type]
+            enumValues: @props.property.enumValues
+            idTable: @props.property.idTable
             aggrStatuses: ["individual", "aggregate", "literal"]
             onChange: (expr) => @props.onChange(_.extend({}, @props.property, expr: expr))
       
       if @props.property.type == "join"
-        R FormGroupComponent, label: "Join",
+        R ui.FormGroup, label: "Join",
           R JoinEditorComponent, value: @props.property.join, onChange: ((join) => @props.onChange(_.extend({}, @props.property, join: join)))
       
       if @props.property.type in ["id", "id[]"]
-        R FormGroupComponent, label: "ID Table",
+        R ui.FormGroup, label: "ID Table",
           R TableSelectComponent, value: @props.property.idTable, schema: @props.schema, onChange: ((table) => @props.onChange(_.extend({}, @props.property, idTable: table))),
       
-      R FormGroupComponent, label: "Deprecated",
+      R ui.FormGroup, label: "Deprecated",
         H.input type: 'checkbox', checked: @props.property.deprecated, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, deprecated: ev.target.checked)))
       
       if _.includes(@props.features, "uniqueCode") and @props.property.type == "text"
-        R FormGroupComponent, label: "Unique Code?",
+        R ui.FormGroup, label: "Unique Code?",
           H.input type: 'checkbox', checked: @props.property.uniqueCode, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, uniqueCode: ev.target.checked)))
       
       if _.includes(@props.features, "sql")
-        R FormGroupComponent, label: "SQL",
+        R ui.FormGroup, label: "SQL",
           H.input type: 'text', className: "form-control", value: @props.property.sql, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, sql: ev.target.value)))
       
       if @props.createRoleEditElem
-        R FormGroupComponent, label: "Roles",
+        R ui.FormGroup, label: "Roles",
           @props.createRoleEditElem(@props.property.roles or [], (roles) => @props.onChange(_.extend({}, @props.property, roles: roles)) )
 
 
@@ -106,7 +108,7 @@ class JoinEditorComponent extends React.Component
     H.div null,
       H.div className: "row",
         H.div className: "col-md-12",
-          R FormGroupComponent, label: "Type",
+          R ui.FormGroup, label: "Type",
             H.select className: "form-control", value: @props.value?.type, onChange: ((ev) => @props.onChange(_.extend({}, @props.value, type: ev.target.value))),
               H.option key: "", value: "", ""
               H.option key: "1-n", value: "1-n", "One to many"
@@ -114,13 +116,13 @@ class JoinEditorComponent extends React.Component
               H.option key: "n-n", value: "n-n", "Many to many"
               H.option key: "1-1", value: "1-1", "one to one"
         H.div className: "col-md-12",
-          R FormGroupComponent, label: "To Table",
+          R ui.FormGroup, label: "To Table",
             H.input type: 'text', className: "form-control", value: @props.value?.toTable, onChange: ((ev) => @props.onChange(_.extend({}, @props.value, toTable: ev.target.value)))
         H.div className: "col-md-12",
-          R FormGroupComponent, label: "From Column",
+          R ui.FormGroup, label: "From Column",
             H.input type: 'text', className: "form-control", value: @props.value?.fromColumn, onChange: ((ev) => @props.onChange(_.extend({}, @props.value, fromColumn: ev.target.value)))
         H.div className: "col-md-12",
-          R FormGroupComponent, label: "To Column",
+          R ui.FormGroup, label: "To Column",
             H.input type: 'text', className: "form-control", value: @props.value?.toColumn, onChange: ((ev) => @props.onChange(_.extend({}, @props.value, toColumn: ev.target.value)))
 
 # Reusable table select Component
@@ -179,7 +181,7 @@ class EnumValueEditorComponent extends React.Component
             onChange: (value) => @props.onChange(_.extend({}, @props.value, id: value))
 
         H.div className: "col-md-6",
-          R FormGroupComponent, label: "Code",
+          R ui.FormGroup, label: "Code",
             H.input 
               type: "text"
               className: "form-control"
@@ -189,11 +191,11 @@ class EnumValueEditorComponent extends React.Component
               onChange: (ev) => @props.onChange(_.extend({}, @props.value, code: ev.target.value))
       H.div className: "row",
         H.div className: "col-md-12",
-          R FormGroupComponent, label: "Name",
+          R ui.FormGroup, label: "Name",
             R LocalizedStringEditorComp, value: @props.value.name, onChange: (value) => @props.onChange(_.extend({}, @props.value, name: value))
       H.div className: "row",
         H.div className: "col-md-12",
-          R FormGroupComponent, label: "Description",
+          R ui.FormGroup, label: "Description",
             R LocalizedStringEditorComp, value: @props.value.desc, onChange: (value) => @props.onChange(_.extend({}, @props.value, desc: value))
       if @props.onRemove
         H.div key: "remove",

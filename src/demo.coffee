@@ -16,17 +16,16 @@ PropertyListComponent = require './properties/PropertyListComponent'
 PropertyListEditorComponent = require './properties/PropertyListEditorComponent'
 
 $ ->
-  # $.getJSON "https://api.mwater.co/v3/jsonql/schema?formIds=f6d3b6deed734467932f4dca34af4175", (schemaJson) ->
-  #   schema = new Schema(schemaJson)
-  # dataSource = new MWaterDataSource("https://api.mwater.co/v3/", null, false)
-    # # dataSource = new MWaterDataSource("http://localhost:1234/v3/", "e449acf016c362f19c4b65b52db23486", false)
+  $.getJSON "https://api.mwater.co/v3/jsonql/schema", (schemaJson) ->
+    schema = new Schema(schemaJson)
+    dataSource = new MWaterDataSource("https://api.mwater.co/v3/", null, false)
 
-  # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
-  # ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
-  # ReactDOM.render(R(PropertyListContainerComponent), document.getElementById("main"))
-  # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
-  ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
-  # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
+    # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
+    # ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
+    ReactDOM.render(R(PropertyListContainerComponent, schema: schema, dataSource: dataSource, table: "entities.water_point"), document.getElementById("main"))
+    # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+    # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
+    # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
 
 class PropertyListContainerComponent extends React.Component
   @propTypes:
@@ -48,7 +47,7 @@ class PropertyListContainerComponent extends React.Component
             schema: @props.schema
             dataSource: @props.dataSource
             table: @props.table
-            features: ["idField", "sql", "joinType", "idType"]
+            features: ["idField", "sql", "joinType", "idType", "expr"]
             onChange: (properties) => @setState(properties: properties) 
             createRoleDisplayElem: (roles) => H.span null, JSON.stringify(roles)
             createRoleEditElem: (roles, onChange) => 

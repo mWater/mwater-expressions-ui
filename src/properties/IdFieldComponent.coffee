@@ -3,7 +3,7 @@ R = React.createElement
 H = React.DOM
 _ = require 'lodash'
 
-FormGroupComponent = require './FormGroupComponent'
+ui = require 'react-library/lib/bootstrap'
 
 module.exports = class IdFieldComponent extends React.Component
   @propTypes: 
@@ -20,6 +20,6 @@ module.exports = class IdFieldComponent extends React.Component
     @props.onChange(ev.target.value)
     
   render: ->
-    R FormGroupComponent, label: "ID", hasWarnings: not @isValid(@props.value),
+    R ui.FormGroup, label: "ID", hasWarnings: not @isValid(@props.value),
       H.input type: "text", className: "form-control", value: @props.value or "", onChange: @handleChange
       H.p className: "help-block", "Lowercase, numbers and underscores"

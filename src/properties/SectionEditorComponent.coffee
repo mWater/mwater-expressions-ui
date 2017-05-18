@@ -3,6 +3,8 @@ R = React.createElement
 H = React.DOM
 _ = require 'lodash'
 
+ui = require 'react-library/lib/bootstrap'
+
 LocalizedStringEditorComp = require '../LocalizedStringEditorComp'
 PropertyListEditorComponent = require './PropertyListEditorComponent'
 IdFieldComponent = require './IdFieldComponent'
@@ -25,19 +27,13 @@ module.exports = class SectionEditorComponent extends React.Component
         R IdFieldComponent, 
           value: @props.property.id
           onChange: (value) => @props.onChange(_.extend({}, @props.property, id: value))
-        R FormGroupComponent, label: "ID",
+        R ui.FormGroup, label: "ID",
           H.input type: "text", className: "form-control", value: @props.property.id, onChange: (ev) => @props.onChange(_.extend({}, @props.property, id: ev.target.value))
           H.p className: "help-block", "Letters lowercase, numbers and _ only. No spaces or uppercase"
       if _.includes @props.features, "code"
-        R FormGroupComponent, label: "Code",
+        R ui.FormGroup, label: "Code",
           H.input type: "text", className: "form-control", value: @props.property.code, onChange: (ev) => @props.onChange(_.extend({}, @props.property, code: ev.target.value))
-      R FormGroupComponent, label: "Name",
+      R ui.FormGroup, label: "Name",
         R LocalizedStringEditorComp, value: @props.property.name, onChange: (value) => @props.onChange(_.extend({}, @props.property, name: value))
-      R FormGroupComponent, label: "Description",
+      R ui.FormGroup, label: "Description",
         R LocalizedStringEditorComp, value: @props.property.desc, onChange: (value) => @props.onChange(_.extend({}, @props.property, desc: value))
-
-class FormGroupComponent extends React.Component
-  render: ->
-    H.div className: "form-group",
-      H.label null, @props.label
-      @props.children
