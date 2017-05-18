@@ -29,6 +29,7 @@ class PropertyListComponent extends React.Component
     # joinType: allow join-type fields
     # code: show code of properties
     # expr: allow fields with expr set
+    # section: allow adding sections
     features: React.PropTypes.array
     
     # function that returns the UI of the roles, called with a single argument, the array containing roles
@@ -95,7 +96,8 @@ class PropertyListComponent extends React.Component
 
       H.ul className: "dropdown-menu text-left", role: "menu",
         H.li(key: "property", H.a(onClick: @handleNewProperty, "Property"))
-        H.li(key: "section", H.a(onClick: @handleNewSection, "Section"))
+        if _.includes(@props.features, "section")
+          H.li(key: "section", H.a(onClick: @handleNewSection, "Section"))
     
   renderAddingModal:  ->
     if not @state.addingItem
