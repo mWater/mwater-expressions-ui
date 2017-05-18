@@ -13,7 +13,6 @@ FilterExprComponent = require './FilterExprComponent'
 InlineExprsEditorComponent = require './InlineExprsEditorComponent'
 ContentEditableComponent = require './ContentEditableComponent'
 PropertyListComponent = require './properties/PropertyListComponent'
-PropertyListEditorComponent = require './properties/PropertyListEditorComponent'
 
 $ ->
   $.getJSON "https://api.mwater.co/v3/jsonql/schema", (schemaJson) ->
@@ -46,8 +45,9 @@ class PropertyListContainerComponent extends React.Component
             properties: @state.properties
             schema: @props.schema
             dataSource: @props.dataSource
-            table: @props.table
-            features: ["idField", "sql", "joinType", "idType", "expr"]
+            # table: @props.table
+            tableIds: ["entities.water_point", "entities.community"]
+            features: ["idField", "sql", "joinType", "idType", "expr", "table"]
             onChange: (properties) => @setState(properties: properties) 
             createRoleDisplayElem: (roles) => H.span null, JSON.stringify(roles)
             createRoleEditElem: (roles, onChange) => 
@@ -55,10 +55,6 @@ class PropertyListContainerComponent extends React.Component
       H.div className: "col-md-6",
         H.pre null, JSON.stringify(@state.properties, null, 2)
           
-    # H.div style: {padding: 20, border: "1px solid #aeaeae", width: 600},
-    #   R PropertyListEditorComponent, 
-    #     properties: @state.properties
-    #     onChange: (properties) => @setState(properties: properties) 
 
 class ContentEditableTestComponent extends React.Component
   constructor: ->

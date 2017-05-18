@@ -6,7 +6,7 @@ uuid = require 'uuid'
 
 ReorderableListComponent = require("react-library/lib/reorderable/ReorderableListComponent")
 LocalizedStringComponent = require '../LocalizedStringComponent'
-PropertyListEditorComponent = require './PropertyListEditorComponent'
+PropertyEditorComponent = require './PropertyEditorComponent'
 SectionEditorComponent = require './SectionEditorComponent'
 NestedListClipboardEnhancement = require './NestedListClipboardEnhancement'
 ActionCancelModalComponent = require('react-library/lib/ActionCancelModalComponent')
@@ -18,7 +18,8 @@ class PropertyListComponent extends React.Component
     onChange: React.PropTypes.func.isRequired 
     schema: React.PropTypes.object # schema of all data. Needed for idType and expr features
     dataSource: React.PropTypes.object # data source. Needed for expr feature
-    table: React.PropTypes.string.isRequired    # Table that properties are of
+    table: React.PropTypes.string    # Table that properties are of. Not required if table feature is on
+    tableIds: React.PropTypes.arrayOf(React.PropTypes.string.isRequired)   # Ids of tables to include when using table feature
     propertyIdGenerator: React.PropTypes.func # Function to generate the ID of the property
     
     # Array of features to be enabled apart from the defaults. Features are:
@@ -30,6 +31,7 @@ class PropertyListComponent extends React.Component
     # code: show code of properties
     # expr: allow fields with expr set
     # section: allow adding sections
+    # table: each property contains table
     features: React.PropTypes.array
     
     # function that returns the UI of the roles, called with a single argument, the array containing roles
@@ -121,11 +123,12 @@ class PropertyListComponent extends React.Component
             onChange: (updatedProperty) => @setState(addingItem: updatedProperty)
             features: @props.features
         else
-          R PropertyListEditorComponent,
+          R PropertyEditorComponent,
             property: @state.addingItem
             schema: @props.schema
             dataSource: @props.dataSource
             table: @props.table
+            tableIds: @props.tableIds
             onChange: (updatedProperty) => @setState(addingItem: updatedProperty)
             features: @props.features
             createRoleEditElem: @props.createRoleEditElem
@@ -137,6 +140,7 @@ class PropertyListComponent extends React.Component
         schema: @props.schema
         dataSource: @props.dataSource
         table: @props.table
+        tableIds: @props.tableIds
         features: @props.features
         onChange: @handleChange.bind(null, index)
         onDelete: @handleDelete.bind(null, index)
@@ -163,6 +167,10 @@ class PropertyComponent extends React.Component
   @propTypes:
     property: React.PropTypes.object.isRequired # The property
     onChange: React.PropTypes.func.isRequired
+    schema: React.PropTypes.object # schema of all data. Needed for idType and expr features
+    dataSource: React.PropTypes.object # data source. Needed for expr feature
+    table: React.PropTypes.string    # Table that properties are of. Not required if table feature is on
+    tableIds: React.PropTypes.arrayOf(React.PropTypes.string.isRequired)   # Ids of tables to include when using table feature
     features: React.PropTypes.array # Features to be enabled apart from the default features
     createRoleDisplayElem: React.PropTypes.func
     createRoleEditElem: React.PropTypes.func
@@ -216,6 +224,9 @@ class PropertyComponent extends React.Component
       value.name[value._base or "en"]
       
     H.span null, "#{names.join(" / ")}"
+
+  renderTable: (table) ->
+    return R LocalizedStringComponent, value: @props.schema.getTable(table)?.name
   
   render: ->
     classNames = ["pl-property"]
@@ -240,11 +251,12 @@ class PropertyComponent extends React.Component
                 onChange: (updatedProperty) => @setState(editorProperty: updatedProperty)
                 features: @props.features
             else
-              R PropertyListEditorComponent,
+              R PropertyEditorComponent,
                 property: @state.editorProperty
                 schema: @props.schema
                 dataSource: @props.dataSource
                 table: @props.table
+                tableIds: @props.tableIds
                 onChange: (updatedProperty) => @setState(editorProperty: updatedProperty)
                 features: @props.features
                 createRoleEditElem: @props.createRoleEditElem
@@ -267,6 +279,9 @@ class PropertyComponent extends React.Component
               H.div className: "pl-item-detail-sql text-muted", @props.property.sql
             if @props.property.type in ["enum", "enumset"] and @props.property.enumValues.length > 0
               H.div className: "pl-item-detail-enum text-muted", @renderEnumValues(@props.property.enumValues)
+            if _.includes(@props.features, "table") and @props.property.table
+              H.div className: "pl-item-detail-table text-muted", 
+                @renderTable(@props.property.table)
             if @props.property.roles and @props.createRoleDisplayElem
               @props.createRoleDisplayElem(@props.property.roles)
 
@@ -278,6 +293,7 @@ class PropertyComponent extends React.Component
             schema: @props.schema
             dataSource: @props.dataSource
             table: @props.table
+            tableIds: @props.tableIds
             createRoleEditElem: @props.createRoleEditElem
             createRoleDisplayElem: @props.createRoleDisplayElem
             onCut: @props.onCut

@@ -6,7 +6,6 @@ _ = require 'lodash'
 ui = require 'react-library/lib/bootstrap'
 
 LocalizedStringEditorComp = require '../LocalizedStringEditorComp'
-PropertyListEditorComponent = require './PropertyListEditorComponent'
 IdFieldComponent = require './IdFieldComponent'
 
 # edit section

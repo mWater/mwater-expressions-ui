@@ -2,8 +2,6 @@ React = require 'react'
 R = React.createElement
 uuid = require 'uuid'
 
-PropertyListEditorComponent = require './PropertyListEditorComponent'
-
 # A wrapper for nested list for property editor
 #  
 # The problem with nested list is that the the item component will need to render the list component

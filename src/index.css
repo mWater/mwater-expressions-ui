@@ -106,6 +106,10 @@
   font-size: 12px;
 }
 
+.pl-container .pl-item .pl-item-detail-table {
+  font-size: 12px;
+}
+
 .pl-container .pl-item .pl-item-detail-indicator {
   color: #888;
 }

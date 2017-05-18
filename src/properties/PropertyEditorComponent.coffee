@@ -7,17 +7,19 @@ ui = require 'react-library/lib/bootstrap'
 
 LocalizedStringEditorComp = require '../LocalizedStringEditorComp'
 ExprComponent = require '../ExprComponent'
+ExprUtils = require('mwater-expressions').ExprUtils
 IdFieldComponent = require './IdFieldComponent'
 
-# edit properties
-module.exports = class PropertyListEditorComponent extends React.Component
+# Edit a single property
+module.exports = class PropertyEditorComponent extends React.Component
   @propTypes:
     property: React.PropTypes.object.isRequired # The property being edited
     onChange: React.PropTypes.func.isRequired # Function called when anything is changed in the editor
     features: React.PropTypes.array # Features to be enabled apart from the default features
     schema: React.PropTypes.object   # schema of all data
     dataSource: React.PropTypes.object   # data source
-    table: React.PropTypes.string.isRequired    # Table that properties are of
+    table: React.PropTypes.string    # Table that properties are of. Not required if table feature is on
+    tableIds: React.PropTypes.arrayOf(React.PropTypes.string.isRequired)   # Ids of tables to include when using table feature
     createRoleEditElem: React.PropTypes.func
     
   @defaultProps:
@@ -25,6 +27,17 @@ module.exports = class PropertyListEditorComponent extends React.Component
     
   render: ->
     H.div null,
+      if _.includes(@props.features, "table")
+        R ui.FormGroup, label: "Table",
+          R ui.Select,
+            nullLabel: "Select..."
+            value: @props.property.table
+            onChange: (table) => @props.onChange(_.extend({}, @props.property, table: table))
+            options: _.map(@props.tableIds, (tableId) =>
+              table = @props.schema.getTable(tableId)
+              return { value: table.id, label: ExprUtils.localizeString(table.name) }
+            )
+
       if _.includes(@props.features, "idField")
         R IdFieldComponent, 
           value: @props.property.id
@@ -61,12 +74,12 @@ module.exports = class PropertyListEditorComponent extends React.Component
         R ui.FormGroup, label: "Values",
           R EnumValuesEditorComponent, value: @props.property.enumValues, onChange: ((value) => @props.onChange(_.extend({}, @props.property, enumValues: value)))
       
-      if _.includes(@props.features, "expr") and @props.property.type
-        R ui.FormGroup, label: "Expression", hint: "Leave blank unless this property is an expression", 
+      if _.includes(@props.features, "expr") and @props.property.type and (@props.property.table or @props.table)
+        R ui.FormGroup, label: "Expression", hint: (if not @props.property.table then "Leave blank unless this property is an expression"), 
           R ExprComponent, 
             schema: @props.schema
             dataSource: @props.dataSource
-            table: @props.table 
+            table: @props.property.table or @props.table
             value: @props.property.expr
             types: [@props.property.type]
             enumValues: @props.property.enumValues
@@ -82,8 +95,10 @@ module.exports = class PropertyListEditorComponent extends React.Component
         R ui.FormGroup, label: "ID Table",
           R TableSelectComponent, value: @props.property.idTable, schema: @props.schema, onChange: ((table) => @props.onChange(_.extend({}, @props.property, idTable: table))),
       
-      R ui.FormGroup, label: "Deprecated",
-        H.input type: 'checkbox', checked: @props.property.deprecated, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, deprecated: ev.target.checked)))
+      R ui.Checkbox,
+        value: @props.property.deprecated
+        onChange: ((deprecated) => @props.onChange(_.extend({}, @props.property, deprecated: deprecated))),
+          "Deprecated"
       
       if _.includes(@props.features, "uniqueCode") and @props.property.type == "text"
         R ui.FormGroup, label: "Unique Code?",
