@@ -9,7 +9,6 @@ AsyncLoadComponent = require 'react-library/lib/AsyncLoadComponent'
 # Needs two indexes to work fast:
 # create index on some_table (label_column);
 # create index on some_table (lower(label_column) text_pattern_ops);
-
 module.exports = class IdLiteralComponent extends AsyncLoadComponent
   @propTypes: 
     value: React.PropTypes.any # String value of primary key or array of primary keys
@@ -69,16 +68,20 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
         callback(currentValue: null)
         return 
       if not @props.multi
-        callback(currentValue: { label: rows[0].label, value: rows[0].value })
+        callback(currentValue: { label: rows[0].label, value: JSON.stringify(rows[0].value) })
       else
-        callback(currentValue: rows)
+        callback(currentValue: _.map(rows, (row) -> { label: row.label, value: JSON.stringify(row.value) }))
 
   handleChange: (value) =>
     if @props.multi
       value = if value then value.split("\n") else null
+      value = _.map(value, JSON.parse)
       @props.onChange(value)
     else
-      @props.onChange(value or null)
+      if value
+        @props.onChange(JSON.parse(value))
+      else
+        @props.onChange(null)
 
   getOptions: (input, cb) =>
     # If no input, or just displaying current value
@@ -133,19 +136,17 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
       rows = _.filter(rows, (r) -> r.label)
 
       cb(null, {
-        options: _.map(rows, (r) -> { value: r.value, label: r.label })
+        options: _.map(rows, (r) -> { value: JSON.stringify(r.value), label: r.label })
         complete: false # TODO rows.length < 50 # Complete if didn't hit limit
       })
 
     return
 
   render: ->
-    value = @state.currentValue or ""
-
     H.div style: { width: "100%" },
       React.createElement(ReactSelect, { 
         ref: "select"
-        value: value
+        value: if @state.currentValue? then @state.currentValue else ""
         placeholder: @props.placeholder or "Select"
         asyncOptions: @getOptions
         multi: @props.multi
