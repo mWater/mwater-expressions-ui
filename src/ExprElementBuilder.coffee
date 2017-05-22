@@ -209,7 +209,12 @@ module.exports = class ExprElementBuilder
           handleRemove = =>
             exprs = expr.exprs.slice()
             exprs.splice(i, 1)
-            onChange(_.extend({}, expr, { exprs: exprs }))          
+
+            # If only one left, remove op entirely
+            if exprs.length == 1
+              onChange(exprs[0])
+            else
+              onChange(_.extend({}, expr, { exprs: exprs }))          
 
           return { elem: elem, onRemove: handleRemove }
         
