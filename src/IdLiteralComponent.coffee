@@ -5,7 +5,7 @@ ReactSelect = require 'react-select'
 ExprCompiler = require("mwater-expressions").ExprCompiler
 AsyncLoadComponent = require 'react-library/lib/AsyncLoadComponent'
 
-# Displays a combo box that allows selecting multiple text values from an expression
+# Displays a combo box that allows selecting one or multiple text values from an expression
 # Needs two indexes to work fast:
 # create index on some_table (label_column);
 # create index on some_table (lower(label_column) text_pattern_ops);
