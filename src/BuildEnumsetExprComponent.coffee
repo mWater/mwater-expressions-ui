@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
@@ -9,14 +10,14 @@ RemovableComponent = require './RemovableComponent'
 # Build enumset
 module.exports = class BuildEnumsetExprComponent extends React.Component
   @propTypes:
-    schema: React.PropTypes.object.isRequired
-    dataSource: React.PropTypes.object.isRequired # Data source to use to get values
-    value: React.PropTypes.object   # Current expression value
-    enumValues: React.PropTypes.array # enum values. Can't display without them
-    onChange: React.PropTypes.func  # Called with new expression
+    schema: PropTypes.object.isRequired
+    dataSource: PropTypes.object.isRequired # Data source to use to get values
+    value: PropTypes.object   # Current expression value
+    enumValues: PropTypes.array # enum values. Can't display without them
+    onChange: PropTypes.func  # Called with new expression
 
   @contextTypes:
-    locale: React.PropTypes.string  # e.g. "en"
+    locale: PropTypes.string  # e.g. "en"
 
   handleValueChange: (id, value) =>
     values = _.clone(@props.value.values)

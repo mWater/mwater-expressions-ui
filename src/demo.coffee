@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 ReactDOM = require 'react-dom'
 R = React.createElement
@@ -28,9 +29,9 @@ $ ->
 
 class PropertyListContainerComponent extends React.Component
   @propTypes:
-    schema: React.PropTypes.object.isRequired # schema of all data
-    dataSource: React.PropTypes.object.isRequired # data source
-    table: React.PropTypes.string.isRequired    # Table that properties are of
+    schema: PropTypes.object.isRequired # schema of all data
+    dataSource: PropTypes.object.isRequired # data source
+    table: PropTypes.string.isRequired    # Table that properties are of
   constructor: ->
     super
 

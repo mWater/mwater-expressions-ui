@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 CrossComponent = require('react-library/lib/CrossComponent')
 React = require 'react'
 H = React.DOM
@@ -8,10 +9,10 @@ width = 60
 # Displays a set of components vertically with lines connecting them
 module.exports = class StackedComponent extends React.Component
   @propTypes:
-    joinLabel: React.PropTypes.node   # Label between connections
-    items: React.PropTypes.arrayOf(React.PropTypes.shape({
-      elem: React.PropTypes.node.isRequired # Elem to display
-      onRemove: React.PropTypes.func # Pass to put a remove link on right of specified item
+    joinLabel: PropTypes.node   # Label between connections
+    items: PropTypes.arrayOf(PropTypes.shape({
+      elem: PropTypes.node.isRequired # Elem to display
+      onRemove: PropTypes.func # Pass to put a remove link on right of specified item
       })).isRequired 
 
   renderRow: (item, i, first, last) ->

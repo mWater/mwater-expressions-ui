@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 ReactDOM = require 'react-dom'
 H = React.DOM
@@ -6,9 +7,9 @@ R = React.createElement
 # Shows a tree that selects table + joins + expr of a scalar expression
 module.exports = class ScalarExprTreeComponent extends React.Component 
   @propTypes: 
-    tree: React.PropTypes.array.isRequired    # Tree from ScalarExprTreeBuilder
-    onChange: React.PropTypes.func.isRequired # Called with newly selected value
-    height: React.PropTypes.number            # Render height of the component
+    tree: PropTypes.array.isRequired    # Tree from ScalarExprTreeBuilder
+    onChange: PropTypes.func.isRequired # Called with newly selected value
+    height: PropTypes.number            # Render height of the component
 
   render: ->
     H.div style: { overflowY: (if @props.height then "auto"), height: @props.height },
@@ -20,9 +21,9 @@ module.exports = class ScalarExprTreeComponent extends React.Component
 
 class ScalarExprTreeTreeComponent extends React.Component
   @propTypes:
-    tree: React.PropTypes.array.isRequired    # Tree from ScalarExprTreeBuilder
-    onChange: React.PropTypes.func.isRequired # Called with newly selected value
-    prefix: React.PropTypes.string            # String to prefix names with
+    tree: PropTypes.array.isRequired    # Tree from ScalarExprTreeBuilder
+    onChange: PropTypes.func.isRequired # Called with newly selected value
+    prefix: PropTypes.string            # String to prefix names with
 
   render: ->
     elems = []
@@ -40,8 +41,8 @@ class ScalarExprTreeTreeComponent extends React.Component
 
 class ScalarExprTreeLeafComponent extends React.Component
   @propTypes:
-    item: React.PropTypes.object.isRequired # Contains item "name" and "value"
-    prefix: React.PropTypes.string            # String to prefix names with
+    item: PropTypes.object.isRequired # Contains item "name" and "value"
+    prefix: PropTypes.string            # String to prefix names with
   
   handleClick: =>
     @props.onChange(@props.item.value)
@@ -63,13 +64,13 @@ class ScalarExprTreeLeafComponent extends React.Component
 
 class ScalarExprTreeNodeComponent extends React.Component
   @propTypes:
-    item: React.PropTypes.object.isRequired # Item to display
-    onChange: React.PropTypes.func.isRequired # Called when item is selected
+    item: PropTypes.object.isRequired # Item to display
+    onChange: PropTypes.func.isRequired # Called when item is selected
 
   @contextTypes:
     # Function to decorate the children component of a section. Passed { children: React element of children, tableId: id of table, section: section object from schema }
     # Should return decorated element
-    decorateScalarExprTreeSectionChildren: React.PropTypes.func 
+    decorateScalarExprTreeSectionChildren: PropTypes.func 
 
   constructor: (props) ->
     super

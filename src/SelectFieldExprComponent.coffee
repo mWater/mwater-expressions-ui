@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
@@ -9,18 +10,18 @@ ExprUtils = require('mwater-expressions').ExprUtils
 
 module.exports = class SelectFieldExprComponent extends React.Component
   @propTypes:
-    value: React.PropTypes.object   # Current expression value
-    onChange: React.PropTypes.func.isRequired # Called with new expression
+    value: PropTypes.object   # Current expression value
+    onChange: PropTypes.func.isRequired # Called with new expression
 
-    schema: React.PropTypes.object.isRequired
-    dataSource: React.PropTypes.object.isRequired # Data source to use to get values
+    schema: PropTypes.object.isRequired
+    dataSource: PropTypes.object.isRequired # Data source to use to get values
 
     # Props to narrow down choices
-    table: React.PropTypes.string.isRequired # Current table
-    types: React.PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
-    enumValues: React.PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
-    idTable: React.PropTypes.string # If specified the table from which id-type expressions must come
-    aggrStatuses: React.PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
+    table: PropTypes.string.isRequired # Current table
+    types: PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
+    enumValues: PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
+    idTable: PropTypes.string # If specified the table from which id-type expressions must come
+    aggrStatuses: PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
 
   constructor: ->
     super

@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -11,14 +12,14 @@ AsyncLoadComponent = require 'react-library/lib/AsyncLoadComponent'
 # create index on some_table (lower(label_column) text_pattern_ops);
 module.exports = class IdLiteralComponent extends AsyncLoadComponent
   @propTypes: 
-    value: React.PropTypes.any # String value of primary key or array of primary keys
-    onChange: React.PropTypes.func.isRequired  # Called with primary key or array of primary keys
-    idTable: React.PropTypes.string.isRequired # Array of id and name (localized string)
-    schema: React.PropTypes.object.isRequired # Schema of the database
-    dataSource: React.PropTypes.object.isRequired # Data source to use to get values
-    placeholder: React.PropTypes.string
-    orderBy: React.PropTypes.array   # Optional extra orderings. Put "main" as tableAlias. JsonQL
-    multi: React.PropTypes.bool      # Allow multiple values (id[] type)
+    value: PropTypes.any # String value of primary key or array of primary keys
+    onChange: PropTypes.func.isRequired  # Called with primary key or array of primary keys
+    idTable: PropTypes.string.isRequired # Array of id and name (localized string)
+    schema: PropTypes.object.isRequired # Schema of the database
+    dataSource: PropTypes.object.isRequired # Data source to use to get values
+    placeholder: PropTypes.string
+    orderBy: PropTypes.array   # Optional extra orderings. Put "main" as tableAlias. JsonQL
+    multi: PropTypes.bool      # Allow multiple values (id[] type)
 
   focus: ->
     @refs.select.focus()

@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 ReactSelect = require 'react-select'
@@ -7,12 +8,12 @@ ExprUtils = require("mwater-expressions").ExprUtils
 # Component which displays an array of enums
 module.exports = class EnumSetComponent extends React.Component
   @propTypes: 
-    value: React.PropTypes.object
-    onChange: React.PropTypes.func.isRequired 
-    enumValues: React.PropTypes.array.isRequired # Array of id and name (localized string)
+    value: PropTypes.object
+    onChange: PropTypes.func.isRequired 
+    enumValues: PropTypes.array.isRequired # Array of id and name (localized string)
 
   @contextTypes:
-    locale: React.PropTypes.string  # e.g. "en"
+    locale: PropTypes.string  # e.g. "en"
 
   handleChange: (val) =>
     value = if val then val.split("\n") else []

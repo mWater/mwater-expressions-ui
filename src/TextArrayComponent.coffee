@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 ReactSelect = require 'react-select'
@@ -6,11 +7,11 @@ ExprCompiler = require("mwater-expressions").ExprCompiler
 # Displays a combo box that allows selecting multiple text values from an expression
 module.exports = class TextArrayComponent extends React.Component
   @propTypes: 
-    value: React.PropTypes.object
-    onChange: React.PropTypes.func.isRequired 
-    refExpr: React.PropTypes.object.isRequired # Expression for the text values to select from
-    schema: React.PropTypes.object.isRequired # Schema of the database
-    dataSource: React.PropTypes.object.isRequired # Data source to use to get values
+    value: PropTypes.object
+    onChange: PropTypes.func.isRequired 
+    refExpr: PropTypes.object.isRequired # Expression for the text values to select from
+    schema: PropTypes.object.isRequired # Schema of the database
+    dataSource: PropTypes.object.isRequired # Data source to use to get values
 
   focus: ->
     @refs.select.focus()

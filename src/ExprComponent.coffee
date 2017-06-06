@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
@@ -11,26 +12,26 @@ ExprElementBuilder = require './ExprElementBuilder'
 # Cleans expression as a convenience
 module.exports = class ExprComponent extends React.Component
   @propTypes:
-    schema: React.PropTypes.object.isRequired
-    dataSource: React.PropTypes.object.isRequired # Data source to use to get values
+    schema: PropTypes.object.isRequired
+    dataSource: PropTypes.object.isRequired # Data source to use to get values
 
-    table: React.PropTypes.string.isRequired # Current table
-    value: React.PropTypes.object   # Current expression value
-    onChange: React.PropTypes.func  # Called with new expression
+    table: PropTypes.string.isRequired # Current table
+    value: PropTypes.object   # Current expression value
+    onChange: PropTypes.func  # Called with new expression
 
-    types: React.PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
-    enumValues: React.PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
-    idTable: React.PropTypes.string # If specified the table from which id-type expressions must come
+    types: PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
+    enumValues: PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
+    idTable: PropTypes.string # If specified the table from which id-type expressions must come
 
-    preferLiteral: React.PropTypes.bool # True to prefer literal expressions
-    aggrStatuses: React.PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
-    placeholder: React.PropTypes.string # placeholder for empty value
+    preferLiteral: PropTypes.bool # True to prefer literal expressions
+    aggrStatuses: PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
+    placeholder: PropTypes.string # placeholder for empty value
 
   @defaultProps:
     aggrStatuses: ["individual", "literal"]
 
   @contextTypes:
-    locale: React.PropTypes.string  # e.g. "en"
+    locale: PropTypes.string  # e.g. "en"
 
   # Opens the editor popup. Only works if expression is blank
   openEditor: =>

@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 
@@ -8,11 +9,11 @@ module.exports = class LocalizedStringEditorComp extends React.Component
     @state = { selectedLanguageCode: "en" }
 
   @propTypes: 
-    value: React.PropTypes.object
-    onChange: React.PropTypes.func.isRequired
-    availableLanguages: React.PropTypes.array # Contains id and name of languages
-    readonly: React.PropTypes.bool
-    multiline: React.PropTypes.bool  # True to allow multiple lines
+    value: PropTypes.object
+    onChange: PropTypes.func.isRequired
+    availableLanguages: PropTypes.array # Contains id and name of languages
+    readonly: PropTypes.bool
+    multiline: PropTypes.bool  # True to allow multiple lines
   
 
   handleRemoveValue: =>

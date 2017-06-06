@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
@@ -10,13 +11,13 @@ AsyncLoadComponent = require 'react-library/lib/AsyncLoadComponent'
 # Displays a literal expression as a string. Simple for non-id types. For id types, loads using a query
 module.exports = class LiteralExprStringComponent extends AsyncLoadComponent
   @propTypes:
-    schema: React.PropTypes.object.isRequired
-    dataSource: React.PropTypes.object.isRequired # Data source to use to get values
-    value: React.PropTypes.object   # Current expression value
-    enumValues: React.PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
+    schema: PropTypes.object.isRequired
+    dataSource: PropTypes.object.isRequired # Data source to use to get values
+    value: PropTypes.object   # Current expression value
+    enumValues: PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
 
   @contextTypes:
-    locale: React.PropTypes.string  # e.g. "en"
+    locale: PropTypes.string  # e.g. "en"
 
   # Override to determine if a load is needed. Not called on mounting
   isLoadNeeded: (newProps, oldProps) -> 

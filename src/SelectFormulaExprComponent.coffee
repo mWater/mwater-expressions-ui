@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
@@ -9,14 +10,14 @@ ExprUtils = require('mwater-expressions').ExprUtils
 
 module.exports = class SelectFormulaExprComponent extends React.Component
   @propTypes:
-    value: React.PropTypes.object   # Current expression value
-    onChange: React.PropTypes.func.isRequired # Called with new expression
+    value: PropTypes.object   # Current expression value
+    onChange: PropTypes.func.isRequired # Called with new expression
 
     # Props to narrow down choices
-    table: React.PropTypes.string.isRequired # Current table
-    allowCase: React.PropTypes.bool    # Allow case statements
-    types: React.PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
-    aggrStatuses: React.PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
+    table: PropTypes.string.isRequired # Current table
+    allowCase: PropTypes.bool    # Allow case statements
+    types: PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
+    aggrStatuses: PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
 
   constructor: ->
     super
