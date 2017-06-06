@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 R = React.createElement
 H = React.DOM
@@ -14,13 +15,13 @@ ActionCancelModalComponent = require('react-library/lib/ActionCancelModalCompone
 # List/add/edit properties
 class PropertyListComponent extends React.Component
   @propTypes:
-    properties: React.PropTypes.array.isRequired # array of properties
-    onChange: React.PropTypes.func.isRequired 
-    schema: React.PropTypes.object # schema of all data. Needed for idType and expr features
-    dataSource: React.PropTypes.object # data source. Needed for expr feature
-    table: React.PropTypes.string    # Table that properties are of. Not required if table feature is on
-    tableIds: React.PropTypes.arrayOf(React.PropTypes.string.isRequired)   # Ids of tables to include when using table feature
-    propertyIdGenerator: React.PropTypes.func # Function to generate the ID of the property
+    properties: PropTypes.array.isRequired # array of properties
+    onChange: PropTypes.func.isRequired 
+    schema: PropTypes.object # schema of all data. Needed for idType and expr features
+    dataSource: PropTypes.object # data source. Needed for expr feature
+    table: PropTypes.string    # Table that properties are of. Not required if table feature is on
+    tableIds: PropTypes.arrayOf(PropTypes.string.isRequired)   # Ids of tables to include when using table feature
+    propertyIdGenerator: PropTypes.func # Function to generate the ID of the property
     
     # Array of features to be enabled apart from the defaults. Features are:
     # sql: include raw SQL editor
@@ -32,24 +33,24 @@ class PropertyListComponent extends React.Component
     # expr: allow fields with expr set
     # section: allow adding sections
     # table: each property contains table
-    features: React.PropTypes.array
+    features: PropTypes.array
     
     # function that returns the UI of the roles, called with a single argument, the array containing roles
-    createRoleDisplayElem: React.PropTypes.func 
+    createRoleDisplayElem: PropTypes.func 
     
     # function that returns the UI of the roles for editing, gets passed two arguments
     # 1. the array containing roles
     # 2. The callback function that should be called when the roles change
-    createRoleEditElem: React.PropTypes.func
+    createRoleEditElem: PropTypes.func
     
-    onCut: React.PropTypes.func # supplied by NestedListClipboardEnhancement
-    onCopy: React.PropTypes.func # supplied by NestedListClipboardEnhancement
-    onPaste: React.PropTypes.func # supplied by NestedListClipboardEnhancement
-    onPasteInto: React.PropTypes.func # supplied by NestedListClipboardEnhancement
-    listId: React.PropTypes.string # used internally
+    onCut: PropTypes.func # supplied by NestedListClipboardEnhancement
+    onCopy: PropTypes.func # supplied by NestedListClipboardEnhancement
+    onPaste: PropTypes.func # supplied by NestedListClipboardEnhancement
+    onPasteInto: PropTypes.func # supplied by NestedListClipboardEnhancement
+    listId: PropTypes.string # used internally
     
   @contextTypes:
-    clipboard: React.PropTypes.object
+    clipboard: PropTypes.object
   
   constructor: (props) ->
     super(props)
@@ -165,21 +166,21 @@ class PropertyListComponent extends React.Component
 
 class PropertyComponent extends React.Component
   @propTypes:
-    property: React.PropTypes.object.isRequired # The property
-    onChange: React.PropTypes.func.isRequired
-    schema: React.PropTypes.object # schema of all data. Needed for idType and expr features
-    dataSource: React.PropTypes.object # data source. Needed for expr feature
-    table: React.PropTypes.string    # Table that properties are of. Not required if table feature is on
-    tableIds: React.PropTypes.arrayOf(React.PropTypes.string.isRequired)   # Ids of tables to include when using table feature
-    features: React.PropTypes.array # Features to be enabled apart from the default features
-    createRoleDisplayElem: React.PropTypes.func
-    createRoleEditElem: React.PropTypes.func
-    onCut: React.PropTypes.func.isRequired
-    onCopy: React.PropTypes.func.isRequired
-    onPaste: React.PropTypes.func.isRequired
-    onPasteInto: React.PropTypes.func.isRequired
-    onDelete: React.PropTypes.func.isRequired
-    listId: React.PropTypes.string
+    property: PropTypes.object.isRequired # The property
+    onChange: PropTypes.func.isRequired
+    schema: PropTypes.object # schema of all data. Needed for idType and expr features
+    dataSource: PropTypes.object # data source. Needed for expr feature
+    table: PropTypes.string    # Table that properties are of. Not required if table feature is on
+    tableIds: PropTypes.arrayOf(PropTypes.string.isRequired)   # Ids of tables to include when using table feature
+    features: PropTypes.array # Features to be enabled apart from the default features
+    createRoleDisplayElem: PropTypes.func
+    createRoleEditElem: PropTypes.func
+    onCut: PropTypes.func.isRequired
+    onCopy: PropTypes.func.isRequired
+    onPaste: PropTypes.func.isRequired
+    onPasteInto: PropTypes.func.isRequired
+    onDelete: PropTypes.func.isRequired
+    listId: PropTypes.string
   
   @iconMap:
     text: "fa fa-font"
@@ -197,7 +198,7 @@ class PropertyComponent extends React.Component
     join: "fa fa-link"
     
   @contextTypes:
-    clipboard: React.PropTypes.object
+    clipboard: PropTypes.object
   
   constructor: (props) ->
     super

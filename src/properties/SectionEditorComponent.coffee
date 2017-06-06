@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 R = React.createElement
 H = React.DOM
@@ -11,9 +12,9 @@ IdFieldComponent = require './IdFieldComponent'
 # edit section
 module.exports = class SectionEditorComponent extends React.Component
   @propTypes:
-    property: React.PropTypes.object.isRequired # The property being edited
-    onChange: React.PropTypes.func.isRequired # Function called when anything is changed in the editor
-    features: React.PropTypes.array # Features to be enabled apart from the default features
+    property: PropTypes.object.isRequired # The property being edited
+    onChange: PropTypes.func.isRequired # Function called when anything is changed in the editor
+    features: PropTypes.array # Features to be enabled apart from the default features
     
   @defaultProps:
     features: []

@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 R = React.createElement
 H = React.DOM
@@ -13,14 +14,14 @@ IdFieldComponent = require './IdFieldComponent'
 # Edit a single property
 module.exports = class PropertyEditorComponent extends React.Component
   @propTypes:
-    property: React.PropTypes.object.isRequired # The property being edited
-    onChange: React.PropTypes.func.isRequired # Function called when anything is changed in the editor
-    features: React.PropTypes.array # Features to be enabled apart from the default features
-    schema: React.PropTypes.object   # schema of all data
-    dataSource: React.PropTypes.object   # data source
-    table: React.PropTypes.string    # Table that properties are of. Not required if table feature is on
-    tableIds: React.PropTypes.arrayOf(React.PropTypes.string.isRequired)   # Ids of tables to include when using table feature
-    createRoleEditElem: React.PropTypes.func
+    property: PropTypes.object.isRequired # The property being edited
+    onChange: PropTypes.func.isRequired # Function called when anything is changed in the editor
+    features: PropTypes.array # Features to be enabled apart from the default features
+    schema: PropTypes.object   # schema of all data
+    dataSource: PropTypes.object   # data source
+    table: PropTypes.string    # Table that properties are of. Not required if table feature is on
+    tableIds: PropTypes.arrayOf(PropTypes.string.isRequired)   # Ids of tables to include when using table feature
+    createRoleEditElem: PropTypes.func
     
   @defaultProps:
     features: []
@@ -116,8 +117,8 @@ module.exports = class PropertyEditorComponent extends React.Component
 # Edits join
 class JoinEditorComponent extends React.Component
   @propTypes: 
-    value: React.PropTypes.object  # The join object
-    onChange: React.PropTypes.func.isRequired  # Called with new value
+    value: PropTypes.object  # The join object
+    onChange: PropTypes.func.isRequired  # Called with new value
   
   render: ->
     H.div null,
@@ -143,9 +144,9 @@ class JoinEditorComponent extends React.Component
 # Reusable table select Component
 class TableSelectComponent extends React.Component
   @propTypes: 
-    value: React.PropTypes.string  # The selected table
-    schema: React.PropTypes.object.isRequired # schema of all data
-    onChange: React.PropTypes.func.isRequired  # Called with new value
+    value: PropTypes.string  # The selected table
+    schema: PropTypes.object.isRequired # schema of all data
+    onChange: PropTypes.func.isRequired  # Called with new value
   
   render: ->
     H.select className: "form-control", value: @props.value, onChange: ((ev) => @props.onChange(ev.target.value)),
@@ -155,8 +156,8 @@ class TableSelectComponent extends React.Component
 # Edits a list of enum values
 class EnumValuesEditorComponent extends React.Component
   @propTypes: 
-    value: React.PropTypes.array  # Array of enum values to edit
-    onChange: React.PropTypes.func.isRequired  # Called with new value
+    value: PropTypes.array  # Array of enum values to edit
+    onChange: PropTypes.func.isRequired  # Called with new value
 
   handleChange: (i, item) =>
     value = (@props.value or []).slice()
@@ -183,9 +184,9 @@ class EnumValuesEditorComponent extends React.Component
 # Edits an enum value (id, name)
 class EnumValueEditorComponent extends React.Component
   @propTypes: 
-    value: React.PropTypes.object 
-    onChange: React.PropTypes.func.isRequired  # Called with new value
-    onRemove: React.PropTypes.func
+    value: PropTypes.object 
+    onChange: PropTypes.func.isRequired  # Called with new value
+    onRemove: PropTypes.func
 
   render: ->
     H.div null,

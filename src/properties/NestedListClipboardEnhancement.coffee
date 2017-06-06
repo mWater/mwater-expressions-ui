@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 R = React.createElement
 uuid = require 'uuid'
@@ -17,7 +18,7 @@ uuid = require 'uuid'
 module.exports = (WrappedComponent) ->
   return class NestedListClipboardEnhancement extends React.Component
     @childContextTypes:
-      clipboard: React.PropTypes.object # Clipboard accessible to the children
+      clipboard: PropTypes.object # Clipboard accessible to the children
     
     constructor: (props) ->
       super(props)
