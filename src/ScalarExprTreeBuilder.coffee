@@ -19,6 +19,7 @@ module.exports = class ScalarExprTreeBuilder
   #   childrenType: "section", "join"
   #   tableId: table id of current item if applicable
   #   item: column/section object of current item if applicable
+  #   key: unique key within sibling list
   # }
   # options are:
   #  table: starting table
@@ -59,6 +60,7 @@ module.exports = class ScalarExprTreeBuilder
         desc: ExprUtils.localizeString(@schema.getTable(options.table).desc, @locale) 
         value: { table: options.startTable, joins: options.joins, expr: { type: "id", table: options.table } }
         tableId: options.table
+        key: "(id)"
       }
       if not options.filter or (node.name and node.name.match(options.filter))
         nodes.push(node)
@@ -71,6 +73,7 @@ module.exports = class ScalarExprTreeBuilder
         name: "Number of #{ExprUtils.localizeString(@schema.getTable(options.table).name, @locale)}"
         value: { table: options.startTable, joins: options.joins, expr: { type: "op", op: "count", table: options.table, exprs: [] }}
         tableId: options.tableId
+        key: "(count)"
       }
       if not options.filter or (node.name and node.name.match(options.filter))
         nodes.push(node)
@@ -84,6 +87,7 @@ module.exports = class ScalarExprTreeBuilder
         desc: "Use to create an advanced function here"
         value: { table: options.startTable, joins: options.joins, expr: null }
         tableId: options.tableId
+        key: "(advanced)"
         })
 
     # TODO keep?
@@ -123,6 +127,7 @@ module.exports = class ScalarExprTreeBuilder
                 @createNodes(item.contents, childOptions)
               tableId: options.table
               item: item
+              key: item.id or name
             }
 
             # If empty, do not show if searching
@@ -156,6 +161,7 @@ module.exports = class ScalarExprTreeBuilder
       desc: ExprUtils.localizeString(column.desc, @locale)
       tableId: options.table
       item: column
+      key: column.id
     }
 
     # Determine if matches

@@ -31,10 +31,10 @@ class ScalarExprTreeTreeComponent extends React.Component
     for item, i in @props.tree
       if item.children
         elems.push(
-          R(ScalarExprTreeNodeComponent, key: item.name + item.desc, item: item, prefix: @props.prefix, onChange: @props.onChange))
+          R(ScalarExprTreeNodeComponent, key: item.key, item: item, prefix: @props.prefix, onChange: @props.onChange))
       else 
         elems.push(
-           R(ScalarExprTreeLeafComponent, key: item.name + item.desc, item: item, prefix: @props.prefix, onChange: @props.onChange))
+           R(ScalarExprTreeLeafComponent, key: item.key, item: item, prefix: @props.prefix, onChange: @props.onChange))
 
     H.div null, 
       elems
