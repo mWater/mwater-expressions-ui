@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
@@ -14,19 +15,19 @@ IdLiteralComponent = require './IdLiteralComponent'
 
 module.exports = class SelectLiteralExprComponent extends React.Component
   @propTypes:
-    value: React.PropTypes.object   # Current expression value
-    onChange: React.PropTypes.func.isRequired # Called with new expression
-    onCancel: React.PropTypes.func.isRequired # Called to cancel
+    value: PropTypes.object   # Current expression value
+    onChange: PropTypes.func.isRequired # Called with new expression
+    onCancel: PropTypes.func.isRequired # Called to cancel
 
-    schema: React.PropTypes.object.isRequired
-    dataSource: React.PropTypes.object.isRequired
+    schema: PropTypes.object.isRequired
+    dataSource: PropTypes.object.isRequired
 
     # Props to narrow down choices
-    table: React.PropTypes.string.isRequired # Current table
-    types: React.PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
-    enumValues: React.PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
-    idTable: React.PropTypes.string # If specified the table from which id-type expressions must come
-    refExpr: React.PropTypes.object     # expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
+    table: PropTypes.string.isRequired # Current table
+    types: PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
+    enumValues: PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
+    idTable: PropTypes.string # If specified the table from which id-type expressions must come
+    refExpr: PropTypes.object     # expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
 
   constructor: (props) ->
     super
@@ -181,12 +182,12 @@ module.exports = class SelectLiteralExprComponent extends React.Component
 # Component which displays an enum as a list
 class EnumAsListComponent extends React.Component
   @propTypes: 
-    value: React.PropTypes.object
-    onChange: React.PropTypes.func.isRequired 
-    enumValues: React.PropTypes.array.isRequired # Array of id and name (localized string)
+    value: PropTypes.object
+    onChange: PropTypes.func.isRequired 
+    enumValues: PropTypes.array.isRequired # Array of id and name (localized string)
 
   @contextTypes:
-    locale: React.PropTypes.string  # e.g. "en"
+    locale: PropTypes.string  # e.g. "en"
 
   handleChange: (val) =>
     if not val
@@ -217,12 +218,12 @@ class EnumAsListComponent extends React.Component
 # Component which displays an enumset as a list
 class EnumsetAsListComponent extends React.Component
   @propTypes: 
-    value: React.PropTypes.object
-    onChange: React.PropTypes.func.isRequired 
-    enumValues: React.PropTypes.array.isRequired # Array of id and name (localized string)
+    value: PropTypes.object
+    onChange: PropTypes.func.isRequired 
+    enumValues: PropTypes.array.isRequired # Array of id and name (localized string)
 
   @contextTypes:
-    locale: React.PropTypes.string  # e.g. "en"
+    locale: PropTypes.string  # e.g. "en"
 
   handleToggle: (val) =>
     items = @props.value?.value or []
@@ -259,12 +260,12 @@ class EnumsetAsListComponent extends React.Component
 # Component which displays an enum dropdown
 class EnumComponent extends React.Component
   @propTypes: 
-    value: React.PropTypes.object
-    onChange: React.PropTypes.func.isRequired 
-    enumValues: React.PropTypes.array.isRequired # Array of id and name (localized string)
+    value: PropTypes.object
+    onChange: PropTypes.func.isRequired 
+    enumValues: PropTypes.array.isRequired # Array of id and name (localized string)
 
   @contextTypes:
-    locale: React.PropTypes.string  # e.g. "en"
+    locale: PropTypes.string  # e.g. "en"
 
   handleChange: (val) =>
     if not val

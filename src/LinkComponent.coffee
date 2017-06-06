@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 _ = require 'lodash'
@@ -6,10 +7,10 @@ _ = require 'lodash'
 # Also has a dropdown component if dropdown items are specified
 module.exports = class LinkComponent extends React.Component
   @propTypes:
-    onClick: React.PropTypes.func # Called on click
-    onRemove: React.PropTypes.func # Adds an x if specified 
-    dropdownItems: React.PropTypes.array # Array of { id, name } or { value, label } to display as dropdown. Null name/label is a separator
-    onDropdownItemClicked: React.PropTypes.func # Called with id/value of dropdown item
+    onClick: PropTypes.func # Called on click
+    onRemove: PropTypes.func # Adds an x if specified 
+    dropdownItems: PropTypes.array # Array of { id, name } or { value, label } to display as dropdown. Null name/label is a separator
+    onDropdownItemClicked: PropTypes.func # Called with id/value of dropdown item
 
   renderRemove: ->
     if @props.onRemove

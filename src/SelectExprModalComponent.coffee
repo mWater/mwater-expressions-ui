@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
@@ -13,28 +14,28 @@ SelectLiteralExprComponent = require './SelectLiteralExprComponent'
 
 module.exports = class SelectExprModalComponent extends React.Component
   @propTypes:
-    onSelect: React.PropTypes.func.isRequired # Called with new expression
-    onCancel: React.PropTypes.func.isRequired # Modal was cancelled
+    onSelect: PropTypes.func.isRequired # Called with new expression
+    onCancel: PropTypes.func.isRequired # Modal was cancelled
 
-    schema: React.PropTypes.object.isRequired
-    dataSource: React.PropTypes.object.isRequired # Data source to use to get values
+    schema: PropTypes.object.isRequired
+    dataSource: PropTypes.object.isRequired # Data source to use to get values
 
-    table: React.PropTypes.string.isRequired # Current table
-    value: React.PropTypes.object   # Current expression value
+    table: PropTypes.string.isRequired # Current table
+    value: PropTypes.object   # Current expression value
 
     # Props to narrow down choices
-    types: React.PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
-    enumValues: React.PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
-    idTable: React.PropTypes.string # If specified the table from which id-type expressions must come
-    initialMode: React.PropTypes.oneOf(['field', 'formula', 'literal']) # Initial mode. Default field
-    allowCase: React.PropTypes.bool    # Allow case statements
-    aggrStatuses: React.PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
-    refExpr: React.PropTypes.object     # expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
+    types: PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
+    enumValues: PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
+    idTable: PropTypes.string # If specified the table from which id-type expressions must come
+    initialMode: PropTypes.oneOf(['field', 'formula', 'literal']) # Initial mode. Default field
+    allowCase: PropTypes.bool    # Allow case statements
+    aggrStatuses: PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
+    refExpr: PropTypes.object     # expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
 
-    placeholder: React.PropTypes.string # Placeholder text (default Select...)
+    placeholder: PropTypes.string # Placeholder text (default Select...)
  
   @contextTypes:
-    locale: React.PropTypes.string  # e.g. "en"
+    locale: PropTypes.string  # e.g. "en"
 
   @defaultProps:
     placeholder: "Select..."

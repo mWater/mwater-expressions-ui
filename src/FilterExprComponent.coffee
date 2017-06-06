@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
@@ -13,17 +14,17 @@ ExprLinkComponent = require './ExprLinkComponent'
 # Displays a boolean filter expression. Just shows "+ Add filter" (or other add label) when empty
 module.exports = class FilterExprComponent extends React.Component
   @propTypes:
-    schema: React.PropTypes.object.isRequired
-    dataSource: React.PropTypes.object.isRequired # Data source to use to get values
+    schema: PropTypes.object.isRequired
+    dataSource: PropTypes.object.isRequired # Data source to use to get values
 
-    table: React.PropTypes.string.isRequired # Current table
+    table: PropTypes.string.isRequired # Current table
 
-    value: React.PropTypes.object   # Current value
-    onChange: React.PropTypes.func  # Called with new expression
-    addLabel: React.PropTypes.node  # Label for adding item. Default "+ Add Label"
+    value: PropTypes.object   # Current value
+    onChange: PropTypes.func  # Called with new expression
+    addLabel: PropTypes.node  # Label for adding item. Default "+ Add Label"
 
   @contextTypes:
-    locale: React.PropTypes.string  # e.g. "en"
+    locale: PropTypes.string  # e.g. "en"
 
   @defaultProps:
     addLabel: "+ Add Filter"

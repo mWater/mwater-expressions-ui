@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
@@ -6,12 +7,12 @@ selection = require './saveSelection'
 # Content editable component with cursor restoring
 module.exports = class ContentEditableComponent extends React.Component
   @propTypes:
-    html: React.PropTypes.string.isRequired
-    onChange: React.PropTypes.func.isRequired  # Called with element
-    style: React.PropTypes.object # Style to add to div
-    onClick: React.PropTypes.func  # Set to catch click events
-    onFocus: React.PropTypes.func  # Set to catch focus events
-    onBlur: React.PropTypes.func  # Set to catch blur events
+    html: PropTypes.string.isRequired
+    onChange: PropTypes.func.isRequired  # Called with element
+    style: PropTypes.object # Style to add to div
+    onClick: PropTypes.func  # Set to catch click events
+    onFocus: PropTypes.func  # Set to catch focus events
+    onBlur: PropTypes.func  # Set to catch blur events
 
   handleInput: (ev) => 
     if not @refs.editor

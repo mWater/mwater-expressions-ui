@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
@@ -397,7 +398,7 @@ module.exports = class ExprElementBuilder
 # TODO DOC
 class WrappedLinkComponent extends React.Component
   @propTypes:
-    links: React.PropTypes.array.isRequired # Shape is label, onClick
+    links: PropTypes.array.isRequired # Shape is label, onClick
 
   renderLinks: ->
     H.div style: { 

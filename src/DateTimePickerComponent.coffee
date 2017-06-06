@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 R = React.createElement
 H = React.DOM
@@ -8,17 +9,17 @@ require("eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min
 module.exports = class DateTimePickerComponent extends React.Component
   @propTypes:
     # do we need time picker?
-    timepicker: React.PropTypes.bool
+    timepicker: PropTypes.bool
 
     # callback on date change
     # argument: moment object for currently selected datetime
-    onChange: React.PropTypes.func
+    onChange: PropTypes.func
 
     # date as moment
-    date: React.PropTypes.object
+    date: PropTypes.object
 
     # default date as moment 
-    defaultDate: React.PropTypes.object
+    defaultDate: PropTypes.object
 
   @defaultProps:
     timepicker: false

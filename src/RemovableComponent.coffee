@@ -1,10 +1,11 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 
 # Component with a remove x to the right
 module.exports = class RemovableComponent extends React.Component
   @propTypes:
-    onRemove: React.PropTypes.func # Pass to put a remove link on right of specified item
+    onRemove: PropTypes.func # Pass to put a remove link on right of specified item
 
   render: ->
     H.div style: { display: "flex" }, className: "hover-display-parent",

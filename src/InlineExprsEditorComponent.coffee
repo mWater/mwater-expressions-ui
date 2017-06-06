@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
@@ -11,15 +12,15 @@ ContentEditableComponent = require './ContentEditableComponent'
 # Editor that is a text box with embeddable expressions
 module.exports = class InlineExprsEditorComponent extends React.Component
   @propTypes:
-    schema: React.PropTypes.object.isRequired   # Schema to use
-    dataSource: React.PropTypes.object.isRequired # Data source to use to get values
-    table: React.PropTypes.string.isRequired    # Current table
+    schema: PropTypes.object.isRequired   # Schema to use
+    dataSource: PropTypes.object.isRequired # Data source to use to get values
+    table: PropTypes.string.isRequired    # Current table
 
-    text: React.PropTypes.string                # Text with embedded expressions as {0}, {1}, etc.
-    exprs: React.PropTypes.array                # Expressions that correspond to {0}, {1}, etc.
-    onChange: React.PropTypes.func.isRequired   # Called with (text, exprs)
-    multiline: React.PropTypes.bool             # Allow multiple lines
-    rows: React.PropTypes.number                # Optional number of lines
+    text: PropTypes.string                # Text with embedded expressions as {0}, {1}, etc.
+    exprs: PropTypes.array                # Expressions that correspond to {0}, {1}, etc.
+    onChange: PropTypes.func.isRequired   # Called with (text, exprs)
+    multiline: PropTypes.bool             # Allow multiple lines
+    rows: PropTypes.number                # Optional number of lines
 
   @defaultProps:
     exprs: []
@@ -178,10 +179,10 @@ module.exports = class InlineExprsEditorComponent extends React.Component
 # Modal that displays an expression builder
 class ExprInsertModalComponent extends React.Component
   @propTypes:
-    schema: React.PropTypes.object.isRequired   # Schema to use
-    dataSource: React.PropTypes.object.isRequired # Data source to use to get values
-    table: React.PropTypes.string.isRequired    # Current table
-    onInsert: React.PropTypes.func.isRequired   # Called with expr to insert
+    schema: PropTypes.object.isRequired   # Schema to use
+    dataSource: PropTypes.object.isRequired # Data source to use to get values
+    table: PropTypes.string.isRequired    # Current table
+    onInsert: PropTypes.func.isRequired   # Called with expr to insert
 
   constructor: ->
     super
@@ -220,10 +221,10 @@ class ExprInsertModalComponent extends React.Component
 # Modal that displays an expression builder
 class ExprUpdateModalComponent extends React.Component
   @propTypes:
-    schema: React.PropTypes.object.isRequired   # Schema to use
-    dataSource: React.PropTypes.object.isRequired # Data source to use to get values
-    table: React.PropTypes.string.isRequired    # Current table
-    onUpdate: React.PropTypes.func.isRequired   # Called with expr to update
+    schema: PropTypes.object.isRequired   # Schema to use
+    dataSource: PropTypes.object.isRequired # Data source to use to get values
+    table: PropTypes.string.isRequired    # Current table
+    onUpdate: PropTypes.func.isRequired   # Called with expr to update
 
   constructor: ->
     super
