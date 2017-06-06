@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 R = React.createElement
 H = React.DOM
@@ -7,8 +8,8 @@ ui = require 'react-library/lib/bootstrap'
 
 module.exports = class IdFieldComponent extends React.Component
   @propTypes: 
-    value: React.PropTypes.string  # The value
-    onChange: React.PropTypes.func.isRequired  # Called with new value
+    value: PropTypes.string  # The value
+    onChange: PropTypes.func.isRequired  # Called with new value
     
   constructor: (props) ->
     super(props)
