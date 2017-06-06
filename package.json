@@ -1,6 +1,6 @@
 {
   "name": "mwater-expressions-ui",
-  "version": "4.12.3",
+  "version": "4.12.4",
   "private": true,
   "description": "Expression UI library",
   "repository": "git@github.com:mWater/mwater-expressions-ui.git",
