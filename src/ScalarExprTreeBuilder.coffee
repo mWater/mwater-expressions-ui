@@ -19,7 +19,7 @@ module.exports = class ScalarExprTreeBuilder
   #   childrenType: "section", "join"
   #   tableId: table id of current item if applicable
   #   item: column/section object of current item if applicable
-  #   key: unique key within sibling list
+  #   key: unique key within sibling list if present
   # }
   # options are:
   #  table: starting table
@@ -127,7 +127,7 @@ module.exports = class ScalarExprTreeBuilder
                 @createNodes(item.contents, childOptions)
               tableId: options.table
               item: item
-              key: item.id or name
+              key: item.id
             }
 
             # If empty, do not show if searching
