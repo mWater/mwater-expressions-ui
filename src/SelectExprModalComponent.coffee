@@ -45,8 +45,10 @@ module.exports = class SelectExprModalComponent extends React.Component
   renderContents: ->
     table = @props.schema.getTable(@props.table)
 
-    tabs = [          
-      {
+    tabs = []
+
+    if table
+      tabs.push({
         id: "field"
         label: [H.i(className: "fa fa-table"), " #{ExprUtils.localizeString(table.name, @context.locale)} Field"]
         elem: R SelectFieldExprComponent,
@@ -59,19 +61,19 @@ module.exports = class SelectExprModalComponent extends React.Component
           enumValues: @props.enumValues
           idTable: @props.idTable
           aggrStatuses: @props.aggrStatuses
-      }
-      {
-        id: "formula"
-        label: [H.i(className: "fa fa-calculator"), " Formula"]
-        elem: R SelectFormulaExprComponent,
-          table: @props.table
-          onChange: @props.onSelect
-          types: @props.types
-          allowCase: @props.allowCase
-          aggrStatuses: @props.aggrStatuses
-          enumValues: @props.enumValues
-      }
-    ]
+      })
+
+    tabs.push({
+      id: "formula"
+      label: [H.i(className: "fa fa-calculator"), " Formula"]
+      elem: R SelectFormulaExprComponent,
+        table: @props.table
+        onChange: @props.onSelect
+        types: @props.types
+        allowCase: @props.allowCase
+        aggrStatuses: @props.aggrStatuses
+        enumValues: @props.enumValues
+    })
 
     if "literal" in @props.aggrStatuses
       tabs.push({
