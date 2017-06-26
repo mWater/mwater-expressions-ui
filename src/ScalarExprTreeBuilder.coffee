@@ -56,7 +56,7 @@ module.exports = class ScalarExprTreeBuilder
     # Create self (id) type if id type allowed and idTable matches
     if not options.includeAggr and options.idTable == options.table and (not options.types or "id" in options.types)
       node = {
-        name: ExprUtils.localizeString(@schema.getTable(options.table).name, @locale)
+        name: ExprUtils.localizeString(@schema.getTable(options.table).name, @locale) or "(unnamed)"
         desc: ExprUtils.localizeString(@schema.getTable(options.table).desc, @locale) 
         value: { table: options.startTable, joins: options.joins, expr: { type: "id", table: options.table } }
         tableId: options.table
@@ -106,7 +106,7 @@ module.exports = class ScalarExprTreeBuilder
           # Avoid if deprecated
           if not item.deprecated
             # Determine if matches
-            name = ExprUtils.localizeString(item.name, @locale)
+            name = ExprUtils.localizeString(item.name, @locale) or "(unnamed)"
             desc = ExprUtils.localizeString(item.desc, @locale)
 
             matches = not options.filter or name.match(options.filter) or (desc and desc.match(options.filter))
@@ -157,7 +157,7 @@ module.exports = class ScalarExprTreeBuilder
     column = options.column
 
     node = { 
-      name: ExprUtils.localizeString(column.name, @locale)
+      name: ExprUtils.localizeString(column.name, @locale) or "(unnamed)"
       desc: ExprUtils.localizeString(column.desc, @locale)
       tableId: options.table
       item: column
