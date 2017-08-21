@@ -405,6 +405,7 @@ class WrappedLinkComponent extends React.Component
       position: "absolute"
       left: 10
       bottom: 0 
+      whiteSpace: "nowrap"
     }, className: "hover-display-child",
       _.map @props.links, (link, i) =>
         H.a key: "#{i}", style: { 
