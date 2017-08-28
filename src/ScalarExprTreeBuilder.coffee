@@ -3,10 +3,19 @@ ExprUtils = require("mwater-expressions").ExprUtils
 
 # Builds a tree for selecting table + joins + expr of a scalar expression
 # Organizes columns, and follows joins
+# options:
+#   locale: optional locale to use for names
+#   isScalarExprTreeSectionInitiallyOpen: optiona function to override initial open state of a section. Passed { tableId: id of table, section: section object from schema, filter: optional string filter }
+#     Should return true to set initially open
+#   isScalarExprTreeSectionMatch: optiona function to override filtering of a section. Passed { tableId: id of table, section: section object from schema, filter: optional string filter }
+#     Should return null for default, true to include, false to exclude
 module.exports = class ScalarExprTreeBuilder
-  constructor: (schema, locale) ->
+  constructor: (schema, options={}) ->
     @schema = schema
-    @locale = locale
+    @locale = options.locale
+    @isScalarExprTreeSectionInitiallyOpen = options.isScalarExprTreeSectionInitiallyOpen
+    @isScalarExprTreeSectionMatch = options.isScalarExprTreeSectionMatch
+
     @exprUtils = new ExprUtils(@schema)
 
   # Returns array of 
@@ -111,6 +120,11 @@ module.exports = class ScalarExprTreeBuilder
 
             matches = not options.filter or options.filter(name) or options.filter(desc)
 
+            # Override matching
+            overrideMatch = @isScalarExprTreeSectionMatch?({ tableId: options.table, section: item, filter: options.filter })
+            if overrideMatch?
+              matches = overrideMatch
+
             childOptions = _.extend({}, options)
 
             # Strip filter if matches to allow all sub-items
@@ -129,6 +143,10 @@ module.exports = class ScalarExprTreeBuilder
               item: item
               key: item.id
             }
+
+            # Override initially open
+            if @isScalarExprTreeSectionInitiallyOpen?({ tableId: options.table, section: item, filter: options.filter })
+              node.initiallyOpen = true
 
             # If empty, do not show if searching
             numChildren = node.children().length

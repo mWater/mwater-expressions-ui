@@ -23,6 +23,17 @@ module.exports = class SelectFieldExprComponent extends React.Component
     idTable: PropTypes.string # If specified the table from which id-type expressions must come
     aggrStatuses: PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
 
+  @contextTypes:
+    locale: PropTypes.string  # e.g. "en"
+
+    # Function to override initial open state of a section. Passed { tableId: id of table, section: section object from schema, filter: optional string filter }
+    # Should return true to set initially open
+    isScalarExprTreeSectionInitiallyOpen: PropTypes.func
+
+    # Function to override filtering of a section. Passed { tableId: id of table, section: section object from schema, filter: optional string filter }
+    # Should return null for default, true to include, false to exclude
+    isScalarExprTreeSectionMatch: PropTypes.func
+
   constructor: ->
     super
 
@@ -104,7 +115,12 @@ module.exports = class SelectFieldExprComponent extends React.Component
 
     # Create tree 
     treeBuilder = new ScalarExprTreeBuilder(@props.schema, @context.locale)
-    tree = treeBuilder.getTree(table: @props.table, types: @props.types, idTable: @props.idTable, includeAggr: "aggregate" in @props.aggrStatuses, filter: filter)
+    tree = treeBuilder.getTree({
+      table: @props.table
+      types: @props.types
+      idTable: @props.idTable
+      includeAggr: "aggregate" in @props.aggrStatuses, filter: filter
+    })
 
     H.div null,
       H.input 

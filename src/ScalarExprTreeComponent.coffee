@@ -5,6 +5,7 @@ H = React.DOM
 R = React.createElement
 
 # Shows a tree that selects table + joins + expr of a scalar expression
+# Supports some React context properties for special. See individual classes
 module.exports = class ScalarExprTreeComponent extends React.Component 
   @propTypes: 
     tree: PropTypes.array.isRequired    # Tree from ScalarExprTreeBuilder
