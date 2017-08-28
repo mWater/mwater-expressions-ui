@@ -98,7 +98,9 @@ module.exports = class SelectFieldExprComponent extends React.Component
 
   render: ->
     if @state.searchText 
-      filter = new RegExp(_.escapeRegExp(@state.searchText), "i")
+      regex = new RegExp(_.escapeRegExp(@state.searchText), "i")
+      filter = (str) ->
+        return str and str.match(regex)
 
     # Create tree 
     treeBuilder = new ScalarExprTreeBuilder(@props.schema, @context.locale)
@@ -120,3 +122,4 @@ module.exports = class SelectFieldExprComponent extends React.Component
           key: "scalar_tree:#{@state.searchText}"
           tree: tree,
           onChange: @handleTreeChange
+          filter: filter

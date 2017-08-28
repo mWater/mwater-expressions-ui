@@ -4,8 +4,6 @@ React = require 'react'
 R = React.createElement
 H = React.DOM
 
-ScalarExprTreeComponent = require './ScalarExprTreeComponent'
-ScalarExprTreeBuilder = require './ScalarExprTreeBuilder'
 ExprUtils = require('mwater-expressions').ExprUtils
 
 module.exports = class SelectFormulaExprComponent extends React.Component

@@ -27,7 +27,7 @@ module.exports = class ScalarExprTreeBuilder
   #  idTable: id type table to limit to
   #  includeAggr: to include aggregate expressions, including an count() option that has name that is "Number of ..." at first table level
   #  initialValue: initial value to flesh out TODO REMOVE
-  #  filter: filter regex
+  #  filter: optional string filter function (takes string, returns boolean)
   getTree: (options = {}) ->
     return @createTableChildNodes({
       startTable: options.table
@@ -49,7 +49,7 @@ module.exports = class ScalarExprTreeBuilder
   # idTable: table to limit to for id type
   # includeAggr: to include an count() option that has and name that is "Number of ..."
   # initialValue: initial value to flesh out TODO REMOVE
-  # filter: filter regex
+  # filter: optional string filter function (takes string, returns boolean)
   # depth: current depth. First level is 0
   createTableChildNodes: (options) ->
     nodes = []
@@ -62,7 +62,7 @@ module.exports = class ScalarExprTreeBuilder
         tableId: options.table
         key: "(id)"
       }
-      if not options.filter or (node.name and node.name.match(options.filter))
+      if not options.filter or options.filter(node.name)
         nodes.push(node)
 
     table = @schema.getTable(options.table)
@@ -75,13 +75,13 @@ module.exports = class ScalarExprTreeBuilder
         tableId: options.tableId
         key: "(count)"
       }
-      if not options.filter or (node.name and node.name.match(options.filter))
+      if not options.filter or options.filter(node.name)
         nodes.push(node)
     
     nodes = nodes.concat(@createNodes(table.contents, options))
 
     # Include advanced option (null expression with only joins that can be customized)
-    if options.includeAggr and options.depth > 0
+    if options.includeAggr and options.depth > 0 and (not options.filter or options.filter("Advanced"))
       nodes.push({
         name: "Advanced..."
         desc: "Use to create an advanced function here"
@@ -109,7 +109,7 @@ module.exports = class ScalarExprTreeBuilder
             name = ExprUtils.localizeString(item.name, @locale) or "(unnamed)"
             desc = ExprUtils.localizeString(item.desc, @locale)
 
-            matches = not options.filter or name.match(options.filter) or (desc and desc.match(options.filter))
+            matches = not options.filter or options.filter(name) or options.filter(desc)
 
             childOptions = _.extend({}, options)
 
@@ -165,7 +165,7 @@ module.exports = class ScalarExprTreeBuilder
     }
 
     # Determine if matches
-    matches = not options.filter or (node.name and node.name.match(options.filter)) or (node.desc and node.desc.match(options.filter))
+    matches = not options.filter or options.filter(node.name) or options.filter(node.desc)
 
     # If join, add children
     if column.type == "join"

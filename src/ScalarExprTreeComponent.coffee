@@ -10,13 +10,14 @@ module.exports = class ScalarExprTreeComponent extends React.Component
     tree: PropTypes.array.isRequired    # Tree from ScalarExprTreeBuilder
     onChange: PropTypes.func.isRequired # Called with newly selected value
     height: PropTypes.number            # Render height of the component
+    filter: PropTypes.func              # Optional string filter function (takes string, returns boolean)
 
   render: ->
     H.div style: { overflowY: (if @props.height then "auto"), height: @props.height },
       R(ScalarExprTreeTreeComponent,
         tree: @props.tree,
         onChange: @props.onChange
-        frame: this
+        filter: @props.filter
       )
 
 class ScalarExprTreeTreeComponent extends React.Component
@@ -24,6 +25,7 @@ class ScalarExprTreeTreeComponent extends React.Component
     tree: PropTypes.array.isRequired    # Tree from ScalarExprTreeBuilder
     onChange: PropTypes.func.isRequired # Called with newly selected value
     prefix: PropTypes.string            # String to prefix names with
+    filter: PropTypes.func              # Optional string filter function (takes string, returns boolean)
 
   render: ->
     elems = []
@@ -31,10 +33,10 @@ class ScalarExprTreeTreeComponent extends React.Component
     for item, i in @props.tree
       if item.children
         elems.push(
-          R(ScalarExprTreeNodeComponent, key: item.key, item: item, prefix: @props.prefix, onChange: @props.onChange))
+          R(ScalarExprTreeNodeComponent, key: item.key, item: item, prefix: @props.prefix, onChange: @props.onChange, filter: @props.filter))
       else 
         elems.push(
-           R(ScalarExprTreeLeafComponent, key: item.key, item: item, prefix: @props.prefix, onChange: @props.onChange))
+          R(ScalarExprTreeLeafComponent, key: item.key, item: item, prefix: @props.prefix, onChange: @props.onChange))
 
     H.div null, 
       elems
@@ -66,9 +68,10 @@ class ScalarExprTreeNodeComponent extends React.Component
   @propTypes:
     item: PropTypes.object.isRequired # Item to display
     onChange: PropTypes.func.isRequired # Called when item is selected
+    filter: PropTypes.func              # Optional string filter function (takes string, returns boolean)
 
   @contextTypes:
-    # Function to decorate the children component of a section. Passed { children: React element of children, tableId: id of table, section: section object from schema }
+    # Function to decorate the children component of a section. Passed { children: React element of children, tableId: id of table, section: section object from schema, filter: optional string filter }
     # Should return decorated element
     decorateScalarExprTreeSectionChildren: PropTypes.func 
 
@@ -104,11 +107,18 @@ class ScalarExprTreeNodeComponent extends React.Component
       if @props.item.item.type == "join"
         prefix = prefix + @props.item.name + " > "
 
-      children = R(ScalarExprTreeTreeComponent, prefix: prefix, tree: @props.item.children(), onChange: @props.onChange)
+      # Render child items
+      childItems = @props.item.children()
+
+      children = _.map childItems, (item) =>
+        if item.children
+          R ScalarExprTreeNodeComponent, key: item.key, item: item, prefix: prefix, onChange: @props.onChange, filter: @props.filter
+        else 
+          R ScalarExprTreeLeafComponent, key: item.key, item: item, prefix: prefix, onChange: @props.onChange
 
       # Decorate children if section
       if @context.decorateScalarExprTreeSectionChildren and @props.item.item.type == "section"
-        children = @context.decorateScalarExprTreeSectionChildren({ children: children, tableId: @props.item.tableId, section: @props.item.item })
+        children = @context.decorateScalarExprTreeSectionChildren({ children: children, tableId: @props.item.tableId, section: @props.item.item, filter: @props.filter })
 
       # Pad left and give key
       children = H.div style: { paddingLeft: 18 }, key: "tree",
