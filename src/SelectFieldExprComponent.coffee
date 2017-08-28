@@ -114,7 +114,11 @@ module.exports = class SelectFieldExprComponent extends React.Component
         return str and str.match(regex)
 
     # Create tree 
-    treeBuilder = new ScalarExprTreeBuilder(@props.schema, @context.locale)
+    treeBuilder = new ScalarExprTreeBuilder(@props.schema, {
+      locale: @context.locale
+      isScalarExprTreeSectionMatch: @context.isScalarExprTreeSectionMatch
+      isScalarExprTreeSectionInitiallyOpen: @context.isScalarExprTreeSectionInitiallyOpen
+      })
     tree = treeBuilder.getTree({
       table: @props.table
       types: @props.types
