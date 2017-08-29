@@ -158,9 +158,9 @@ module.exports = class ScalarExprTreeBuilder
             if @isScalarExprTreeSectionInitiallyOpen?({ tableId: options.table, section: item, filter: options.filter })
               node.initiallyOpen = true
 
-            # If empty, do not show if searching
+            # If empty, do not show if searching unless override match
             numChildren = node.children().length
-            if numChildren > 0 or not options.filter
+            if numChildren > 0 or not options.filter or overrideMatch
               # If depth is 0-1 and searching and doesn't match, leave open
               if options.depth < 2 and options.filter and not matches
                 node.initiallyOpen = true
