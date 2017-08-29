@@ -11,7 +11,7 @@ module.exports = class ScalarExprTreeComponent extends React.Component
     tree: PropTypes.array.isRequired    # Tree from ScalarExprTreeBuilder
     onChange: PropTypes.func.isRequired # Called with newly selected value
     height: PropTypes.number            # Render height of the component
-    filter: PropTypes.func              # Optional string filter function (takes string, returns boolean)
+    filter: PropTypes.text              # Optional string filter 
 
   render: ->
     H.div style: { overflowY: (if @props.height then "auto"), height: @props.height },
@@ -26,7 +26,7 @@ class ScalarExprTreeTreeComponent extends React.Component
     tree: PropTypes.array.isRequired    # Tree from ScalarExprTreeBuilder
     onChange: PropTypes.func.isRequired # Called with newly selected value
     prefix: PropTypes.string            # String to prefix names with
-    filter: PropTypes.func              # Optional string filter function (takes string, returns boolean)
+    filter: PropTypes.text              # Optional string filter 
 
   render: ->
     elems = []
@@ -69,7 +69,7 @@ class ScalarExprTreeNodeComponent extends React.Component
   @propTypes:
     item: PropTypes.object.isRequired # Item to display
     onChange: PropTypes.func.isRequired # Called when item is selected
-    filter: PropTypes.func              # Optional string filter function (takes string, returns boolean)
+    filter: PropTypes.text              # Optional string filter 
 
   @contextTypes:
     # Function to decorate the children component of a section. Passed { children: React element of children, tableId: id of table, section: section object from schema, filter: optional string filter }
@@ -81,6 +81,11 @@ class ScalarExprTreeNodeComponent extends React.Component
     @state = { 
       collapse: if @props.item.initiallyOpen then "open" else "closed" 
     }
+
+  componentWillReceiveProps: (nextProps) ->
+    # If initially open changed, then update collapse
+    if nextProps.item.initiallyOpen != @props.item.initiallyOpen
+      @setState(collapse: if nextProps.item.initiallyOpen then "open" else "closed") 
 
   handleArrowClick: =>
     if @state.collapse == "open" 

@@ -108,22 +108,18 @@ module.exports = class SelectFieldExprComponent extends React.Component
       @props.onChange({ type: "scalar", table: @props.table, joins: val.joins, expr: expr })
 
   render: ->
-    if @state.searchText 
-      regex = new RegExp(_.escapeRegExp(@state.searchText), "i")
-      filter = (str) ->
-        return str and str.match(regex)
-
     # Create tree 
     treeBuilder = new ScalarExprTreeBuilder(@props.schema, {
       locale: @context.locale
       isScalarExprTreeSectionMatch: @context.isScalarExprTreeSectionMatch
       isScalarExprTreeSectionInitiallyOpen: @context.isScalarExprTreeSectionInitiallyOpen
       })
+    
     tree = treeBuilder.getTree({
       table: @props.table
       types: @props.types
       idTable: @props.idTable
-      includeAggr: "aggregate" in @props.aggrStatuses, filter: filter
+      includeAggr: "aggregate" in @props.aggrStatuses, filter: @state.searchText
     })
 
     H.div null,
@@ -138,8 +134,6 @@ module.exports = class SelectFieldExprComponent extends React.Component
       # Create tree component with value of table and path
       H.div style: { paddingTop: 10, paddingBottom: 200 },
         R ScalarExprTreeComponent, 
-          # Include search text so that searching resets the collapsed state
-          key: "scalar_tree:#{@state.searchText}"
           tree: tree,
           onChange: @handleTreeChange
-          filter: filter
+          filter: @state.searchText

@@ -36,7 +36,7 @@ module.exports = class ScalarExprTreeBuilder
   #  idTable: id type table to limit to
   #  includeAggr: to include aggregate expressions, including an count() option that has name that is "Number of ..." at first table level
   #  initialValue: initial value to flesh out TODO REMOVE
-  #  filter: optional string filter function (takes string, returns boolean)
+  #  filter: optional string filter 
   getTree: (options = {}) ->
     return @createTableChildNodes({
       startTable: options.table
@@ -58,7 +58,7 @@ module.exports = class ScalarExprTreeBuilder
   # idTable: table to limit to for id type
   # includeAggr: to include an count() option that has and name that is "Number of ..."
   # initialValue: initial value to flesh out TODO REMOVE
-  # filter: optional string filter function (takes string, returns boolean)
+  # filter: optional string filter 
   # depth: current depth. First level is 0
   createTableChildNodes: (options) ->
     nodes = []
@@ -71,7 +71,7 @@ module.exports = class ScalarExprTreeBuilder
         tableId: options.table
         key: "(id)"
       }
-      if not options.filter or options.filter(node.name)
+      if filterMatches(options.filter, node.name)
         nodes.push(node)
 
     table = @schema.getTable(options.table)
@@ -84,13 +84,13 @@ module.exports = class ScalarExprTreeBuilder
         tableId: options.tableId
         key: "(count)"
       }
-      if not options.filter or options.filter(node.name)
+      if filterMatches(options.filter, node.name)
         nodes.push(node)
     
     nodes = nodes.concat(@createNodes(table.contents, options))
 
     # Include advanced option (null expression with only joins that can be customized)
-    if options.includeAggr and options.depth > 0 and (not options.filter or options.filter("Advanced"))
+    if options.includeAggr and options.depth > 0 and filterMatches(options.filter, "Advanced")
       nodes.push({
         name: "Advanced..."
         desc: "Use to create an advanced function here"
@@ -106,6 +106,16 @@ module.exports = class ScalarExprTreeBuilder
 
     return nodes
 
+  # Options:
+  # startTable: table id that started from
+  # table: table id to get nodes for
+  # joins: joins for child nodes
+  # types: types to limit to 
+  # idTable: table to limit to for id type
+  # includeAggr: to include an count() option that has and name that is "Number of ..."
+  # initialValue: initial value to flesh out TODO REMOVE
+  # filter: optional string filter 
+  # depth: current depth. First level is 0
   createNodes: (contents, options) ->
     nodes = []
 
@@ -118,7 +128,7 @@ module.exports = class ScalarExprTreeBuilder
             name = ExprUtils.localizeString(item.name, @locale) or "(unnamed)"
             desc = ExprUtils.localizeString(item.desc, @locale)
 
-            matches = not options.filter or options.filter(name) or options.filter(desc)
+            matches = filterMatches(options.filter, name) or (desc and filterMatches(options.filter, desc))
 
             # Override matching
             overrideMatch = @isScalarExprTreeSectionMatch?({ tableId: options.table, section: item, filter: options.filter })
@@ -170,7 +180,7 @@ module.exports = class ScalarExprTreeBuilder
 
     return nodes
 
-  # Include column, startTable, joins, initialValue, table, types
+  # Include column, startTable, joins, initialValue, table, types, filter
   createColumnNode: (options) ->
     column = options.column
 
@@ -183,7 +193,7 @@ module.exports = class ScalarExprTreeBuilder
     }
 
     # Determine if matches
-    matches = not options.filter or options.filter(node.name) or options.filter(node.desc)
+    matches = filterMatches(options.filter, node.name) or (node.desc and filterMatches(options.filter, node.desc))
 
     # If join, add children
     if column.type == "join"
@@ -270,3 +280,15 @@ module.exports = class ScalarExprTreeBuilder
       node.value = { table: options.startTable, joins: options.joins, expr: fieldExpr }
 
     return node
+
+# Filters text based on lower-case
+filterMatches = (filter, text) ->
+  if not filter
+    return true
+
+  if not text
+    return false
+
+  if text.match(new RegExp(_.escapeRegExp(filter), "i"))
+    return true
+  return false
