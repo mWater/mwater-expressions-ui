@@ -25,7 +25,7 @@ module.exports = class ContentEditableComponent extends React.Component
 
     # Cancel timer
     if @selSaver
-      clearTimeout @selSaver
+      clearTimeout(@selSaver)
       @selSaver = null
 
     if not @refs.editor
@@ -39,24 +39,34 @@ module.exports = class ContentEditableComponent extends React.Component
     # Start selection saver (blur is not reliable in Firefox)
     saveRange = =>
       @range = selection.save(@refs.editor)
-      @selSaver = setTimeout saveRange, 200
+      @selSaver = setTimeout(saveRange, 200)
 
     if not @selSaver
-      @selSaver = setTimeout saveRange, 200
+      @selSaver = setTimeout(saveRange, 200)
 
   focus: ->
     @refs.editor.focus()
 
-  pasteHTML: (html, selectPastedContent) ->
+  pasteHTML: (html) ->
     @refs.editor.focus()
 
     # Restore caret
     if @range
       selection.restore(@refs.editor, @range)
 
-    pasteHtmlAtCaret(html, selectPastedContent)
+    pasteHtmlAtCaret(html)
 
     @props.onChange(@refs.editor)
+
+  getSelectedHTML: ->
+    html = ''
+    sel = window.getSelection()
+    if sel.rangeCount
+      container = document.createElement("div")
+      for i in [0...sel.rangeCount]
+        container.appendChild(sel.getRangeAt(i).cloneContents())
+    html = container.innerHTML
+    return html
 
   shouldComponentUpdate: (nextProps) ->
     # Update if prop html has changed, or if inner html has changed
@@ -108,7 +118,7 @@ module.exports = class ContentEditableComponent extends React.Component
 
 # http://stackoverflow.com/questions/6690752/insert-html-at-caret-in-a-contenteditable-div
 # TODO selectPastedContent doesn't work
-pasteHtmlAtCaret = (html, selectPastedContent) ->
+pasteHtmlAtCaret = (html) ->
   range = undefined
   sel = window.getSelection()
 

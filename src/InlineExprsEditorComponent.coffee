@@ -29,7 +29,7 @@ module.exports = class InlineExprsEditorComponent extends React.Component
 
   handleInsert: (expr) =>
     if expr
-      @refs.contentEditable.pasteHTML(@createExprHtml(expr), false)
+      @refs.contentEditable.pasteHTML(@createExprHtml(expr))
 
   handleUpdate: (expr, index) =>
     exprs = @props.exprs.slice()

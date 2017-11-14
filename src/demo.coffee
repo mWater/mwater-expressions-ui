@@ -24,8 +24,8 @@ $ ->
     # ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(PropertyListContainerComponent, schema: schema, dataSource: dataSource, table: "entities.water_point"), document.getElementById("main"))
     # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
-    ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
-    # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
+    # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
+    ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
 
 class PropertyListContainerComponent extends React.Component
   @propTypes:
@@ -69,24 +69,20 @@ class ContentEditableTestComponent extends React.Component
     H.div null,
       H.div null, "Sdfsdfsd"
       H.div null, "Sdfsdfsd"
-      H.div null, "Sdfsdfsd"
       R ContentEditableComponent,
         ref: "editor"
         html: @state.html
         onChange: (elem) => 
           console.log elem
           @setState(html: elem.innerHTML)
+      H.div null, "Sdfsdfsd"
       H.button 
         onClick: => 
           console.log "click!"
-          @refs.editor.pasteHTML("HELLO!", false)
+          @refs.editor.pasteHTML("<b>" + @refs.editor.getSelectedHTML() + "</b>")
         type: "button",
         "Paste"
-
-  pasteHTML: (html, selectPastedContent) ->
-    @refs.editor.focus()
-
-
+  
 class MockTestInlineExprsEditorComponent extends React.Component
   constructor: ->
     super
