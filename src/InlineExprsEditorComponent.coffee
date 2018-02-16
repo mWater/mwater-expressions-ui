@@ -169,7 +169,7 @@ module.exports = class InlineExprsEditorComponent extends React.Component
         R ContentEditableComponent, 
           ref: "contentEditable", 
           html: @createContentEditableHtml(), 
-          style: { padding: "6px 12px", border: "1px solid #ccc", borderRadius: 4, minHeight: (if @props.multiline and @props.rows then "#{@props.rows * 2.5}ex") }
+          style: { whiteSpace: 'pre-wrap', padding: "6px 12px", border: "1px solid #ccc", borderRadius: 4, minHeight: (if @props.multiline and @props.rows then "#{@props.rows * 2.5}ex") }
           onChange: @handleChange
           onClick: @handleClick
       H.a onClick: @handleInsertClick, style: { cursor: "pointer", position: "absolute", right: 5, top: 8, fontStyle: "italic", color: "#337ab7" },
