@@ -30,7 +30,7 @@ module.exports = class SelectLiteralExprComponent extends React.Component
     refExpr: PropTypes.object     # expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
 
   constructor: (props) ->
-    super
+    super(props)
 
     @state = {
       value: props.value

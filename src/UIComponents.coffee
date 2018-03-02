@@ -56,6 +56,7 @@ exports.SwitchViewComponent = class SwitchViewComponent extends React.Component
     viewId: PropTypes.string.isRequired   # Current view id to display
 
   constructor: (props) ->
+    super(props)
     @state = { 
       measuring: false
     }
@@ -125,6 +126,7 @@ exports.ToggleEditComponent = class ToggleEditComponent extends React.Component
     onRemove: PropTypes.func
 
   constructor: (props) ->
+    super(props)
     @state = { open: props.initiallyOpen or false }
 
   close: =>

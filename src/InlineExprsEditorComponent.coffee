@@ -184,8 +184,8 @@ class ExprInsertModalComponent extends React.Component
     table: PropTypes.string.isRequired    # Current table
     onInsert: PropTypes.func.isRequired   # Called with expr to insert
 
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
 
     @state = {
       open: false
@@ -226,8 +226,8 @@ class ExprUpdateModalComponent extends React.Component
     table: PropTypes.string.isRequired    # Current table
     onUpdate: PropTypes.func.isRequired   # Called with expr to update
 
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
 
     @state = {
       open: false

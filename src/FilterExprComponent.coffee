@@ -29,8 +29,8 @@ module.exports = class FilterExprComponent extends React.Component
   @defaultProps:
     addLabel: "+ Add Filter"
 
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
 
     @state = { displayNull: false } # Set true when initial null value should be displayed
 

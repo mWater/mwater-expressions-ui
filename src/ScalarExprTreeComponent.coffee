@@ -77,7 +77,7 @@ class ScalarExprTreeNodeComponent extends React.Component
     decorateScalarExprTreeSectionChildren: PropTypes.func 
 
   constructor: (props) ->
-    super
+    super(props)
     @state = { 
       collapse: if @props.item.initiallyOpen then "open" else "closed" 
     }

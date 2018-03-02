@@ -34,8 +34,8 @@ module.exports = class SelectFieldExprComponent extends React.Component
     # Should return null for default, true to include, false to exclude
     isScalarExprTreeSectionMatch: PropTypes.func
 
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
 
     @state = {
       searchText: ""

@@ -32,8 +32,8 @@ class PropertyListContainerComponent extends React.Component
     schema: PropTypes.object.isRequired # schema of all data
     dataSource: PropTypes.object.isRequired # data source
     table: PropTypes.string.isRequired    # Table that properties are of
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
 
     @state = { 
       properties: properties
@@ -58,8 +58,8 @@ class PropertyListContainerComponent extends React.Component
           
 
 class ContentEditableTestComponent extends React.Component
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
 
     @state = { 
       html: "World Water Week"
@@ -84,8 +84,8 @@ class ContentEditableTestComponent extends React.Component
         "Paste"
   
 class MockTestInlineExprsEditorComponent extends React.Component
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
 
     @state = { 
       schema: null
@@ -160,8 +160,8 @@ class MockTestInlineExprsEditorComponent extends React.Component
 
 
 class MockTestComponent extends React.Component
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
     @state = { 
       value: null # { type: "field", table: "t1", column: "1-2" }
       schema: null
@@ -247,8 +247,8 @@ class MockTestComponent extends React.Component
       H.pre null, JSON.stringify(@state.value, null, 2)
 
 class MockPropertyEditorTestComponent extends React.Component
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
     @state = { 
       value: null # { type: "field", table: "t1", column: "1-2" }
       schema: null
@@ -314,8 +314,8 @@ class MockPropertyEditorTestComponent extends React.Component
       table: "t1"
 
 class LiveTestComponent extends React.Component
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
     @state = { 
       value: null
       schema: null
@@ -501,6 +501,7 @@ value = {
 class MWaterDataSource extends DataSource
   # Caching allows server to send cached results
   constructor: (apiUrl, client, caching = true) ->
+    super()
     @apiUrl = apiUrl
     @client = client
     @caching = caching

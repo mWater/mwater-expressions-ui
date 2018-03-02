@@ -38,8 +38,8 @@ module.exports = class ExprLinkComponent extends React.Component
     initialMode: "field"
     aggrStatuses: ['individual', 'literal']
 
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
 
     @state = {
       modalVisible: false

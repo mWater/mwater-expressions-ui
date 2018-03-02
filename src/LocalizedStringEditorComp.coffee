@@ -4,8 +4,8 @@ H = React.DOM
 
 # Edits a localized string (_base: "en", en: "fsdfasd", fr: "wersdf", etc)
 module.exports = class LocalizedStringEditorComp extends React.Component 
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
     @state = { selectedLanguageCode: "en" }
 
   @propTypes: 

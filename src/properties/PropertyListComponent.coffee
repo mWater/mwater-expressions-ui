@@ -201,7 +201,7 @@ class PropertyComponent extends React.Component
     clipboard: PropTypes.object
   
   constructor: (props) ->
-    super
+    super(props)
     @state = { editing: false , editorProperty: null}
   
   handleEdit: =>

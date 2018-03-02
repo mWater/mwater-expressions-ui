@@ -17,8 +17,8 @@ module.exports = class SelectFormulaExprComponent extends React.Component
     types: PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
     aggrStatuses: PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
 
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
 
     @state = {
       searchText: ""
