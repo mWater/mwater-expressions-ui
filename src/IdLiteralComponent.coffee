@@ -20,6 +20,7 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     placeholder: PropTypes.string
     orderBy: PropTypes.array   # Optional extra orderings. Put "main" as tableAlias. JsonQL
     multi: PropTypes.bool      # Allow multiple values (id[] type)
+    filter: PropTypes.object   # Optional extra filter. Put "main" as tableAlias. JsonQL
 
   focus: ->
     @refs.select.focus()
@@ -122,6 +123,13 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
       orderBy: [{ ordinal: 2, direction: "asc" }]
       limit: 50
     }
+    
+    if @props.filter
+      query.where = {
+        type: "op"
+        op: "and"
+        exprs: [query.where, @props.filter]
+      }
 
     # Add custom orderings
     if @props.orderBy
