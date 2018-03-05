@@ -273,6 +273,10 @@ class PropertyComponent extends React.Component
               if _.includes(@props.features, "idField") and @props.property.id
                 H.small null, "[#{@props.property.id}] "
               R LocalizedStringComponent, value: @props.property.name
+              if @props.property.expr
+                H.span className: "text-muted",
+                  " "
+                  H.span(className: "fa fa-calculator")
             if @props.property.desc
               H.div className: "pl-item-detail-description",
                 R LocalizedStringComponent, value: @props.property.desc
