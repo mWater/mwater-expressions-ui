@@ -75,7 +75,8 @@ describe "ScalarExprTreeBuilder", ->
         { id: "c3", name: { en: "cde" }, type: "text" }
       ]}]})
 
-      nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: /Cd/i })
+      debugger
+      nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: "Cd" })
       assert.deepEqual _.pluck(nodes, "name"), ["BCD", "cde"]
 
     it "keeps all children of matching nodes with children", ->
@@ -86,7 +87,7 @@ describe "ScalarExprTreeBuilder", ->
         ]}
       ]}]})
 
-      nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: /Cd/i })
+      nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: "Cd" })
       assert.equal nodes[0].children()[0].name, "xyz"
 
     it "has level 1 initially closed when filtering matches the section", ->
@@ -97,7 +98,7 @@ describe "ScalarExprTreeBuilder", ->
         ]}
       ]}]})
 
-      nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: /Cd/i })
+      nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: "Cd" })
       assert not nodes[0].initiallyOpen
 
     it "filters by level 0 name", ->
@@ -106,7 +107,7 @@ describe "ScalarExprTreeBuilder", ->
         { id: "c2", name: { en: "xyz" }, type: "text" }
       ]}]})
 
-      nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: /xyz/ })
+      nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: "xyz" })
       assert.deepEqual _.pluck(nodes, "name"), ["xyz"]
 
     it "filters by level 1 name", ->
@@ -117,7 +118,7 @@ describe "ScalarExprTreeBuilder", ->
         ]}
       ]}]})
 
-      nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: /c3/ })
+      nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: "c3" })
       assert.deepEqual _.pluck(nodes, "name"), ["c2"]
       assert.deepEqual _.pluck(nodes[0].children(), "name"), ["c3"]
 
@@ -131,7 +132,7 @@ describe "ScalarExprTreeBuilder", ->
         ]}
       ]}]})
 
-      nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: /c4/ })
+      nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: "c4" })
       assert.deepEqual _.pluck(nodes, "name"), ["c2"]
       assert.deepEqual _.pluck(nodes[0].children(), "name"), ["c3"]
       assert.deepEqual _.pluck(nodes[0].children()[0].children(), "name"), ["c4"]

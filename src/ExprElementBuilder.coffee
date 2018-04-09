@@ -286,7 +286,7 @@ module.exports = class ExprElementBuilder
           rhsElem = @build(expr.exprs[1], table, rhsOnChange, {
             key: "rhs"
             types: [opItem.exprTypes[1]]
-            enumValues: @exprUtils.getExprEnumValues(expr.exprs[0])
+            enumValues: if opItem.exprTypes[1] in ['enum', 'enumset'] then @exprUtils.getExprEnumValues(expr.exprs[0])  # Only include if type is enum or enumset
             idTable: @exprUtils.getExprIdTable(expr.exprs[0])
             refExpr: expr.exprs[0]
             preferLiteral: opItem.rhsLiteral
