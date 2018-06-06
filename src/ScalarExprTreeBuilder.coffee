@@ -180,7 +180,7 @@ module.exports = class ScalarExprTreeBuilder
 
     return nodes
 
-  # Include column, startTable, joins, initialValue, table, types, filter
+  # Include column, startTable, joins, initialValue, table, types, filter, idTable
   createColumnNode: (options) ->
     column = options.column
 
@@ -238,6 +238,7 @@ module.exports = class ScalarExprTreeBuilder
           initialValue: initVal
           filter: filter
           depth: options.depth + 1
+          idTable: options.idTable
         })
         
       # Load children (recursively) if selected node is in this tree
