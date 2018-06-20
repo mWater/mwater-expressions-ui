@@ -19,6 +19,7 @@
   "dependencies": {
     "async": "^1.5.0",
     "classnames": "^2.2.5",
+    "coffeescript": "^2.3.1",
     "eonasdan-bootstrap-datetimepicker": "^4.15.35",
     "lodash": "^3.10.1",
     "moment": "^2.10.6",
@@ -36,8 +37,6 @@
     "uuid": "^3.0.1"
   },
   "devDependencies": {
-    "browser-sync": "^2.10.0",
-    "browserify": "^12.0.1",
     "canonical-json": "0.0.4",
     "chai": "^3.4.0",
     "coffee-loader": "^0.7.3",
@@ -56,8 +55,6 @@
     "mocha-loader": "^1.1.1",
     "react-addons-test-utils": "^0.14.2",
     "rework-npm": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0",
-    "watchify": "^3.6.0",
     "webpack": "^2.3.1",
     "webpack-dev-server": "^2.4.2"
   }

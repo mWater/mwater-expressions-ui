@@ -1,16 +1,10 @@
 _ = require 'lodash'
 gulp = require 'gulp'
 gutil = require 'gulp-util'
-browserify = require 'browserify'
-source = require 'vinyl-source-stream'
 concat = require 'gulp-concat'
 rework = require 'gulp-rework'
 reworkNpm = require 'rework-npm'
-browserSync = require 'browser-sync'
-reload = browserSync.reload
 coffee = require 'gulp-coffee' 
-watchify = require 'watchify'
-watch = require 'gulp-watch'
 webpack = require 'webpack'
 WebpackDevServer = require 'webpack-dev-server'
 path = require 'path'
@@ -31,15 +25,6 @@ makeBrowserifyBundle = ->
     extensions: [".coffee"]
     basedir: "./src/"
   ))
-
-bundleDemoJs = (bundle) ->
-  bundle.bundle()
-    .on("error", gutil.log)
-    .pipe(source("demo.js"))
-    .pipe(gulp.dest("./dist/js/"))
-
-gulp.task "browserify", ->
-  bundleDemoJs(makeBrowserifyBundle())
 
 gulp.task "libs_css", ->
   return gulp.src([
@@ -69,7 +54,6 @@ gulp.task 'copy_assets', ->
     .pipe(gulp.dest('dist/'))
 
 gulp.task "demo", gulp.parallel([
-  "browserify"
   "libs_js"
   "libs_css"
   "copy_fonts"
@@ -87,27 +71,25 @@ gulp.task "demo", gulp.parallel([
 
 gulp.task 'watch', gulp.series([
   'demo', 
-  gulp.parallel([
-    -> watch("./src/*.css", gulp.series([ 'index_css', -> browserSync.reload()] ))
-    ->
-      b = makeBrowserifyBundle()
-      w = watchify(b)
+  ->
+    webpackConfig = require './webpack.config.js'
 
-      first = true
-      w.on 'bytes', ->
-        if first
-          browserSync({ server: "./dist", startPath: "/demo.html", ghostMode: false,  notify: false })
-          first = false
-        else
-          browserSync.reload()
+    webpackConfig.output.publicPath = 'http://localhost:3001/js/'
 
-      # Needs to be run at least once
-      bundleDemoJs(w)
+    # Include version
+    webpackConfig.plugins = [
+      new webpack.NamedModulesPlugin()
+    ]
+    webpackConfig.entry.unshift('webpack-dev-server/client?http://localhost:3001');
 
-      # Redo on update
-      w.on 'update', ->
-        bundleDemoJs(w)
-    ])  
+    compiler = webpack(webpackConfig)
+
+    new WebpackDevServer(compiler, { contentBase: "dist", publicPath: "/js/" }).listen 3001, "localhost", (err) =>
+      if err 
+        throw new gutil.PluginError("webpack-dev-server", err)
+
+      # Server listening
+      gutil.log("[webpack-dev-server]", "http://localhost:3001/demo.html")
   ])
 
 gulp.task "test", gulp.series([
