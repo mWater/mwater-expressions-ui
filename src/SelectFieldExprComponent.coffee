@@ -42,7 +42,7 @@ module.exports = class SelectFieldExprComponent extends React.Component
     }
 
   componentDidMount: ->
-    @refs.search.focus()
+    @searchComp?.focus()
 
   handleSearchTextChange: (ev) =>
     @setState(searchText: ev.target.value)
@@ -124,7 +124,7 @@ module.exports = class SelectFieldExprComponent extends React.Component
 
     H.div null,
       H.input 
-        ref: "search"
+        ref: (c) => @searchComp = c
         type: "text"
         placeholder: "Search Fields..."
         className: "form-control input-lg"

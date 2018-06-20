@@ -25,7 +25,7 @@ module.exports = class SelectFormulaExprComponent extends React.Component
     }
 
   componentDidMount: ->
-    @refs.search.focus()
+    @searchComp?.focus()
 
   handleSearchTextChange: (ev) =>
     @setState(searchText: ev.target.value)
@@ -102,7 +102,7 @@ module.exports = class SelectFormulaExprComponent extends React.Component
 
     H.div null,
       H.input 
-        ref: "search"
+        ref: (c) => @searchComp = c
         type: "text"
         placeholder: "Search Formulas..."
         className: "form-control input-lg"
