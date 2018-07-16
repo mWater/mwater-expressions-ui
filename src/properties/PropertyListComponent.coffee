@@ -22,6 +22,7 @@ class PropertyListComponent extends React.Component
     table: PropTypes.string    # Table that properties are of. Not required if table feature is on
     tableIds: PropTypes.arrayOf(PropTypes.string.isRequired)   # Ids of tables to include when using table feature
     propertyIdGenerator: PropTypes.func # Function to generate the ID of the property
+    allPropertyIds: PropTypes.arrayOf(PropTypes.string.isRequired)  # List of all property ids to prevent duplicates. Do not set directly!
     
     # Array of features to be enabled apart from the defaults. Features are:
     # sql: include raw SQL editor
@@ -57,7 +58,7 @@ class PropertyListComponent extends React.Component
     @state = {
       addingItem: null  # Property being added
     }
-    
+
   handleChange: (index, property) =>
     value = @props.properties.slice()
     value[index] = property
@@ -86,9 +87,9 @@ class PropertyListComponent extends React.Component
     
     @setState(addingItem: section)
     
-  renderControls: ->
+  renderControls: (allPropertyIds) ->
     H.div className: "btn-group pl-controls",
-      @renderAddingModal()
+      @renderAddingModal(allPropertyIds)
 
       H.button key: "default_add", type: "button", className: "btn btn-xs btn-default dropdown-toggle", "data-toggle": "dropdown", 
         H.span className: "glyphicon glyphicon-plus"
@@ -102,7 +103,7 @@ class PropertyListComponent extends React.Component
         if _.includes(@props.features, "section")
           H.li(key: "section", H.a(onClick: @handleNewSection, "Section"))
     
-  renderAddingModal:  ->
+  renderAddingModal: (allPropertyIds) ->
     if not @state.addingItem
       return null
     
@@ -112,6 +113,9 @@ class PropertyListComponent extends React.Component
       actionLabel: "Save"
       onAction: () => 
         if @state.addingItem
+          # Prevent duplicates
+          if @state.addingItem.id in allPropertyIds
+            return alert("Duplicate ids not allowed")
           value = @props.properties.slice()
           value.push(@state.addingItem)
           @props.onChange(value)
@@ -133,8 +137,9 @@ class PropertyListComponent extends React.Component
             onChange: (updatedProperty) => @setState(addingItem: updatedProperty)
             features: @props.features
             createRoleEditElem: @props.createRoleEditElem
+            forbiddenPropertyIds: allPropertyIds
     
-  renderProperty: (item, index, connectDragSource, connectDragPreview, connectDropTarget) =>
+  renderProperty: (allPropertyIds, item, index, connectDragSource, connectDragPreview, connectDropTarget) =>
     elem = H.div key: index,
       R PropertyComponent, 
         property: item
@@ -152,17 +157,21 @@ class PropertyListComponent extends React.Component
         createRoleEditElem: @props.createRoleEditElem
         createRoleDisplayElem: @props.createRoleDisplayElem
         listId: @props.listId
+        allPropertyIds: allPropertyIds
     return connectDragPreview(connectDropTarget(connectDragSource(elem)))
     
   render: ->
+    # Compute list of all property ids, recursively
+    allPropertyIds = _.pluck(flattenProperties(@props.properties), "id")
+
     H.div className: 'pl-editor-container',
       R ReorderableListComponent,
         items: @props.properties
         onReorder: (list) => @props.onChange(list)
-        renderItem: @renderProperty
+        renderItem: @renderProperty.bind(this, allPropertyIds)
         getItemId: (item) => item.id
         element: H.div className: 'pl-container'
-      @renderControls()
+      @renderControls(allPropertyIds)
 
 class PropertyComponent extends React.Component
   @propTypes:
@@ -181,6 +190,7 @@ class PropertyComponent extends React.Component
     onPasteInto: PropTypes.func.isRequired
     onDelete: PropTypes.func.isRequired
     listId: PropTypes.string
+    allPropertyIds: PropTypes.arrayOf(PropTypes.string.isRequired)  # List of all property ids to prevent duplicates
   
   @iconMap:
     text: "fa fa-font"
@@ -241,6 +251,9 @@ class PropertyComponent extends React.Component
           actionLabel: "Save"
           onAction: () =>
             if @state.editorProperty
+              # Prevent duplicates
+              if @state.editorProperty.id != @props.property.id and @state.editorProperty.id in @props.allPropertyIds
+                return alert("Duplicate ids not allowed")
               @props.onChange(@state.editorProperty)
             @setState(editing: false, editorProperty: null)
               
@@ -261,6 +274,7 @@ class PropertyComponent extends React.Component
                 onChange: (updatedProperty) => @setState(editorProperty: updatedProperty)
                 features: @props.features
                 createRoleEditElem: @props.createRoleEditElem
+                forbiddenPropertyIds: _.without(@props.allPropertyIds, @props.property.id)
       @renderControls()  
       if @props.property.deprecated
           H.div className: "pl-item-deprecated-overlay", ""
@@ -310,5 +324,18 @@ class PropertyComponent extends React.Component
               newProperty = _.cloneDeep(@props.property)
               newProperty.contents = list
               @props.onChange(newProperty)
+            allPropertyIds: @props.allPropertyIds
         
 module.exports = NestedListClipboardEnhancement(PropertyListComponent)
+
+# Flatten a nested list of properties
+flattenProperties = (properties) ->
+  props = []
+
+  for prop in properties
+    if prop.contents
+      props = props.concat(flattenProperties(prop.contents))
+    else
+      props.push(prop)
+
+  return props

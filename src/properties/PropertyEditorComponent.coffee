@@ -22,6 +22,7 @@ module.exports = class PropertyEditorComponent extends React.Component
     table: PropTypes.string    # Table that properties are of. Not required if table feature is on
     tableIds: PropTypes.arrayOf(PropTypes.string.isRequired)   # Ids of tables to include when using table feature
     createRoleEditElem: PropTypes.func
+    forbiddenPropertyIds: PropTypes.arrayOf(PropTypes.string.isRequired) # Ids of properties that are not allowed as would be duplicates
     
   @defaultProps:
     features: []
@@ -40,9 +41,15 @@ module.exports = class PropertyEditorComponent extends React.Component
             )
 
       if _.includes(@props.features, "idField")
-        R IdFieldComponent, 
-          value: @props.property.id
-          onChange: (value) => @props.onChange(_.extend({}, @props.property, id: value))
+        [
+          R IdFieldComponent, 
+            value: @props.property.id
+            onChange: (value) => @props.onChange(_.extend({}, @props.property, id: value))
+          if @props.forbiddenPropertyIds and @props.property.id in @props.forbiddenPropertyIds
+            H.div className: "alert alert-danger",
+              "Duplicate IDs not allowed"
+        ]
+
       if _.includes(@props.features, "code")
         R ui.FormGroup, label: "Code",
           H.input type: "text", className: "form-control", value: @props.property.code, onChange: (ev) => @props.onChange(_.extend({}, @props.property, code: ev.target.value))
