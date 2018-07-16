@@ -44,7 +44,7 @@ module.exports = class SelectLiteralExprComponent extends React.Component
       @state.inputText = "" + props.value.value
 
   componentDidMount: ->
-    @refs.input?.focus()
+    @inputComp?.focus()
 
   handleChange: (value) =>
     @setState(value: value, changed: true)
@@ -92,7 +92,7 @@ module.exports = class SelectLiteralExprComponent extends React.Component
   renderTextBox: ->
     return H.div className: (if @state.inputTextError then "has-error"),
       H.input 
-        ref: "input"
+        ref: (c) => @inputComp = c
         type: "text"
         className: "form-control"
         value: @state.inputText or ""
