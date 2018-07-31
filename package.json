@@ -6,12 +6,12 @@
   "repository": "git@github.com:mWater/mwater-expressions-ui.git",
   "main": "lib/index.js",
   "scripts": {
-    "test": "testem ci"
+    "test": "mocha --require coffeescript/register --recursive \"test/**/*Tests.coffee\""
   },
-  "browserify": {
-    "transform": [
-      "coffeeify"
-    ]
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test"
+    }
   },
   "style": "src/index.css",
   "author": "mWater",
@@ -47,10 +47,7 @@
     "gulp-rework": "^1.0.3",
     "gulp-util": "^3.0.7",
     "gulp-watch": "^4.3.11",
-    "karma": "^0.13.14",
-    "karma-browserify": "^4.4.0",
-    "karma-chrome-launcher": "^0.2.1",
-    "karma-mocha": "^0.2.0",
+    "husky": "^1.0.0-rc.13",
     "mocha": "^2.3.3",
     "mocha-loader": "^1.1.1",
     "react-addons-test-utils": "^0.14.2",

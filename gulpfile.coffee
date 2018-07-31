@@ -20,12 +20,6 @@ gulp.task 'copy', ->
   gulp.src(['./src/**/*.js', './src/**/*.css', './src/**/*.txt'])
     .pipe(gulp.dest('./lib/'))
 
-makeBrowserifyBundle = ->
-  shim(browserify("./demo.coffee",
-    extensions: [".coffee"]
-    basedir: "./src/"
-  ))
-
 gulp.task "libs_css", ->
   return gulp.src([
     "./bower_components/bootstrap/dist/css/bootstrap.css"
@@ -107,16 +101,3 @@ gulp.task "test", gulp.series([
 ])
 
 gulp.task "default", gulp.series("copy", "coffee")
-
-# Shim non-browserify friendly libraries to allow them to be 'require'd
-shim = (instance) ->
-  shims = {
-    jquery: '../shims/jquery-shim'
-    lodash: '../shims/lodash-shim'
-  }
-
-  # Add shims
-  for name, path of shims
-    instance.require(path, {expose: name})
-
-  return instance

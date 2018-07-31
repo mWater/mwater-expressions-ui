@@ -32,7 +32,6 @@ describe "ScalarExprTreeBuilder", ->
     ]})
 
     nodes = new ScalarExprTreeBuilder(@schema).getTree(table: "t1")
-    console.log JSON.stringify(nodes)
     compare nodes[1].value, { table: "t1", joins: [], expr: { type: "field", table: "t1", column: "c2" }}
 
   it "does not allow selection of single join as id type if idTable is wrong", ->
