@@ -2,7 +2,6 @@ PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
-H = React.DOM
 
 ExprCompiler = require("mwater-expressions").ExprCompiler
 ExprUtils = require("mwater-expressions").ExprUtils
@@ -85,6 +84,6 @@ module.exports = class LiteralExprStringComponent extends AsyncLoadComponent
       else
         str = @state.label
 
-    return H.span null,
+    return R 'span', null,
       str
         

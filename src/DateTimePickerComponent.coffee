@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 React = require 'react'
 R = React.createElement
-H = React.DOM
 moment = require 'moment'
 
 require("eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js")
@@ -28,7 +27,7 @@ module.exports = class DateTimePickerComponent extends React.Component
     @props.onChange?(event.date)
 
   componentDidMount: ->
-    node = @refs.main
+    node = @main
 
     pickerOptions =
       format: if @props.timepicker then "YYYY-MM-DD HH-mm-ss" else "YYYY-MM-DD"
@@ -50,14 +49,14 @@ module.exports = class DateTimePickerComponent extends React.Component
     if nextProps.date? and @props.date? and nextProps.date.isSame(@props.date)
       return
 
-    node = @refs.main
+    node = @main
     $(node).off("dp.change", @onChange)
     $(node).data("DateTimePicker").date(nextProps.date or null)
     $(node).on("dp.change", @onChange)
 
   componentWillUnmount: ->
-    node = @refs.main
+    node = @main
     $(node).data("DateTimePicker").destroy()
 
   render: ->
-    H.div ref: "main"
+    R 'div', ref: (c) => @main = c

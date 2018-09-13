@@ -1,7 +1,7 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
+R = React.createElement
 ReactSelect = require 'react-select'
 ExprCompiler = require("mwater-expressions").ExprCompiler
 AsyncLoadComponent = require 'react-library/lib/AsyncLoadComponent'
@@ -23,7 +23,7 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     filter: PropTypes.object   # Optional extra filter. Put "main" as tableAlias. JsonQL
 
   focus: ->
-    @refs.select.focus()
+    @select.focus()
 
   # Override to determine if a load is needed. Not called on mounting
   isLoadNeeded: (newProps, oldProps) -> 
@@ -152,9 +152,9 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     return
 
   render: ->
-    H.div style: { width: "100%" },
+    R 'div', style: { width: "100%" },
       React.createElement(ReactSelect, { 
-        ref: "select"
+        ref: (c) => @select = c
         value: if @state.currentValue? then @state.currentValue else ""
         placeholder: @props.placeholder or "Select"
         asyncOptions: @getOptions

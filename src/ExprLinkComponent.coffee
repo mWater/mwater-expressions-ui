@@ -2,7 +2,6 @@ PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
-H = React.DOM
 
 SelectExprModalComponent = require './SelectExprModalComponent'
 LinkComponent = require './LinkComponent'
@@ -54,7 +53,7 @@ module.exports = class ExprLinkComponent extends React.Component
 
   # Display placeholder if no value
   renderNone: =>
-    H.a onClick: @handleClick, style: { cursor: "pointer", fontStyle: "italic", color: "#478" }, 
+    R 'a', onClick: @handleClick, style: { cursor: "pointer", fontStyle: "italic", color: "#478" }, 
       @props.placeholder
     
   # Display summary if field
@@ -62,7 +61,7 @@ module.exports = class ExprLinkComponent extends React.Component
     exprUtils = new ExprUtils(@props.schema)
 
     R LinkComponent, 
-      dropdownItems: [{ id: "edit", name: [H.i(className: "fa fa-pencil text-muted"), " Edit"] }, { id: "remove", name: [H.i(className: "fa fa-remove text-muted"), " Remove"] }]
+      dropdownItems: [{ id: "edit", name: [R('i', className: "fa fa-pencil text-muted"), " Edit"] }, { id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
       onDropdownItemClicked: ((id) => 
         if id == "edit"
           @setState(modalVisible: true)
@@ -72,7 +71,7 @@ module.exports = class ExprLinkComponent extends React.Component
 
   renderLiteral: =>
     R LinkComponent, 
-      dropdownItems: [{ id: "edit", name: [H.i(className: "fa fa-pencil text-muted"), " Edit"] }, { id: "remove", name: [H.i(className: "fa fa-remove text-muted"), " Remove"] }]
+      dropdownItems: [{ id: "edit", name: [R('i', className: "fa fa-pencil text-muted"), " Edit"] }, { id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
       onDropdownItemClicked: ((id) => 
         if id == "edit"
           @setState(modalVisible: true)
@@ -96,7 +95,7 @@ module.exports = class ExprLinkComponent extends React.Component
       else
         initialMode = "formula"
 
-    H.div null,
+    R 'div', null,
       if @state.modalVisible
         R SelectExprModalComponent, 
           schema: @props.schema

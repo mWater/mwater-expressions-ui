@@ -2,7 +2,6 @@ PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
-H = React.DOM
 
 ExprUtils = require('mwater-expressions').ExprUtils
 
@@ -100,8 +99,8 @@ module.exports = class SelectFormulaExprComponent extends React.Component
       filter = new RegExp(_.escapeRegExp(@state.searchText), "i")
       items = _.filter(items, (item) -> item.name.match(filter) or item.desc.match(filter))
 
-    H.div null,
-      H.input 
+    R 'div', null,
+      R 'input', 
         ref: (c) => @searchComp = c
         type: "text"
         placeholder: "Search Formulas..."
@@ -110,9 +109,9 @@ module.exports = class SelectFormulaExprComponent extends React.Component
         onChange: @handleSearchTextChange
 
       # Create list
-      H.div style: { paddingTop: 10 },
+      R 'div', style: { paddingTop: 10 },
         _.map items, (item) =>
-          H.div 
+          R 'div', 
             key: item.name
             style: {
               padding: 4
@@ -124,4 +123,4 @@ module.exports = class SelectFormulaExprComponent extends React.Component
             onClick: item.onClick,
               item.name
               if item.desc
-                H.span className: "text-muted", style: { fontSize: 12, paddingLeft: 3 }, " - " + item.desc
+                R 'span', className: "text-muted", style: { fontSize: 12, paddingLeft: 3 }, " - " + item.desc

@@ -2,7 +2,6 @@ PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
-H = React.DOM
 
 moment = require 'moment'
 
@@ -90,9 +89,8 @@ module.exports = class SelectLiteralExprComponent extends React.Component
 
   # Render a text box for inputting text/number
   renderTextBox: ->
-    return H.div className: (if @state.inputTextError then "has-error"),
-      H.input 
-        ref: (c) => @inputComp = c
+    return R 'div', className: (if @state.inputTextError then "has-error"),
+      R 'input', 
         type: "text"
         className: "form-control"
         value: @state.inputText or ""
@@ -109,7 +107,6 @@ module.exports = class SelectLiteralExprComponent extends React.Component
     # If text[], enumset or id literal, use special component
     if exprType == "text[]" or _.isEqual(@props.types, ["text[]"])
       return R(TextArrayComponent, 
-        ref: "input"
         value: expr
         refExpr: @props.refExpr
         schema: @props.schema
@@ -131,7 +128,6 @@ module.exports = class SelectLiteralExprComponent extends React.Component
     if exprType == "id" or _.isEqual(@props.types, ["id"]) and @props.idTable
       idTable = @props.idTable or exprUtils.getExprIdTable(expr)
       return R(IdLiteralComponent, 
-        ref: "input"
         value: expr?.value
         idTable: idTable
         schema: @props.schema
@@ -141,7 +137,6 @@ module.exports = class SelectLiteralExprComponent extends React.Component
     if exprType == "id[]" or _.isEqual(@props.types, ["id[]"]) and @props.idTable
       idTable = @props.idTable or exprUtils.getExprIdTable(expr)
       return R(IdLiteralComponent, 
-        ref: "input"
         value: expr?.value
         idTable: idTable
         schema: @props.schema
@@ -166,16 +161,16 @@ module.exports = class SelectLiteralExprComponent extends React.Component
         timepicker: true
         onChange: @handleDateTimeSelected
 
-    return H.div className: "text-warning", "Literal input not supported for this type"
+    return R 'div', className: "text-warning", "Literal input not supported for this type"
     
   render: ->
-    H.div null,
-      H.div style: { paddingBottom: 10 }, 
-        H.button type: "button", className: "btn btn-primary", onClick: @handleAccept, disabled: not @state.changed,
-          H.i className: "fa fa-check"
+    R 'div', null,
+      R 'div', style: { paddingBottom: 10 }, 
+        R 'button', type: "button", className: "btn btn-primary", onClick: @handleAccept, disabled: not @state.changed,
+          R 'i', className: "fa fa-check"
           " OK"
         " "
-        H.button type: "button", className: "btn btn-default", onClick: @props.onCancel,
+        R 'button', type: "button", className: "btn btn-default", onClick: @props.onCancel,
           "Cancel"
       @renderInput()
 
@@ -205,13 +200,13 @@ class EnumAsListComponent extends React.Component
       cursor: "pointer"
     }
 
-    H.div null,
+    R 'div', null,
       _.map @props.enumValues, (val) => 
-        H.div key: val.id, className: "hover-grey-background", style: itemStyle, onClick: @handleChange.bind(null, val.id),
+        R 'div', key: val.id, className: "hover-grey-background", style: itemStyle, onClick: @handleChange.bind(null, val.id),
           if val.id == value
-            H.i className: "fa fa-fw fa-check", style: { color: "#2E6DA4" }
+            R 'i', className: "fa fa-fw fa-check", style: { color: "#2E6DA4" }
           else
-            H.i className: "fa fa-fw"
+            R 'i', className: "fa fa-fw"
           " "
           ExprUtils.localizeString(val.name, @context.locale)
 
@@ -247,13 +242,13 @@ class EnumsetAsListComponent extends React.Component
       cursor: "pointer"
     }
 
-    H.div null,
+    R 'div', null,
       _.map @props.enumValues, (val) => 
-        H.div key: val.id, className: "hover-grey-background", style: itemStyle, onClick: @handleToggle.bind(null, val.id),
+        R 'div', key: val.id, className: "hover-grey-background", style: itemStyle, onClick: @handleToggle.bind(null, val.id),
           if val.id in items
-            H.i className: "fa fa-fw fa-check-square", style: { color: "#2E6DA4" }
+            R 'i', className: "fa fa-fw fa-check-square", style: { color: "#2E6DA4" }
           else
-            H.i className: "fa fa-fw fa-square", style: { color: "#DDDDDD" }
+            R 'i', className: "fa fa-fw fa-square", style: { color: "#DDDDDD" }
           " "
           ExprUtils.localizeString(val.name, @context.locale)
 
@@ -278,7 +273,7 @@ class EnumComponent extends React.Component
 
     # Use JSON to allow non-strings as ids
     options = _.map(@props.enumValues, (val) => { value: JSON.stringify(val.id), label: ExprUtils.localizeString(val.name, @context.locale) })
-    H.div style: { width: "100%" },
+    R 'div', style: { width: "100%" },
       React.createElement(ReactSelect, { 
         value: value
         multi: false

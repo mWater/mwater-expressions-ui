@@ -2,7 +2,6 @@ PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
-H = React.DOM
 
 ScalarExprTreeComponent = require './ScalarExprTreeComponent'
 ScalarExprTreeBuilder = require './ScalarExprTreeBuilder'
@@ -122,8 +121,8 @@ module.exports = class SelectFieldExprComponent extends React.Component
       includeAggr: "aggregate" in @props.aggrStatuses, filter: @state.searchText
     })
 
-    H.div null,
-      H.input 
+    R 'div', null,
+      R 'input', 
         ref: (c) => @searchComp = c
         type: "text"
         placeholder: "Search Fields..."
@@ -132,7 +131,7 @@ module.exports = class SelectFieldExprComponent extends React.Component
         onChange: @handleSearchTextChange
 
       # Create tree component with value of table and path
-      H.div style: { paddingTop: 10, paddingBottom: 200 },
+      R 'div', style: { paddingTop: 10, paddingBottom: 200 },
         R ScalarExprTreeComponent, 
           tree: tree,
           onChange: @handleTreeChange

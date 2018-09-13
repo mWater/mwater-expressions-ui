@@ -1,6 +1,6 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
+R = React.createElement
 ReactSelect = require 'react-select'
 ExprCompiler = require("mwater-expressions").ExprCompiler
 
@@ -14,7 +14,7 @@ module.exports = class TextArrayComponent extends React.Component
     dataSource: PropTypes.object.isRequired # Data source to use to get values
 
   focus: ->
-    @refs.select.focus()
+    @select.focus()
 
   handleChange: (val) =>
     value = if val then val.split("\n") else []
@@ -69,9 +69,9 @@ module.exports = class TextArrayComponent extends React.Component
     if @props.value and @props.value.value.length > 0 
       value = @props.value.value.join("\n")
 
-    H.div style: { width: "100%" },
+    R 'div', style: { width: "100%" },
       React.createElement(ReactSelect, { 
-        ref: "select"
+        ref: (c) => @select = c
         value: value
         multi: true
         delimiter: "\n"

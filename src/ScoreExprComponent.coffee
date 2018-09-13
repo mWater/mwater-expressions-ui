@@ -2,7 +2,6 @@ PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
-H = React.DOM
 
 ExprUtils = require("mwater-expressions").ExprUtils
 RemovableComponent = require './RemovableComponent'
@@ -36,22 +35,22 @@ module.exports = class ScoreExprComponent extends React.Component
     if not enumValues
       return null
 
-    H.table className: "table table-bordered", 
-      H.thead null,
-        H.tr null,
-          H.th key: "name", "Choice"
-          # H.th key: "arrow"
-          H.th key: "score", "Score"
-      H.tbody null,
+    R 'table', className: "table table-bordered", 
+      R 'thead', null,
+        R 'tr', null,
+          R 'th', key: "name", "Choice"
+          # R 'th', key: "arrow"
+          R 'th', key: "score", "Score"
+      R 'tbody', null,
         _.map enumValues, (enumValue) =>
-          H.tr key: enumValue.id,
+          R 'tr', key: enumValue.id,
             # Name of value
-            H.td key: "name",
+            R 'td', key: "name",
               exprUtils.localizeString(enumValue.name, @context.locale)
-            # H.td key: "arrow",
-            #   H.span className: "glyphicon glyphicon-arrow-right"
+            # R 'td', key: "arrow",
+            #   R 'span', className: "glyphicon glyphicon-arrow-right"
             # Score
-            H.td key: "score", style: { maxWidth: "20em" },
+            R 'td', key: "score", style: { maxWidth: "20em" },
               R ExprComponent,
                 schema: @props.schema
                 dataSource: @props.dataSource
@@ -66,9 +65,9 @@ module.exports = class ScoreExprComponent extends React.Component
     ExprComponent = require './ExprComponent'
 
     R RemovableComponent, onRemove: @props.onChange.bind(null, null),
-      H.div null, 
+      R 'div', null, 
         "Score choices of: "
-        H.div style: { display: "inline-block", maxWidth: "50em" },
+        R 'div', style: { display: "inline-block", maxWidth: "50em" },
           R ExprComponent,
             schema: @props.schema
             dataSource: @props.dataSource

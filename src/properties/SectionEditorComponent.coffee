@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 React = require 'react'
 R = React.createElement
-H = React.DOM
 _ = require 'lodash'
 
 ui = require 'react-library/lib/bootstrap'
@@ -20,7 +19,7 @@ module.exports = class SectionEditorComponent extends React.Component
     features: []
     
   render: ->
-    H.div null,
+    R 'div', null,
       # todo: validate id
       # Sections need an id
       if _.includes @props.features, "idField"
@@ -28,11 +27,11 @@ module.exports = class SectionEditorComponent extends React.Component
           value: @props.property.id
           onChange: (value) => @props.onChange(_.extend({}, @props.property, id: value))
         R ui.FormGroup, label: "ID",
-          H.input type: "text", className: "form-control", value: @props.property.id, onChange: (ev) => @props.onChange(_.extend({}, @props.property, id: ev.target.value))
-          H.p className: "help-block", "Letters lowercase, numbers and _ only. No spaces or uppercase"
+          R 'input', type: "text", className: "form-control", value: @props.property.id, onChange: (ev) => @props.onChange(_.extend({}, @props.property, id: ev.target.value))
+          R 'p', className: "help-block", "Letters lowercase, numbers and _ only. No spaces or uppercase"
       if _.includes @props.features, "code"
         R ui.FormGroup, label: "Code",
-          H.input type: "text", className: "form-control", value: @props.property.code, onChange: (ev) => @props.onChange(_.extend({}, @props.property, code: ev.target.value))
+          R 'input', type: "text", className: "form-control", value: @props.property.code, onChange: (ev) => @props.onChange(_.extend({}, @props.property, code: ev.target.value))
       R ui.FormGroup, label: "Name",
         R LocalizedStringEditorComp, value: @props.property.name, onChange: (value) => @props.onChange(_.extend({}, @props.property, name: value))
       R ui.FormGroup, label: "Description",

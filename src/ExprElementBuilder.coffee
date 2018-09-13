@@ -2,7 +2,6 @@ PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
-H = React.DOM
 
 ExprUtils = require("mwater-expressions").ExprUtils
 EnumSetComponent = require './EnumSetComponent'
@@ -140,7 +139,7 @@ module.exports = class ExprElementBuilder
   # Build an id component. Displays table name. Only remove option
   buildId: (expr, onChange, options = {}) ->
     return R(LinkComponent, 
-      dropdownItems: [{ id: "remove", name: [H.i(className: "fa fa-remove text-muted"), " Remove"] }]
+      dropdownItems: [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
       onDropdownItemClicked: => onChange(null),
       @exprUtils.summarizeExpr(expr)) 
 
@@ -158,10 +157,10 @@ module.exports = class ExprElementBuilder
       # Summarize without aggregation
       summary = @exprUtils.summarizeExpr(_.omit(expr, "aggr"))
 
-      return H.div style: { display: "flex", alignItems: "baseline" },
+      return R 'div', style: { display: "flex", alignItems: "baseline" },
         # Aggregate dropdown
         R(LinkComponent, 
-          dropdownItems: [{ id: "remove", name: [H.i(className: "fa fa-remove text-muted"), " Remove"] }]
+          dropdownItems: [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
           onDropdownItemClicked: => onChange(null),
           summary)
     else
@@ -183,9 +182,9 @@ module.exports = class ExprElementBuilder
         aggrStatuses: innerAggrStatuses 
       })
 
-    return H.div style: { display: "flex", alignItems: "baseline" },
+    return R 'div', style: { display: "flex", alignItems: "baseline" },
       R(LinkComponent, 
-        dropdownItems: [{ id: "remove", name: [H.i(className: "fa fa-remove text-muted"), " Remove"] }]
+        dropdownItems: [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
         onDropdownItemClicked: => onChange(null),
         joinsStr)
       innerElem
@@ -231,7 +230,7 @@ module.exports = class ExprElementBuilder
         # Special case for no expressions
         if opItem.exprTypes.length == 0
           return R(LinkComponent, 
-            dropdownItems: [{ id: "remove", name: [H.i(className: "fa fa-remove text-muted"), " Remove"] }]
+            dropdownItems: [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
             onDropdownItemClicked: (=> onChange(null)),
               @exprUtils.summarizeExpr(expr, @locale))
 
@@ -311,7 +310,7 @@ module.exports = class ExprElementBuilder
         opItems = _.uniq(opItems, "op")
 
         opElem = R(LinkComponent, 
-          dropdownItems: [{ id: "_remove", name: [H.i(className: "fa fa-remove text-muted"), " Remove"] }].concat(_.map(opItems, (oi) -> { id: oi.op, name: oi.name }))
+          dropdownItems: [{ id: "_remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }].concat(_.map(opItems, (oi) -> { id: oi.op, name: oi.name }))
           onDropdownItemClicked: (op) =>
             if op == "_remove"
               onChange(null)
@@ -321,13 +320,13 @@ module.exports = class ExprElementBuilder
 
         # Some ops have prefix (e.g. "latitude of")
         if opItem.prefix
-          return H.div style: { display: "flex", alignItems: "baseline", flexWrap: "wrap" },
+          return R 'div', style: { display: "flex", alignItems: "baseline", flexWrap: "wrap" },
             opElem
             lhsElem
-            if opItem.joiner then H.span(style: { paddingLeft: 5, paddingRight: 5 }, opItem.joiner)
+            if opItem.joiner then R('span', style: { paddingLeft: 5, paddingRight: 5 }, opItem.joiner)
             rhsElem
         else
-          return H.div style: { display: "flex", alignItems: "baseline", flexWrap: "wrap" },
+          return R 'div', style: { display: "flex", alignItems: "baseline", flexWrap: "wrap" },
             lhsElem, opElem, rhsElem
 
   buildCase: (expr, onChange, options) ->
@@ -352,12 +351,12 @@ module.exports = class ExprElementBuilder
         onChange(_.extend({}, expr, { cases: cases }))
 
       # Build a flexbox that wraps with a when and then flexbox
-      elem = H.div key: "#{i}", style: { display: "flex", alignItems: "baseline"  },
-        H.div key: "when", style: { display: "flex", alignItems: "baseline" },
-          H.div key: "label", style: labelStyle, "if"
+      elem = R 'div', key: "#{i}", style: { display: "flex", alignItems: "baseline"  },
+        R 'div', key: "when", style: { display: "flex", alignItems: "baseline" },
+          R 'div', key: "label", style: labelStyle, "if"
           @build(cse.when, expr.table, innerElemOnWhenChange, key: "content", types: ["boolean"], suppressWrapOps: ["if"], aggrStatuses: options.aggrStatuses)
-        H.div key: "then", style: { display: "flex", alignItems: "baseline" },
-          H.div key: "label", style: labelStyle, "then"
+        R 'div', key: "then", style: { display: "flex", alignItems: "baseline" },
+          R 'div', key: "label", style: labelStyle, "then"
           @build(cse.then, expr.table, innerElemOnThenChange, key: "content", types: options.types, preferLiteral: true, enumValues: options.enumValues, aggrStatuses: options.aggrStatuses)
 
       handleRemove = =>
@@ -372,8 +371,8 @@ module.exports = class ExprElementBuilder
       onChange(_.extend({}, expr, { else: newValue }))
 
     items.push({
-      elem: H.div key: "when", style: { display: "flex", alignItems: "baseline" },
-        H.div key: "label", style: labelStyle, "else"
+      elem: R 'div', key: "when", style: { display: "flex", alignItems: "baseline" },
+        R 'div', key: "label", style: labelStyle, "else"
         @build(expr.else, expr.table, onElseChange, key: "content", types: options.types, preferLiteral: true, enumValues: options.enumValues, aggrStatuses: options.aggrStatuses)  
     })
 
@@ -401,14 +400,14 @@ class WrappedLinkComponent extends React.Component
     links: PropTypes.array.isRequired # Shape is label, onClick
 
   renderLinks: ->
-    H.div style: { 
+    R 'div', style: { 
       position: "absolute"
       left: 10
       bottom: 0 
       whiteSpace: "nowrap"
     }, className: "hover-display-child",
       _.map @props.links, (link, i) =>
-        H.a key: "#{i}", style: { 
+        R 'a', key: "#{i}", style: { 
           paddingLeft: 3
           paddingRight: 3
           backgroundColor: "white"
@@ -418,8 +417,8 @@ class WrappedLinkComponent extends React.Component
           link.label
 
   render: ->
-    H.div style: { paddingBottom: 20, position: "relative" }, className: "hover-display-parent",
-      H.div style: { 
+    R 'div', style: { paddingBottom: 20, position: "relative" }, className: "hover-display-parent",
+      R 'div', style: { 
         position: "absolute"
         height: 10
         bottom: 10

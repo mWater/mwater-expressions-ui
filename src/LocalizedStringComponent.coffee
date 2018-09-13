@@ -1,6 +1,6 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
+R = React.createElement
 
 # Displays a localized string (_base: "en", en: "apple", fr: "pomme", etc)
 module.exports = class LocalizedStringComponent extends React.Component 
@@ -9,6 +9,6 @@ module.exports = class LocalizedStringComponent extends React.Component
 
   render: ->
     if @props.value
-      return H.span(null, @props.value[@props.value._base or "en"])
+      return R('span', null, @props.value[@props.value._base or "en"])
     else
       return null

@@ -2,7 +2,6 @@ PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
-H = React.DOM
 
 update = require 'update-object'
 ExprCleaner = require("mwater-expressions").ExprCleaner
@@ -46,7 +45,7 @@ module.exports = class FilterExprComponent extends React.Component
       @props.onChange({ type: "op", op: "and", table: @props.table, exprs: [@props.value, null] })
       return
 
-    @setState(displayNull: true, => @refs.newExpr?.showModal())
+    @setState(displayNull: true, => @newExpr?.showModal())
 
   # Clean expression and pass up
   handleChange: (expr) =>
@@ -71,15 +70,15 @@ module.exports = class FilterExprComponent extends React.Component
     @handleChange(null)    
 
   renderAddFilter: ->
-    H.div null, 
-      H.a onClick: @handleAddFilter, @props.addLabel
+    R 'div', null, 
+      R 'a', onClick: @handleAddFilter, @props.addLabel
 
   render: ->
     expr = @cleanExpr(@props.value)
 
     # Render each item of and
     if expr and expr.op == "and"
-      return H.div null,
+      return R 'div', null,
         R StackedComponent, 
           joinLabel: "and"
           items: _.map expr.exprs, (subexpr, i) =>
@@ -95,7 +94,7 @@ module.exports = class FilterExprComponent extends React.Component
           @renderAddFilter()
 
     else if expr 
-      return H.div null,
+      return R 'div', null,
         R RemovableComponent, 
           onRemove: @handleRemove,
           new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(expr, @props.table, @handleChange, { 
@@ -108,7 +107,7 @@ module.exports = class FilterExprComponent extends React.Component
         @renderAddFilter()
     else if @state.displayNull
       R ExprLinkComponent, 
-        ref: "newExpr"
+        ref: (c) => @newExpr = c
         schema: @props.schema
         dataSource: @props.dataSource
         table: @props.table

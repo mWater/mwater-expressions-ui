@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 React = require 'react'
 ReactDOM = require 'react-dom'
-H = React.DOM
 R = React.createElement
 motion = require 'react-motion'
 
@@ -16,12 +15,12 @@ exports.SectionComponent = class SectionComponent extends React.Component
     label: PropTypes.node
 
   render: ->
-    H.div style: { marginBottom: 15 }, 
-      H.label className: "text-muted", 
-        H.span(className: "glyphicon glyphicon-#{@props.icon}")
+    R 'div', style: { marginBottom: 15 }, 
+      R 'label', className: "text-muted", 
+        R('span', className: "glyphicon glyphicon-#{@props.icon}")
         " "
         @props.label
-      H.div style: { marginLeft: 10 },
+      R 'div', style: { marginLeft: 10 },
         @props.children
 
 # List of options with a name and description each
@@ -31,9 +30,9 @@ exports.OptionListComponent = class OptionListComponent extends React.Component
     hint: PropTypes.string
 
   render: ->
-    H.div null,
-      H.div style: { color: "#AAA", fontStyle: "italic" }, key: "hint", @props.hint
-      H.div className: "mwater-visualization-big-options", key: "options",
+    R 'div', null,
+      R 'div', style: { color: "#AAA", fontStyle: "italic" }, key: "hint", @props.hint
+      R 'div', className: "mwater-visualization-big-options", key: "options",
         _.map @props.items, (item) =>
           R OptionComponent, name: item.name, desc: item.desc, onClick: item.onClick, key: item.name
 
@@ -45,9 +44,9 @@ class OptionComponent extends React.Component
     onClick: PropTypes.func.isRequired
 
   render: ->
-    H.div className: "mwater-visualization-big-option", onClick: @props.onClick,
-      H.div style: { fontWeight: "bold" }, @props.name
-      H.div style: { color: "#888" }, @props.desc
+    R 'div', className: "mwater-visualization-big-option", onClick: @props.onClick,
+      R 'div', style: { fontWeight: "bold" }, @props.name
+      R 'div', style: { color: "#888" }, @props.desc
 
 # Switches views smoothly
 exports.SwitchViewComponent = class SwitchViewComponent extends React.Component
@@ -93,9 +92,9 @@ exports.SwitchViewComponent = class SwitchViewComponent extends React.Component
       (style) =>
         # If measuring, display all positioned at top
         if @state.measuring
-          return H.div style: { position: "relative" },
+          return R 'div', style: { position: "relative" },
             _.map _.keys(@props.views), (v) =>
-              H.div style: { position: "absolute", top: 0, opacity: style[v] }, ref: @refCallback.bind(null, v), key: v,
+              R 'div', style: { position: "absolute", top: 0, opacity: style[v] }, ref: @refCallback.bind(null, v), key: v,
                 @props.views[v]
 
         # If transitioning
@@ -105,14 +104,14 @@ exports.SwitchViewComponent = class SwitchViewComponent extends React.Component
           for id, val of style
             height += val * @heights[id]
 
-          return H.div style: { position: "relative", height: height },
+          return R 'div', style: { position: "relative", height: height },
             _.map _.keys(@props.views), (v) =>
-              H.div style: { position: "absolute", top: 0, left: 0, right: 0, opacity: style[v] }, key: v,
+              R 'div', style: { position: "absolute", top: 0, left: 0, right: 0, opacity: style[v] }, key: v,
                 @props.views[v]
 
         # Just display (but wrapped to keep same component)
-        return H.div null,
-          H.div key: @props.viewId,
+        return R 'div', null,
+          R 'div', key: @props.viewId,
             @props.views[@props.viewId]
 
 # Shows as editable link that can be clicked to open 
@@ -169,7 +168,7 @@ exports.ButtonToggleComponent = class ButtonToggleComponent extends React.Compon
     onChange: PropTypes.func.isRequired # Called with value
 
   render: ->
-    H.div className: "btn-group btn-group-xs",
+    R 'div', className: "btn-group btn-group-xs",
       _.map @props.options, (option, i) =>
-        H.button type: "button", className: (if option.value == @props.value then "btn btn-primary active" else "btn btn-default"), onClick: @props.onChange.bind(null, option.value),
+        R 'button', type: "button", className: (if option.value == @props.value then "btn btn-primary active" else "btn btn-default"), onClick: @props.onChange.bind(null, option.value),
           option.label

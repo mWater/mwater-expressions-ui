@@ -1,6 +1,6 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
+R = React.createElement
 ReactSelect = require 'react-select'
 _ = require 'lodash'
 ExprUtils = require("mwater-expressions").ExprUtils
@@ -30,7 +30,7 @@ module.exports = class EnumSetComponent extends React.Component
 
     # Use JSON to allow non-strings as ids
     options = _.map(@props.enumValues, (val) => { value: JSON.stringify(val.id), label: ExprUtils.localizeString(val.name, @context.locale) })
-    H.div style: { width: "100%" },
+    R 'div', style: { width: "100%" },
       React.createElement(ReactSelect, { 
         value: value
         multi: true

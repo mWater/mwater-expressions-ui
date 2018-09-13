@@ -2,7 +2,6 @@ PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
-H = React.DOM
 
 ExprCleaner = require("mwater-expressions").ExprCleaner
 ExprElementBuilder = require './ExprElementBuilder'

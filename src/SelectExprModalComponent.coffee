@@ -2,7 +2,6 @@ PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
-H = React.DOM
 
 ExprUtils = require("mwater-expressions").ExprUtils
 ModalWindowComponent = require('react-library/lib/ModalWindowComponent')
@@ -50,7 +49,7 @@ module.exports = class SelectExprModalComponent extends React.Component
     if table
       tabs.push({
         id: "field"
-        label: [H.i(className: "fa fa-table"), " #{ExprUtils.localizeString(table.name, @context.locale)} Field"]
+        label: [R('i', className: "fa fa-table"), " #{ExprUtils.localizeString(table.name, @context.locale)} Field"]
         elem: R SelectFieldExprComponent,
           schema: @props.schema
           dataSource: @props.dataSource
@@ -65,7 +64,7 @@ module.exports = class SelectExprModalComponent extends React.Component
 
     tabs.push({
       id: "formula"
-      label: [H.i(className: "fa fa-calculator"), " Formula"]
+      label: [R('i', className: "fa fa-calculator"), " Formula"]
       elem: R SelectFormulaExprComponent,
         table: @props.table
         onChange: @props.onSelect
@@ -78,7 +77,7 @@ module.exports = class SelectExprModalComponent extends React.Component
     if "literal" in @props.aggrStatuses
       tabs.push({
         id: "literal"
-        label: [H.i(className: "fa fa-pencil"), " Value"]
+        label: [R('i', className: "fa fa-pencil"), " Value"]
         elem: R SelectLiteralExprComponent,
           value: @props.value
           onChange: @props.onSelect
@@ -92,8 +91,8 @@ module.exports = class SelectExprModalComponent extends React.Component
           refExpr: @props.refExpr
       })
 
-    H.div null,
-      H.h3 style: { marginTop: 0 }, "Select Field, Formula or Value"
+    R 'div', null,
+      R 'h3', style: { marginTop: 0 }, "Select Field, Formula or Value"
       R TabbedComponent,
         tabs: tabs
         initialTabId: @props.initialMode

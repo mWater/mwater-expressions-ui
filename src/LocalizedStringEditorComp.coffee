@@ -1,6 +1,6 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
+R = React.createElement
 
 # Edits a localized string (_base: "en", en: "fsdfasd", fr: "wersdf", etc)
 module.exports = class LocalizedStringEditorComp extends React.Component 
@@ -61,20 +61,20 @@ module.exports = class LocalizedStringEditorComp extends React.Component
       { id: "pt", name: "pt" }
     ]
 
-    return H.div {className:"input-group"},
+    return R 'div', {className:"input-group"},
       if @props.multiline
-        H.textarea { className: "form-control", rows: 5, onChange: @handleChangeValue, value: currentText, placeholder: placeholder }
+        R 'textarea', { className: "form-control", rows: 5, onChange: @handleChangeValue, value: currentText, placeholder: placeholder }
       else
-        H.input { type: "text", className: "form-control", onChange: @handleChangeValue, value: currentText, placeholder: placeholder }
+        R 'input', { type: "text", className: "form-control", onChange: @handleChangeValue, value: currentText, placeholder: placeholder }
 
-      H.div {className: "input-group-btn"},
-        H.button {type: "button", className: "btn btn-default dropdown-toggle", "data-toggle": "dropdown"},
+      R 'div', {className: "input-group-btn"},
+        R 'button', {type: "button", className: "btn btn-default dropdown-toggle", "data-toggle": "dropdown"},
           @state.selectedLanguageCode
           " "
-          H.span {className: "caret"}
+          R 'span', {className: "caret"}
         
-        H.ul {className: "dropdown-menu"},
+        R 'ul', {className: "dropdown-menu"},
           _.map availableLanguages, (availableLanguage) =>
-            H.li key: availableLanguage.id,
-              H.a onClick: @onLanguageSelectionClick.bind(null, availableLanguage.id),
+            R 'li', key: availableLanguage.id,
+              R 'a', onClick: @onLanguageSelectionClick.bind(null, availableLanguage.id),
                 availableLanguage.name

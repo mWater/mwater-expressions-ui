@@ -2,7 +2,6 @@ PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
-H = React.DOM
 
 ExprUtils = require("mwater-expressions").ExprUtils
 RemovableComponent = require './RemovableComponent'
@@ -30,22 +29,22 @@ module.exports = class BuildEnumsetExprComponent extends React.Component
 
     exprUtils = new ExprUtils(@props.schema)
 
-    H.table className: "table table-bordered", 
-      H.thead null,
-        H.tr null,
-          H.th key: "name", "Choice"
-          # H.th key: "arrow"
-          H.th key: "include", "Include if"
-      H.tbody null,
+    R 'table', className: "table table-bordered", 
+      R 'thead', null,
+        R 'tr', null,
+          R 'th', key: "name", "Choice"
+          # R 'th', key: "arrow"
+          R 'th', key: "include", "Include if"
+      R 'tbody', null,
         _.map @props.enumValues, (enumValue) =>
-          H.tr key: enumValue.id,
+          R 'tr', key: enumValue.id,
             # Name of value
-            H.td key: "name",
+            R 'td', key: "name",
               exprUtils.localizeString(enumValue.name, @context.locale)
-            # H.td key: "arrow",
-            #   H.span className: "glyphicon glyphicon-arrow-right"
+            # R 'td', key: "arrow",
+            #   R 'span', className: "glyphicon glyphicon-arrow-right"
             # Boolean condition
-            H.td key: "value", style: { maxWidth: "30em" },
+            R 'td', key: "value", style: { maxWidth: "30em" },
               R ExprComponent,
                 schema: @props.schema
                 dataSource: @props.dataSource
@@ -59,4 +58,4 @@ module.exports = class BuildEnumsetExprComponent extends React.Component
       if @props.enumValues
         @renderValues()
       else
-        H.i(null, "Cannot display build enumset without known values")
+        R('i', null, "Cannot display build enumset without known values")
