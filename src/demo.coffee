@@ -23,8 +23,8 @@ $ ->
     # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
     # ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(PropertyListContainerComponent, schema: schema, dataSource: dataSource, table: "entities.water_point"), document.getElementById("main"))
-    # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
-    ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
+    ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+    # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
 
 class PropertyListContainerComponent extends React.Component
@@ -236,7 +236,8 @@ class MockTestComponent extends React.Component
         # types: ['enumset']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
-        types: ['number', 'boolean', 'date', 'datetime', 'text', 'enum']
+        # types: ['number', 'boolean', 'date', 'datetime', 'text', 'enum']
+        types: ["boolean"]
         # types: ['enumset']
         value: @state.value
         onChange: @handleValueChange

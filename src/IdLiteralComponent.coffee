@@ -2,7 +2,7 @@ PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
-ReactSelect = require 'react-select'
+AsyncReactSelect = require('react-select/lib/Async').default
 ExprCompiler = require("mwater-expressions").ExprCompiler
 AsyncLoadComponent = require 'react-library/lib/AsyncLoadComponent'
 
@@ -70,29 +70,24 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
         callback(currentValue: null)
         return 
       if not @props.multi
-        callback(currentValue: { label: rows[0].label, value: JSON.stringify(rows[0].value) })
+        callback(currentValue: rows[0])
       else
-        callback(currentValue: _.map(rows, (row) -> { label: row.label, value: JSON.stringify(row.value) }))
+        callback(currentValue: rows)
 
   handleChange: (value) =>
     if @props.multi
-      value = if value then value.split("\n") else null
-      value = _.map(value, JSON.parse)
-      @props.onChange(value)
-    else
-      if value
-        @props.onChange(JSON.parse(value))
-      else
+      if value and value.length == 0
         @props.onChange(null)
+      else
+        @props.onChange(_.pluck(value, "value"))
+    else
+      @props.onChange(value?.value)
 
-  getOptions: (input, cb) =>
-    # If no input, or just displaying current value
-    if not input or _.isObject(input)
+  loadOptions: (input, cb) =>
+    # If no input
+    if not input
       # No options
-      cb(null, {
-        options: []
-        complete: false
-      })
+      cb([])
       return
 
     table = @props.schema.getTable(@props.idTable)
@@ -144,22 +139,17 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
       # Filter null and blank
       rows = _.filter(rows, (r) -> r.label)
 
-      cb(null, {
-        options: _.map(rows, (r) -> { value: JSON.stringify(r.value), label: r.label })
-        complete: false # TODO rows.length < 50 # Complete if didn't hit limit
-      })
+      cb(rows)
 
     return
 
   render: ->
     R 'div', style: { width: "100%" },
-      React.createElement(ReactSelect, { 
+      R AsyncReactSelect, 
         ref: (c) => @select = c
-        value: if @state.currentValue? then @state.currentValue else ""
+        value: @state.currentValue
         placeholder: @props.placeholder or "Select"
-        asyncOptions: @getOptions
-        multi: @props.multi
-        delimiter: "\n"
+        loadOptions: @loadOptions
+        isMulti: @props.multi
         isLoading: @state.loading
         onChange: @handleChange
-      })

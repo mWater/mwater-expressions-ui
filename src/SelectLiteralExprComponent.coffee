@@ -8,7 +8,6 @@ moment = require 'moment'
 ExprUtils = require('mwater-expressions').ExprUtils
 
 DateTimePickerComponent = require './DateTimePickerComponent'
-EnumSetComponent = require './EnumSetComponent'
 TextArrayComponent = require './TextArrayComponent'
 IdLiteralComponent = require './IdLiteralComponent'
 

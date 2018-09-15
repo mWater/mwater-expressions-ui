@@ -4,7 +4,6 @@ React = require 'react'
 R = React.createElement
 
 ExprUtils = require("mwater-expressions").ExprUtils
-EnumSetComponent = require './EnumSetComponent'
 LinkComponent = require './LinkComponent'
 StackedComponent = require './StackedComponent'
 IdLiteralComponent = require './IdLiteralComponent'
