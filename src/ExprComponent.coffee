@@ -34,7 +34,7 @@ module.exports = class ExprComponent extends React.Component
 
   # Opens the editor popup. Only works if expression is blank
   openEditor: =>
-    @refs.exprLink?.showModal()
+    @exprLink?.showModal()
 
   # Clean expression and pass up
   handleChange: (expr) =>
@@ -62,6 +62,6 @@ module.exports = class ExprComponent extends React.Component
       aggrStatuses: @props.aggrStatuses
       placeholder: @props.placeholder
       # If no expression, pass a ref to use so that the expression editor can be opened
-      exprLinkRef: if not expr then "exprLink"
+      exprLinkRef: if not expr then ((c) => @exprLink = c)
       })
 
