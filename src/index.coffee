@@ -5,3 +5,5 @@ exports.InlineExprsEditorComponent = require './InlineExprsEditorComponent'
 exports.ContentEditableComponent = require './ContentEditableComponent'
 exports.IdLiteralComponent = require './IdLiteralComponent'
 exports.PropertyListComponent = require './properties/PropertyListComponent'
+
+require "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css"

@@ -13,7 +13,6 @@
       "pre-commit": "npm test"
     }
   },
-  "style": "src/index.css",
   "author": "mWater",
   "license": "LGPL-3.0",
   "dependencies": {
