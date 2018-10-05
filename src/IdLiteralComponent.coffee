@@ -133,7 +133,6 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     # Execute query
     @props.dataSource.performQuery query, (err, rows) =>
       if err
-        cb(err)
         return 
 
       # Filter null and blank
@@ -151,5 +150,7 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
         placeholder: @props.placeholder or "Select"
         loadOptions: @loadOptions
         isMulti: @props.multi
+        isClearable: true
         isLoading: @state.loading
         onChange: @handleChange
+        noOptionsMessage: () => "Type to search"
