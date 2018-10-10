@@ -23,8 +23,8 @@ $ ->
     # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
     # ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(PropertyListContainerComponent, schema: schema, dataSource: dataSource, table: "entities.water_point"), document.getElementById("main"))
-    ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
-    # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
+    # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+    ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
 
 class PropertyListContainerComponent extends React.Component
@@ -225,19 +225,24 @@ class MockTestComponent extends React.Component
     #   schema: @state.schema
     #   dataSource: @state.dataSource
     #   table: "t1"
-      
 
+    variables = [
+      { id: "varnumber", name: { _base: "en", en: "Variable Number" }, type: "number" }
+      { id: "varnumberexpr", name: { _base: "en", en: "Variable Number Expr" }, type: "number", table: "t1" }
+    ]
+      
     R 'div', style: { padding: 10, marginTop: 0 },
       R(ExprComponent, 
         schema: @state.schema
         dataSource: @state.dataSource
         table: "t1"
+        variables: variables
         # types: ["text", "enum", "boolean", "date", "number", "datetime"]
         # types: ['enumset']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         # types: ['number', 'boolean', 'date', 'datetime', 'text', 'enum']
-        types: ["boolean"]
+        # types: ["boolean"]
         # types: ['enumset']
         value: @state.value
         onChange: @handleValueChange

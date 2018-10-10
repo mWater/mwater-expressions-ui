@@ -13,6 +13,7 @@ module.exports = class ExprLinkComponent extends React.Component
   @propTypes:
     schema: PropTypes.object.isRequired
     dataSource: PropTypes.object.isRequired # Data source to use to get values
+    variables: PropTypes.array.isRequired
 
     table: PropTypes.string.isRequired # Current table
     value: PropTypes.object   # Current expression value
@@ -102,6 +103,7 @@ module.exports = class ExprLinkComponent extends React.Component
           dataSource: @props.dataSource
           table: @props.table
           value: @props.value
+          variables: @props.variables
           types: @props.types
           enumValues: @props.enumValues
           idTable: @props.idTable

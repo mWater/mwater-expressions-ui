@@ -13,12 +13,13 @@ ExprLinkComponent = require './ExprLinkComponent'
 
 # Builds a react element for an expression
 module.exports = class ExprElementBuilder 
-  constructor: (schema, dataSource, locale) ->
+  constructor: (schema, dataSource, locale, variables = []) ->
     @schema = schema
     @dataSource = dataSource
     @locale = locale
+    @variables = variables
 
-    @exprUtils = new ExprUtils(@schema)
+    @exprUtils = new ExprUtils(@schema, variables)
 
   # Build the tree for an expression
   # Options include:
@@ -52,6 +53,7 @@ module.exports = class ExprElementBuilder
       elem = R ExprLinkComponent,
         schema: @schema
         dataSource: @dataSource
+        variables: @variables
         table: table
         value: expr
         onChange: onChange
@@ -82,6 +84,8 @@ module.exports = class ExprElementBuilder
       elem = @buildScore(expr, onChange, { key: options.key })
     else if expr.type == "build enumset"
       elem = @buildBuildEnumset(expr, onChange, { key: options.key, enumValues: options.enumValues })
+    else if expr.type == "variable"
+      elem = @buildVariable(expr, onChange, { key: options.key })
     else
       throw new Error("Unhandled expression type #{expr.type}")
 
@@ -137,6 +141,13 @@ module.exports = class ExprElementBuilder
 
   # Build an id component. Displays table name. Only remove option
   buildId: (expr, onChange, options = {}) ->
+    return R(LinkComponent, 
+      dropdownItems: [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
+      onDropdownItemClicked: => onChange(null),
+      @exprUtils.summarizeExpr(expr)) 
+
+  # Build a variable component. Displays variable name. Only remove option
+  buildVariable: (expr, onChange, options = {}) ->
     return R(LinkComponent, 
       dropdownItems: [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
       onDropdownItemClicked: => onChange(null),

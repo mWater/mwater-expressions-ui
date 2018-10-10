@@ -15,6 +15,7 @@ module.exports = class FilterExprComponent extends React.Component
   @propTypes:
     schema: PropTypes.object.isRequired
     dataSource: PropTypes.object.isRequired # Data source to use to get values
+    variables: PropTypes.array
 
     table: PropTypes.string.isRequired # Current table
 
@@ -27,6 +28,7 @@ module.exports = class FilterExprComponent extends React.Component
 
   @defaultProps:
     addLabel: "+ Add Filter"
+    variables: []
 
   constructor: (props) ->
     super(props)
@@ -110,6 +112,7 @@ module.exports = class FilterExprComponent extends React.Component
         ref: (c) => @newExpr = c
         schema: @props.schema
         dataSource: @props.dataSource
+        variables: @props.variables
         table: @props.table
         onChange: @handleChange
     else

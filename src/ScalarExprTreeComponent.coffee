@@ -10,7 +10,7 @@ module.exports = class ScalarExprTreeComponent extends React.Component
     tree: PropTypes.array.isRequired    # Tree from ScalarExprTreeBuilder
     onChange: PropTypes.func.isRequired # Called with newly selected value
     height: PropTypes.number            # Render height of the component
-    filter: PropTypes.text              # Optional string filter 
+    filter: PropTypes.string            # Optional string filter 
 
   render: ->
     R 'div', style: { overflowY: (if @props.height then "auto"), height: @props.height },
@@ -25,7 +25,7 @@ class ScalarExprTreeTreeComponent extends React.Component
     tree: PropTypes.array.isRequired    # Tree from ScalarExprTreeBuilder
     onChange: PropTypes.func.isRequired # Called with newly selected value
     prefix: PropTypes.string            # String to prefix names with
-    filter: PropTypes.text              # Optional string filter 
+    filter: PropTypes.string            # Optional string filter 
 
   render: ->
     elems = []

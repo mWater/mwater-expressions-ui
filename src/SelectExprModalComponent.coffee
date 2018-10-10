@@ -10,6 +10,7 @@ TabbedComponent = require('react-library/lib/TabbedComponent')
 SelectFieldExprComponent = require './SelectFieldExprComponent'
 SelectFormulaExprComponent = require './SelectFormulaExprComponent'
 SelectLiteralExprComponent = require './SelectLiteralExprComponent'
+SelectVariableExprComponent = require './SelectVariableExprComponent'
 
 module.exports = class SelectExprModalComponent extends React.Component
   @propTypes:
@@ -18,6 +19,7 @@ module.exports = class SelectExprModalComponent extends React.Component
 
     schema: PropTypes.object.isRequired
     dataSource: PropTypes.object.isRequired # Data source to use to get values
+    variables: PropTypes.array.isRequired
 
     table: PropTypes.string.isRequired # Current table
     value: PropTypes.object   # Current expression value
@@ -53,6 +55,7 @@ module.exports = class SelectExprModalComponent extends React.Component
         elem: R SelectFieldExprComponent,
           schema: @props.schema
           dataSource: @props.dataSource
+          variables: @props.variables
           onChange: @props.onSelect
           table: @props.table
           types: @props.types
@@ -89,6 +92,19 @@ module.exports = class SelectExprModalComponent extends React.Component
           enumValues: @props.enumValues
           idTable: @props.idTable
           refExpr: @props.refExpr
+      })
+
+    if _.find(@props.variables, (v) => !v.table) and ("literal" in @props.aggrStatuses)
+      tabs.push({
+        id: "variables"
+        label: ["Variables"]
+        elem: R SelectVariableExprComponent,
+          value: @props.value
+          variables: @props.variables
+          onChange: @props.onSelect
+          types: @props.types
+          enumValues: @props.enumValues
+          idTable: @props.idTable
       })
 
     R 'div', null,
