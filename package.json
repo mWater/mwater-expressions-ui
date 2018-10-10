@@ -32,7 +32,7 @@
     "react-library": "github:mwater/react-library#react16",
     "react-motion": "^0.3.1",
     "react-onclickout": "^2.0.4",
-    "react-select": "^2.0.0",
+    "react-select": "github:mWater/react-select#fix_2682_built",
     "update-object": "^1.0.0",
     "uuid": "^3.0.1"
   },
