@@ -55,7 +55,7 @@ module.exports = class FilterExprComponent extends React.Component
 
   # Cleans an expression
   cleanExpr: (expr) ->
-    return new ExprCleaner(@props.schema).cleanExpr(expr, {
+    return new ExprCleaner(@props.schema, @props.variables).cleanExpr(expr, {
       table: @props.table
       types: ["boolean"]
     })
