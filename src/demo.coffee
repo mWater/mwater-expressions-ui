@@ -170,7 +170,7 @@ class MockTestComponent extends React.Component
 
   componentWillMount: ->
     schema = new Schema()
-    schema = schema.addTable({ id: "t1", name: { en: "T1" }, primaryKey: "primary", contents: [
+    schema = schema.addTable({ id: "t1", name: { en: "T1" }, primaryKey: "primary", label: "text", contents: [
       { id: "text", name: { en: "Text" }, desc: { en: "Text is a bunch of characters" }, type: "text" }
       { id: "number", name: { en: "Number" }, type: "number" }
       { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
@@ -229,16 +229,17 @@ class MockTestComponent extends React.Component
     variables = [
       { id: "varnumber", name: { _base: "en", en: "Variable Number" }, type: "number" }
       { id: "varnumberexpr", name: { _base: "en", en: "Variable Number Expr" }, type: "number", table: "t1" }
+      { id: "vart1id", name: { _base: "en", en: "Variable T1" }, type: "id", idTable: "t1" }
     ]
       
     R 'div', style: { padding: 10, marginTop: 0 },
       R(ExprComponent, 
         schema: @state.schema
         dataSource: @state.dataSource
-        table: "t1"
+        table: "t2"
         variables: variables
         # types: ["text", "enum", "boolean", "date", "number", "datetime"]
-        # types: ['enumset']
+        types: ['boolean']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         # types: ['number', 'boolean', 'date', 'datetime', 'text', 'enum']
@@ -246,7 +247,7 @@ class MockTestComponent extends React.Component
         # types: ['enumset']
         value: @state.value
         onChange: @handleValueChange
-        aggrStatuses: ["literal", "aggregate", "individual"]
+        aggrStatuses: ["literal", "individual"]
       )
       R('br')
       R('br')

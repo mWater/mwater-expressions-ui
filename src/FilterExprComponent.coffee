@@ -84,7 +84,7 @@ module.exports = class FilterExprComponent extends React.Component
         R StackedComponent, 
           joinLabel: "and"
           items: _.map expr.exprs, (subexpr, i) =>
-            elem: new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(subexpr, @props.table, @handleAndChange.bind(null, i), { 
+            elem: new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale, @props.variables).build(subexpr, @props.table, @handleAndChange.bind(null, i), { 
               types: ["boolean"]
               preferLiteral: false
               suppressWrapOps: ['and']   # Don't allow wrapping in and since this is an and control
@@ -99,7 +99,7 @@ module.exports = class FilterExprComponent extends React.Component
       return R 'div', null,
         R RemovableComponent, 
           onRemove: @handleRemove,
-          new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(expr, @props.table, @handleChange, { 
+          new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale, @props.variables).build(expr, @props.table, @handleChange, { 
             types: ["boolean"]
             preferLiteral: false
             suppressWrapOps: ['and']  # Don't allow wrapping in and since this is an and control
