@@ -76,7 +76,7 @@ declare module 'mwater-expressions-ui' {
     /** Optional extra filter. Put "main" as tableAlias. JsonQL   */
     filter?: JsonQL
 
-    /** Optional label expression to use. Will fallback to label column or primary key */
-    labelExpr?: Expr
+    /** Optional label expression to use. Will fallback to label column or primary key. Put "main" as tableAlias. JsonQL */
+    labelExpr?: JsonQL
   }> {}
 }
