@@ -21,7 +21,7 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     orderBy: PropTypes.array   # Optional extra orderings. Put "main" as tableAlias. JsonQL
     multi: PropTypes.bool      # Allow multiple values (id[] type)
     filter: PropTypes.object   # Optional extra filter. Put "main" as tableAlias. JsonQL
-    labelExpr: PropTypes.object # Optional label expression to use. Defaults to label column or PK if none
+    labelExpr: PropTypes.object # Optional label expression to use. Defaults to label column or PK if none. JsonQL
 
   focus: ->
     @select.focus()
@@ -82,9 +82,10 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
       @props.onChange(value?.value)
 
   getLabelExpr: ->
-    # Primary key column
     if @props.labelExpr
       return @props.labelExpr
+
+    table = props.schema.getTable(@props.idTable)
     if table.label
       return { type: "field", tableAlias: "main", column: table.label }
 
