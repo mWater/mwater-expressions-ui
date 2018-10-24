@@ -85,7 +85,7 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     if @props.labelExpr
       return @props.labelExpr
 
-    table = props.schema.getTable(@props.idTable)
+    table = @props.schema.getTable(@props.idTable)
     if table.label
       return { type: "field", tableAlias: "main", column: table.label }
 
