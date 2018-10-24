@@ -21,6 +21,7 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     orderBy: PropTypes.array   # Optional extra orderings. Put "main" as tableAlias. JsonQL
     multi: PropTypes.bool      # Allow multiple values (id[] type)
     filter: PropTypes.object   # Optional extra filter. Put "main" as tableAlias. JsonQL
+    labelExpr: PropTypes.object # Optional label expression to use. Defaults to label column or PK if none
 
   focus: ->
     @select.focus()
@@ -40,17 +41,14 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
 
     # Primary key column
     idColumn = { type: "field", tableAlias: "main", column: table.primaryKey }
-    if table.label
-      labelColumn = { type: "field", tableAlias: "main", column: table.label }
-    else # Use primary key. Ugly, but what else to do?
-      labelColumn = idColumn
+    labelExpr = @getLabelExpr()
 
     # select <label column> as value from <table> where <label column> ~* 'input%' limit 50
     query = {
       type: "query"
       selects: [
         { type: "select", expr: idColumn, alias: "value" }
-        { type: "select", expr: labelColumn, alias: "label" }
+        { type: "select", expr: labelExpr, alias: "label" }
       ]
       from: { type: "table", table: @props.idTable, alias: "main" }
       where: {
@@ -83,6 +81,16 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     else
       @props.onChange(value?.value)
 
+  getLabelExpr: ->
+    # Primary key column
+    if @props.labelExpr
+      return @props.labelExpr
+    if table.label
+      return { type: "field", tableAlias: "main", column: table.label }
+
+    # Use primary key. Ugly, but what else to do?
+    return { type: "field", tableAlias: "main", column: table.primaryKey }
+
   loadOptions: (input, cb) =>
     # If no input
     if not input
@@ -94,24 +102,21 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
 
     # Primary key column
     idColumn = { type: "field", tableAlias: "main", column: table.primaryKey }
-    if table.label
-      labelColumn = { type: "field", tableAlias: "main", column: table.label }
-    else # Use primary key. Ugly, but what else to do?
-      labelColumn = idColumn
+    labelExpr = @getLabelExpr()
 
     # select <label column> as value from <table> where <label column> ~* 'input%' limit 50
     query = {
       type: "query"
       selects: [
         { type: "select", expr: idColumn, alias: "value" }
-        { type: "select", expr: labelColumn, alias: "label" }
+        { type: "select", expr: labelExpr, alias: "label" }
       ]
       from: { type: "table", table: @props.idTable, alias: "main" }
       where: {
         type: "op"
         op: "like"
         exprs: [
-          { type: "op", op: "lower", exprs: [labelColumn] }
+          { type: "op", op: "lower", exprs: [labelExpr] }
           input.toLowerCase() + "%"
         ]
       }
