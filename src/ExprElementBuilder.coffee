@@ -12,7 +12,7 @@ BuildEnumsetExprComponent = require './BuildEnumsetExprComponent'
 ExprLinkComponent = require './ExprLinkComponent'
 
 # Builds a react element for an expression
-module.exports = class ExprElementBuilder 
+module.exports = class ExprElementBuilder
   constructor: (schema, dataSource, locale, variables = []) ->
     @schema = schema
     @dataSource = dataSource
@@ -31,12 +31,12 @@ module.exports = class ExprElementBuilder
   #   preferLiteral: to preferentially choose literal expressions (used for RHS of expressions)
   #   suppressWrapOps: pass ops to *not* offer to wrap in
   #   includeAggr: true to include count (id) item at root level in expression selector
-  #   aggrStatuses: statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
+  #   aggrStatuses: statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] or ["literal"] if not table
   #   placeholder: empty placeholder
   #   exprLinkRef: ref to put on expr link component
   build: (expr, table, onChange, options = {}) ->
     _.defaults(options, {
-      aggrStatuses: ["individual", "literal"]
+      aggrStatuses: if table then ["individual", "literal"] else ["literal"]
       })
 
     # True if a boolean expression is required

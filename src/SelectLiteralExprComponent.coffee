@@ -10,6 +10,7 @@ ExprUtils = require('mwater-expressions').ExprUtils
 DateTimePickerComponent = require './DateTimePickerComponent'
 TextArrayComponent = require './TextArrayComponent'
 IdLiteralComponent = require './IdLiteralComponent'
+Toggle = require('react-library/lib/bootstrap').Toggle
 
 module.exports = class SelectLiteralExprComponent extends React.Component
   @propTypes:
@@ -21,7 +22,6 @@ module.exports = class SelectLiteralExprComponent extends React.Component
     dataSource: PropTypes.object.isRequired
 
     # Props to narrow down choices
-    table: PropTypes.string.isRequired # Current table
     types: PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
     enumValues: PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
     idTable: PropTypes.string # If specified the table from which id-type expressions must come
@@ -45,7 +45,7 @@ module.exports = class SelectLiteralExprComponent extends React.Component
     @inputComp?.focus()
 
   handleChange: (value) =>
-    @setState(value: value, changed: true)
+    @setState(value: value, changed: true, inputText: null)
 
   handleDateSelected: (date) =>
     if date
@@ -102,6 +102,14 @@ module.exports = class SelectLiteralExprComponent extends React.Component
     # Get current expression type
     exprUtils = new ExprUtils(@props.schema)
     exprType = exprUtils.getExprType(expr)
+
+    # If boolean, use Toggle
+    if exprType == "boolean" or _.isEqual(@props.types, ["boolean"])
+      return R(Toggle, 
+        value: expr?.value
+        allowReset: true
+        options: [{ value: false, label: "False" }, { value: true, label: "True" }]
+        onChange: (value) => @handleChange(if value? then { type: "literal", valueType: "boolean", value: value } else null))
 
     # If text[], enumset or id literal, use special component
     if exprType == "text[]" or _.isEqual(@props.types, ["text[]"])

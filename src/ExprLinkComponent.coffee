@@ -15,7 +15,7 @@ module.exports = class ExprLinkComponent extends React.Component
     dataSource: PropTypes.object.isRequired # Data source to use to get values
     variables: PropTypes.array.isRequired
 
-    table: PropTypes.string.isRequired # Current table
+    table: PropTypes.string   # Current table
     value: PropTypes.object   # Current expression value
     onChange: PropTypes.func  # Called with new expression
 

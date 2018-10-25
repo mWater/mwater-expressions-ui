@@ -14,7 +14,7 @@ module.exports = class ExprComponent extends React.Component
     schema: PropTypes.object.isRequired
     dataSource: PropTypes.object.isRequired # Data source to use to get values
 
-    table: PropTypes.string.isRequired # Current table
+    table: PropTypes.string   # Current table. null for literal only
     value: PropTypes.object   # Current expression value
     onChange: PropTypes.func  # Called with new expression
 
@@ -25,7 +25,7 @@ module.exports = class ExprComponent extends React.Component
     idTable: PropTypes.string # If specified the table from which id-type expressions must come
 
     preferLiteral: PropTypes.bool # True to prefer literal expressions
-    aggrStatuses: PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
+    aggrStatuses: PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] or ["literal"] for no table
     placeholder: PropTypes.string # placeholder for empty value
 
   @defaultProps:
@@ -49,7 +49,7 @@ module.exports = class ExprComponent extends React.Component
       types: @props.types
       enumValueIds: if @props.enumValues then _.pluck(@props.enumValues, "id")
       idTable: @props.idTable
-      aggrStatuses: @props.aggrStatuses
+      aggrStatuses: if not @props.table then ["literal"] else @props.aggrStatuses
     })
 
   render: ->
@@ -61,7 +61,7 @@ module.exports = class ExprComponent extends React.Component
       preferLiteral: @props.preferLiteral
       idTable: @props.idTable
       includeAggr: "aggregate" in @props.aggrStatuses
-      aggrStatuses: @props.aggrStatuses
+      aggrStatuses: if not @props.table then ["literal"] else @props.aggrStatuses
       placeholder: @props.placeholder
       # If no expression, pass a ref to use so that the expression editor can be opened
       exprLinkRef: if not expr then ((c) => @exprLink = c)

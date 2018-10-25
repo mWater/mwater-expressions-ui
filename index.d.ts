@@ -18,7 +18,7 @@ declare module 'mwater-expressions-ui' {
   class ExprComponent extends React.Component<{
     schema: Schema
     dataSource: DataSource
-    table: string
+    table: string | null
     value: Expr
     onChange: (expr: Expr) => void
     
