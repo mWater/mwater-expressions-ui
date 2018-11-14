@@ -6,6 +6,7 @@
   "repository": "git@github.com:mWater/mwater-expressions-ui.git",
   "main": "lib/index.js",
   "types": "index.d.ts",
+  "style": "lib/index.css",
   "scripts": {
     "test": "mocha --require coffeescript/register --recursive \"test/**/*Tests.coffee\""
   },
@@ -28,7 +29,7 @@
     "react": "^16.5.2",
     "react-bootstrap-daterangepicker": "^1.0.3",
     "react-dom": "^16.5.2",
-    "react-library": "github:mwater/react-library#react16",
+    "react-library": "github:mWater/react-library#react16",
     "react-motion": "^0.3.1",
     "react-onclickout": "^2.0.4",
     "react-select": "github:mWater/react-select#fix_2682_built",
