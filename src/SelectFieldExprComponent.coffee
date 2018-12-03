@@ -2,7 +2,6 @@ PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
-H = React.DOM
 
 ScalarExprTreeComponent = require './ScalarExprTreeComponent'
 ScalarExprTreeBuilder = require './ScalarExprTreeBuilder'
@@ -15,6 +14,7 @@ module.exports = class SelectFieldExprComponent extends React.Component
 
     schema: PropTypes.object.isRequired
     dataSource: PropTypes.object.isRequired # Data source to use to get values
+    variables: PropTypes.array.isRequired
 
     # Props to narrow down choices
     table: PropTypes.string.isRequired # Current table
@@ -113,7 +113,8 @@ module.exports = class SelectFieldExprComponent extends React.Component
       locale: @context.locale
       isScalarExprTreeSectionMatch: @context.isScalarExprTreeSectionMatch
       isScalarExprTreeSectionInitiallyOpen: @context.isScalarExprTreeSectionInitiallyOpen
-      })
+      variables: @props.variables
+    })
     
     tree = treeBuilder.getTree({
       table: @props.table
@@ -122,8 +123,8 @@ module.exports = class SelectFieldExprComponent extends React.Component
       includeAggr: "aggregate" in @props.aggrStatuses, filter: @state.searchText
     })
 
-    H.div null,
-      H.input 
+    R 'div', null,
+      R 'input', 
         ref: (c) => @searchComp = c
         type: "text"
         placeholder: "Search Fields..."
@@ -132,7 +133,7 @@ module.exports = class SelectFieldExprComponent extends React.Component
         onChange: @handleSearchTextChange
 
       # Create tree component with value of table and path
-      H.div style: { paddingTop: 10, paddingBottom: 200 },
+      R 'div', style: { paddingTop: 10, paddingBottom: 200 },
         R ScalarExprTreeComponent, 
           tree: tree,
           onChange: @handleTreeChange

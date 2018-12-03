@@ -1,6 +1,5 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 ExprComponent = require './ExprComponent'
 ExprUtils = require("mwater-expressions").ExprUtils
@@ -25,11 +24,11 @@ module.exports = class InlineExprsEditorComponent extends React.Component
   @defaultProps:
     exprs: []
 
-  handleInsertClick: => @refs.insertModal.open()
+  handleInsertClick: => @insertModal.open()
 
   handleInsert: (expr) =>
     if expr
-      @refs.contentEditable.pasteHTML(@createExprHtml(expr))
+      @contentEditable.pasteHTML(@createExprHtml(expr))
 
   handleUpdate: (expr, index) =>
     exprs = @props.exprs.slice()
@@ -41,7 +40,7 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     index = ev.target.dataset["index"]
     if index and index.match(/^\d+$/)
       index = parseInt(index)
-      @refs.updateModal.open(@props.exprs[index], index)
+      @updateModal.open(@props.exprs[index], index)
 
   # Handle a change to the content editable element
   handleChange: (elem) => 
@@ -156,25 +155,25 @@ module.exports = class InlineExprsEditorComponent extends React.Component
     return html
 
   renderInsertModal: ->
-    R ExprInsertModalComponent, ref: "insertModal", schema: @props.schema, dataSource: @props.dataSource, table: @props.table, onInsert: @handleInsert
+    R ExprInsertModalComponent, ref: ((c) => @insertModal = c), schema: @props.schema, dataSource: @props.dataSource, table: @props.table, onInsert: @handleInsert
 
   renderUpdateModal: ->
-    R ExprUpdateModalComponent, ref: "updateModal", schema: @props.schema, dataSource: @props.dataSource, table: @props.table, onUpdate: @handleUpdate
+    R ExprUpdateModalComponent, ref: ((c) => @updateModal = c), schema: @props.schema, dataSource: @props.dataSource, table: @props.table, onUpdate: @handleUpdate
 
   render: ->
-    H.div style: { position: "relative" },
+    R 'div', style: { position: "relative" },
       @renderInsertModal()
       @renderUpdateModal()
-      H.div style: { paddingRight: 20 },
+      R 'div', style: { paddingRight: 20 },
         R ContentEditableComponent, 
-          ref: "contentEditable", 
+          ref: (c) => @contentEditable = c 
           html: @createContentEditableHtml(), 
           style: { whiteSpace: 'pre-wrap', padding: "6px 12px", border: "1px solid #ccc", borderRadius: 4, minHeight: (if @props.multiline and @props.rows then "#{@props.rows * 2.5}ex") }
           onChange: @handleChange
           onClick: @handleClick
-      H.a onClick: @handleInsertClick, style: { cursor: "pointer", position: "absolute", right: 5, top: 8, fontStyle: "italic", color: "#337ab7" },
+      R 'a', onClick: @handleInsertClick, style: { cursor: "pointer", position: "absolute", right: 5, top: 8, fontStyle: "italic", color: "#337ab7" },
         "f"
-        H.sub null, "x"
+        R 'sub', null, "x"
 
 # Modal that displays an expression builder
 class ExprInsertModalComponent extends React.Component
@@ -209,7 +208,7 @@ class ExprInsertModalComponent extends React.Component
         )
       onCancel: => @setState(open: false)
       title: "Insert Expression",
-        H.div style: { paddingBottom: 200 },
+        R 'div', style: { paddingBottom: 200 },
           R ExprComponent, 
             schema: @props.schema
             dataSource: @props.dataSource
@@ -252,7 +251,7 @@ class ExprUpdateModalComponent extends React.Component
         )
       onCancel: => @setState(open: false)
       title: "Update Expression",
-        H.div style: { paddingBottom: 200 },
+        R 'div', style: { paddingBottom: 200 },
           R ExprComponent, 
             schema: @props.schema
             dataSource: @props.dataSource

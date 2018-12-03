@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 React = require 'react'
 R = React.createElement
-H = React.DOM
 _ = require 'lodash'
 
 ui = require 'react-library/lib/bootstrap'
@@ -22,5 +21,5 @@ module.exports = class IdFieldComponent extends React.Component
     
   render: ->
     R ui.FormGroup, label: "ID", hasWarnings: not @isValid(@props.value),
-      H.input type: "text", className: "form-control", value: @props.value or "", onChange: @handleChange
-      H.p className: "help-block", "Lowercase, numbers and underscores"
+      R 'input', type: "text", className: "form-control", value: @props.value or "", onChange: @handleChange
+      R 'p', className: "help-block", "Lowercase, numbers and underscores"

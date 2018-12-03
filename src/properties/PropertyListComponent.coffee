@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 React = require 'react'
 R = React.createElement
-H = React.DOM
 _ = require 'lodash'
 uuid = require 'uuid'
 
@@ -88,20 +87,20 @@ class PropertyListComponent extends React.Component
     @setState(addingItem: section)
     
   renderControls: (allPropertyIds) ->
-    H.div className: "btn-group pl-controls",
+    R 'div', className: "btn-group pl-controls",
       @renderAddingModal(allPropertyIds)
 
-      H.button key: "default_add", type: "button", className: "btn btn-xs btn-default dropdown-toggle", "data-toggle": "dropdown", 
-        H.span className: "glyphicon glyphicon-plus"
+      R 'button', key: "default_add", type: "button", className: "btn btn-xs btn-default dropdown-toggle", "data-toggle": "dropdown", 
+        R 'span', className: "glyphicon glyphicon-plus"
         " "          
         "Add"
         " "
-        H.span className: "caret"
+        R 'span', className: "caret"
 
-      H.ul className: "dropdown-menu text-left", role: "menu",
-        H.li(key: "property", H.a(onClick: @handleNewProperty, "Property"))
+      R 'ul', className: "dropdown-menu text-left", role: "menu",
+        R('li', key: "property", R('a', onClick: @handleNewProperty, "Property"))
         if _.includes(@props.features, "section")
-          H.li(key: "section", H.a(onClick: @handleNewSection, "Section"))
+          R('li', key: "section", R('a', onClick: @handleNewSection, "Section"))
     
   renderAddingModal: (allPropertyIds) ->
     if not @state.addingItem
@@ -140,7 +139,7 @@ class PropertyListComponent extends React.Component
             forbiddenPropertyIds: allPropertyIds
     
   renderProperty: (allPropertyIds, item, index, connectDragSource, connectDragPreview, connectDropTarget) =>
-    elem = H.div key: index,
+    elem = R 'div', key: index,
       R PropertyComponent, 
         property: item
         schema: @props.schema
@@ -164,13 +163,13 @@ class PropertyListComponent extends React.Component
     # Compute list of all property ids, recursively
     allPropertyIds = _.pluck(flattenProperties(@props.properties), "id")
 
-    H.div className: 'pl-editor-container',
+    R 'div', className: 'pl-editor-container',
       R ReorderableListComponent,
         items: @props.properties
         onReorder: (list) => @props.onChange(list)
         renderItem: @renderProperty.bind(this, allPropertyIds)
         getItemId: (item) => item.id
-        element: H.div className: 'pl-container'
+        element: R 'div', className: 'pl-container'
       @renderControls(allPropertyIds)
 
 class PropertyComponent extends React.Component
@@ -218,23 +217,23 @@ class PropertyComponent extends React.Component
     @setState(editing: true, editorProperty: @props.property)
   
   renderControls: ->
-    H.div className: "pl-item-controls",
-      H.a className: "pl-item-control", onClick: @handleEdit, "Edit"
-      H.a className: "pl-item-control", onClick: (() => @props.onCopy(@props.listId, @props.property.id)), "Copy"
-      H.a className: "pl-item-control", onClick: (() => @props.onCut(@props.listId, @props.property.id)), "Cut"
+    R 'div', className: "pl-item-controls",
+      R 'a', className: "pl-item-control", onClick: @handleEdit, "Edit"
+      R 'a', className: "pl-item-control", onClick: (() => @props.onCopy(@props.listId, @props.property.id)), "Copy"
+      R 'a', className: "pl-item-control", onClick: (() => @props.onCut(@props.listId, @props.property.id)), "Cut"
       if @context.clipboard
-        H.a className: "pl-item-control", onClick: (() => @props.onPaste(@props.listId, @props.property.id)), "Paste"
+        R 'a', className: "pl-item-control", onClick: (() => @props.onPaste(@props.listId, @props.property.id)), "Paste"
       
       if @context.clipboard and @props.property.type == "section"  
-        H.a className: "pl-item-control", onClick: (() => @props.onPasteInto(@props.listId, @props.property.id)), "Paste Into"
+        R 'a', className: "pl-item-control", onClick: (() => @props.onPasteInto(@props.listId, @props.property.id)), "Paste Into"
       
-      H.a className: "pl-item-control", onClick: (() => @props.onDelete()), "Delete"
+      R 'a', className: "pl-item-control", onClick: (() => @props.onDelete()), "Delete"
   
   renderEnumValues: (values) =>
     names = _.map values, (value) ->
       value.name[value._base or "en"]
       
-    H.span null, "#{names.join(" / ")}"
+    R 'span', null, "#{names.join(" / ")}"
 
   renderTable: (table) ->
     return R LocalizedStringComponent, value: @props.schema.getTable(table)?.name
@@ -243,7 +242,7 @@ class PropertyComponent extends React.Component
     classNames = ["pl-property"]
     if @props.property.deprecated 
       classNames.push("deprecated")
-    H.div className: "#{ classNames.join(" ")} pl-item-type-#{@props.property.type}",
+    R 'div', className: "#{ classNames.join(" ")} pl-item-type-#{@props.property.type}",
       if @state.editing
         R ActionCancelModalComponent, { 
           size: "large"
@@ -277,35 +276,35 @@ class PropertyComponent extends React.Component
                 forbiddenPropertyIds: _.without(@props.allPropertyIds, @props.property.id)
       @renderControls()  
       if @props.property.deprecated
-          H.div className: "pl-item-deprecated-overlay", ""
-      H.div className: "pl-item", onDoubleClick: @handleEdit, 
-        H.div className: "pl-item-detail",
-          H.span className: "pl-item-detail-indicator",
-            H.i className: "#{PropertyComponent.iconMap[@props.property.type]} fa-fw"
-          H.div null,
-            H.div className: "pl-item-detail-name",
+          R 'div', className: "pl-item-deprecated-overlay", ""
+      R 'div', className: "pl-item", onDoubleClick: @handleEdit, 
+        R 'div', className: "pl-item-detail",
+          R 'span', className: "pl-item-detail-indicator",
+            R 'i', className: "#{PropertyComponent.iconMap[@props.property.type]} fa-fw"
+          R 'div', null,
+            R 'div', className: "pl-item-detail-name",
               if _.includes(@props.features, "idField") and @props.property.id
-                H.small null, "[#{@props.property.id}] "
+                R 'small', null, "[#{@props.property.id}] "
               R LocalizedStringComponent, value: @props.property.name
               if @props.property.expr
-                H.span className: "text-muted",
+                R 'span', className: "text-muted",
                   " "
-                  H.span(className: "fa fa-calculator")
+                  R('span', className: "fa fa-calculator")
             if @props.property.desc
-              H.div className: "pl-item-detail-description",
+              R 'div', className: "pl-item-detail-description",
                 R LocalizedStringComponent, value: @props.property.desc
             if @props.property.sql
-              H.div className: "pl-item-detail-sql text-muted", @props.property.sql
+              R 'div', className: "pl-item-detail-sql text-muted", @props.property.sql
             if @props.property.type in ["enum", "enumset"] and @props.property.enumValues.length > 0
-              H.div className: "pl-item-detail-enum text-muted", @renderEnumValues(@props.property.enumValues)
+              R 'div', className: "pl-item-detail-enum text-muted", @renderEnumValues(@props.property.enumValues)
             if _.includes(@props.features, "table") and @props.property.table
-              H.div className: "pl-item-detail-table text-muted", 
+              R 'div', className: "pl-item-detail-table text-muted", 
                 @renderTable(@props.property.table)
             if @props.property.roles and @props.createRoleDisplayElem
               @props.createRoleDisplayElem(@props.property.roles)
 
       if @props.property.type == "section"
-        H.div className: "pl-item-section",
+        R 'div', className: "pl-item-section",
           R PropertyListComponent, 
             properties: @props.property.contents or []
             features: @props.features

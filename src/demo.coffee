@@ -1,8 +1,8 @@
 PropTypes = require('prop-types')
 React = require 'react'
+console.log(React)
 ReactDOM = require 'react-dom'
 R = React.createElement
-H = React.DOM
 Schema = require("mwater-expressions").Schema
 
 ExprComponent = require './ExprComponent'
@@ -39,9 +39,9 @@ class PropertyListContainerComponent extends React.Component
       properties: properties
     }
   render: ->
-    H.div className: "row",
-      H.div className: "col-md-6",
-        H.div style: {padding: 20, border: "1px solid #aeaeae", width: 600},
+    R 'div', className: "row",
+      R 'div', className: "col-md-6",
+        R 'div', style: {padding: 20, border: "1px solid #aeaeae", width: 600},
           R PropertyListComponent, 
             properties: @state.properties
             schema: @props.schema
@@ -50,11 +50,11 @@ class PropertyListContainerComponent extends React.Component
             tableIds: ["entities.water_point", "entities.community"]
             features: ["idField", "sql", "joinType", "idType", "expr", "table"]
             onChange: (properties) => @setState(properties: properties) 
-            createRoleDisplayElem: (roles) => H.span null, JSON.stringify(roles)
+            createRoleDisplayElem: (roles) => R 'span', null, JSON.stringify(roles)
             createRoleEditElem: (roles, onChange) => 
-              H.input className: "form-control", value: JSON.stringify(roles), onChange: (ev) -> onChange(JSON.parse(ev.target.value))
-      H.div className: "col-md-6",
-        H.pre null, JSON.stringify(@state.properties, null, 2)
+              R 'input', className: "form-control", value: JSON.stringify(roles), onChange: (ev) -> onChange(JSON.parse(ev.target.value))
+      R 'div', className: "col-md-6",
+        R 'pre', null, JSON.stringify(@state.properties, null, 2)
           
 
 class ContentEditableTestComponent extends React.Component
@@ -66,20 +66,20 @@ class ContentEditableTestComponent extends React.Component
     }
 
   render: ->
-    H.div null,
-      H.div null, "Sdfsdfsd"
-      H.div null, "Sdfsdfsd"
+    R 'div', null,
+      R 'div', null, "Sdfsdfsd"
+      R 'div', null, "Sdfsdfsd"
       R ContentEditableComponent,
-        ref: "editor"
+        ref: (c) => @editor = c
         html: @state.html
         onChange: (elem) => 
           console.log elem
           @setState(html: elem.innerHTML)
-      H.div null, "Sdfsdfsd"
-      H.button 
+      R 'div', null, "Sdfsdfsd"
+      R 'button', 
         onClick: => 
           console.log "click!"
-          @refs.editor.pasteHTML("<b>" + @refs.editor.getSelectedHTML() + "</b>")
+          @editor.pasteHTML("<b>" + @editor.getSelectedHTML() + "</b>")
         type: "button",
         "Paste"
   
@@ -141,7 +141,7 @@ class MockTestInlineExprsEditorComponent extends React.Component
     if not @state.schema
       return null
 
-    H.div style: { padding: 10 },
+    R 'div', style: { padding: 10 },
       R(InlineExprsEditorComponent, 
         schema: @state.schema
         dataSource: @state.dataSource
@@ -154,9 +154,9 @@ class MockTestInlineExprsEditorComponent extends React.Component
         multiline: true
         rows: 5
       )
-      # H.br()
-      # H.br()
-      # H.pre null, JSON.stringify(@state.value, null, 2)
+      # R('br')
+      # R('br')
+      # R 'pre', null, JSON.stringify(@state.value, null, 2)
 
 
 class MockTestComponent extends React.Component
@@ -170,7 +170,7 @@ class MockTestComponent extends React.Component
 
   componentWillMount: ->
     schema = new Schema()
-    schema = schema.addTable({ id: "t1", name: { en: "T1" }, primaryKey: "primary", contents: [
+    schema = schema.addTable({ id: "t1", name: { en: "T1" }, primaryKey: "primary", label: "text", contents: [
       { id: "text", name: { en: "Text" }, desc: { en: "Text is a bunch of characters" }, type: "text" }
       { id: "number", name: { en: "Number" }, type: "number" }
       { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
@@ -225,26 +225,33 @@ class MockTestComponent extends React.Component
     #   schema: @state.schema
     #   dataSource: @state.dataSource
     #   table: "t1"
-      
 
-    H.div style: { padding: 10, marginTop: 0 },
+    variables = [
+      { id: "varnumber", name: { _base: "en", en: "Variable Number" }, type: "number" }
+      { id: "varnumberexpr", name: { _base: "en", en: "Variable Number Expr" }, type: "number", table: "t1" }
+      { id: "vart1id", name: { _base: "en", en: "Variable T1" }, type: "id", idTable: "t1" }
+    ]
+      
+    R 'div', style: { padding: 10, marginTop: 0 },
       R(ExprComponent, 
         schema: @state.schema
         dataSource: @state.dataSource
-        table: "t1"
+        table: "t2"
+        variables: variables
         # types: ["text", "enum", "boolean", "date", "number", "datetime"]
-        # types: ['enumset']
+        types: ['boolean']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
-        types: ['number', 'boolean', 'date', 'datetime', 'text', 'enum']
+        # types: ['number', 'boolean', 'date', 'datetime', 'text', 'enum']
+        # types: ["boolean"]
         # types: ['enumset']
         value: @state.value
         onChange: @handleValueChange
-        aggrStatuses: ["literal", "aggregate", "individual"]
+        aggrStatuses: ["literal", "individual"]
       )
-      H.br()
-      H.br()
-      H.pre null, JSON.stringify(@state.value, null, 2)
+      R('br')
+      R('br')
+      R 'pre', null, JSON.stringify(@state.value, null, 2)
 
 class MockPropertyEditorTestComponent extends React.Component
   constructor: (props) ->
@@ -339,7 +346,7 @@ class LiveTestComponent extends React.Component
     if not @state.schema
       return null
       
-    H.div style: { padding: 10 },
+    R 'div', style: { padding: 10 },
       R(ExprComponent, 
         schema: @state.schema
         dataSource: @state.dataSource
@@ -358,9 +365,9 @@ class LiveTestComponent extends React.Component
       #   value: @state.value
       #   onChange: @handleValueChange
       # )
-      H.br()
-      H.br()
-      H.pre null, JSON.stringify(@state.value, null, 2)
+      R('br')
+      R('br')
+      R 'pre', null, JSON.stringify(@state.value, null, 2)
 
 expr1 = { type: "comparison", table: "t1", op: "=", lhs: { type: "field", table: "t1", column: "number" }, rhs: { type: "literal", valueType: "integer", value: 4 } }
 expr2 = { type: "comparison", table: "t1", op: "=", lhs: { type: "field", table: "t1", column: "number" }, rhs: { type: "literal", valueType: "integer", value: 5 } }

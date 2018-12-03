@@ -1,7 +1,8 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
-ReactSelect = require 'react-select'
+R = React.createElement
+# ReactSelect = require('react-select').default
+AsyncReactSelect = require('react-select/lib/Async').default
 ExprCompiler = require("mwater-expressions").ExprCompiler
 
 # Displays a combo box that allows selecting multiple text values from an expression
@@ -14,16 +15,18 @@ module.exports = class TextArrayComponent extends React.Component
     dataSource: PropTypes.object.isRequired # Data source to use to get values
 
   focus: ->
-    @refs.select.focus()
+    @select.focus()
 
-  handleChange: (val) =>
-    value = if val then val.split("\n") else []
-    @props.onChange({ type: "literal", valueType: "text[]", value: value })
+  handleChange: (value) =>
+    if value and value.length > 0
+      @props.onChange({ type: "literal", valueType: "text[]", value: _.pluck(value, "label") })
+    else
+      @props.onChange(null)
 
   escapeRegex: (s) ->
     return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
 
-  getOptions: (input, cb) =>
+  loadOptions: (input, cb) =>
     # Create query to get matches ordered by most frequent to least
     exprCompiler = new ExprCompiler(@props.schema)
 
@@ -51,32 +54,25 @@ module.exports = class TextArrayComponent extends React.Component
     # Execute query
     @props.dataSource.performQuery query, (err, rows) =>
       if err
-        cb(err)
         return 
 
       # Filter null and blank
       rows = _.filter(rows, (r) -> r.value)
 
-      cb(null, {
-        options: _.map(rows, (r) -> { value: r.value, label: r.value })
-        complete: false # TODO rows.length < 50 # Complete if didn't hit limit
-      })
+      cb(_.map(rows, (r) -> { value: r.value, label: r.value }))
 
     return
 
   render: ->
-    value = ""
-    if @props.value and @props.value.value.length > 0 
-      value = @props.value.value.join("\n")
+    value = _.map(@props.value?.value, (v) => { label: v, value: v })
 
-    H.div style: { width: "100%" },
-      React.createElement(ReactSelect, { 
-        ref: "select"
+    R 'div', style: { width: "100%" },
+      R AsyncReactSelect, 
+        ref: (c) => @select = c
         value: value
-        multi: true
-        delimiter: "\n"
+        isMulti: true
         placeholder: "Select..."
-        asyncOptions: @getOptions
+        defaultOptions: true
+        loadOptions: @loadOptions
         onChange: @handleChange
-      })
 

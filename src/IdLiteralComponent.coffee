@@ -1,8 +1,8 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
-ReactSelect = require 'react-select'
+R = React.createElement
+AsyncReactSelect = require('react-select/lib/Async').default
 ExprCompiler = require("mwater-expressions").ExprCompiler
 AsyncLoadComponent = require 'react-library/lib/AsyncLoadComponent'
 
@@ -21,9 +21,10 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     orderBy: PropTypes.array   # Optional extra orderings. Put "main" as tableAlias. JsonQL
     multi: PropTypes.bool      # Allow multiple values (id[] type)
     filter: PropTypes.object   # Optional extra filter. Put "main" as tableAlias. JsonQL
+    labelExpr: PropTypes.object # Optional label expression to use. Defaults to label column or PK if none. JsonQL
 
   focus: ->
-    @refs.select.focus()
+    @select.focus()
 
   # Override to determine if a load is needed. Not called on mounting
   isLoadNeeded: (newProps, oldProps) -> 
@@ -40,17 +41,14 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
 
     # Primary key column
     idColumn = { type: "field", tableAlias: "main", column: table.primaryKey }
-    if table.label
-      labelColumn = { type: "field", tableAlias: "main", column: table.label }
-    else # Use primary key. Ugly, but what else to do?
-      labelColumn = idColumn
+    labelExpr = @getLabelExpr()
 
     # select <label column> as value from <table> where <label column> ~* 'input%' limit 50
     query = {
       type: "query"
       selects: [
         { type: "select", expr: idColumn, alias: "value" }
-        { type: "select", expr: labelColumn, alias: "label" }
+        { type: "select", expr: labelExpr, alias: "label" }
       ]
       from: { type: "table", table: @props.idTable, alias: "main" }
       where: {
@@ -70,53 +68,56 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
         callback(currentValue: null)
         return 
       if not @props.multi
-        callback(currentValue: { label: rows[0].label, value: JSON.stringify(rows[0].value) })
+        callback(currentValue: rows[0])
       else
-        callback(currentValue: _.map(rows, (row) -> { label: row.label, value: JSON.stringify(row.value) }))
+        callback(currentValue: rows)
 
   handleChange: (value) =>
     if @props.multi
-      value = if value then value.split("\n") else null
-      value = _.map(value, JSON.parse)
-      @props.onChange(value)
-    else
-      if value
-        @props.onChange(JSON.parse(value))
-      else
+      if value and value.length == 0
         @props.onChange(null)
+      else
+        @props.onChange(_.pluck(value, "value"))
+    else
+      @props.onChange(value?.value)
 
-  getOptions: (input, cb) =>
-    # If no input, or just displaying current value
-    if not input or _.isObject(input)
+  getLabelExpr: ->
+    if @props.labelExpr
+      return @props.labelExpr
+
+    table = @props.schema.getTable(@props.idTable)
+    if table.label
+      return { type: "field", tableAlias: "main", column: table.label }
+
+    # Use primary key. Ugly, but what else to do?
+    return { type: "field", tableAlias: "main", column: table.primaryKey }
+
+  loadOptions: (input, cb) =>
+    # If no input
+    if not input
       # No options
-      cb(null, {
-        options: []
-        complete: false
-      })
+      cb([])
       return
 
     table = @props.schema.getTable(@props.idTable)
 
     # Primary key column
     idColumn = { type: "field", tableAlias: "main", column: table.primaryKey }
-    if table.label
-      labelColumn = { type: "field", tableAlias: "main", column: table.label }
-    else # Use primary key. Ugly, but what else to do?
-      labelColumn = idColumn
+    labelExpr = @getLabelExpr()
 
     # select <label column> as value from <table> where <label column> ~* 'input%' limit 50
     query = {
       type: "query"
       selects: [
         { type: "select", expr: idColumn, alias: "value" }
-        { type: "select", expr: labelColumn, alias: "label" }
+        { type: "select", expr: labelExpr, alias: "label" }
       ]
       from: { type: "table", table: @props.idTable, alias: "main" }
       where: {
         type: "op"
         op: "like"
         exprs: [
-          { type: "op", op: "lower", exprs: [labelColumn] }
+          { type: "op", op: "lower", exprs: [labelExpr] }
           input.toLowerCase() + "%"
         ]
       }
@@ -138,28 +139,24 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     # Execute query
     @props.dataSource.performQuery query, (err, rows) =>
       if err
-        cb(err)
         return 
 
       # Filter null and blank
       rows = _.filter(rows, (r) -> r.label)
 
-      cb(null, {
-        options: _.map(rows, (r) -> { value: JSON.stringify(r.value), label: r.label })
-        complete: false # TODO rows.length < 50 # Complete if didn't hit limit
-      })
+      cb(rows)
 
     return
 
   render: ->
-    H.div style: { width: "100%" },
-      React.createElement(ReactSelect, { 
-        ref: "select"
-        value: if @state.currentValue? then @state.currentValue else ""
+    R 'div', style: { width: "100%" },
+      R AsyncReactSelect, 
+        ref: (c) => @select = c
+        value: @state.currentValue
         placeholder: @props.placeholder or "Select"
-        asyncOptions: @getOptions
-        multi: @props.multi
-        delimiter: "\n"
+        loadOptions: @loadOptions
+        isMulti: @props.multi
+        isClearable: true
         isLoading: @state.loading
         onChange: @handleChange
-      })
+        noOptionsMessage: () => "Type to search"

@@ -1,6 +1,5 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 selection = require './saveSelection'
 
@@ -15,10 +14,10 @@ module.exports = class ContentEditableComponent extends React.Component
     onBlur: PropTypes.func  # Set to catch blur events
 
   handleInput: (ev) => 
-    if not @refs.editor
+    if not @editor
       return 
 
-    @props.onChange(@refs.editor)
+    @props.onChange(@editor)
 
   handleBlur: (ev) =>
     @props.onBlur?(ev)
@@ -28,35 +27,35 @@ module.exports = class ContentEditableComponent extends React.Component
       clearTimeout(@selSaver)
       @selSaver = null
 
-    if not @refs.editor
+    if not @editor
       return 
 
-    @props.onChange(@refs.editor)
+    @props.onChange(@editor)
 
   handleFocus: (ev) =>
     @props.onFocus?(ev)
 
     # Start selection saver (blur is not reliable in Firefox)
     saveRange = =>
-      @range = selection.save(@refs.editor)
+      @range = selection.save(@editor)
       @selSaver = setTimeout(saveRange, 200)
 
     if not @selSaver
       @selSaver = setTimeout(saveRange, 200)
 
   focus: ->
-    @refs.editor.focus()
+    @editor.focus()
 
   pasteHTML: (html) ->
-    @refs.editor.focus()
+    @editor.focus()
 
     # Restore caret
     if @range
-      selection.restore(@refs.editor, @range)
+      selection.restore(@editor, @range)
 
     pasteHtmlAtCaret(html)
 
-    @props.onChange(@refs.editor)
+    @props.onChange(@editor)
 
   getSelectedHTML: ->
     html = ''
@@ -70,33 +69,33 @@ module.exports = class ContentEditableComponent extends React.Component
 
   shouldComponentUpdate: (nextProps) ->
     # Update if prop html has changed, or if inner html has changed
-    changed = not @refs.editor or nextProps.html != @props.html or @refs.editor.innerHTML != @lastInnerHTML
+    changed = not @editor or nextProps.html != @props.html or @editor.innerHTML != @lastInnerHTML
     # if changed
     #   console.log nextProps.html
     #   console.log @props.html 
-    #   console.log @refs.editor.innerHTML 
+    #   console.log @editor.innerHTML 
     #   console.log @lastInnerHTML
     return changed
  
   componentWillUpdate: ->
     # Save caret
-    @range = selection.save(@refs.editor)
+    @range = selection.save(@editor)
     
   componentDidMount: ->
-    if @refs.editor
+    if @editor
       # Set inner html
-      @refs.editor.innerHTML = @props.html
-      @lastInnerHTML = @refs.editor.innerHTML
+      @editor.innerHTML = @props.html
+      @lastInnerHTML = @editor.innerHTML
 
   componentDidUpdate: ->
-    if @refs.editor
+    if @editor
       # Set inner html
-      @refs.editor.innerHTML = @props.html
-      @lastInnerHTML = @refs.editor.innerHTML
+      @editor.innerHTML = @props.html
+      @lastInnerHTML = @editor.innerHTML
 
     # Restore caret if still focused
-    if document.activeElement == @refs.editor and @range
-      selection.restore(@refs.editor, @range)
+    if document.activeElement == @editor and @range
+      selection.restore(@editor, @range)
 
   componentWillUnmount: ->
     # Cancel timer
@@ -105,10 +104,10 @@ module.exports = class ContentEditableComponent extends React.Component
       @selSaver = null
 
   render: ->
-    H.div 
+    R 'div', 
       contentEditable: true
       spellCheck: true
-      ref: "editor"
+      ref: (c) => @editor = c
       onClick: @props.onClick
       style: @props.style
       onInput: @handleInput

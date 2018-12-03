@@ -9,12 +9,14 @@ ExprUtils = require("mwater-expressions").ExprUtils
 #     Should return true to set initially open
 #   isScalarExprTreeSectionMatch: optiona function to override filtering of a section. Passed { tableId: id of table, section: section object from schema, filter: optional string filter }
 #     Should return null for default, true to include, false to exclude
+#   variables: list of variables to show
 module.exports = class ScalarExprTreeBuilder
   constructor: (schema, options={}) ->
     @schema = schema
     @locale = options.locale
     @isScalarExprTreeSectionInitiallyOpen = options.isScalarExprTreeSectionInitiallyOpen
     @isScalarExprTreeSectionMatch = options.isScalarExprTreeSectionMatch
+    @variables = options.variables or []
 
     @exprUtils = new ExprUtils(@schema)
 
@@ -88,6 +90,16 @@ module.exports = class ScalarExprTreeBuilder
         nodes.push(node)
     
     nodes = nodes.concat(@createNodes(table.contents, options))
+
+    # Include variables
+    for variable in @variables
+      if variable.table == options.table
+        nodes.push({
+          name: ExprUtils.localizeString(variable.name, @locale)
+          desc: ExprUtils.localizeString(variable.desc, @locale)
+          value: { table: options.startTable, joins: options.joins, expr: { type: "variable", variableId: variable.id, table: options.table } }
+          key: "variable:" + variable.id
+        })
 
     # Include advanced option (null expression with only joins that can be customized)
     if options.includeAggr and options.depth > 0 and filterMatches(options.filter, "Advanced")
