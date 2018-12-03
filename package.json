@@ -29,7 +29,7 @@
     "react": "^16.5.2",
     "react-bootstrap-daterangepicker": "^1.0.3",
     "react-dom": "^16.5.2",
-    "react-library": "github:mWater/react-library#react16",
+    "react-library": "github:mWater/react-library",
     "react-motion": "^0.3.1",
     "react-onclickout": "^2.0.4",
     "react-select": "github:mWater/react-select#fix_2682_built",
