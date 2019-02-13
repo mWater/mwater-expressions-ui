@@ -8,7 +8,10 @@
   "types": "index.d.ts",
   "style": "lib/index.css",
   "scripts": {
-    "test": "mocha --require coffeescript/register --recursive \"test/**/*Tests.coffee\""
+    "test": "node_modules/build-library/test-cli",
+    "test-browser": "node_modules/build-library/test-browser",
+    "watch": "node_modules/build-library/watch",
+    "build": "node_modules/build-library/build"
   },
   "husky": {
     "hooks": {
@@ -21,13 +24,13 @@
     "async": "^1.5.0",
     "classnames": "^2.2.5",
     "coffeescript": "^2.3.1",
-    "eonasdan-bootstrap-datetimepicker": "^4.15.35",
     "lodash": "^3.10.1",
     "moment": "^2.10.6",
     "mwater-expressions": "git+ssh://git@github.com/mWater/mwater-expressions.git",
     "prop-types": "^15.5.10",
     "react": "^16.5.2",
     "react-bootstrap-daterangepicker": "^1.0.3",
+    "react-datepicker": "^1.8.0",
     "react-dom": "^16.5.2",
     "react-library": "github:mWater/react-library",
     "react-motion": "^0.3.1",
@@ -38,6 +41,7 @@
   },
   "devDependencies": {
     "@types/react": "^16.4.16",
+    "build-library": "github:mWater/build-library",
     "canonical-json": "0.0.4",
     "chai": "^3.4.0",
     "coffee-loader": "^0.7.3",

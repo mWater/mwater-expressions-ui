@@ -15,6 +15,7 @@ FilterExprComponent = require './FilterExprComponent'
 InlineExprsEditorComponent = require './InlineExprsEditorComponent'
 ContentEditableComponent = require './ContentEditableComponent'
 PropertyListComponent = require './properties/PropertyListComponent'
+require('./index.css')
 
 $ ->
   $.getJSON "https://api.mwater.co/v3/jsonql/schema", (schemaJson) ->
@@ -237,7 +238,7 @@ class MockTestComponent extends React.Component
       R(ExprComponent, 
         schema: @state.schema
         dataSource: @state.dataSource
-        table: "t2"
+        table: "t1"
         variables: variables
         # types: ["text", "enum", "boolean", "date", "number", "datetime"]
         types: ['boolean']
