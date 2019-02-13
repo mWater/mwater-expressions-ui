@@ -21,6 +21,7 @@
   "author": "mWater",
   "license": "LGPL-3.0",
   "dependencies": {
+    "@babel/runtime": "^7.3.1",
     "async": "^1.5.0",
     "classnames": "^2.2.5",
     "coffeescript": "^2.3.1",
