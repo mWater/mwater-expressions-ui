@@ -31,6 +31,7 @@ class PropertyListComponent extends React.Component
     # joinType: allow join-type fields
     # code: show code of properties
     # expr: allow fields with expr set
+    # conditionExpr: allow fields to set a condition expression if they are conditionally displayed
     # section: allow adding sections
     # table: each property contains table
     features: PropTypes.array

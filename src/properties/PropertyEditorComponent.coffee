@@ -93,7 +93,18 @@ module.exports = class PropertyEditorComponent extends React.Component
             idTable: @props.property.idTable
             aggrStatuses: ["individual", "aggregate", "literal"]
             onChange: (expr) => @props.onChange(_.extend({}, @props.property, expr: expr))
-      
+
+      if _.includes(@props.features, "conditionExpr") and (@props.property.table or @props.table)
+        R ui.FormGroup, label: "Condition", hint: "Set this if field should be conditionally displayed", 
+          R ExprComponent, 
+            schema: @props.schema
+            dataSource: @props.dataSource
+            table: @props.property.table or @props.table
+            value: @props.property.conditionExpr
+            types: ["boolean"]
+            aggrStatuses: ["individual"]
+            onChange: (conditionExpr) => @props.onChange(_.extend({}, @props.property, conditionExpr: conditionExpr))
+
       if @props.property.type == "join"
         R ui.FormGroup, label: "Join",
           R JoinEditorComponent, value: @props.property.join, onChange: ((join) => @props.onChange(_.extend({}, @props.property, join: join)))
