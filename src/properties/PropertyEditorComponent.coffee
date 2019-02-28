@@ -102,9 +102,6 @@ module.exports = class PropertyEditorComponent extends React.Component
             table: @props.property.table or @props.table
             value: @props.property.conditionExpr
             types: ["boolean"]
-            enumValues: @props.property.enumValues
-            idTable: @props.property.idTable
-            aggrStatuses: ["individual"]
             onChange: (conditionExpr) => @props.onChange(_.extend({}, @props.property, conditionExpr: conditionExpr))
 
       if @props.property.type == "join"
