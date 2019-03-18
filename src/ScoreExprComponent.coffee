@@ -56,7 +56,7 @@ module.exports = class ScoreExprComponent extends React.Component
                 dataSource: @props.dataSource
                 table: @props.value.table
                 value: @props.value.scores[enumValue.id]
-                onChange: @handleScoreChange.bind(null, enumValue.id)
+                onChange: if @props.onChange then @handleScoreChange.bind(null, enumValue.id)
                 types: ['number']
                 preferLiteral: true
 
@@ -64,7 +64,7 @@ module.exports = class ScoreExprComponent extends React.Component
     # To avoid circularity
     ExprComponent = require './ExprComponent'
 
-    R RemovableComponent, onRemove: @props.onChange.bind(null, null),
+    R RemovableComponent, onRemove: (if @props.onChange then @props.onChange.bind(null, null)),
       R 'div', null, 
         "Score choices of: "
         R 'div', style: { display: "inline-block", maxWidth: "50em" },
@@ -73,6 +73,6 @@ module.exports = class ScoreExprComponent extends React.Component
             dataSource: @props.dataSource
             table: @props.value.table
             value: @props.value.input
-            onChange: @handleInputChange
+            onChange: if @props.onChange then @handleInputChange
             types: ['enum', 'enumset']
       @renderScores()

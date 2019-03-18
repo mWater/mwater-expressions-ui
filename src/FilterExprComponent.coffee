@@ -84,22 +84,22 @@ module.exports = class FilterExprComponent extends React.Component
         R StackedComponent, 
           joinLabel: "and"
           items: _.map expr.exprs, (subexpr, i) =>
-            elem: new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale, @props.variables).build(subexpr, @props.table, @handleAndChange.bind(null, i), { 
+            elem: new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale, @props.variables).build(subexpr, @props.table, (if @props.onChange then @handleAndChange.bind(null, i)), { 
               types: ["boolean"]
               preferLiteral: false
               suppressWrapOps: ['and']   # Don't allow wrapping in and since this is an and control
             })
-            onRemove: @handleAndRemove.bind(null, i)
+            onRemove: if @props.onChange then @handleAndRemove.bind(null, i)
 
         # Only display add if last item is not null
-        if _.last(expr.exprs) != null
+        if _.last(expr.exprs) != null and @props.onChange
           @renderAddFilter()
 
     else if expr 
       return R 'div', null,
         R RemovableComponent, 
-          onRemove: @handleRemove,
-          new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale, @props.variables).build(expr, @props.table, @handleChange, { 
+          onRemove: if @props.onChange then @handleRemove,
+          new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale, @props.variables).build(expr, @props.table, (if @props.onChange then @handleChange), { 
             types: ["boolean"]
             preferLiteral: false
             suppressWrapOps: ['and']  # Don't allow wrapping in and since this is an and control
@@ -114,6 +114,6 @@ module.exports = class FilterExprComponent extends React.Component
         dataSource: @props.dataSource
         variables: @props.variables
         table: @props.table
-        onChange: @handleChange
+        onChange: if @props.onChange then @handleChange
     else
       @renderAddFilter()

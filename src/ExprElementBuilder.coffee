@@ -134,7 +134,7 @@ module.exports = class ExprElementBuilder
       })
 
     # links.push({ label: "Remove", onClick: => onChange(null) })
-    if links.length > 0
+    if links.length > 0 and onChange
       elem = R WrappedLinkComponent, links: links, elem
 
     return elem
@@ -142,14 +142,14 @@ module.exports = class ExprElementBuilder
   # Build an id component. Displays table name. Only remove option
   buildId: (expr, onChange, options = {}) ->
     return R(LinkComponent, 
-      dropdownItems: [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
+      dropdownItems: if onChange then [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
       onDropdownItemClicked: => onChange(null),
       @exprUtils.summarizeExpr(expr)) 
 
   # Build a variable component. Displays variable name. Only remove option
   buildVariable: (expr, onChange, options = {}) ->
     return R(LinkComponent, 
-      dropdownItems: [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
+      dropdownItems: if onChange then [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
       onDropdownItemClicked: => onChange(null),
       @exprUtils.summarizeExpr(expr)) 
 
@@ -170,7 +170,7 @@ module.exports = class ExprElementBuilder
       return R 'div', style: { display: "flex", alignItems: "baseline" },
         # Aggregate dropdown
         R(LinkComponent, 
-          dropdownItems: [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
+          dropdownItems: if onChange then [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
           onDropdownItemClicked: => onChange(null),
           summary)
     else
@@ -185,7 +185,7 @@ module.exports = class ExprElementBuilder
       # True if an individual boolean is required, in which case any expression can be transformed into it
       anyTypeAllowed = not options.types or ("boolean" in options.types and options.types.length == 1)
 
-      innerElem = @build(expr.expr, destTable, innerOnChange, { 
+      innerElem = @build(expr.expr, destTable, (if onChange then innerOnChange), { 
         types: if not anyTypeAllowed then options.types
         idTable: options.idTable
         enumValues: options.enumValues
@@ -194,7 +194,7 @@ module.exports = class ExprElementBuilder
 
     return R 'div', style: { display: "flex", alignItems: "baseline" },
       R(LinkComponent, 
-        dropdownItems: [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
+        dropdownItems: if onChange then [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
         onDropdownItemClicked: => onChange(null),
         joinsStr)
       innerElem
@@ -215,7 +215,7 @@ module.exports = class ExprElementBuilder
             onChange(_.extend({}, expr, { exprs: newExprs }))
 
           types = if expr.op in ['and', 'or'] then ["boolean"] else ["number"]
-          elem = @build(innerExpr, table, innerElemOnChange, types: types, aggrStatuses: options.aggrStatuses, suppressWrapOps: [expr.op], key: "expr#{i}")
+          elem = @build(innerExpr, table, (if onChange then innerElemOnChange), types: types, aggrStatuses: options.aggrStatuses, suppressWrapOps: [expr.op], key: "expr#{i}")
           handleRemove = =>
             exprs = expr.exprs.slice()
             exprs.splice(i, 1)
@@ -240,7 +240,7 @@ module.exports = class ExprElementBuilder
         # Special case for no expressions
         if opItem.exprTypes.length == 0
           return R(LinkComponent, 
-            dropdownItems: [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
+            dropdownItems: if onChange then [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
             onDropdownItemClicked: (=> onChange(null)),
               @exprUtils.summarizeExpr(expr, @locale))
 
@@ -260,7 +260,7 @@ module.exports = class ExprElementBuilder
         if not expr.exprs[0]
           lhsTypes = _.map(opItems, (oi) -> oi.exprTypes[0])
 
-        lhsElem = @build(expr.exprs[0], table, lhsOnChange, types: lhsTypes, aggrStatuses: innerAggrStatuses, key: "lhs", placeholder: opItem.lhsPlaceholder)
+        lhsElem = @build(expr.exprs[0], table, (if onChange then lhsOnChange), types: lhsTypes, aggrStatuses: innerAggrStatuses, key: "lhs", placeholder: opItem.lhsPlaceholder)
 
         # Special case for between 
         if expr.op == "between"
@@ -280,9 +280,9 @@ module.exports = class ExprElementBuilder
 
           # Build rhs
           rhsElem = [
-            @build(expr.exprs[1], table, rhs1OnChange, types: [opItem.exprTypes[1]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true, aggrStatuses: innerAggrStatuses, key: "expr1")
+            @build(expr.exprs[1], table, (if onChange then rhs1OnChange), types: [opItem.exprTypes[1]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true, aggrStatuses: innerAggrStatuses, key: "expr1")
             "\u00A0and\u00A0"
-            @build(expr.exprs[2], table, rhs2OnChange, types: [opItem.exprTypes[2]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true, aggrStatuses: innerAggrStatuses, key: "expr2")
+            @build(expr.exprs[2], table, (if onChange then rhs2OnChange), types: [opItem.exprTypes[2]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true, aggrStatuses: innerAggrStatuses, key: "expr2")
           ]
         else if opItem.exprTypes.length > 1 # If has two expressions
           rhsOnChange = (newValue) =>
@@ -292,7 +292,7 @@ module.exports = class ExprElementBuilder
             # Set expr value
             onChange(_.extend({}, expr, { exprs: newExprs }))
 
-          rhsElem = @build(expr.exprs[1], table, rhsOnChange, {
+          rhsElem = @build(expr.exprs[1], table, (if onChange then rhsOnChange), {
             key: "rhs"
             types: [opItem.exprTypes[1]]
             enumValues: if opItem.exprTypes[1] in ['enum', 'enumset'] then @exprUtils.getExprEnumValues(expr.exprs[0])  # Only include if type is enum or enumset
@@ -320,7 +320,7 @@ module.exports = class ExprElementBuilder
         opItems = _.uniq(opItems, "op")
 
         opElem = R(LinkComponent, 
-          dropdownItems: [{ id: "_remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }].concat(_.map(opItems, (oi) -> { id: oi.op, name: oi.name }))
+          dropdownItems: if onChange then [{ id: "_remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }].concat(_.map(opItems, (oi) -> { id: oi.op, name: oi.name }))
           onDropdownItemClicked: (op) =>
             if op == "_remove"
               onChange(null)
@@ -364,10 +364,10 @@ module.exports = class ExprElementBuilder
       elem = R 'div', key: "#{i}", style: { display: "flex", alignItems: "baseline"  },
         R 'div', key: "when", style: { display: "flex", alignItems: "baseline" },
           R 'div', key: "label", style: labelStyle, "if"
-          @build(cse.when, expr.table, innerElemOnWhenChange, key: "content", types: ["boolean"], suppressWrapOps: ["if"], aggrStatuses: options.aggrStatuses)
+          @build(cse.when, expr.table, (if onChange then innerElemOnWhenChange), key: "content", types: ["boolean"], suppressWrapOps: ["if"], aggrStatuses: options.aggrStatuses)
         R 'div', key: "then", style: { display: "flex", alignItems: "baseline" },
           R 'div', key: "label", style: labelStyle, "then"
-          @build(cse.then, expr.table, innerElemOnThenChange, key: "content", types: options.types, preferLiteral: true, enumValues: options.enumValues, aggrStatuses: options.aggrStatuses)
+          @build(cse.then, expr.table, (if onChange then innerElemOnThenChange), key: "content", types: options.types, preferLiteral: true, enumValues: options.enumValues, aggrStatuses: options.aggrStatuses)
 
       handleRemove = =>
         cases = expr.cases.slice()
@@ -383,7 +383,7 @@ module.exports = class ExprElementBuilder
     items.push({
       elem: R 'div', key: "when", style: { display: "flex", alignItems: "baseline" },
         R 'div', key: "label", style: labelStyle, "else"
-        @build(expr.else, expr.table, onElseChange, key: "content", types: options.types, preferLiteral: true, enumValues: options.enumValues, aggrStatuses: options.aggrStatuses)  
+        @build(expr.else, expr.table, (if onChange then onElseChange), key: "content", types: options.types, preferLiteral: true, enumValues: options.enumValues, aggrStatuses: options.aggrStatuses)  
     })
 
     # Create stacked expression
