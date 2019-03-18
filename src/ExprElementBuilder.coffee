@@ -374,7 +374,7 @@ module.exports = class ExprElementBuilder
         cases.splice(i, 1)
         onChange(_.extend({}, expr, { cases: cases })) 
 
-      return { elem: elem, onRemove: handleRemove }
+      return { elem: elem, onRemove: (if onChange then handleRemove) }
     
     # Add else
     onElseChange = (newValue) =>
