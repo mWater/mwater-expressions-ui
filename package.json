@@ -45,20 +45,7 @@
     "build-library": "github:mWater/build-library",
     "canonical-json": "0.0.4",
     "chai": "^3.4.0",
-    "coffee-loader": "^0.7.3",
-    "coffeeify": "^1.1.0",
-    "gulp": "^4.0.0",
-    "gulp-coffee": "^2.3.1",
-    "gulp-concat": "^2.6.0",
-    "gulp-rework": "^1.0.3",
-    "gulp-util": "^3.0.7",
-    "gulp-watch": "^4.3.11",
     "husky": "^1.0.0-rc.13",
-    "mocha": "^2.3.3",
-    "mocha-loader": "^1.1.1",
-    "react-addons-test-utils": "^0.14.2",
-    "rework-npm": "^1.0.0",
-    "webpack": "^2.3.1",
-    "webpack-dev-server": "^2.4.2"
+    "react-addons-test-utils": "^0.14.2"
   }
 }
