@@ -54,9 +54,14 @@ module.exports = class ExprLinkComponent extends React.Component
 
   # Display placeholder if no value. If readonly, use "None" instead of "Select..."
   renderNone: =>
-    R 'a', onClick: (if @props.onChange then @handleClick), style: { cursor: "pointer", fontStyle: "italic", color: "#478" }, 
-      if @props.onChange then @props.placeholder else "None"
-    
+    if @props.onChange
+      return R 'a', onClick: @handleClick, style: { cursor: "pointer", fontStyle: "italic", color: "#478" }, 
+        if @props.onChange then @props.placeholder else "None"
+    else
+      return R 'div', className: "link-component-readonly", style: { fontStyle: "italic" },
+        "None"
+
+
   # Display summary if field
   renderField: =>
     exprUtils = new ExprUtils(@props.schema)

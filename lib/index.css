@@ -30,6 +30,17 @@
   color: #639db0;
 }
 
+/* Readonly version that is not clickable */
+.link-component-readonly {
+  color: #478;
+  display: inline-block;
+  position: relative;
+  padding: 2px;
+  cursor: default;
+  border-radius: 5px;
+  margin-right: 5px;
+}
+
 /* Use these to make a child that displays only when parent is hovered */
 .hover-display-parent > .hover-display-child {
   visibility: hidden;

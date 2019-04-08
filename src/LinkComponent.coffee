@@ -34,6 +34,10 @@ module.exports = class LinkComponent extends React.Component
       R('a', key: id, onClick: @props.onDropdownItemClicked.bind(null, id), name)
 
   render: ->
+    # Simple case
+    if not @props.onClick and not @props.onRemove and (not @props.dropdownItems or @props.dropdownItems.length == 0)
+      return R 'div', className: "link-component-readonly", @props.children
+
     elem = R 'div', className: "link-component", "data-toggle": "dropdown", 
       R 'div', style: { display: "inline-block" }, onClick: @props.onClick, 
         @props.children
