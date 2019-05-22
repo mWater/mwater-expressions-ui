@@ -23,12 +23,12 @@
 }
 .react-datepicker__navigation--previous {
   border-right-color: #ccc;
-  top: 0em;
+  top: 1em;
   left: 1em;
 }
 .react-datepicker__navigation--next {
   border-left-color: #ccc;
-  top: 0em;
+  top: 1em;
   right: 1em;
 }
 
