@@ -17,16 +17,18 @@
   font-size: 1em;
 }
 .react-datepicker__navigation {
-  top: 1em;
+  top: 0em;
   line-height: 1.7em;
   border: 0.45em solid transparent;
 }
 .react-datepicker__navigation--previous {
   border-right-color: #ccc;
+  top: 1em;
   left: 1em;
 }
 .react-datepicker__navigation--next {
   border-left-color: #ccc;
+  top: 1em;
   right: 1em;
 }
 
