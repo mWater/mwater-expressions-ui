@@ -102,7 +102,7 @@ module.exports = class ScalarExprTreeBuilder
         })
 
     # Include advanced option (null expression with only joins that can be customized)
-    if options.includeAggr and options.depth > 0 and filterMatches(options.filter, "Advanced")
+    if options.depth > 0 and filterMatches(options.filter, "Advanced")
       nodes.push({
         name: "Advanced..."
         desc: "Use to create an advanced function here"
