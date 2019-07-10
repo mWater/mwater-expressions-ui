@@ -59,6 +59,7 @@ module.exports = class LocalizedStringEditorComp extends React.Component
       { id: "fr", name: "fr" }
       { id: "es", name: "es" }
       { id: "pt", name: "pt" }
+      { id: "tet", name: "tet"}
     ]
 
     return R 'div', {className:"input-group"},
