@@ -50,11 +50,11 @@ declare module 'mwater-expressions-ui' {
   }> {}
 
   class IdLiteralComponent extends React.Component<{
-    /** String value of primary key or array of primary keys */
-    value: string | string[] | null
+    /** Value of primary key or array of primary keys */
+    value: string | string[] | number | number[] | null
 
     /** Called with primary key or array of primary keys */
-    onChange: (value: string | string[] | null) => void
+    onChange: (value: string | string[] | number | number[] | null) => void
 
     idTable: string
 
