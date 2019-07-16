@@ -14,6 +14,7 @@ module.exports = class LiteralExprStringComponent extends AsyncLoadComponent
     dataSource: PropTypes.object.isRequired # Data source to use to get values
     value: PropTypes.object   # Current expression value
     enumValues: PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
+    locale: PropTypes.string  # e.g. "en"
 
   @contextTypes:
     locale: PropTypes.string  # e.g. "en"
@@ -73,7 +74,7 @@ module.exports = class LiteralExprStringComponent extends AsyncLoadComponent
     
     # Handle simple case
     if type not in ['id', 'id[]']
-      str = exprUtils.stringifyLiteralValue(type, @props.value?.value, @context.locale, @props.enumValues)
+      str = exprUtils.stringifyLiteralValue(type, @props.value?.value, @props.locale or @context.locale, @props.enumValues)
 
       # Quote text
       if type == "text"

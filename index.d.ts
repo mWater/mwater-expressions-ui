@@ -1,19 +1,6 @@
-declare module 'mwater-expressions/lib/MWaterDataSource' {
-  import { DataSource, JsonQL } from "mwater-expressions";
-
-  export default class MWaterDataSource extends DataSource {
-    /**
-      serverCaching: allows server to send cached results. default true
-      localCaching allows local MRU cache. default true
-      imageApiUrl: overrides apiUrl for images
-     */
-    constructor(apiUrl: string, client?: string | null, options?: { serverCaching?: boolean, localCaching?: boolean, imageApiUrl?: string })
-  }
-}
-
 declare module 'mwater-expressions-ui' {
   import * as React from 'react'
-  import { Schema, DataSource, JsonQL, Expr, LocalizedString, AggrStatus, Variable } from 'mwater-expressions'
+  import { Schema, DataSource, JsonQL, Expr, LocalizedString, AggrStatus, Variable, EnumValue } from 'mwater-expressions'
 
   class ExprComponent extends React.Component<{
     schema: Schema
@@ -78,5 +65,17 @@ declare module 'mwater-expressions-ui' {
 
     /** Optional label expression to use. Will fallback to label column or primary key. Put "main" as tableAlias. JsonQL */
     labelExpr?: JsonQL
+  }> {}
+
+  class LiteralExprStringComponent extends React.Component<{
+    schema: Schema
+    dataSource: DataSource
+    /** Current expression value */
+    value: any
+    /** Array of { id:, name: } of enum values that can be selected. Only when type = "enum" */
+    enumValues?: EnumValue[]
+
+    /** e.g "en" */
+    locale?: string
   }> {}
 }

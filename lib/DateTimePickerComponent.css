@@ -19,7 +19,7 @@
 .react-datepicker__navigation {
   top: 0em;
   line-height: 1.7em;
-  border: 0.65em solid transparent;
+  border: 0.45em solid transparent;
 }
 .react-datepicker__navigation--previous {
   border-right-color: #ccc;
@@ -30,18 +30,6 @@
   border-left-color: #ccc;
   top: 1em;
   right: 1em;
-}
-.react-datepicker__navigation--years-upcoming {
-  border-bottom-color: #ccc;
-  top: -0.2em;
-}
-.react-datepicker__navigation--years-previous {
-  border-top-color: #ccc;
-  top: 0.2em;
-}
-
-.react-datepicker__navigation--years-previous:hover {
-  border-top-color: darken(#ccc, 20%)
 }
 
 .react-datepicker-time__header {
