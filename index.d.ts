@@ -1,6 +1,6 @@
 declare module 'mwater-expressions-ui' {
   import * as React from 'react'
-  import { Schema, DataSource, JsonQL, Expr, LocalizedString, AggrStatus, Variable, EnumValue } from 'mwater-expressions'
+  import { Schema, DataSource, JsonQL, Expr, LocalizedString, AggrStatus, Variable, EnumValue, LiteralExpr } from 'mwater-expressions'
 
   class ExprComponent extends React.Component<{
     schema: Schema
@@ -70,8 +70,10 @@ declare module 'mwater-expressions-ui' {
   class LiteralExprStringComponent extends React.Component<{
     schema: Schema
     dataSource: DataSource
+
     /** Current expression value */
-    value: any
+    value: LiteralExpr
+
     /** Array of { id:, name: } of enum values that can be selected. Only when type = "enum" */
     enumValues?: EnumValue[]
 
