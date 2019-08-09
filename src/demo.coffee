@@ -1,7 +1,6 @@
 $ = require 'jquery'
 PropTypes = require('prop-types')
 React = require 'react'
-console.log(React)
 ReactDOM = require 'react-dom'
 R = React.createElement
 Schema = require("mwater-expressions").Schema
@@ -24,9 +23,9 @@ $ ->
 
     # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
     # ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
-    # ReactDOM.render(R(PropertyListContainerComponent, schema: schema, dataSource: dataSource, table: "entities.water_point"), document.getElementById("main"))
+    ReactDOM.render(R(PropertyListContainerComponent, schema: schema, dataSource: dataSource, table: "entities.water_point"), document.getElementById("main"))
     # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
-    ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
+    # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
 
 class PropertyListContainerComponent extends React.Component
@@ -48,7 +47,7 @@ class PropertyListContainerComponent extends React.Component
             properties: @state.properties
             schema: @props.schema
             dataSource: @props.dataSource
-            # table: @props.table
+            table: @props.table
             tableIds: ["entities.water_point", "entities.community"]
             features: ["idField", "sql", "joinType", "idType", "expr", "table"]
             onChange: (properties) => @setState(properties: properties) 
