@@ -22,10 +22,10 @@ module.exports = class PropertyEditorComponent extends React.Component
     tableIds: PropTypes.arrayOf(PropTypes.string.isRequired)   # Ids of tables to include when using table feature
     createRoleEditElem: PropTypes.func
     forbiddenPropertyIds: PropTypes.arrayOf(PropTypes.string.isRequired) # Ids of properties that are not allowed as would be duplicates
-    
+
   @defaultProps:
     features: []
-    
+
   render: ->
     R 'div', null,
       if _.includes(@props.features, "table")
@@ -41,7 +41,7 @@ module.exports = class PropertyEditorComponent extends React.Component
 
       if _.includes(@props.features, "idField")
         [
-          R IdFieldComponent, 
+          R IdFieldComponent,
             value: @props.property.id
             onChange: (value) => @props.onChange(_.extend({}, @props.property, id: value))
           if @props.forbiddenPropertyIds and @props.property.id in @props.forbiddenPropertyIds
@@ -81,14 +81,14 @@ module.exports = class PropertyEditorComponent extends React.Component
       if @props.property.type in ["enum", "enumset"]
         R ui.FormGroup, label: "Values",
           R EnumValuesEditorComponent, value: @props.property.enumValues, onChange: ((value) => @props.onChange(_.extend({}, @props.property, enumValues: value)))
-        
+
       if @props.property.type in ["measurement"]
         R ui.FormGroup, label: "Units",
           R EnumValuesEditorComponent, value: @props.property.units, actionLabel: "Add unit", onChange: ((value) => @props.onChange(_.extend({}, @props.property, units: value)))
-      
-      if _.includes(@props.features, "expr") and @props.property.type and (@props.property.table or @props.table)
-        R ui.FormGroup, label: "Expression", hint: (if not @props.property.table then "Leave blank unless this property is an expression"), 
-          R ExprComponent, 
+
+      if not @props.property.type in ["measurement"] and  _.includes(@props.features, "expr") and @props.property.type and (@props.property.table or @props.table)
+        R ui.FormGroup, label: "Expression", hint: (if not @props.property.table then "Leave blank unless this property is an expression"),
+          R ExprComponent,
             schema: @props.schema
             dataSource: @props.dataSource
             table: @props.property.table or @props.table
@@ -100,8 +100,8 @@ module.exports = class PropertyEditorComponent extends React.Component
             onChange: (expr) => @props.onChange(_.extend({}, @props.property, expr: expr))
 
       if _.includes(@props.features, "conditionExpr") and (@props.property.table or @props.table)
-        R ui.FormGroup, label: "Condition", hint: "Set this if field should be conditionally displayed", 
-          R ExprComponent, 
+        R ui.FormGroup, label: "Condition", hint: "Set this if field should be conditionally displayed",
+          R ExprComponent,
             schema: @props.schema
             dataSource: @props.dataSource
             table: @props.property.table or @props.table
@@ -112,24 +112,24 @@ module.exports = class PropertyEditorComponent extends React.Component
       if @props.property.type == "join"
         R ui.FormGroup, label: "Join",
           R JoinEditorComponent, value: @props.property.join, onChange: ((join) => @props.onChange(_.extend({}, @props.property, join: join)))
-      
+
       if @props.property.type in ["id", "id[]"]
         R ui.FormGroup, label: "ID Table",
           R TableSelectComponent, value: @props.property.idTable, schema: @props.schema, onChange: ((table) => @props.onChange(_.extend({}, @props.property, idTable: table))),
-      
+
       R ui.Checkbox,
         value: @props.property.deprecated
         onChange: ((deprecated) => @props.onChange(_.extend({}, @props.property, deprecated: deprecated))),
           "Deprecated"
-      
+
       if _.includes(@props.features, "uniqueCode") and @props.property.type == "text"
         R ui.FormGroup, label: "Unique Code?",
           R 'input', type: 'checkbox', checked: @props.property.uniqueCode, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, uniqueCode: ev.target.checked)))
-      
+
       if _.includes(@props.features, "sql")
         R ui.FormGroup, label: "SQL",
           R 'input', type: 'text', className: "form-control", value: @props.property.sql, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, sql: ev.target.value)))
-      
+
       if @props.createRoleEditElem
         R ui.FormGroup, label: "Roles",
           @props.createRoleEditElem(@props.property.roles or [], (roles) => @props.onChange(_.extend({}, @props.property, roles: roles)) )
@@ -137,10 +137,10 @@ module.exports = class PropertyEditorComponent extends React.Component
 
 # Edits join
 class JoinEditorComponent extends React.Component
-  @propTypes: 
+  @propTypes:
     value: PropTypes.object  # The join object
     onChange: PropTypes.func.isRequired  # Called with new value
-  
+
   render: ->
     R 'div', null,
       R 'div', className: "row",
@@ -164,11 +164,11 @@ class JoinEditorComponent extends React.Component
 
 # Reusable table select Component
 class TableSelectComponent extends React.Component
-  @propTypes: 
+  @propTypes:
     value: PropTypes.string  # The selected table
     schema: PropTypes.object.isRequired # schema of all data
     onChange: PropTypes.func.isRequired  # Called with new value
-  
+
   render: ->
     R 'select', className: "form-control", value: @props.value, onChange: ((ev) => @props.onChange(ev.target.value)),
       _.map @props.schema.tables, (table) =>
@@ -176,7 +176,7 @@ class TableSelectComponent extends React.Component
 
 # Edits a list of enum values
 class EnumValuesEditorComponent extends React.Component
-  @propTypes: 
+  @propTypes:
     value: PropTypes.array  # Array of enum values to edit
     onChange: PropTypes.func.isRequired  # Called with new value
     actionLabel: PropTypes.string
@@ -194,19 +194,19 @@ class EnumValuesEditorComponent extends React.Component
   handleRemove: (i) =>
     value = (@props.value or []).slice()
     value.splice(i, 1)
-    @props.onChange(value)    
+    @props.onChange(value)
 
   render: ->
     R 'div', null,
       _.map @props.value or [], (value, i) =>
         R EnumValueEditorComponent, key: i, value: value, onChange: @handleChange.bind(null, i), onRemove: @handleRemove.bind(null, i)
       R 'button', type: "button", className: "btn btn-link", onClick: @handleAdd,
-        "+ #{@props.actionLabel or "Add Value"}"    
+        "+ #{@props.actionLabel or "Add Value"}"
 
 # Edits an enum value (id, name)
 class EnumValueEditorComponent extends React.Component
-  @propTypes: 
-    value: PropTypes.object 
+  @propTypes:
+    value: PropTypes.object
     onChange: PropTypes.func.isRequired  # Called with new value
     onRemove: PropTypes.func
 
@@ -214,13 +214,13 @@ class EnumValueEditorComponent extends React.Component
     R 'div', null,
       R 'div', className: "row",
         R 'div', className: "col-md-6",
-          R IdFieldComponent, 
+          R IdFieldComponent,
             value: @props.value.id
             onChange: (value) => @props.onChange(_.extend({}, @props.value, id: value))
 
         R 'div', className: "col-md-6",
           R ui.FormGroup, label: "Code",
-            R 'input', 
+            R 'input',
               type: "text"
               className: "form-control"
               placeholder: "Code"
@@ -237,8 +237,8 @@ class EnumValueEditorComponent extends React.Component
             R LocalizedStringEditorComp, value: @props.value.desc, onChange: (value) => @props.onChange(_.extend({}, @props.value, desc: value))
       if @props.onRemove
         R 'div', key: "remove",
-          R 'button', className: "btn btn-link btn-xs", onClick: @props.onRemove, 
+          R 'button', className: "btn btn-link btn-xs", onClick: @props.onRemove,
             "Remove"
 
 
-    
+
