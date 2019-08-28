@@ -206,6 +206,7 @@ class PropertyComponent extends React.Component
     boolean: "fa fa-toggle-on"
     id: "fa fa-arrow-right"
     join: "fa fa-link"
+    measurement: "fa fa-arrows-h"
     
   @contextTypes:
     clipboard: PropTypes.object
