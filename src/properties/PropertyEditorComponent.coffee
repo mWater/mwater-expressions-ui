@@ -84,7 +84,7 @@ module.exports = class PropertyEditorComponent extends React.Component
       
       if @props.property.type == "measurement"
         R ui.FormGroup, label: "Units",
-          R EnumValuesEditorComponent, value: @props.property.units, actionLabel: "Add unit", onChange: ((value) => @props.onChange(_.extend({}, @props.property, enumValues: value)))
+          R EnumValuesEditorComponent, value: @props.property.units, actionLabel: "Add unit", onChange: ((value) => @props.onChange(_.extend({}, @props.property, units: value)))
 
       if @props.property.type != "measurement"
         if _.includes(@props.features, "expr") and @props.property.type and (@props.property.table or @props.table)
