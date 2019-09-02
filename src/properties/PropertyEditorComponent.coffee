@@ -64,6 +64,7 @@ module.exports = class PropertyEditorComponent extends React.Component
           R 'option', key: "boolean", value: "boolean", "Boolean"
           R 'option', key: "geometry", value: "geometry", "Geometry"
           R 'option', key: "enum", value: "enum", "Enum"
+          R 'option', key: "enum", value: "measurement", "Measurement"
           R 'option', key: "enumset", value: "enumset", "Enum Set"
           R 'option', key: "date", value: "date", "Date"
           R 'option', key: "datetime", value: "datetime", "Datetime"
@@ -81,18 +82,23 @@ module.exports = class PropertyEditorComponent extends React.Component
         R ui.FormGroup, label: "Values",
           R EnumValuesEditorComponent, value: @props.property.enumValues, onChange: ((value) => @props.onChange(_.extend({}, @props.property, enumValues: value)))
       
-      if _.includes(@props.features, "expr") and @props.property.type and (@props.property.table or @props.table)
-        R ui.FormGroup, label: "Expression", hint: (if not @props.property.table then "Leave blank unless this property is an expression"), 
-          R ExprComponent, 
-            schema: @props.schema
-            dataSource: @props.dataSource
-            table: @props.property.table or @props.table
-            value: @props.property.expr
-            types: [@props.property.type]
-            enumValues: @props.property.enumValues
-            idTable: @props.property.idTable
-            aggrStatuses: ["individual", "aggregate", "literal"]
-            onChange: (expr) => @props.onChange(_.extend({}, @props.property, expr: expr))
+      if @props.property.type == "measurement"
+        R ui.FormGroup, label: "Units",
+          R EnumValuesEditorComponent, value: @props.property.units, actionLabel: "Add unit", onChange: ((value) => @props.onChange(_.extend({}, @props.property, enumValues: value)))
+
+      if @props.property.type != "measurement"
+        if _.includes(@props.features, "expr") and @props.property.type and (@props.property.table or @props.table)
+          R ui.FormGroup, label: "Expression", hint: (if not @props.property.table then "Leave blank unless this property is an expression"), 
+            R ExprComponent, 
+              schema: @props.schema
+              dataSource: @props.dataSource
+              table: @props.property.table or @props.table
+              value: @props.property.expr
+              types: [@props.property.type]
+              enumValues: @props.property.enumValues
+              idTable: @props.property.idTable
+              aggrStatuses: ["individual", "aggregate", "literal"]
+              onChange: (expr) => @props.onChange(_.extend({}, @props.property, expr: expr))
 
       if _.includes(@props.features, "conditionExpr") and (@props.property.table or @props.table)
         R ui.FormGroup, label: "Condition", hint: "Set this if field should be conditionally displayed", 
@@ -174,6 +180,7 @@ class EnumValuesEditorComponent extends React.Component
   @propTypes: 
     value: PropTypes.array  # Array of enum values to edit
     onChange: PropTypes.func.isRequired  # Called with new value
+    actionLabel: PropTypes.string
 
   handleChange: (i, item) =>
     value = (@props.value or []).slice()
@@ -195,7 +202,7 @@ class EnumValuesEditorComponent extends React.Component
       _.map @props.value or [], (value, i) =>
         R EnumValueEditorComponent, key: i, value: value, onChange: @handleChange.bind(null, i), onRemove: @handleRemove.bind(null, i)
       R 'button', type: "button", className: "btn btn-link", onClick: @handleAdd,
-        "+ Add Value"    
+        "+ #{@props.actionLabel or "Add Value"}"
 
 # Edits an enum value (id, name)
 class EnumValueEditorComponent extends React.Component
