@@ -64,7 +64,7 @@ module.exports = class PropertyEditorComponent extends React.Component
           R 'option', key: "boolean", value: "boolean", "Boolean"
           R 'option', key: "geometry", value: "geometry", "Geometry"
           R 'option', key: "enum", value: "enum", "Enum"
-          R 'option', key: "enum", value: "measurement", "Measurement"
+          R 'option', key: "measurement", value: "measurement", "Measurement"
           R 'option', key: "enumset", value: "enumset", "Enum Set"
           R 'option', key: "date", value: "date", "Date"
           R 'option', key: "datetime", value: "datetime", "Datetime"
