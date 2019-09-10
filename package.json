@@ -5,7 +5,6 @@
   "description": "Expression UI library",
   "repository": "github:mWater/mwater-expressions-ui.git",
   "main": "lib/index.js",
-  "types": "index.d.ts",
   "style": "lib/index.css",
   "scripts": {
     "test": "node_modules/build-library/test-cli",
@@ -29,10 +28,10 @@
     "moment": "^2.10.6",
     "mwater-expressions": "github:mWater/mwater-expressions",
     "prop-types": "^15.5.10",
-    "react": "^16.5.2",
+    "react": "^16.9.0",
     "react-bootstrap-daterangepicker": "^1.0.3",
     "react-datepicker": "^1.8.0",
-    "react-dom": "^16.5.2",
+    "react-dom": "^16.9.0",
     "react-library": "github:mWater/react-library",
     "react-motion": "^0.3.1",
     "react-onclickout": "^2.0.4",
@@ -41,7 +40,7 @@
     "uuid": "^3.0.1"
   },
   "devDependencies": {
-    "@types/react": "^16.4.16",
+    "@types/react": "^16.9.2",
     "build-library": "github:mWater/build-library",
     "canonical-json": "0.0.4",
     "chai": "^3.4.0",
