@@ -40,10 +40,10 @@ export default class PropertyListComponent extends React.Component<{
   features?: ("sql" | "idField" | "uniqueCode" | "idType" | "joinType" | "code" | "expr" | "conditionExpr" | "section" | "table")[]
 
   /** function that returns the UI of the roles, called with a single argument, the array containing roles */
-  createRoleDisplayElem: (roles: any[]) => ReactNode
+  createRoleDisplayElem?: (roles: any[]) => ReactNode
   
   /** function that returns the UI of the roles for editing, gets passed two arguments
    * 1. the array containing roles
    * 2. The callback function that should be called when the roles change */
-  createRoleEditElem: (roles: any[], onChange: (roles: any[]) => void) => ReactNode
+  createRoleEditElem?: (roles: any[], onChange: (roles: any[]) => void) => ReactNode
 }> {}
