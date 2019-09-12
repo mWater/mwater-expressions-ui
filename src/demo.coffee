@@ -15,6 +15,7 @@ FilterExprComponent = require './FilterExprComponent'
 InlineExprsEditorComponent = require './InlineExprsEditorComponent'
 ContentEditableComponent = require './ContentEditableComponent'
 PropertyListComponent = require './properties/PropertyListComponent'
+IdLiteralComponent = require './IdLiteralComponent'
 require('./index.css')
 
 $ ->
@@ -28,6 +29,7 @@ $ ->
     # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
     ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
+    # ReactDOM.render(R(LiveIdLiteralTestComponent), document.getElementById("main"))
 
 class PropertyListContainerComponent extends React.Component
   @propTypes:
@@ -900,3 +902,48 @@ properties = [
     ]
   }
 ]
+
+class LiveIdLiteralTestComponent extends React.Component
+  constructor: (props) ->
+    super(props)
+    @state = { 
+      value: null
+      schema: null
+      dataSource: null
+    }
+
+  componentWillMount: ->
+    # apiUrl = "http://localhost:1234/v3/"
+    apiUrl = "https://api.mwater.co/v3/"
+    $.getJSON apiUrl + "jsonql/schema", (schemaJson) =>
+      schema = new Schema(schemaJson)
+      dataSource = new MWaterDataSource(apiUrl, null, false)
+
+      @setState(schema: schema, dataSource: dataSource)
+
+  # handleValueChange: (value) => 
+  #   # value = new ExprCleaner(@state.schema).cleanExpr(value, { aggrStatuses: ['literal', 'aggregate']}) #, { type: 'boolean' })
+  #   @setState(value: value)
+
+  render: ->
+    if not @state.schema
+      return null
+      
+    R 'div', style: { padding: 10 },
+      R(IdLiteralComponent, 
+        value: null
+        onChange: (val) => alert(val)
+        idTable: "admin_regions"
+        schema: @state.schema
+        dataSource: @state.dataSource
+      )
+      # R(FilterExprComponent, 
+      #   schema: @state.schema
+      #   dataSource: @state.dataSource
+      #   table: "entities.water_point"
+      #   value: @state.value
+      #   onChange: @handleValueChange
+      # )
+      R('br')
+      R('br')
+      R 'pre', null, JSON.stringify(@state.value, null, 2)

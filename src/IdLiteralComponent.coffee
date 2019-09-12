@@ -43,7 +43,6 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     idColumn = { type: "field", tableAlias: "main", column: table.primaryKey }
     labelExpr = @getLabelExpr()
 
-    # select <label column> as value from <table> where <label column> ~* 'input%' limit 50
     query = {
       type: "query"
       selects: [
@@ -93,17 +92,23 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     return { type: "field", tableAlias: "main", column: table.primaryKey }
 
   loadOptions: (input, cb) =>
-    # If no input
-    if not input
-      # No options
-      cb([])
-      return
-
     table = @props.schema.getTable(@props.idTable)
 
     # Primary key column
     idColumn = { type: "field", tableAlias: "main", column: table.primaryKey }
     labelExpr = @getLabelExpr()
+
+    if input
+      where = {
+        type: "op"
+        op: "like"
+        exprs: [
+          { type: "op", op: "lower", exprs: [labelExpr] }
+          input.toLowerCase() + "%"
+        ]
+      }
+    else  
+      where = null 
 
     # select <label column> as value from <table> where <label column> ~* 'input%' limit 50
     query = {
@@ -113,14 +118,7 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
         { type: "select", expr: labelExpr, alias: "label" }
       ]
       from: { type: "table", table: @props.idTable, alias: "main" }
-      where: {
-        type: "op"
-        op: "like"
-        exprs: [
-          { type: "op", op: "lower", exprs: [labelExpr] }
-          input.toLowerCase() + "%"
-        ]
-      }
+      where: where
       orderBy: [{ ordinal: 2, direction: "asc" }]
       limit: 50
     }
@@ -160,3 +158,4 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
         isLoading: @state.loading
         onChange: @handleChange
         noOptionsMessage: () => "Type to search"
+        defaultOptions: true
