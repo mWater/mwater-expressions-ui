@@ -8,5 +8,4 @@ exports.PropertyListComponent = require './properties/PropertyListComponent'
 exports.LiteralExprStringComponent = require './LiteralExprStringComponent'
 
 require "./index.css"
-require "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css"
  
