@@ -69,7 +69,7 @@ class ScalarExprTreeNodeComponent extends React.Component
   @propTypes:
     item: PropTypes.object.isRequired # Item to display
     onChange: PropTypes.func.isRequired # Called when item is selected
-    filter: PropTypes.text              # Optional string filter 
+    filter: PropTypes.string            # Optional string filter 
 
   @contextTypes:
     # Function to decorate the children component of a section. Passed { children: React element of children, tableId: id of table, section: section object from schema, filter: optional string filter }
