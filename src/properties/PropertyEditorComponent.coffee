@@ -165,9 +165,10 @@ class TableSelectComponent extends React.Component
     onChange: PropTypes.func.isRequired  # Called with new value
   
   render: ->
-    R 'select', className: "form-control", value: @props.value, onChange: ((ev) => @props.onChange(ev.target.value)),
-      _.map @props.schema.tables, (table) =>
-        R 'option', key: table.id, value: table.id, table.name[table.name._base or "en"]
+    return R ui.Select, 
+      value: @props.value, 
+      onChange: ((ev) => @props.onChange(ev.target.value))
+      options: _.map(@props.schema.tables, (table) => { value: table.id, label: table.name[table.name._base or "en"] })
 
 # Edits a list of enum values
 class EnumValuesEditorComponent extends React.Component
