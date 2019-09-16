@@ -166,8 +166,9 @@ class TableSelectComponent extends React.Component
   
   render: ->
     return R ui.Select, 
-      value: @props.value, 
-      onChange: ((ev) => @props.onChange(ev.target.value))
+      value: @props.value
+      onChange: @props.onChange
+      nullLabel: "Select table"
       options: _.map(@props.schema.tables, (table) => { value: table.id, label: table.name[table.name._base or "en"] })
 
 # Edits a list of enum values
