@@ -165,11 +165,12 @@ class TableSelectComponent extends React.Component
     onChange: PropTypes.func.isRequired  # Called with new value
   
   render: ->
+    options = _.sortBy(_.map(@props.schema.tables, (table) => { value: table.id, label: table.name[table.name._base or "en"] + " - " + table.id }), "value")
     return R ui.Select, 
       value: @props.value
       onChange: @props.onChange
       nullLabel: "Select table"
-      options: _.map(@props.schema.tables, (table) => { value: table.id, label: table.name[table.name._base or "en"] })
+      options: options
 
 # Edits a list of enum values
 class EnumValuesEditorComponent extends React.Component
