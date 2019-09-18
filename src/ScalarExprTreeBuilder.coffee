@@ -221,15 +221,16 @@ module.exports = class ScalarExprTreeBuilder
       joins = options.joins.slice()
       joins.push(column.id)
       initVal = options.initialValue
-      
-      # Do not allow selecting joins if the toTable doesn't have a label field. Otherwise, there is no way to filter it or otherwise manipulate it
-      if @schema.getTable(column.join.toTable)?.label
-        # Single joins have a value of id (if for correct table)
-        if column.join.type in ['n-1', '1-1'] and (not options.types or 'id' in options.types) and (not options.idTable or column.join.toTable == options.idTable)
-          node.value = { table: options.startTable, joins: options.joins, expr: { type: "field", table: options.table, column: column.id } }
-        # Multiple joins have a value of id[] (if for correct table)
-        if column.join.type in ['n-n', '1-n'] and (not options.types or 'id[]' in options.types) and (not options.idTable or column.join.toTable == options.idTable)
-          node.value = { table: options.startTable, joins: options.joins, expr: { type: "field", table: options.table, column: column.id } }
+
+      # Had to disable to allow UIBuilder to work as it needs raw ids      
+      # # Do not allow selecting joins if the toTable doesn't have a label field. Otherwise, there is no way to filter it or otherwise manipulate it
+      # if @schema.getTable(column.join.toTable)?.label
+      # Single joins have a value of id (if for correct table)
+      if column.join.type in ['n-1', '1-1'] and (not options.types or 'id' in options.types) and (not options.idTable or column.join.toTable == options.idTable)
+        node.value = { table: options.startTable, joins: options.joins, expr: { type: "field", table: options.table, column: column.id } }
+      # Multiple joins have a value of id[] (if for correct table)
+      if column.join.type in ['n-n', '1-n'] and (not options.types or 'id[]' in options.types) and (not options.idTable or column.join.toTable == options.idTable)
+        node.value = { table: options.startTable, joins: options.joins, expr: { type: "field", table: options.table, column: column.id } }
 
       node.children = =>
         # Determine if to include count. True if aggregated
