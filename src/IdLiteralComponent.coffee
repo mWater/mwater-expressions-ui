@@ -123,12 +123,15 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
       limit: 50
     }
     
-    if @props.filter
-      query.where = {
-        type: "op"
-        op: "and"
-        exprs: [query.where, @props.filter]
-      }
+    if @props.filter 
+      if query.where
+        query.where = {
+          type: "op"
+          op: "and"
+          exprs: [query.where, @props.filter]
+        }
+      else
+        query.where = @props.filter
 
     # Add custom orderings
     if @props.orderBy
