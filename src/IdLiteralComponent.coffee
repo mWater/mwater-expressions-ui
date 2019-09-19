@@ -164,3 +164,7 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
         defaultOptions: true
         closeMenuOnScroll: true
         menuPortalTarget: document.body
+        styles: { 
+          # Keep menu above fixed data table headers and map
+          menu: (style) => _.extend({}, style, zIndex: 2000)
+        }
