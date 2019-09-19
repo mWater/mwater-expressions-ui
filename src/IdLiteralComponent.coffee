@@ -162,3 +162,5 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
         onChange: @handleChange
         noOptionsMessage: () => "Type to search"
         defaultOptions: true
+        closeMenuOnScroll: true
+        menuPortalTarget: document.body
