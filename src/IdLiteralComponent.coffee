@@ -167,4 +167,5 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
         styles: { 
           # Keep menu above fixed data table headers and map
           menu: (style) => _.extend({}, style, zIndex: 2000)
+          menuPortal: (style) => _.extend({}, style, zIndex: 2000)
         }

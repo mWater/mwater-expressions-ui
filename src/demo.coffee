@@ -17,6 +17,7 @@ ContentEditableComponent = require './ContentEditableComponent'
 PropertyListComponent = require './properties/PropertyListComponent'
 IdLiteralComponent = require './IdLiteralComponent'
 require('./index.css')
+ModalPopupComponent = require('react-library/lib/ModalPopupComponent')
 
 $ ->
   $.getJSON "https://api.mwater.co/v3/jsonql/schema", (schemaJson) ->
@@ -928,15 +929,16 @@ class LiveIdLiteralTestComponent extends React.Component
   render: ->
     if not @state.schema
       return null
-      
+
     R 'div', style: { padding: 10 },
-      R(IdLiteralComponent, 
-        value: null
-        onChange: (val) => alert(val)
-        idTable: "admin_regions"
-        schema: @state.schema
-        dataSource: @state.dataSource
-      )
+      R ModalPopupComponent, null,
+        R(IdLiteralComponent, 
+          value: null
+          onChange: (val) => alert(val)
+          idTable: "admin_regions"
+          schema: @state.schema
+          dataSource: @state.dataSource
+        )
       # R(FilterExprComponent, 
       #   schema: @state.schema
       #   dataSource: @state.dataSource
