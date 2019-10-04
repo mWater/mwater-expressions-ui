@@ -156,6 +156,9 @@ class JoinEditorComponent extends React.Component
         R 'div', className: "col-md-12",
           R ui.FormGroup, label: "To Column",
             R 'input', type: 'text', className: "form-control", value: @props.value?.toColumn, onChange: ((ev) => @props.onChange(_.extend({}, @props.value, toColumn: ev.target.value)))
+        R 'div', className: "col-md-12",
+          R ui.FormGroup, label: "Inverse. Column (schema, not physical) in 'To Table' that is the reverse of this join. Optional",
+            R 'input', type: 'text', className: "form-control", value: @props.value?.inverse, onChange: ((ev) => @props.onChange(_.extend({}, @props.value, inverse: ev.target.value)))
 
 # Reusable table select Component
 class TableSelectComponent extends React.Component
