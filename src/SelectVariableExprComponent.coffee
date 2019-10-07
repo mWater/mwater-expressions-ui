@@ -5,14 +5,11 @@ R = React.createElement
 
 ExprUtils = require('mwater-expressions').ExprUtils
 
-module.exports = class SelectFieldExprComponent extends React.Component
+module.exports = class SelectVariableExprComponent extends React.Component
   @propTypes:
     value: PropTypes.object   # Current expression value
     onChange: PropTypes.func.isRequired # Called with new expression
     variables: PropTypes.array.isRequired
-
-    schema: PropTypes.object.isRequired
-    dataSource: PropTypes.object.isRequired # Data source to use to get values
 
     # Props to narrow down choices
     types: PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]

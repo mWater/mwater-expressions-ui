@@ -27,10 +27,10 @@ $ ->
     # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
     # ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(PropertyListContainerComponent, schema: schema, dataSource: dataSource, table: "entities.water_point"), document.getElementById("main"))
-    # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+    ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
-    ReactDOM.render(R(LiveIdLiteralTestComponent), document.getElementById("main"))
+    # ReactDOM.render(R(LiveIdLiteralTestComponent), document.getElementById("main"))
 
 class PropertyListContainerComponent extends React.Component
   @propTypes:
@@ -350,6 +350,11 @@ class LiveTestComponent extends React.Component
   render: ->
     if not @state.schema
       return null
+
+    variables = [
+      { id: "user", name: { _base: "en", en: "User" }, type: "id", idTable: "users" },
+      { id: "groups", name: { _base: "en", en: "Groups" }, type: "id[]", idTable: "groups" }
+    ]
       
     R 'div', style: { padding: 10 },
       R(ExprComponent, 
@@ -362,6 +367,7 @@ class LiveTestComponent extends React.Component
         # idTable: "t4"
         value: @state.value
         onChange: @handleValueChange
+        variables: variables
       )
       # R(FilterExprComponent, 
       #   schema: @state.schema
