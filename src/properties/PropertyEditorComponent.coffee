@@ -118,12 +118,12 @@ module.exports = class PropertyEditorComponent extends React.Component
           "Deprecated"
       
       if _.includes(@props.features, "uniqueCode") and @props.property.type == "text"
-        R 'input', type: 'checkbox', checked: @props.property.uniqueCode, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, uniqueCode: ev.target.checked))),
-          R 'label', null, "Unique Code"
+        R ui.Checkbox, value: @props.property.uniqueCode, onChange: ((value) => @props.onChange(_.extend({}, @props.property, uniqueCode: value))),
+          "Unique Code"
 
       if _.includes(@props.features, "unique") and @props.property.type in ["text", "id"]
-        R 'input', type: 'checkbox', checked: @props.property.unique, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, unique: ev.target.checked))),
-          R 'label', null, "Unique Value",
+        R ui.Checkbox, value: @props.property.unique, onChange: ((value) => @props.onChange(_.extend({}, @props.property, unique: value))),
+          "Unique Value"
 
       if _.includes(@props.features, "sql")
         R ui.FormGroup, label: "SQL",
