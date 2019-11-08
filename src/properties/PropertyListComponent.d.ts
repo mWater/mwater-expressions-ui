@@ -36,8 +36,9 @@ export default class PropertyListComponent extends React.Component<{
   * conditionExpr: allow fields to set a condition expression if they are conditionally displayed
   * section: allow adding sections
   * table: each property contains table
+  * unique: allow unique flag on properties
   */
-  features?: ("sql" | "idField" | "uniqueCode" | "idType" | "joinType" | "code" | "expr" | "conditionExpr" | "section" | "table")[]
+  features?: ("sql" | "idField" | "uniqueCode" | "idType" | "joinType" | "code" | "expr" | "conditionExpr" | "section" | "table" | "unique")[]
 
   /** function that returns the UI of the roles, called with a single argument, the array containing roles */
   createRoleDisplayElem?: (roles: any[]) => ReactNode
