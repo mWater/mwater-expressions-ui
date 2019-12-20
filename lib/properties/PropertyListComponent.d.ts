@@ -1,11 +1,11 @@
-import { Column, Schema, DataSource } from 'mwater-expressions'
+import { Column, Schema, DataSource, Section } from 'mwater-expressions'
 import React, { ReactNode } from 'react'
 
 export default class PropertyListComponent extends React.Component<{
   /** # array of properties */
-  properties: Column[]
+  properties: (Column | Section)[]
   
-  onChange: (properties: Column[]) => void
+  onChange: (properties: (Column | Section)[]) => void
 
   /** schema of all data. Needed for idType and expr features */
   schema?: Schema
