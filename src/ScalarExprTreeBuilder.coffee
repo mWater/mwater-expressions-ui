@@ -225,12 +225,17 @@ module.exports = class ScalarExprTreeBuilder
       # Had to disable to allow UIBuilder to work as it needs raw ids      
       # # Do not allow selecting joins if the toTable doesn't have a label field. Otherwise, there is no way to filter it or otherwise manipulate it
       # if @schema.getTable(column.join.toTable)?.label
+
       # Single joins have a value of id (if for correct table)
       if column.join.type in ['n-1', '1-1'] and (not options.types or 'id' in options.types) and (not options.idTable or column.join.toTable == options.idTable)
         node.value = { table: options.startTable, joins: options.joins, expr: { type: "field", table: options.table, column: column.id } }
       # Multiple joins have a value of id[] (if for correct table)
       if column.join.type in ['n-n', '1-n'] and (not options.types or 'id[]' in options.types) and (not options.idTable or column.join.toTable == options.idTable)
         node.value = { table: options.startTable, joins: options.joins, expr: { type: "field", table: options.table, column: column.id } }
+
+      # Don't allow selecting non-number fields in multiple joins, as it's too confusing https://github.com/mWater/mwater-portal/issues/1121
+      if @exprUtils.isMultipleJoins(options.startTable, options.joins)
+        node.value = null
 
       node.children = =>
         # Determine if to include count. True if aggregated
@@ -277,6 +282,10 @@ module.exports = class ScalarExprTreeBuilder
 
       # Skip if aggregate and not aggr allowed
       if not @exprUtils.isMultipleJoins(options.startTable, options.joins) and @exprUtils.getExprAggrStatus(fieldExpr) == "aggregate" and not options.includeAggr
+        return
+
+      # Don't allow selecting non-number fields in multiple joins, as it's too confusing https://github.com/mWater/mwater-portal/issues/1121
+      if @exprUtils.isMultipleJoins(options.startTable, options.joins) and column.type not in ['number']
         return
 
       if options.types 
