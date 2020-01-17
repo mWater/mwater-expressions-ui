@@ -43,7 +43,7 @@ module.exports = class ExprElementBuilder
     booleanOnly = options.types and options.types.length == 1 and options.types[0] == "boolean" 
 
     # True if an aggregate number or individual boolean is required, in which case any expression can be transformed into it
-    anyTypeAllowed = not options.types or ("boolean" in options.types and "individual" in options.aggrStatuses and options.types.length == 1) or ("number" in options.types and "aggregate" in options.aggrStatuses)
+    anyTypeAllowed = not options.types or ("boolean" in options.types and ("individual" in options.aggrStatuses or "literal" in options.aggrStatuses) and options.types.length == 1) or ("number" in options.types and "aggregate" in options.aggrStatuses)
 
     # Get current expression type
     exprType = @exprUtils.getExprType(expr)
