@@ -294,7 +294,7 @@ module.exports = class ExprElementBuilder
 
           rhsElem = @build(expr.exprs[1], table, (if onChange then rhsOnChange), {
             key: "rhs"
-            types: [opItem.exprTypes[1]]
+            types: _.uniq(_.map(opItems, (oi) => oi.exprTypes[1]))
             enumValues: if opItem.exprTypes[1] in ['enum', 'enumset'] then @exprUtils.getExprEnumValues(expr.exprs[0])  # Only include if type is enum or enumset
             idTable: @exprUtils.getExprIdTable(expr.exprs[0])
             refExpr: expr.exprs[0]
