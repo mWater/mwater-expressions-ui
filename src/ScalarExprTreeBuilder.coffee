@@ -286,7 +286,7 @@ module.exports = class ScalarExprTreeBuilder
 
       # Don't allow selecting non-number fields in multiple joins, as it's too confusing https://github.com/mWater/mwater-portal/issues/1121
       # unless they are ordered
-      if not @schema.getTable(options.table).ordered and @exprUtils.isMultipleJoins(options.startTable, options.joins) and column.type not in ['number']
+      if not @schema.getTable(options.table).ordering and @exprUtils.isMultipleJoins(options.startTable, options.joins) and column.type not in ['number']
         return
 
       if options.types 
