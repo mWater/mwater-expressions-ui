@@ -58,7 +58,7 @@ class ScalarExprTreeLeafComponent extends React.Component
       color: "#478"
     }
 
-    R 'div', style: style, className: "hover-grey-background", onClick: @handleClick,
+    R 'div', style: style, className: "hover-grey-background", onClick: @handleClick, "data-key": item.key,
       if @props.prefix
         R 'span', className: "text-muted", @props.prefix
       @props.item.name
