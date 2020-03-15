@@ -128,10 +128,10 @@ module.exports = class PropertyEditorComponent extends React.Component
       if _.includes(@props.features, "onDelete") and @props.property.type in ["id"]
         R ui.FormGroup, label: "On Delete",
           R ui.Select, 
-            value: @props.property.onDelete,
-            onChange: ((value) => @props.onChange(_.extend({}, @props.property, onDelete: value)))
+            value: @props.property.onDelete or null,
+            nullLabel: "No Action"
+            onChange: ((value) => @props.onChange(_.extend({}, @props.property, onDelete: value or undefined)))
             options: [
-              { label: "No Action", value: undefined }
               { label: "Cascade", value: "cascade" }
               { label: "Set Null", value: "set_null" }
             ]

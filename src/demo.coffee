@@ -25,9 +25,9 @@ $ ->
     dataSource = new MWaterDataSource("https://api.mwater.co/v3/", null, false)
 
     # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
-    # ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
+    ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(PropertyListContainerComponent, schema: schema, dataSource: dataSource, table: "entities.water_point"), document.getElementById("main"))
-    ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+    # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(LiveIdLiteralTestComponent), document.getElementById("main"))
@@ -52,8 +52,8 @@ class PropertyListContainerComponent extends React.Component
             schema: @props.schema
             dataSource: @props.dataSource
             # table: @props.table
-            tableIds: ["entities.water_point", "entities.community"]
-            features: ["idField", "sql", "joinType", "idType", "expr", "table"]
+            # tableIds: ["entities.water_point", "entities.community"]
+            features: ["idField", "sql", "joinType", "idType", "expr", "onDelete"]
             onChange: (properties) => @setState(properties: properties) 
             createRoleDisplayElem: (roles) => R 'span', null, JSON.stringify(roles)
             createRoleEditElem: (roles, onChange) => 
