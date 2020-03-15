@@ -37,8 +37,9 @@ export default class PropertyListComponent extends React.Component<{
   * section: allow adding sections
   * table: each property contains table
   * unique: allow unique flag on properties
+  * onDelete: allow undefined, "cascade" or "set_null"
   */
-  features?: ("sql" | "idField" | "uniqueCode" | "idType" | "joinType" | "code" | "expr" | "conditionExpr" | "section" | "table" | "unique")[]
+  features?: ("sql" | "idField" | "uniqueCode" | "idType" | "joinType" | "code" | "expr" | "conditionExpr" | "section" | "table" | "unique" | "onDelete")[]
 
   /** function that returns the UI of the roles, called with a single argument, the array containing roles */
   createRoleDisplayElem?: (roles: any[]) => ReactNode

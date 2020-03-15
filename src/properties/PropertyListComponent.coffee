@@ -35,6 +35,7 @@ class PropertyListComponent extends React.Component
     # section: allow adding sections
     # table: each property contains table
     # unique: allow unique flag on properties
+    # onDelete: allow undefined, "cascade" or "set_null"
     features: PropTypes.array
     
     # function that returns the UI of the roles, called with a single argument, the array containing roles

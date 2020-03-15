@@ -125,6 +125,17 @@ module.exports = class PropertyEditorComponent extends React.Component
         R ui.Checkbox, value: @props.property.unique, onChange: ((value) => @props.onChange(_.extend({}, @props.property, unique: value))),
           "Unique Value"
 
+      if _.includes(@props.features, "onDelete") and @props.property.type in ["id"]
+        R ui.FormGroup, label: "On Delete",
+          R ui.Select, 
+            value: @props.property.onDelete,
+            onChange: ((value) => @props.onChange(_.extend({}, @props.property, onDelete: value)))
+            options: [
+              { label: "No Action", value: undefined }
+              { label: "Cascade", value: "cascade" }
+              { label: "Set Null", value: "set_null" }
+            ]
+
       if _.includes(@props.features, "sql")
         R ui.FormGroup, label: "SQL",
           R 'input', type: 'text', className: "form-control", value: @props.property.sql, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, sql: ev.target.value)))
