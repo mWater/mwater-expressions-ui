@@ -25,10 +25,10 @@ $ ->
     dataSource = new MWaterDataSource("https://api.mwater.co/v3/", null, false)
 
     # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
-    # ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
+    ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(PropertyListContainerComponent, schema: schema, dataSource: dataSource, table: "entities.water_point"), document.getElementById("main"))
     # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
-    ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
+    # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(LiveIdLiteralTestComponent), document.getElementById("main"))
 
