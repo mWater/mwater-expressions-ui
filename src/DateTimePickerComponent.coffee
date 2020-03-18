@@ -27,10 +27,11 @@ module.exports = class DateTimePickerComponent extends React.Component
 
   render: ->
     return R DatePicker,
-      selected: @props.date
+      selected: if @props.date then @props.date.toDate() else null
       showTimeSelect: @props.timepicker
       inline: true
       showMonthDropdown: true
       showYearDropdown: true
-      onChange: @props.onChange
+      onChange: (v) =>
+        @props.onChange(if v then moment(v) else null)
 
