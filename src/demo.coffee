@@ -25,10 +25,10 @@ $ ->
     dataSource = new MWaterDataSource("https://api.mwater.co/v3/", null, false)
 
     # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
-    ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
+    # ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(PropertyListContainerComponent, schema: schema, dataSource: dataSource, table: "entities.water_point"), document.getElementById("main"))
     # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
-    # ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
+    ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(LiveIdLiteralTestComponent), document.getElementById("main"))
 
@@ -244,7 +244,7 @@ class MockTestComponent extends React.Component
         table: "t1"
         variables: variables
         # types: ["text", "enum", "boolean", "date", "number", "datetime"]
-        types: ['boolean']
+        # types: ['boolean']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         # types: ['number', 'boolean', 'date', 'datetime', 'text', 'enum']

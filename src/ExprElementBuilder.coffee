@@ -133,6 +133,26 @@ module.exports = class ExprElementBuilder
         onChange(_.extend({}, expr, { cases: cases }))
       })
 
+    # Add case mapping for enum
+    if exprType == "enum"
+      links.push({ label: "Map Values", onClick: => 
+        newExpr = {
+          type: "case"
+          table: expr.table
+          cases: _.map(@exprUtils.getExprEnumValues(expr), (ev) =>
+            literal = { type: "literal", valueType: "enum", value: ev.id }
+
+            return { 
+              when: { type: "op", table: expr.table, op: "=", exprs: [expr, literal] }
+              then: { type: "literal", valueType: "text", value: ExprUtils.localizeString(ev.name) }
+            }
+          )
+          else: null
+        }
+
+        onChange(newExpr)
+      })
+
     # links.push({ label: "Remove", onClick: => onChange(null) })
     if links.length > 0 and onChange
       elem = R WrappedLinkComponent, links: links, elem
