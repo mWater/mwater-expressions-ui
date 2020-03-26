@@ -36,6 +36,7 @@ class PropertyListComponent extends React.Component
     # table: each property contains table
     # unique: allow unique flag on properties
     # onDelete: allow undefined, "cascade" or "set_null"
+    # dataurlType: allow dataurl type
     features: PropTypes.array
     
     # function that returns the UI of the roles, called with a single argument, the array containing roles
@@ -208,6 +209,7 @@ class PropertyComponent extends React.Component
     boolean: "fa fa-toggle-on"
     id: "fa fa-arrow-right"
     join: "fa fa-link"
+    dataurl: "fa fa-file"
     
   @contextTypes:
     clipboard: PropTypes.object

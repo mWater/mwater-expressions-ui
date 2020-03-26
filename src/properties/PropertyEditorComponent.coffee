@@ -77,6 +77,8 @@ module.exports = class PropertyEditorComponent extends React.Component
             R 'option', key: "id[]", value: "id[]", "Reference List"
           if _.includes(@props.features, "joinType")
             R 'option', key: "join", value: "join", "Join"
+          if _.includes(@props.features, "dataurlType")
+            R 'option', key: "dataurl", value: "dataurl", "Data URL (inline file storage)"
       if @props.property.type in ["enum", "enumset"]
         R ui.FormGroup, label: "Values",
           R EnumValuesEditorComponent, value: @props.property.enumValues, onChange: ((value) => @props.onChange(_.extend({}, @props.property, enumValues: value)))
