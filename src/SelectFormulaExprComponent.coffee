@@ -11,7 +11,7 @@ module.exports = class SelectFormulaExprComponent extends React.Component
     onChange: PropTypes.func.isRequired # Called with new expression
 
     # Props to narrow down choices
-    table: PropTypes.string.isRequired # Current table
+    table: PropTypes.string     # Current table
     allowCase: PropTypes.bool    # Allow case statements
     types: PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
     aggrStatuses: PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
@@ -32,36 +32,43 @@ module.exports = class SelectFormulaExprComponent extends React.Component
   handleIfSelected: =>
     ifExpr = {
       type: "case"
-      table: @props.table
       cases: [{ when: null, then: null }]
       else: null
     }
+    if @props.table
+      ifExpr.table = @props.table
+
     @props.onChange(ifExpr)
 
   handleScoreSelected: =>
     scoreExpr = {
       type: "score"
-      table: @props.table
       input: null
       scores: {}
     }
+    if @props.table
+      scoreExpr.table = @props.table
+
     @props.onChange(scoreExpr)
 
   handleBuildEnumsetSelected: =>
     expr = {
       type: "build enumset"
-      table: @props.table
       values: {}
     }
+    if @props.table
+      expr.table = @props.table
     @props.onChange(expr)
 
   handleOpSelected: (op) =>
     expr = {
       type: "op"
-      table: @props.table
       op: op
       exprs: []
     }
+    if @props.table
+      expr.table = @props.table
+
     @props.onChange(expr)
 
   render: ->

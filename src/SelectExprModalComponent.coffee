@@ -65,7 +65,7 @@ module.exports = class SelectExprModalComponent extends React.Component
           aggrStatuses: @props.aggrStatuses
       })
 
-    if table
+    if table or "literal" in @props.aggrStatuses
       tabs.push({
         id: "formula"
         label: [R('i', className: "fa fa-calculator"), " Formula"]
