@@ -187,6 +187,8 @@ class MockTestComponent extends React.Component
       { id: "boolean", name: { en: "Boolean" }, type: "boolean" }
       { id: "geometry", name: { en: "Geometry" }, type: "geometry" }
       { id: "1-2", name: { en: "T1->T2" }, type: "join", join: { fromColumn: "primary", toTable: "t2", toColumn: "t1", type: "1-n" }}
+      { id: "id2", name: { en: "Id2" }, type: "id", idTable: "t2"}
+      { id: "id2[]", name: { en: "Id2[]" }, type: "id[]", idTable: "t2"}
 
       # Expressions
       { id: "expr_enum", name: { en: "Expr Enum"}, type: "expr", expr: { type: "field", table: "t1", column: "enum" } }

@@ -207,8 +207,8 @@ module.exports = class ScalarExprTreeBuilder
     # Determine if matches
     matches = filterMatches(options.filter, node.name) or (node.desc and filterMatches(options.filter, node.desc))
 
-    # If join, add children
-    if column.type == "join"
+    # If join (or id, id[]), add children
+    if column.type in ["join", "id", "id[]"]
       # Allow looping now as it prevents some useful calculations
       # # Do not allow looping (selecting a->b->a) by getting a list of all tables visited so far
       # visitedTables = []
@@ -226,11 +226,17 @@ module.exports = class ScalarExprTreeBuilder
       # # Do not allow selecting joins if the toTable doesn't have a label field. Otherwise, there is no way to filter it or otherwise manipulate it
       # if @schema.getTable(column.join.toTable)?.label
 
-      # Single joins have a value of id (if for correct table)
-      if column.join.type in ['n-1', '1-1'] and (not options.types or 'id' in options.types) and (not options.idTable or column.join.toTable == options.idTable)
+      # Handle id
+      if column.type == "id" and (not options.types or 'id' in options.types) and (not options.idTable or column.idTable == options.idTable)
         node.value = { table: options.startTable, joins: options.joins, expr: { type: "field", table: options.table, column: column.id } }
       # Multiple joins have a value of id[] (if for correct table)
-      if column.join.type in ['n-n', '1-n'] and (not options.types or 'id[]' in options.types) and (not options.idTable or column.join.toTable == options.idTable)
+      if column.type == "id[]" and (not options.types or 'id[]' in options.types) and (not options.idTable or column.idTable == options.idTable)
+        node.value = { table: options.startTable, joins: options.joins, expr: { type: "field", table: options.table, column: column.id } }
+      # Single joins have a vlaue of id (if for correct table)
+      if column.type == "join" and column.join.type in ['n-1', '1-1'] and (not options.types or 'id' in options.types) and (not options.idTable or column.join.toTable == options.idTable)
+        node.value = { table: options.startTable, joins: options.joins, expr: { type: "field", table: options.table, column: column.id } }
+      # Multiple joins have a value of id[] (if for correct table)
+      if column.type == "join" and column.join.type in ['n-n', '1-n'] and (not options.types or 'id[]' in options.types) and (not options.idTable or column.join.toTable == options.idTable)
         node.value = { table: options.startTable, joins: options.joins, expr: { type: "field", table: options.table, column: column.id } }
 
       # Don't allow selecting non-number fields in multiple joins, as it's too confusing https://github.com/mWater/mwater-portal/issues/1121
@@ -249,7 +255,7 @@ module.exports = class ScalarExprTreeBuilder
 
         return @createTableChildNodes({
           startTable: options.startTable
-          table: column.join.toTable
+          table: if column.type == "join" then column.join.toTable else column.idTable
           joins: joins
           types: options.types
           includeAggr: includeAggr

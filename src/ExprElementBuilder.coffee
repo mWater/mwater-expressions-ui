@@ -180,7 +180,7 @@ module.exports = class ExprElementBuilder
     for join in expr.joins
       joinCol = @schema.getColumn(destTable, join)
       joinsStr += ExprUtils.localizeString(joinCol.name, @locale) + " > "
-      destTable = joinCol.join.toTable
+      destTable = if joinCol.type == "join" then joinCol.join.toTable else joinCol.idTable
 
     # If just a field or id inside, add to string and make a simple link control
     if expr.expr and expr.expr.type in ["field", "id"]
