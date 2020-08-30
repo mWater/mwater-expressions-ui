@@ -1,7 +1,6 @@
 $ = require 'jquery'
 PropTypes = require('prop-types')
 React = require 'react'
-console.log(React)
 ReactDOM = require 'react-dom'
 R = React.createElement
 Schema = require("mwater-expressions").Schema
@@ -19,6 +18,9 @@ IdLiteralComponent = require './IdLiteralComponent'
 require('./index.css')
 ModalPopupComponent = require('react-library/lib/ModalPopupComponent')
 
+HTML5Backend = require('react-dnd-html5-backend').default
+DragDropContext = require("react-dnd").DragDropContext
+
 $ ->
   $.getJSON "https://api.mwater.co/v3/jsonql/schema", (schemaJson) ->
     schema = new Schema(schemaJson)
@@ -26,7 +28,7 @@ $ ->
 
     # ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
     # ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
-    # ReactDOM.render(R(PropertyListContainerComponent, schema: schema, dataSource: dataSource, table: "entities.water_point"), document.getElementById("main"))
+    # ReactDOM.render(R(PropertyListContainerComponentWrapped, schema: schema, dataSource: dataSource, table: "entities.water_system"), document.getElementById("main"))
     # ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
     ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
     # ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
@@ -41,8 +43,9 @@ class PropertyListContainerComponent extends React.Component
     super(props)
 
     @state = { 
-      properties: properties
+      properties: @props.schema.getTable("entities.water_system").contents
     }
+
   render: ->
     R 'div', className: "row",
       R 'div', className: "col-md-6",
@@ -51,16 +54,18 @@ class PropertyListContainerComponent extends React.Component
             properties: @state.properties
             schema: @props.schema
             dataSource: @props.dataSource
-            # table: @props.table
+            table: @props.table
             # tableIds: ["entities.water_point", "entities.community"]
-            features: ["idField", "sql", "joinType", "idType", "expr", "onDelete"]
+            features: ["idField", "joinType", "idType", "expr", "onDelete"]
             onChange: (properties) => @setState(properties: properties) 
-            createRoleDisplayElem: (roles) => R 'span', null, JSON.stringify(roles)
-            createRoleEditElem: (roles, onChange) => 
-              R 'input', className: "form-control", value: JSON.stringify(roles), onChange: (ev) -> onChange(JSON.parse(ev.target.value))
+            # createRoleDisplayElem: (roles) => R 'span', null, JSON.stringify(roles)
+            # createRoleEditElem: (roles, onChange) => 
+            #   R 'input', className: "form-control", value: JSON.stringify(roles), onChange: (ev) -> onChange(JSON.parse(ev.target.value))
       R 'div', className: "col-md-6",
         R 'pre', null, JSON.stringify(@state.properties, null, 2)
           
+PropertyListContainerComponentWrapped = DragDropContext(HTML5Backend)(PropertyListContainerComponent)
+
 
 class ContentEditableTestComponent extends React.Component
   constructor: (props) ->

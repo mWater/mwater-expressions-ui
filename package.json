@@ -31,6 +31,8 @@
     "react": "^16.13.1",
     "react-bootstrap-daterangepicker": "^1.0.3",
     "react-datepicker": "^1.8.0",
+    "react-dnd": "^6.0.0",
+    "react-dnd-html5-backend": "^6.0.0",
     "react-dom": "^16.13.1",
     "react-library": "github:mWater/react-library",
     "react-motion": "^0.3.1",
@@ -41,6 +43,7 @@
   },
   "devDependencies": {
     "@types/react": "^16.9.43",
+    "@types/lodash": "^3.10.3",
     "build-library": "github:mWater/build-library",
     "canonical-json": "0.0.4",
     "chai": "^3.4.0",

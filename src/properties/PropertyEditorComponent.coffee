@@ -9,6 +9,7 @@ LocalizedStringEditorComp = require '../LocalizedStringEditorComp'
 ExprComponent = require '../ExprComponent'
 ExprUtils = require('mwater-expressions').ExprUtils
 IdFieldComponent = require './IdFieldComponent'
+JoinEditorComponent = require('./JoinEditorComponent').JoinEditorComponent
 
 # Edit a single property
 module.exports = class PropertyEditorComponent extends React.Component
@@ -108,7 +109,11 @@ module.exports = class PropertyEditorComponent extends React.Component
 
       if @props.property.type == "join"
         R ui.FormGroup, label: "Join",
-          R JoinEditorComponent, value: @props.property.join, onChange: ((join) => @props.onChange(_.extend({}, @props.property, join: join)))
+          R JoinEditorComponent, 
+            join: @props.property.join, 
+            onChange: ((join) => @props.onChange(_.extend({}, @props.property, join: join)))
+            schema: @props.schema
+            fromTableId: @props.property.table or @props.table
       
       if @props.property.type in ["id", "id[]"]
         R ui.FormGroup, label: "ID Table",
@@ -145,37 +150,6 @@ module.exports = class PropertyEditorComponent extends React.Component
       if @props.createRoleEditElem
         R ui.FormGroup, label: "Roles",
           @props.createRoleEditElem(@props.property.roles or [], (roles) => @props.onChange(_.extend({}, @props.property, roles: roles)) )
-
-
-# Edits join
-class JoinEditorComponent extends React.Component
-  @propTypes: 
-    value: PropTypes.object  # The join object
-    onChange: PropTypes.func.isRequired  # Called with new value
-  
-  render: ->
-    R 'div', null,
-      R 'div', className: "row",
-        R 'div', className: "col-md-12",
-          R ui.FormGroup, label: "Type",
-            R 'select', className: "form-control", value: @props.value?.type, onChange: ((ev) => @props.onChange(_.extend({}, @props.value, type: ev.target.value))),
-              R 'option', key: "", value: "", ""
-              R 'option', key: "1-n", value: "1-n", "One to many"
-              R 'option', key: "n-1", value: "n-1", "Many to one"
-              R 'option', key: "n-n", value: "n-n", "Many to many"
-              R 'option', key: "1-1", value: "1-1", "one to one"
-        R 'div', className: "col-md-12",
-          R ui.FormGroup, label: "To Table",
-            R 'input', type: 'text', className: "form-control", value: @props.value?.toTable, onChange: ((ev) => @props.onChange(_.extend({}, @props.value, toTable: ev.target.value)))
-        R 'div', className: "col-md-12",
-          R ui.FormGroup, label: "From Column",
-            R 'input', type: 'text', className: "form-control", value: @props.value?.fromColumn, onChange: ((ev) => @props.onChange(_.extend({}, @props.value, fromColumn: ev.target.value)))
-        R 'div', className: "col-md-12",
-          R ui.FormGroup, label: "To Column",
-            R 'input', type: 'text', className: "form-control", value: @props.value?.toColumn, onChange: ((ev) => @props.onChange(_.extend({}, @props.value, toColumn: ev.target.value)))
-        R 'div', className: "col-md-12",
-          R ui.FormGroup, label: "Inverse. Column (schema, not physical) in 'To Table' that is the reverse of this join. Optional",
-            R 'input', type: 'text', className: "form-control", value: @props.value?.inverse, onChange: ((ev) => @props.onChange(_.extend({}, @props.value, inverse: ev.target.value)))
 
 # Reusable table select Component
 class TableSelectComponent extends React.Component
