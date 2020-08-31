@@ -132,6 +132,10 @@ module.exports = class PropertyEditorComponent extends React.Component
         R ui.Checkbox, value: @props.property.unique, onChange: ((value) => @props.onChange(_.extend({}, @props.property, unique: value))),
           "Unique Value"
 
+      if _.includes(@props.features, "indexed") and @props.property.type in ["text", "id", "number", "enum"]
+        R ui.Checkbox, value: @props.property.indexed, onChange: ((value) => @props.onChange(_.extend({}, @props.property, indexed: value))),
+          "Indexed (improves query speed, but slows updates)"
+
       if _.includes(@props.features, "onDelete") and @props.property.type in ["id"]
         R ui.FormGroup, label: "On Delete",
           R ui.Select, 

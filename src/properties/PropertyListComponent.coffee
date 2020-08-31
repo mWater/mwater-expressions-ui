@@ -36,6 +36,7 @@ class PropertyListComponent extends React.Component
     # table: each property contains table
     # unique: allow unique flag on properties
     # onDelete: allow undefined, "cascade" or "set_null"
+    # indexed: allow indexed flag on properties
     # dataurlType: allow dataurl type
     features: PropTypes.array
     
