@@ -64,18 +64,6 @@ module.exports = class ScalarExprTreeBuilder
   # depth: current depth. First level is 0
   createTableChildNodes: (options) ->
     nodes = []
-    # Create self (id) type if id type allowed and idTable matches
-    if not options.includeAggr and options.idTable == options.table and (not options.types or "id" in options.types)
-      node = {
-        name: ExprUtils.localizeString(@schema.getTable(options.table).name, @locale) or "(unnamed)"
-        desc: ExprUtils.localizeString(@schema.getTable(options.table).desc, @locale) 
-        value: { table: options.startTable, joins: options.joins, expr: { type: "id", table: options.table } }
-        tableId: options.table
-        key: "(id)"
-      }
-      if filterMatches(options.filter, node.name)
-        nodes.push(node)
-
     table = @schema.getTable(options.table)
 
     # Create count node if any joins
@@ -100,6 +88,18 @@ module.exports = class ScalarExprTreeBuilder
           value: { table: options.startTable, joins: options.joins, expr: { type: "variable", variableId: variable.id, table: options.table } }
           key: "variable:" + variable.id
         })
+
+    # Create self (id) type if id type allowed and idTable matches
+    if not options.includeAggr and (not options.idTable or options.idTable == options.table) and (not options.types or "id" in options.types)
+      node = {
+        name: ExprUtils.localizeString(@schema.getTable(options.table).name, @locale) or "(unnamed)"
+        desc: "Id of the row"
+        value: { table: options.startTable, joins: options.joins, expr: { type: "id", table: options.table } }
+        tableId: options.table
+        key: "(id)"
+      }
+      if filterMatches(options.filter, node.name)
+        nodes.push(node)
 
     # Include advanced option (null expression with only joins that can be customized)
     if options.depth > 0 and filterMatches(options.filter, "Advanced")

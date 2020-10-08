@@ -20,7 +20,7 @@ describe "ScalarExprTreeBuilder", ->
 
   it "returns columns", ->
     nodes = new ScalarExprTreeBuilder(@schema).getTree(table: "t1")
-    assert.deepEqual _.pluck(nodes, "name"), ["C1"]
+    assert.deepEqual _.pluck(nodes, "name"), ["C1", "T1"]
     assert _.isEqual(nodes[0].value, { table: "t1", joins: [], expr: { type: "field", table: "t1", column: "c1"}}), JSON.stringify(nodes[0].value)
 
   it "allows selection of single join as id type", ->
@@ -47,7 +47,7 @@ describe "ScalarExprTreeBuilder", ->
 
   it "returns table sections if present", ->
     @schema = new Schema()
-    @schema = @schema.addTable({ id: "t1", contents: [
+    @schema = @schema.addTable({ id: "t1", name: { en: "T1" }, contents: [
         { id: "c2", name: { en: "C2" }, type: "text" }
         { name: { en: "A" }, type: "section", contents: [
           { id: "c4", name: { en: "C4" }, type: "text" }
@@ -56,7 +56,7 @@ describe "ScalarExprTreeBuilder", ->
     ]})
 
     nodes = new ScalarExprTreeBuilder(@schema).getTree(table: "t1")
-    assert.deepEqual _.pluck(nodes, "name"), ["C2", "A"]
+    assert.deepEqual _.pluck(nodes, "name"), ["C2", "A", "T1"]
     assert.equal nodes[1].children().length, 2
     assert.equal nodes[1].children()[0].name, "C4"
 
@@ -154,7 +154,7 @@ describe "ScalarExprTreeBuilder", ->
   it "limits to one table", ->
     # Should not add root node
     nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1" })
-    assert.deepEqual _.pluck(nodes, "name"), ["C1"]
+    assert.deepEqual _.pluck(nodes, "name"), ["C1", "T1"]
 
   describe "limits type", ->
     it "includes direct types", ->
