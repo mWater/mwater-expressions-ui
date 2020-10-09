@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { Join, Schema, ExprUtils } from "mwater-expressions"
-import { useState } from "react"
+import { ChangeEvent, useState } from "react"
 import React from "react"
 import { FormGroup, Toggle, TextInput, Select } from 'react-library/lib/bootstrap'
 
@@ -27,10 +27,16 @@ export const JoinEditorComponent = (props: {
   /** Manual toggle to advanced mode */
   const [forceAdvanced, setForceAdvanced] = useState(false)
 
+  /** Manual toggle for JsonQL mode (very advanced joins) */
+  const [forceJsonQLMode, setForceJsonQLMode] = useState(false)
+
   const handleReset = () => {
     setForceAdvanced(false)
     onChange(undefined)
   }
+
+  // Determine if in JsonQL mode
+  const jsonQLMode = forceJsonQLMode || (join && join.jsonql)
 
   // Advanced mode if forced, or exists and is non-standard, or no from table
   if (forceAdvanced || !fromTable || (join && !isStandard)) {
@@ -54,18 +60,34 @@ export const JoinEditorComponent = (props: {
           onChange={toTable => onChange(_.extend({}, partialJoin, { toTable: toTable }))}
         />
       </FormGroup>
-      <FormGroup key="fromColumn" label="From Column">
-        <TextInput
-          value={partialJoin.fromColumn as string || ""}
-          onChange={fromColumn => onChange(_.extend({}, partialJoin, { fromColumn: fromColumn }))}
-        />
-      </FormGroup>
-      <FormGroup key="toColumn" label="To Column">
-        <TextInput
-          value={partialJoin.toColumn as string || ""}
-          onChange={toColumn => onChange(_.extend({}, partialJoin, { toColumn: toColumn }))}
-        />
-      </FormGroup>
+      { jsonQLMode ?
+        <div>
+          <button type="button" className="btn btn-xs btn-link" style={{ float: "right" }} onClick={() => {
+            setForceJsonQLMode(false)
+            onChange(_.omit(partialJoin, "jsonql"))
+          }}>Normal Mode</button>
+          <JsonQLEditor
+            jsonql={partialJoin.jsonql}
+            onChange={jsonql => { onChange(_.extend({}, partialJoin, { jsonql: jsonql }))}}
+          />
+        </div>
+      :
+        <div>
+          <button type="button" className="btn btn-xs btn-link" style={{ float: "right" }} onClick={() => setForceJsonQLMode(true)}>JsonQL Mode</button>
+          <FormGroup key="fromColumn" label="From Column" hint="JsonQL-level column, not schema column">
+            <TextInput
+              value={partialJoin.fromColumn as string || ""}
+              onChange={fromColumn => onChange(_.extend({}, partialJoin, { fromColumn: fromColumn }))}
+            />
+          </FormGroup>
+          <FormGroup key="toColumn" label="To Column" hint="JsonQL-level column, not schema column">
+            <TextInput
+              value={partialJoin.toColumn as string || ""}
+              onChange={toColumn => onChange(_.extend({}, partialJoin, { toColumn: toColumn }))}
+            />
+          </FormGroup>
+        </div>
+      }
       <FormGroup key="inverse" label="Inverse. Column (schema, not physical) in 'To Table' that is the reverse of this join. Optional">
         <TextInput
           value={partialJoin.inverse || ""}
@@ -114,4 +136,45 @@ export const JoinEditorComponent = (props: {
 interface InverseOption {
   value: { table: string, column: string }
   label: string
+}
+
+function JsonQLEditor(props: {
+  jsonql: any
+  onChange: (jsonql: any) => void
+}) {
+  const [text, setText] = useState(() => {
+    return props.jsonql ? JSON.stringify(props.jsonql, null, 2) : ""
+  })
+
+  function isValid(t: string) {
+    if (!t) {
+      return true
+    }
+    try {
+      JSON.parse(t)
+      return true
+    } catch (err) {
+      return false
+    }
+  }
+
+  function handleChange(ev: ChangeEvent<HTMLTextAreaElement>) {
+    const t = ev.target.value
+    setText(t)
+
+    // Attempt to parse
+    if (isValid(t)) {
+      props.onChange(t ? JSON.parse(t) : undefined)
+    }
+  }
+
+  return <FormGroup label="JsonQL expression for join. Use {to} and {from} as table aliases">
+    <textarea 
+      rows={10} 
+      className="form-control" 
+      value={text} 
+      onChange={handleChange} 
+      style={ isValid(text) ? {} : { backgroundColor: "#FFEEEE" }}/>
+  </FormGroup>
+  
 }
