@@ -148,9 +148,13 @@ module.exports = class PropertyEditorComponent extends React.Component
             ]
 
       if _.includes(@props.features, "sql")
-        R ui.FormGroup, label: "SQL",
+        R ui.FormGroup, label: "SQL", hint: "Use {alias} for the table alias",
           R 'input', type: 'text', className: "form-control", value: @props.property.sql, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, sql: ev.target.value)))
-      
+
+      if _.includes(@props.features, "reverseSql")
+        R ui.FormGroup, label: "Reverse SQL", hint: "Use {value} for the value to convert",
+          R 'input', type: 'text', className: "form-control", value: @props.property.reverseSql, onChange: ((ev) => @props.onChange(_.extend({}, @props.property, reverseSql: ev.target.value)))
+
       if @props.createRoleEditElem
         R ui.FormGroup, label: "Roles",
           @props.createRoleEditElem(@props.property.roles or [], (roles) => @props.onChange(_.extend({}, @props.property, roles: roles)) )

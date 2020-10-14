@@ -26,7 +26,8 @@ export default class PropertyListComponent extends React.Component<{
   // allPropertyIds?: arrayOf(PropTypes.string.isRequired)  
   
   /* Array of features to be enabled apart from the defaults. Features are:
-  * sql: include raw SQL editor
+  * sql: include raw SQL editor. Use {alias} for the table name
+  * reverseSql: include reverse SQL editor. Use {value} for the value sql that will be replaced. e.g. {value}::text
   * idField: show id field for properties
   * uniqueCode: allow uniqueCode flag on properties
   * idType: allow id-type fields
@@ -41,7 +42,9 @@ export default class PropertyListComponent extends React.Component<{
   * dataurlType: allow dataurl type fields
   * indexed: allow indexed flag on properties
   */
-  features?: ("sql" | "idField" | "uniqueCode" | "idType" | "joinType" | "code" | "expr" | "conditionExpr" | "section" | "table" | "unique" | "onDelete" | "dataurlType" | "indexed")[]
+  features?: ("sql" | "idField" | "uniqueCode" | "idType" | "joinType" 
+    | "code" | "expr" | "conditionExpr" | "section" | "table" | "unique" 
+    | "onDelete" | "dataurlType" | "indexed" | "reverseSql")[]
 
   /** function that returns the UI of the roles, called with a single argument, the array containing roles */
   createRoleDisplayElem?: (roles: any[]) => ReactNode

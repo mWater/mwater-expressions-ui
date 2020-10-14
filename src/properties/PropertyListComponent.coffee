@@ -25,6 +25,7 @@ class PropertyListComponent extends React.Component
     
     # Array of features to be enabled apart from the defaults. Features are:
     # sql: include raw SQL editor
+    # reverseSql: include reverse SQL editor. Use {value} for the value sql that will be replaced. e.g. {value}::text
     # idField: show id field for properties
     # uniqueCode: allow uniqueCode flag on properties
     # idType: allow id-type fields
@@ -282,7 +283,7 @@ class PropertyComponent extends React.Component
                 forbiddenPropertyIds: _.without(@props.allPropertyIds, @props.property.id)
       @renderControls()  
       if @props.property.deprecated
-          R 'div', className: "pl-item-deprecated-overlay", ""
+        R 'div', className: "pl-item-deprecated-overlay", ""
       R 'div', className: "pl-item", onDoubleClick: @handleEdit, 
         R 'div', className: "pl-item-detail",
           R 'span', className: "pl-item-detail-indicator",
