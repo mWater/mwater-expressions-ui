@@ -301,7 +301,7 @@ class PropertyComponent extends React.Component
               R 'div', className: "pl-item-detail-description",
                 R LocalizedStringComponent, value: @props.property.desc
             if @props.property.sql
-              R 'div', className: "pl-item-detail-sql text-muted", @props.property.sql
+              R 'div', className: "pl-item-detail-sql text-info", "SQL: #{@props.property.sql}"
             if @props.property.type in ["enum", "enumset"] and @props.property.enumValues.length > 0
               R 'div', className: "pl-item-detail-enum text-muted", @renderEnumValues(@props.property.enumValues)
             if _.includes(@props.features, "table") and @props.property.table
