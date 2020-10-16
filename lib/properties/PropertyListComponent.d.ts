@@ -41,10 +41,11 @@ export default class PropertyListComponent extends React.Component<{
   * onDelete: allow undefined, "cascade" or "set_null"
   * dataurlType: allow dataurl type fields
   * indexed: allow indexed flag on properties
+  * required: allow required flag on properties
   */
   features?: ("sql" | "idField" | "uniqueCode" | "idType" | "joinType" 
     | "code" | "expr" | "conditionExpr" | "section" | "table" | "unique" 
-    | "onDelete" | "dataurlType" | "indexed" | "reverseSql")[]
+    | "onDelete" | "dataurlType" | "indexed" | "reverseSql" | "required")[]
 
   /** function that returns the UI of the roles, called with a single argument, the array containing roles */
   createRoleDisplayElem?: (roles: any[]) => ReactNode

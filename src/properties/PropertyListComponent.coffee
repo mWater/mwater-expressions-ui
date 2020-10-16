@@ -39,6 +39,7 @@ class PropertyListComponent extends React.Component
     # onDelete: allow undefined, "cascade" or "set_null"
     # indexed: allow indexed flag on properties
     # dataurlType: allow dataurl type
+    # required: allow required flag on properties
     features: PropTypes.array
     
     # function that returns the UI of the roles, called with a single argument, the array containing roles
@@ -293,6 +294,8 @@ class PropertyComponent extends React.Component
               if _.includes(@props.features, "idField") and @props.property.id
                 R 'small', null, "[#{@props.property.id}] "
               R LocalizedStringComponent, value: @props.property.name
+              if @props.property.required
+                R 'span', style: { color: "red" }, "*"
               if @props.property.expr
                 R 'span', className: "text-muted",
                   " "
@@ -302,6 +305,8 @@ class PropertyComponent extends React.Component
                 R LocalizedStringComponent, value: @props.property.desc
             if @props.property.sql
               R 'div', className: "pl-item-detail-sql text-info", "SQL: #{@props.property.sql}"
+            if @props.property.reverseSql
+              R 'div', className: "pl-item-detail-sql text-info", "Reverse SQL: #{@props.property.reverseSql}"
             if @props.property.type in ["enum", "enumset"] and @props.property.enumValues.length > 0
               R 'div', className: "pl-item-detail-enum text-muted", @renderEnumValues(@props.property.enumValues)
             if _.includes(@props.features, "table") and @props.property.table
