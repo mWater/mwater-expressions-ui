@@ -119,14 +119,14 @@ module.exports = class PropertyEditorComponent extends React.Component
         R ui.FormGroup, label: "ID Table",
           R TableSelectComponent, value: @props.property.idTable, schema: @props.schema, onChange: ((table) => @props.onChange(_.extend({}, @props.property, idTable: table))),
       
+      if _.includes(@props.features, "required")
+        R ui.Checkbox, value: @props.property.required, onChange: ((value) => @props.onChange(_.extend({}, @props.property, required: value))),
+          "Required"
+
       R ui.Checkbox,
         value: @props.property.deprecated
         onChange: ((deprecated) => @props.onChange(_.extend({}, @props.property, deprecated: deprecated))),
           "Deprecated"
-
-      if _.includes(@props.features, "required")
-        R ui.Checkbox, value: @props.property.required, onChange: ((value) => @props.onChange(_.extend({}, @props.property, required: value))),
-          "Required"
 
       if _.includes(@props.features, "uniqueCode") and @props.property.type == "text"
         R ui.Checkbox, value: @props.property.uniqueCode, onChange: ((value) => @props.onChange(_.extend({}, @props.property, uniqueCode: value))),
