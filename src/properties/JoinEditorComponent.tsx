@@ -18,10 +18,10 @@ export const JoinEditorComponent = (props: {
   // Always present
   const partialJoin: Partial<Join> = join || {}
 
-  // Determine if standard join (all fields exactly as 1-n to an existing id)
+  // Determine if standard 1-n join (all fields exactly as 1-n to an existing id)
   const inverse = join && (join.type == "1-n") && join.toTable && join.inverse ? schema.getColumn(join.toTable, join.inverse) : null
   const fromTable = schema.getTable(fromTableId)
-  const isStandard = join && inverse && fromTable && inverse.type == "id" && !inverse.jsonql && inverse.idTable == fromTableId
+  const isStandard1toN = join && inverse && fromTable && inverse.type == "id" && !inverse.jsonql && inverse.idTable == fromTableId
     && join.toColumn == inverse.id && join.fromColumn == fromTable.primaryKey && !join.jsonql
 
   /** Manual toggle to advanced mode */
@@ -39,7 +39,7 @@ export const JoinEditorComponent = (props: {
   const jsonQLMode = forceJsonQLMode || (join && join.jsonql)
 
   // Advanced mode if forced, or exists and is non-standard, or no from table
-  if (forceAdvanced || !fromTable || (join && !isStandard)) {
+  if (forceAdvanced || !fromTable || (join && !isStandard1toN)) {
     return <div>
       <button type="button" className="btn btn-xs btn-link" style={{ float: "right" }} onClick={handleReset}>Reset</button>
       <FormGroup key="type" label="Type">
@@ -88,6 +88,7 @@ export const JoinEditorComponent = (props: {
           </FormGroup>
         </div>
       }
+      { join && join.type == "1-n" ?
       <FormGroup key="inverse" label="Inverse. Column (schema, not physical) in 'To Table' that is the reverse of this join. Optional">
         <TextInput
           value={partialJoin.inverse || ""}
@@ -95,6 +96,7 @@ export const JoinEditorComponent = (props: {
           emptyNull={true}
         />
       </FormGroup>
+      : null }
     </div>
   }
 
