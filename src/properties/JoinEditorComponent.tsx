@@ -49,7 +49,7 @@ export const JoinEditorComponent = (props: {
             { value: "1-n", label: "One to many" },
             { value: "n-1", label: "Many to one" },
             { value: "n-n", label: "Many to many" },
-            { value: "1-1", label: "one to one" }
+            { value: "1-1", label: "One to one" }
           ]}
           onChange={type => onChange(_.extend({}, partialJoin, { type: type }))}
         />
