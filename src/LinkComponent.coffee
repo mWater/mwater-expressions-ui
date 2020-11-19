@@ -15,7 +15,7 @@ module.exports = class LinkComponent extends React.Component
   renderRemove: ->
     if @props.onRemove
       return R 'span', className: "link-component-remove", onClick: @props.onRemove,
-        R('span', className: "glyphicon glyphicon-remove")
+        R('i', className: "fa fa-remove")
 
   renderDropdownItem: (item) =>
     id = item.id or item.value

@@ -14,4 +14,4 @@ module.exports = class RemovableComponent extends React.Component
       if @props.onRemove
         R 'div', style: { flex: "0 0 auto", alignSelf: "center" }, className: "hover-display-child",
           R 'a', onClick: @props.onRemove, style: { fontSize: "80%", cursor: "pointer", marginLeft: 5 },
-            R 'span', className: "glyphicon glyphicon-remove"
+            R 'i', className: "fa fa-remove"

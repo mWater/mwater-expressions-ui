@@ -98,7 +98,7 @@ class PropertyListComponent extends React.Component
       @renderAddingModal(allPropertyIds)
 
       R 'button', key: "default_add", type: "button", className: "btn btn-xs btn-default dropdown-toggle", "data-toggle": "dropdown", 
-        R 'span', className: "glyphicon glyphicon-plus"
+        R 'i', className: "fa fa-plus"
         " "          
         "Add"
         " "
