@@ -18,8 +18,6 @@ module.exports = class ExprComponent extends React.Component
     value: PropTypes.object   # Current expression value
     onChange: PropTypes.func  # Called with new expression
 
-    variables: PropTypes.array # Array of variables to allow selecting
-
     types: PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
     enumValues: PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
     idTable: PropTypes.string # If specified the table from which id-type expressions must come
@@ -44,7 +42,7 @@ module.exports = class ExprComponent extends React.Component
 
   # Cleans an expression
   cleanExpr: (expr) ->
-    return new ExprCleaner(@props.schema, @props.variables).cleanExpr(expr, {
+    return new ExprCleaner(@props.schema).cleanExpr(expr, {
       table: @props.table
       types: @props.types
       enumValueIds: if @props.enumValues then _.pluck(@props.enumValues, "id")
@@ -55,7 +53,7 @@ module.exports = class ExprComponent extends React.Component
   render: ->
     expr = @cleanExpr(@props.value)
 
-    new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale, @props.variables).build(expr, @props.table, (if @props.onChange then @handleChange), { 
+    new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(expr, @props.table, (if @props.onChange then @handleChange), { 
       types: @props.types
       enumValues: @props.enumValues 
       preferLiteral: @props.preferLiteral

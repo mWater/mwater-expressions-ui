@@ -13,13 +13,12 @@ ExprLinkComponent = require './ExprLinkComponent'
 
 # Builds a react element for an expression
 module.exports = class ExprElementBuilder
-  constructor: (schema, dataSource, locale, variables = []) ->
+  constructor: (schema, dataSource, locale) ->
     @schema = schema
     @dataSource = dataSource
     @locale = locale
-    @variables = variables
 
-    @exprUtils = new ExprUtils(@schema, variables)
+    @exprUtils = new ExprUtils(@schema)
 
   # Build the tree for an expression
   # Options include:
@@ -59,7 +58,6 @@ module.exports = class ExprElementBuilder
       elem = R ExprLinkComponent,
         schema: @schema
         dataSource: @dataSource
-        variables: @variables
         table: table
         value: expr
         onChange: onChange

@@ -9,14 +9,12 @@ ExprUtils = require("mwater-expressions").ExprUtils
 #     Should return true to set initially open
 #   isScalarExprTreeSectionMatch: optiona function to override filtering of a section. Passed { tableId: id of table, section: section object from schema, filter: optional string filter }
 #     Should return null for default, true to include, false to exclude
-#   variables: list of variables to show
 module.exports = class ScalarExprTreeBuilder
   constructor: (schema, options={}) ->
     @schema = schema
     @locale = options.locale
     @isScalarExprTreeSectionInitiallyOpen = options.isScalarExprTreeSectionInitiallyOpen
     @isScalarExprTreeSectionMatch = options.isScalarExprTreeSectionMatch
-    @variables = options.variables or []
 
     @exprUtils = new ExprUtils(@schema)
 
@@ -80,7 +78,7 @@ module.exports = class ScalarExprTreeBuilder
     nodes = nodes.concat(@createNodes(table.contents, options))
 
     # Include variables
-    for variable in @variables
+    for variable in @schema.getVariables()
       if variable.table == options.table
         nodes.push({
           name: ExprUtils.localizeString(variable.name, @locale)

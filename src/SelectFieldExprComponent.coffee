@@ -14,7 +14,6 @@ module.exports = class SelectFieldExprComponent extends React.Component
 
     schema: PropTypes.object.isRequired
     dataSource: PropTypes.object.isRequired # Data source to use to get values
-    variables: PropTypes.array.isRequired
 
     # Props to narrow down choices
     table: PropTypes.string.isRequired # Current table
@@ -113,7 +112,6 @@ module.exports = class SelectFieldExprComponent extends React.Component
       locale: @context.locale
       isScalarExprTreeSectionMatch: @context.isScalarExprTreeSectionMatch
       isScalarExprTreeSectionInitiallyOpen: @context.isScalarExprTreeSectionInitiallyOpen
-      variables: @props.variables
     })
     
     tree = treeBuilder.getTree({

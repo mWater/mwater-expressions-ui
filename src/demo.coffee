@@ -214,6 +214,10 @@ class MockTestComponent extends React.Component
       { id: "number", name: { en: "Number" }, type: "number" }
     ]})
 
+    schema = schema.addVariable({ id: "varnumber", name: { _base: "en", en: "Variable Number" }, type: "number" })
+    schema = schema.addVariable({ id: "varnumberexpr", name: { _base: "en", en: "Variable Number Expr" }, type: "number", table: "t1" })
+    schema = schema.addVariable({ id: "vart1id", name: { _base: "en", en: "Variable T1" }, type: "id", idTable: "t1" })
+
     # Fake data source
     dataSource = {
       performQuery: (query, cb) =>
@@ -238,18 +242,12 @@ class MockTestComponent extends React.Component
     #   dataSource: @state.dataSource
     #   table: "t1"
 
-    variables = [
-      { id: "varnumber", name: { _base: "en", en: "Variable Number" }, type: "number" }
-      { id: "varnumberexpr", name: { _base: "en", en: "Variable Number Expr" }, type: "number", table: "t1" }
-      { id: "vart1id", name: { _base: "en", en: "Variable T1" }, type: "id", idTable: "t1" }
-    ]
       
     R 'div', style: { padding: 10, marginTop: 0 },
       R(ExprComponent, 
         schema: @state.schema
         dataSource: @state.dataSource
         table: "t1"
-        variables: variables
         # types: ["text", "enum", "boolean", "date", "number", "datetime"]
         # types: ['boolean']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
@@ -347,6 +345,9 @@ class LiveTestComponent extends React.Component
     $.getJSON apiUrl + "jsonql/schema", (schemaJson) =>
       schema = new Schema(schemaJson)
       dataSource = new MWaterDataSource(apiUrl, null, false)
+      
+      schema = schema.addVariable({ id: "user", name: { _base: "en", en: "User" }, type: "id", idTable: "users" })
+      schema = schema.addVariable({ id: "groups", name: { _base: "en", en: "Groups" }, type: "id[]", idTable: "groups" })
 
       @setState(schema: schema, dataSource: dataSource)
 
@@ -357,11 +358,6 @@ class LiveTestComponent extends React.Component
   render: ->
     if not @state.schema
       return null
-
-    variables = [
-      { id: "user", name: { _base: "en", en: "User" }, type: "id", idTable: "users" },
-      { id: "groups", name: { _base: "en", en: "Groups" }, type: "id[]", idTable: "groups" }
-    ]
       
     R 'div', style: { padding: 10 },
       R(ExprComponent, 
@@ -374,7 +370,6 @@ class LiveTestComponent extends React.Component
         # idTable: "t4"
         value: @state.value
         onChange: @handleValueChange
-        variables: variables
       )
       # R(FilterExprComponent, 
       #   schema: @state.schema

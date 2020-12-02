@@ -15,7 +15,6 @@ module.exports = class FilterExprComponent extends React.Component
   @propTypes:
     schema: PropTypes.object.isRequired
     dataSource: PropTypes.object.isRequired # Data source to use to get values
-    variables: PropTypes.array
 
     table: PropTypes.string.isRequired # Current table
 
@@ -28,7 +27,6 @@ module.exports = class FilterExprComponent extends React.Component
 
   @defaultProps:
     addLabel: "+ Add Filter"
-    variables: []
 
   constructor: (props) ->
     super(props)
@@ -55,7 +53,7 @@ module.exports = class FilterExprComponent extends React.Component
 
   # Cleans an expression
   cleanExpr: (expr) ->
-    return new ExprCleaner(@props.schema, @props.variables).cleanExpr(expr, {
+    return new ExprCleaner(@props.schema).cleanExpr(expr, {
       table: @props.table
       types: ["boolean"]
     })
@@ -84,7 +82,7 @@ module.exports = class FilterExprComponent extends React.Component
         R StackedComponent, 
           joinLabel: "and"
           items: _.map expr.exprs, (subexpr, i) =>
-            elem: new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale, @props.variables).build(subexpr, @props.table, (if @props.onChange then @handleAndChange.bind(null, i)), { 
+            elem: new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(subexpr, @props.table, (if @props.onChange then @handleAndChange.bind(null, i)), { 
               types: ["boolean"]
               preferLiteral: false
               suppressWrapOps: ['and']   # Don't allow wrapping in and since this is an and control
@@ -99,7 +97,7 @@ module.exports = class FilterExprComponent extends React.Component
       return R 'div', null,
         R RemovableComponent, 
           onRemove: if @props.onChange then @handleRemove,
-          new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale, @props.variables).build(expr, @props.table, (if @props.onChange then @handleChange), { 
+          new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale).build(expr, @props.table, (if @props.onChange then @handleChange), { 
             types: ["boolean"]
             preferLiteral: false
             suppressWrapOps: ['and']  # Don't allow wrapping in and since this is an and control
@@ -112,7 +110,6 @@ module.exports = class FilterExprComponent extends React.Component
         ref: (c) => @newExpr = c
         schema: @props.schema
         dataSource: @props.dataSource
-        variables: @props.variables
         table: @props.table
         onChange: if @props.onChange then @handleChange
     else

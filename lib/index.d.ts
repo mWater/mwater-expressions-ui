@@ -11,9 +11,6 @@ export class ExprComponent extends React.Component<{
   value: Expr
   onChange: (expr: Expr) => void
   
-  /** Variables that are available to be selected */
-  variables?: Variable[]
-
   /** If specified, the types (value type) of expression required. e.g. ["boolean"] */
   types?: string[]
   enumValues?: Array<{ id: string, name: LocalizedString }>
@@ -27,13 +24,16 @@ export class ExprComponent extends React.Component<{
 export class FilterExprComponent extends React.Component<{
   schema: Schema
   dataSource: DataSource
-  variables?: Variable[]
+
   /** Current table */
   table: string
+
   /** Current value */
   value?: Expr
+
   /** Called with new expression */
   onChange: (expr: Expr) => void
+
   /** Label for adding item. Default "+ Add Label" */
   addLabel?: React.ReactNode
 }> {}

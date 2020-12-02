@@ -19,7 +19,6 @@ module.exports = class SelectExprModalComponent extends React.Component
 
     schema: PropTypes.object.isRequired
     dataSource: PropTypes.object.isRequired # Data source to use to get values
-    variables: PropTypes.array.isRequired
 
     table: PropTypes.string   # Current table. If none, then literal-only
     value: PropTypes.object   # Current expression value
@@ -55,7 +54,6 @@ module.exports = class SelectExprModalComponent extends React.Component
         elem: R SelectFieldExprComponent,
           schema: @props.schema
           dataSource: @props.dataSource
-          variables: @props.variables
           onChange: @props.onSelect
           table: @props.table
           types: @props.types
@@ -94,13 +92,13 @@ module.exports = class SelectExprModalComponent extends React.Component
           refExpr: @props.refExpr
       })
 
-    if _.find(@props.variables, (v) => !v.table) and ("literal" in @props.aggrStatuses)
+    if @props.schema.getVariables().length > 0
       tabs.push({
         id: "variables"
         label: ["Variables"]
         elem: R SelectVariableExprComponent,
           value: @props.value
-          variables: @props.variables
+          variables: @props.schema.getVariables()
           onChange: @props.onSelect
           types: @props.types
           enumValues: @props.enumValues

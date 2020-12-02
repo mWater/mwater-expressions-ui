@@ -74,7 +74,6 @@ describe "ScalarExprTreeBuilder", ->
         { id: "c3", name: { en: "cde" }, type: "text" }
       ]}]})
 
-      debugger
       nodes = new ScalarExprTreeBuilder(@schema).getTree({ table: "t1", filter: "Cd" })
       assert.deepEqual _.pluck(nodes, "name"), ["BCD", "cde"]
 
