@@ -94,7 +94,7 @@ module.exports = class SelectExprModalComponent extends React.Component
           refExpr: @props.refExpr
       })
 
-    if _.find(@props.variables, (v) => !v.table) and ("literal" in @props.aggrStatuses)
+    if (@props.variables or []).length > 0
       tabs.push({
         id: "variables"
         label: ["Variables"]
