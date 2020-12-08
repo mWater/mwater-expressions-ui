@@ -2,8 +2,7 @@ _ = require 'lodash'
 PropTypes = require('prop-types')
 React = require 'react'
 R = React.createElement
-# ReactSelect = require('react-select').default
-AsyncReactSelect = require('react-select/lib/Async').default
+AsyncReactSelect = require('react-select').Async
 ExprCompiler = require("mwater-expressions").ExprCompiler
 
 # Displays a combo box that allows selecting multiple text values from an expression
