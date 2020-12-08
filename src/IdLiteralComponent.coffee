@@ -2,7 +2,7 @@ PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
-AsyncReactSelect = require('react-select').Async
+AsyncReactSelect = require('react-select/async').default
 ExprCompiler = require("mwater-expressions").ExprCompiler
 AsyncLoadComponent = require 'react-library/lib/AsyncLoadComponent'
 

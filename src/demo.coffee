@@ -251,7 +251,7 @@ class MockTestComponent extends React.Component
         table: "t1"
         variables: variables
         # types: ["text", "enum", "boolean", "date", "number", "datetime"]
-        # types: ['boolean']
+        types: ['boolean']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         # types: ['number', 'boolean', 'date', 'datetime', 'text', 'enum']
