@@ -1,7 +1,7 @@
 import { DataSource, ExprUtils, LiteralType, Schema, SpatialJoinExpr } from "mwater-expressions";
 import React, { useState } from "react";
 import ModalPopupComponent from 'react-library/lib/ModalPopupComponent'
-import { FormGroup } from "react-library/lib/bootstrap"
+import { FormGroup, NumberInput } from "react-library/lib/bootstrap"
 import { TableSelectComponent } from "./TableSelectComponent";
 import ExprComponent from './ExprComponent'
 import FilterExprComponent from './FilterExprComponent'
@@ -95,6 +95,16 @@ const SpatialJoinPopupContents = (props: {
           value={value.toGeometryExpr}
           types={["geometry"]}
           onChange={v => props.onChange({ ...value, toGeometryExpr: v })}
+        />        
+      </FormGroup> 
+    : null}
+
+    { value.toTable ?
+      <FormGroup label="Maximum distance (meters)">
+        <NumberInput
+          value={value.radius}
+          decimal={true}
+          onChange={v => props.onChange({ ...value, radius: v })}
         />        
       </FormGroup> 
     : null}
