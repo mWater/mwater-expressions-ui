@@ -1,42 +1,13 @@
 import React from 'react'
-import { Schema, DataSource, Expr, LocalizedString, AggrStatus, Variable, EnumValue, LiteralExpr } from 'mwater-expressions'
+import { Schema, DataSource, EnumValue, LiteralExpr } from 'mwater-expressions'
 import { JsonQL } from 'jsonql'
 
 export { default as PropertyListComponent } from './properties/PropertyListComponent'
 
-export class ExprComponent extends React.Component<{
-  schema: Schema
-  dataSource: DataSource
-  table: string | null
-  value: Expr
-  onChange: (expr: Expr) => void
-  
-  /** Variables that are available to be selected */
-  variables?: Variable[]
+export { default as ExprComponent } from './ExprComponent'
+export { default as FilterExprComponent } from './FilterExprComponent'
 
-  /** If specified, the types (value type) of expression required. e.g. ["boolean"] */
-  types?: string[]
-  enumValues?: Array<{ id: string, name: LocalizedString }>
-  idTable?: string
-  preferLiteral?: boolean
-  aggrStatuses?: Array<AggrStatus>
-  placeholder?: string
-}> {}
-
-/** Displays a boolean filter expression. Just shows "+ Add filter" (or other add label) when empty */
-export class FilterExprComponent extends React.Component<{
-  schema: Schema
-  dataSource: DataSource
-  variables?: Variable[]
-  /** Current table */
-  table: string
-  /** Current value */
-  value?: Expr
-  /** Called with new expression */
-  onChange: (expr: Expr) => void
-  /** Label for adding item. Default "+ Add Label" */
-  addLabel?: React.ReactNode
-}> {}
+export * from './TableSelectComponent'
 
 export class IdLiteralComponent extends React.Component<{
   /** Value of primary key or array of primary keys */

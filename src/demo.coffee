@@ -206,6 +206,7 @@ class MockTestComponent extends React.Component
       { id: "text", name: { en: "Text" }, type: "text" }
       { id: "enum", name: { en: "Enum" }, type: "enum", enumValues: [{ id: "a", name: { en: "A"}}, { id: "b", name: { en: "B"}}] }
       { id: "number", name: { en: "Number" }, type: "number" }
+      { id: "geometry", name: { en: "Geometry" }, type: "geometry" }
       { id: "2-1", name: { en: "T2->T1" }, type: "join", join: { fromColumn: "t1", toTable: "t1", toColumn: "primary", type: "n-1" }}
     ]})
 
@@ -251,7 +252,7 @@ class MockTestComponent extends React.Component
         table: "t1"
         variables: variables
         # types: ["text", "enum", "boolean", "date", "number", "datetime"]
-        types: ['boolean']
+        # types: ['boolean']
         # enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}] 
         # idTable: "t4"
         # types: ['number', 'boolean', 'date', 'datetime', 'text', 'enum']

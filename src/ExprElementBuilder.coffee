@@ -92,6 +92,8 @@ module.exports = class ExprElementBuilder
       elem = @buildBuildEnumset(expr, onChange, { key: options.key, enumValues: options.enumValues })
     else if expr.type == "variable"
       elem = @buildVariable(expr, onChange, { key: options.key })
+    else if expr.type == "spatial join"
+      elem = @buildSpatialJoin(expr, onChange, { key: options.key, type: options.types })
     else
       throw new Error("Unhandled expression type #{expr.type}")
 
@@ -428,6 +430,15 @@ module.exports = class ExprElementBuilder
       dataSource: @dataSource
       value: expr
       enumValues: options.enumValues
+      onChange: onChange
+
+  buildSpatialJoin: (expr, onChange, options) -> 
+    BuildSpatialJoinExprComponent = require('./BuildSpatialJoinExprComponent').BuildSpatialJoinExprComponent
+    return R BuildSpatialJoinExprComponent,
+      schema: @schema
+      dataSource: @dataSource
+      value: expr
+      types: options.types
       onChange: onChange
 
 # TODO DOC
