@@ -1,6 +1,6 @@
-import { DataSource, ExprUtils, LiteralType, Schema, SpatialJoinExpr } from "mwater-expressions";
+import { DataSource, ExprUtils, LiteralType, localizeString, Schema, SpatialJoinExpr } from "mwater-expressions";
 import React, { useState } from "react";
-import ModalPopupComponent from 'react-library/lib/ModalPopupComponent'
+import ActionCancelModalComponent from 'react-library/lib/ActionCancelModalComponent'
 import { FormGroup, NumberInput } from "react-library/lib/bootstrap"
 import { TableSelectComponent } from "./TableSelectComponent";
 import ExprComponent from './ExprComponent'
@@ -15,41 +15,81 @@ export const BuildSpatialJoinExprComponent = (props: {
   onChange: (value: SpatialJoinExpr) => void
 }) => {
   const value = props.value
+  const fromTable = props.value.table ? props.schema.getTable(props.value.table) : null
   const toTable = props.value.toTable ? props.schema.getTable(props.value.toTable) : null
   const exprUtils = new ExprUtils(props.schema)
 
-  const [editing, setEditing] = useState(false)
+  const [editingValue, setEditingValue] = useState<SpatialJoinExpr>()
 
   function handleEdit() {
-    setEditing(true)
+    setEditingValue(props.value)
   }
 
+  function handleSave() {
+    if (!editingValue!.toTable) {
+      alert("To Data Source required")
+      return
+    }
+    if (!editingValue!.fromGeometryExpr) {
+      alert("From Location required")
+      return
+    }
+    if (!editingValue!.toGeometryExpr) {
+      alert("To Location required")
+      return
+    }
+    if (!editingValue!.valueExpr) {
+      alert("Calculated value required")
+      return
+    }
+    if (!editingValue!.radiusExpr) {
+      alert("Distance value required")
+      return
+    }
+    props.onChange(editingValue!)
+    setEditingValue(undefined) 
+  }
+
+  const configured = value.radiusExpr != null && value.toTable != null && value.toGeometryExpr != null && value.valueExpr != null && value.fromGeometryExpr != null
+
   return <div>
-    { editing ? 
-      <ModalPopupComponent
-        onClose={() => setEditing(false) }
-        showCloseX={true}
+    { editingValue ? 
+      <ActionCancelModalComponent
+        onAction={handleSave}
+        onCancel={() => {
+          setEditingValue(undefined) 
+        }}
       >
         <SpatialJoinPopupContents
           schema={props.schema}
           dataSource={props.dataSource}
-          value={props.value}
-          onChange={props.onChange}
+          value={editingValue}
+          onChange={setEditingValue}
           types={props.types}
         />
-      </ModalPopupComponent>
+      </ActionCancelModalComponent>
     : null }
-    <div><span className="text-muted">Spation join to:</span> {toTable ? ExprUtils.localizeString(toTable.name) : "Not defined"}
-    &nbsp;<a onClick={handleEdit} style={{ cursor: "pointer" }}><i className="fa fa-pencil"/> Edit</a></div>
     <div>
-      <span className="text-muted">On: </span>
-      { exprUtils.summarizeExpr(value.fromGeometryExpr) }
-      <span className="text-muted"> : </span>
-      { exprUtils.summarizeExpr(value.toGeometryExpr) }
+      <b>Spatial join</b>&nbsp;
+      <a onClick={handleEdit} style={{ cursor: "pointer" }}>
+        { configured ? 
+          <span><i className="fa fa-pencil"/> Edit</span>
+        : <span><i className="fa fa-pencil"/> Configure</span> }
+      </a>
     </div>
-    <div><span className="text-muted">Radius:</span> {value.radius || ""} meters</div>
-    <div><span className="text-muted">Value:</span> { exprUtils.summarizeExpr(value.valueExpr) }</div>
-    <div><span className="text-muted">Filters:</span> { exprUtils.summarizeExpr(value.filterExpr) }</div>
+    { configured ? 
+      <div style={{ marginLeft: 5 }}>
+        <div><span className="text-muted">Distance:</span> {exprUtils.summarizeExpr(value.radiusExpr) } meters</div>
+        <div style={{ paddingTop: 10 }}><b>From Table</b></div>
+        <div><span className="text-muted">Data Source: </span>{ fromTable ? ExprUtils.localizeString(fromTable.name) : "Not defined" }</div>
+        <div><span className="text-muted">Location: </span>{ exprUtils.summarizeExpr(value.fromGeometryExpr) }</div>
+        <div style={{ paddingTop: 10 }}><b>To Table</b></div>
+        <div><span className="text-muted">Data Source: </span>{ toTable ? ExprUtils.localizeString(toTable.name) : "Not defined" }</div>
+        <div><span className="text-muted">Location: </span>{ exprUtils.summarizeExpr(value.toGeometryExpr) }</div>
+        <div><span className="text-muted">Value:</span> { exprUtils.summarizeExpr(value.valueExpr) }</div>
+        <div><span className="text-muted">Filters:</span> { exprUtils.summarizeExpr(value.filterExpr) }</div>
+      </div>
+     : null }
   </div>
 }
 
@@ -64,74 +104,96 @@ const SpatialJoinPopupContents = (props: {
   const value = props.value
   const exprUtils = new ExprUtils(props.schema)
 
+  const fromTable = props.value.table ? props.schema.getTable(props.value.table) : null
+
   return <div>
-    <FormGroup label="Join to table">
-      <TableSelectComponent
+    <h4>Spatial Join</h4>
+    <div className="text-muted">Join data from one table to another including only those rows that are within a certain distance</div>
+
+    <div className="panel panel-default">
+      <div className="panel-heading">From Table - <span className="text-muted">Table from which join is made</span></div>
+      <div className="panel-body">
+        <FormGroup label="Data Source" hint="Data source to start join from">
+          { fromTable ? localizeString(fromTable.name) : null}
+        </FormGroup>
+
+        { value.table ?
+          <FormGroup label="Location" hint="GPS coordinates of from table">
+            <ExprComponent
+              table={value.table}
+              schema={props.schema}
+              dataSource={props.dataSource}
+              value={value.fromGeometryExpr}
+              types={["geometry"]}
+              onChange={v => props.onChange({ ...value, fromGeometryExpr: v })}
+            />        
+          </FormGroup> 
+        : null}
+      </div>
+    </div>
+
+    {/* <FormGroup label="To Table" hint="Table to which join is made"> */}
+    <div className="panel panel-default">
+    <div className="panel-heading">To Table - <span className="text-muted">Table to which join is made</span></div>
+      <div className="panel-body">
+        <FormGroup label="Data Source" hint="Data source to join to based on distance">
+          <TableSelectComponent
+            schema={props.schema}
+            value={value.toTable}
+            onChange={v => props.onChange({ ...value, toTable: v })}
+          />        
+        </FormGroup>
+
+        { value.toTable ?
+          <FormGroup label="Location" hint="GPS coordinates of to table">
+            <ExprComponent
+              table={value.toTable}
+              schema={props.schema}
+              dataSource={props.dataSource}
+              value={value.toGeometryExpr}
+              types={["geometry"]}
+              onChange={v => props.onChange({ ...value, toGeometryExpr: v })}
+            />        
+          </FormGroup> 
+        : null}
+
+        { value.toTable ?
+          <FormGroup label="Calculated Value" help="Value in the To table that will be aggregated">
+            <ExprComponent
+              table={value.toTable}
+              schema={props.schema}
+              dataSource={props.dataSource}
+              value={value.valueExpr}
+              aggrStatuses={["aggregate"]}
+              onChange={v => props.onChange({ ...value, valueExpr: v })}
+            />        
+          </FormGroup> 
+        : null}
+
+        { value.toTable ?
+          <FormGroup label="Optional Filters" hint="Limits which rows are included in To table">
+            <FilterExprComponent
+              table={value.toTable}
+              schema={props.schema}
+              dataSource={props.dataSource}
+              value={value.filterExpr}
+              onChange={v => props.onChange({ ...value, filterExpr: v })}
+            />        
+          </FormGroup> 
+        : null}
+      </div>
+    </div>
+
+    <FormGroup label="Within a distance of... (meters)">
+      <ExprComponent
+        table={value.table}
         schema={props.schema}
-        value={value.toTable}
-        onChange={v => props.onChange({ ...value, toTable: v })}
+        dataSource={props.dataSource}
+        value={value.radiusExpr}
+        types={["number"]}
+        preferLiteral={true}
+        onChange={v => props.onChange({ ...value, radiusExpr: v })}
       />        
-    </FormGroup>
-
-    { value.toTable ?
-      <FormGroup label="From Location">
-        <ExprComponent
-          table={value.table}
-          schema={props.schema}
-          dataSource={props.dataSource}
-          value={value.fromGeometryExpr}
-          types={["geometry"]}
-          onChange={v => props.onChange({ ...value, fromGeometryExpr: v })}
-        />        
-      </FormGroup> 
-    : null}
-
-    { value.toTable ?
-      <FormGroup label="To Location">
-        <ExprComponent
-          table={value.toTable}
-          schema={props.schema}
-          dataSource={props.dataSource}
-          value={value.toGeometryExpr}
-          types={["geometry"]}
-          onChange={v => props.onChange({ ...value, toGeometryExpr: v })}
-        />        
-      </FormGroup> 
-    : null}
-
-    { value.toTable ?
-      <FormGroup label="Maximum distance (meters)">
-        <NumberInput
-          value={value.radius}
-          decimal={true}
-          onChange={v => props.onChange({ ...value, radius: v })}
-        />        
-      </FormGroup> 
-    : null}
-
-    { value.toTable ?
-      <FormGroup label="Calculated Value" help="Popup may close when setting this value. Re-open to complete">
-        <ExprComponent
-          table={value.toTable}
-          schema={props.schema}
-          dataSource={props.dataSource}
-          value={value.valueExpr}
-          aggrStatuses={["aggregate"]}
-          onChange={v => props.onChange({ ...value, valueExpr: v })}
-        />        
-      </FormGroup> 
-    : null}
-
-    { value.toTable ?
-      <FormGroup label="Optional Filters">
-        <FilterExprComponent
-          table={value.toTable}
-          schema={props.schema}
-          dataSource={props.dataSource}
-          value={value.filterExpr}
-          onChange={v => props.onChange({ ...value, filterExpr: v })}
-        />        
-      </FormGroup> 
-    : null}
+    </FormGroup> 
   </div>
 }
