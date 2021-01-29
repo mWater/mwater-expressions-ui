@@ -21,6 +21,33 @@ ModalPopupComponent = require('react-library/lib/ModalPopupComponent')
 HTML5Backend = require('react-dnd-html5-backend').default
 DragDropContext = require("react-dnd").DragDropContext
 
+registerExprExtension = require('mwater-expressions').registerExprExtension
+registerExprUIExtension = require('./extensions').registerExprUIExtension
+
+registerExprExtension("test", {
+  cleanExpr: (expr) => expr
+  getExprAggrStatus: () => "individual"
+  validateExpr: (expr) => null
+  getExprEnumValues: (expr) => []
+  getExprIdTable: (expr) => null
+  getExprType: (expr) => "number"
+  summarizeExpr: (expr) => "EXTENSION: #{expr.params.value}"
+  getReferencedFields: (expr) => []
+  compileExpr: (expr) => throw new Error("Not implemented")
+  evaluate: (expr) => throw new Error("Not implemented")
+  evaluateSync: (expr) => throw new Error("Not implemented")
+})
+
+registerExprUIExtension({
+  id: "test"
+  name: { _base: "en", en: "Test Extension" }
+  desc: { _base: "en", en: "Extension for advanced use" }
+  aggrStatuses: ["individual"]
+  types: ["number"]
+  createDefaultExpr: (table) => ({ type: "extension", extension: "test", table: table, params: { value: 4 } })
+  createExprElement: (expr, schema, dataSource, variables, locale) => R('div', null, "EXTENSION: #{expr.params.value}")
+})
+
 $ ->
   $.getJSON "https://api.mwater.co/v3/jsonql/schema", (schemaJson) ->
     schema = new Schema(schemaJson)

@@ -10,6 +10,7 @@ IdLiteralComponent = require './IdLiteralComponent'
 ScoreExprComponent = require './ScoreExprComponent'
 BuildEnumsetExprComponent = require './BuildEnumsetExprComponent'
 ExprLinkComponent = require './ExprLinkComponent'
+getExprUIExtensions = require('./extensions').getExprUIExtensions
 
 # Builds a react element for an expression
 module.exports = class ExprElementBuilder
@@ -94,6 +95,11 @@ module.exports = class ExprElementBuilder
       elem = @buildVariable(expr, onChange, { key: options.key })
     else if expr.type == "spatial join"
       elem = @buildSpatialJoin(expr, onChange, { key: options.key, type: options.types })
+    else if expr.type == "extension"
+      extension = _.findWhere(getExprUIExtensions(), { id: expr.extension })
+      if not extension
+        return "Unsupported extension #{expr.extension}"
+      elem = extension.createExprElement(expr, @schema, @dataSource, @variables or [], locale: @locale)
     else
       throw new Error("Unhandled expression type #{expr.type}")
 

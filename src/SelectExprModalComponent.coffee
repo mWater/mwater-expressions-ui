@@ -76,6 +76,7 @@ module.exports = class SelectExprModalComponent extends React.Component
           allowCase: @props.allowCase
           aggrStatuses: @props.aggrStatuses
           enumValues: @props.enumValues
+          locale: @context.locale
       })
 
     if "literal" in @props.aggrStatuses

@@ -3,6 +3,7 @@ _ = require 'lodash'
 React = require 'react'
 R = React.createElement
 
+getExprUIExtensions = require('./extensions').getExprUIExtensions
 ExprUtils = require('mwater-expressions').ExprUtils
 
 module.exports = class SelectFormulaExprComponent extends React.Component
@@ -15,6 +16,7 @@ module.exports = class SelectFormulaExprComponent extends React.Component
     allowCase: PropTypes.bool    # Allow case statements
     types: PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
     aggrStatuses: PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
+    locale: PropTypes.string
 
   constructor: (props) ->
     super(props)
@@ -98,7 +100,6 @@ module.exports = class SelectFormulaExprComponent extends React.Component
     if not @props.types or 'number' in @props.types
       items.push({ name: "Score", desc: "Assign scores to different choices of a field and find total.", onClick: @handleScoreSelected })
 
-
     # Only allow aggregate expressions if relevant
     aggr = null
     if "aggregate" not in @props.aggrStatuses
@@ -117,6 +118,25 @@ module.exports = class SelectFormulaExprComponent extends React.Component
     # Add spatial join
     if @props.table
       items.push({ name: "Spatial join", desc: "Advanced: Join to another table based on location distances", onClick: @handleSpatialJoinSelected })
+
+    # Add extensions
+    for exprUIExtension in getExprUIExtensions()
+      # Filter types
+      if exprUIExtension.types and @props.types and _.intersection(exprUIExtension.types, @props.types).length == 0
+        continue
+
+      # Filter aggr
+      if _.intersection(exprUIExtension.aggrStatuses, @props.aggrStatuses or ["individual", "literal"]).length == 0
+        continue
+      
+      if exprUIExtension.table and exprUIExtension.table != @props.table
+        continue
+
+      items.push({ 
+        name: ExprUtils.localizeString(exprUIExtension.name, @props.locale), 
+        desc: ExprUtils.localizeString(exprUIExtension.desc, @props.locale), 
+        onClick: () => @props.onChange(exprUIExtension.createDefaultExpr(@props.table))
+      })
 
     if @state.searchText 
       filter = new RegExp(_.escapeRegExp(@state.searchText), "i")
