@@ -45,7 +45,7 @@ registerExprUIExtension({
   aggrStatuses: ["individual"]
   types: ["number"]
   createDefaultExpr: (table) => ({ type: "extension", extension: "test", table: table, params: { value: 4 } })
-  createExprElement: (expr, schema, dataSource, variables, locale) => R('div', null, "EXTENSION: #{expr.params.value}")
+  createExprElement: (expr, onExprChange, schema, dataSource, variables, locale) => R('div', null, "EXTENSION: #{expr.params.value}")
 })
 
 $ ->

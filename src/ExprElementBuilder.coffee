@@ -99,7 +99,7 @@ module.exports = class ExprElementBuilder
       extension = _.findWhere(getExprUIExtensions(), { id: expr.extension })
       if not extension
         return "Unsupported extension #{expr.extension}"
-      elem = extension.createExprElement(expr, @schema, @dataSource, @variables or [], locale: @locale)
+      elem = extension.createExprElement(expr, onChange, @schema, @dataSource, @variables or [], locale: @locale)
     else
       throw new Error("Unhandled expression type #{expr.type}")
 
