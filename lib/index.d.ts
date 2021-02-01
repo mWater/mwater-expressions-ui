@@ -9,6 +9,8 @@ export { default as FilterExprComponent } from './FilterExprComponent'
 
 export * from './TableSelectComponent'
 
+export * from './extensions'
+
 export class IdLiteralComponent extends React.Component<{
   /** Value of primary key or array of primary keys */
   value: string | string[] | number | number[] | null
