@@ -115,12 +115,14 @@ module.exports = class SelectFormulaExprComponent extends React.Component
     if (not @props.types or 'enumset' in @props.types) and @props.enumValues and @props.enumValues.length > 0
       items.push({ name: "Build enumset", desc: "Advanced: Create a multi-choice answer based on conditions", onClick: @handleBuildEnumsetSelected })
 
-    # Add spatial join
-    if @props.table
-      items.push({ name: "Spatial join", desc: "Advanced: Join to another table based on location distances", onClick: @handleSpatialJoinSelected })
+    # # Add spatial join
+    # if @props.table
+    #   items.push({ name: "Spatial join", desc: "Advanced: Join to another table based on location distances", onClick: @handleSpatialJoinSelected })
 
     # Add extensions
     for exprUIExtension in getExprUIExtensions()
+      extension = exprUIExtension
+
       # Filter types
       if exprUIExtension.types and @props.types and _.intersection(exprUIExtension.types, @props.types).length == 0
         continue
@@ -135,7 +137,7 @@ module.exports = class SelectFormulaExprComponent extends React.Component
       items.push({ 
         name: ExprUtils.localizeString(exprUIExtension.name, @props.locale), 
         desc: ExprUtils.localizeString(exprUIExtension.desc, @props.locale), 
-        onClick: () => @props.onChange(exprUIExtension.createDefaultExpr(@props.table))
+        onClick: () => @props.onChange(extension.createDefaultExpr(@props.table))
       })
 
     if @state.searchText 

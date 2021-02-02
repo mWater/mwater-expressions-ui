@@ -1,4 +1,4 @@
-import { DataSource, ExprUtils, LiteralType, localizeString, Schema, SpatialJoinExpr } from "mwater-expressions";
+import { DataSource, ExprUtils, LiteralType, localizeString, Schema, OldSpatialJoinExpr } from "mwater-expressions";
 import React, { useState } from "react";
 import ActionCancelModalComponent from 'react-library/lib/ActionCancelModalComponent'
 import { FormGroup, NumberInput } from "react-library/lib/bootstrap"
@@ -10,16 +10,16 @@ import FilterExprComponent from './FilterExprComponent'
 export const BuildSpatialJoinExprComponent = (props: {
   schema: Schema
   dataSource: DataSource
-  value: SpatialJoinExpr
+  value: OldSpatialJoinExpr
   types?: LiteralType[]
-  onChange: (value: SpatialJoinExpr) => void
+  onChange: (value: OldSpatialJoinExpr) => void
 }) => {
   const value = props.value
   const fromTable = props.value.table ? props.schema.getTable(props.value.table) : null
   const toTable = props.value.toTable ? props.schema.getTable(props.value.toTable) : null
   const exprUtils = new ExprUtils(props.schema)
 
-  const [editingValue, setEditingValue] = useState<SpatialJoinExpr>()
+  const [editingValue, setEditingValue] = useState<OldSpatialJoinExpr>()
 
   function handleEdit() {
     setEditingValue(props.value)
@@ -97,9 +97,9 @@ export const BuildSpatialJoinExprComponent = (props: {
 const SpatialJoinPopupContents = (props: {
   schema: Schema
   dataSource: DataSource
-  value: SpatialJoinExpr
+  value: OldSpatialJoinExpr
   types?: LiteralType[]
-  onChange: (value: SpatialJoinExpr) => void
+  onChange: (value: OldSpatialJoinExpr) => void
 }) => {
   const value = props.value
   const exprUtils = new ExprUtils(props.schema)
