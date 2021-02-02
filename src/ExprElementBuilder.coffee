@@ -101,7 +101,7 @@ module.exports = class ExprElementBuilder
         return "Unsupported extension #{expr.extension}"
       elem = extension.createExprElement({
         expr: expr, 
-        onChange: onChange, 
+        onExprChange: onChange, 
         schema: @schema, 
         dataSource: @dataSource, 
         variables: @variables or [], 
