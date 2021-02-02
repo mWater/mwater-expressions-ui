@@ -121,24 +121,23 @@ module.exports = class SelectFormulaExprComponent extends React.Component
 
     # Add extensions
     for exprUIExtension in getExprUIExtensions()
-      extension = exprUIExtension
+      do (exprUIExtension) =>
+        # Filter types
+        if exprUIExtension.types and @props.types and _.intersection(exprUIExtension.types, @props.types).length == 0
+          return
 
-      # Filter types
-      if exprUIExtension.types and @props.types and _.intersection(exprUIExtension.types, @props.types).length == 0
-        continue
+        # Filter aggr
+        if _.intersection(exprUIExtension.aggrStatuses, @props.aggrStatuses or ["individual", "literal"]).length == 0
+          return
+        
+        if exprUIExtension.table and exprUIExtension.table != @props.table
+          return
 
-      # Filter aggr
-      if _.intersection(exprUIExtension.aggrStatuses, @props.aggrStatuses or ["individual", "literal"]).length == 0
-        continue
-      
-      if exprUIExtension.table and exprUIExtension.table != @props.table
-        continue
-
-      items.push({ 
-        name: ExprUtils.localizeString(exprUIExtension.name, @props.locale), 
-        desc: ExprUtils.localizeString(exprUIExtension.desc, @props.locale), 
-        onClick: () => @props.onChange(extension.createDefaultExpr(@props.table))
-      })
+        items.push({ 
+          name: ExprUtils.localizeString(exprUIExtension.name, @props.locale), 
+          desc: ExprUtils.localizeString(exprUIExtension.desc, @props.locale), 
+          onClick: () => @props.onChange(extension.createDefaultExpr(@props.table))
+        })
 
     if @state.searchText 
       filter = new RegExp(_.escapeRegExp(@state.searchText), "i")
