@@ -17,7 +17,17 @@ export interface ExprUIExtension<T extends ExtensionExpr> {
     /** Create default expression for a table */
     createDefaultExpr(table: string | null): T;
     /** Create display component for expression */
-    createExprElement(expr: T, onExprChange: (expr: T) => void, schema: Schema, dataSource: DataSource, variables: Variable[], locale: string | null): ReactNode;
+    createExprElement(options: {
+        expr: T;
+        onExprChange: (expr: T) => void;
+        schema: Schema;
+        dataSource: DataSource;
+        variables: Variable[];
+        aggrStatuses: AggrStatus[];
+        locale: string | null;
+        types?: LiteralType[];
+        idTable?: string;
+    }): ReactNode;
 }
 /** Register an extension to expressions UI
  */
