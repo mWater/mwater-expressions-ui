@@ -136,7 +136,7 @@ module.exports = class SelectFormulaExprComponent extends React.Component
         items.push({ 
           name: ExprUtils.localizeString(exprUIExtension.name, @props.locale), 
           desc: ExprUtils.localizeString(exprUIExtension.desc, @props.locale), 
-          onClick: () => @props.onChange(extension.createDefaultExpr(@props.table))
+          onClick: () => @props.onChange(exprUIExtension.createDefaultExpr(@props.table))
         })
 
     if @state.searchText 
