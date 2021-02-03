@@ -4,6 +4,7 @@ import React, { ReactElement } from "react"
 import { createContext, ReactNode, useContext } from "react"
 import ReactSelect from 'react-select'
 
+/* NOTE: NOT CURRENTLY USED, BUT SHOULD REPLACE THE ONE IN mwater-visualization and SWITCH TO NEW REACT CONTEXT */
 /** Factory to create a custom table select component */
 export type CustomTableSelectComponentFactory = (options: {
   schema: Schema
