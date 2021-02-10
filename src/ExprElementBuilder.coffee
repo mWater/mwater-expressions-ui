@@ -76,6 +76,8 @@ module.exports = class ExprElementBuilder
         placeholder: options.placeholder
         refExpr: options.refExpr
         ref: options.exprLinkRef
+        # Hint that requires boolean
+        booleanOnly: booleanOnly
 
     else if expr.type == "op"
       elem = @buildOp(expr, table, onChange, options)

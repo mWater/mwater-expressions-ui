@@ -29,6 +29,8 @@ module.exports = class ExprLinkComponent extends React.Component
     refExpr: PropTypes.object     # expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
 
     placeholder: PropTypes.string # Placeholder text (default Select...)
+
+    booleanOnly: PropTypes.bool   # Hint that must be boolean (even though boolean can take any type)
     
   @contextTypes:
     locale: PropTypes.string  # e.g. "en"
@@ -116,6 +118,7 @@ module.exports = class ExprLinkComponent extends React.Component
           allowCase: @props.allowCase
           aggrStatuses: @props.aggrStatuses
           refExpr: @props.refExpr
+          booleanOnly: @props.booleanOnly
           onCancel: => 
             @setState(modalVisible: false)
           onSelect: (expr) =>

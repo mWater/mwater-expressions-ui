@@ -32,6 +32,7 @@ module.exports = class SelectExprModalComponent extends React.Component
     allowCase: PropTypes.bool    # Allow case statements
     aggrStatuses: PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
     refExpr: PropTypes.object     # expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
+    booleanOnly: PropTypes.bool   # Hint that must be boolean (even though boolean can take any type)
 
     placeholder: PropTypes.string # Placeholder text (default Select...)
  
@@ -89,7 +90,7 @@ module.exports = class SelectExprModalComponent extends React.Component
           onCancel: @props.onCancel
           schema: @props.schema
           dataSource: @props.dataSource
-          types: @props.types
+          types: if @props.booleanOnly then ["boolean"] else @props.types
           enumValues: @props.enumValues
           idTable: @props.idTable
           refExpr: @props.refExpr
