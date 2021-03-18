@@ -24,6 +24,7 @@
     "@types/react-select": "^3.1.2",
     "classnames": "^2.2.5",
     "coffeescript": "^2.5.1",
+    "jsonql": "github:mWater/jsonql",
     "lodash": "^3.10.1",
     "moment": "^2.27.0",
     "mwater-expressions": "github:mWater/mwater-expressions",

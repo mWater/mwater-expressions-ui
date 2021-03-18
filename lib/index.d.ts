@@ -1,6 +1,6 @@
 import React from 'react'
 import { Schema, DataSource, EnumValue, LiteralExpr } from 'mwater-expressions'
-import { JsonQL } from 'jsonql'
+import { JsonQLExpr } from 'jsonql'
 
 export { default as PropertyListComponent } from './properties/PropertyListComponent'
 
@@ -36,10 +36,10 @@ export class IdLiteralComponent extends React.Component<{
   multi?: boolean
 
   /** Optional extra filter. Put "main" as tableAlias. JsonQL   */
-  filter?: JsonQL
+  filter?: JsonQLExpr
 
   /** Optional label expression to use. Will fallback to label column or primary key. Put "main" as tableAlias. JsonQL */
-  labelExpr?: JsonQL
+  labelExpr?: JsonQLExpr
 }> {}
 
 export class LiteralExprStringComponent extends React.Component<{
