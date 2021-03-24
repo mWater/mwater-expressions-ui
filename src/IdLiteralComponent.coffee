@@ -88,8 +88,8 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     if table.label
       return { type: "field", tableAlias: "main", column: table.label }
 
-    # Use primary key. Ugly, but what else to do?
-    return { type: "field", tableAlias: "main", column: table.primaryKey }
+    # Use primary key. Ugly, but what else to do?. Cast to text.
+    return { type: "op", op: "::text", exprs: [{ type: "field", tableAlias: "main", column: table.primaryKey }] }
 
   loadOptions: (input, cb) =>
     table = @props.schema.getTable(@props.idTable)
