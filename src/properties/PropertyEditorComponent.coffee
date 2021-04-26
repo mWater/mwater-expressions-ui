@@ -199,10 +199,32 @@ class EnumValuesEditorComponent extends React.Component
     value.splice(i, 1)
     @props.onChange(value)    
 
+  handleMoveUp: (i) =>
+    value = (@props.value or []).slice()
+    temp = value[i - 1]
+    value[i - 1] = value[i]
+    value[i] = temp
+    @props.onChange(value)    
+
+  handleMoveDown: (i) =>
+    value = (@props.value or []).slice()
+    temp = value[i + 1]
+    value[i + 1] = value[i]
+    value[i] = temp
+    @props.onChange(value)    
+
   render: ->
+    items = @props.value or []
     R 'div', null,
-      _.map @props.value or [], (value, i) =>
-        R EnumValueEditorComponent, key: i, value: value, onChange: @handleChange.bind(null, i), onRemove: @handleRemove.bind(null, i)
+      _.map items, (value, i) =>
+        R EnumValueEditorComponent, 
+          key: i, 
+          value: value, 
+          onChange: @handleChange.bind(null, i), 
+          onRemove: @handleRemove.bind(null, i),
+          onMoveUp: (if i > 0 then @handleMoveUp.bind(null, i)),
+          onMoveDown: (if i < items.length - 1 then @handleMoveDown.bind(null, i)),
+
       R 'button', type: "button", className: "btn btn-link", onClick: @handleAdd,
         "+ Add Value"    
 
@@ -212,36 +234,45 @@ class EnumValueEditorComponent extends React.Component
     value: PropTypes.object 
     onChange: PropTypes.func.isRequired  # Called with new value
     onRemove: PropTypes.func
+    onMoveUp: PropTypes.func
+    onMoveDown: PropTypes.func
 
   render: ->
-    R 'div', null,
-      R 'div', className: "row",
-        R 'div', className: "col-md-6",
-          R IdFieldComponent, 
-            value: @props.value.id
-            onChange: (value) => @props.onChange(_.extend({}, @props.value, id: value))
+    R 'div', className: "panel panel-default",
+      R 'div', className: "panel-body",
+        R 'div', className: "row",
+          R 'div', className: "col-md-6",
+            R IdFieldComponent, 
+              value: @props.value.id
+              onChange: (value) => @props.onChange(_.extend({}, @props.value, id: value))
 
-        R 'div', className: "col-md-6",
-          R ui.FormGroup, label: "Code",
-            R 'input', 
-              type: "text"
-              className: "form-control"
-              placeholder: "Code"
-              style: { width: "10em" }
-              value: @props.value.code
-              onChange: (ev) => @props.onChange(_.extend({}, @props.value, code: ev.target.value))
-      R 'div', className: "row",
-        R 'div', className: "col-md-12",
-          R ui.FormGroup, label: "Name",
-            R LocalizedStringEditorComp, value: @props.value.name, onChange: (value) => @props.onChange(_.extend({}, @props.value, name: value))
-      R 'div', className: "row",
-        R 'div', className: "col-md-12",
-          R ui.FormGroup, label: "Description",
-            R LocalizedStringEditorComp, value: @props.value.desc, onChange: (value) => @props.onChange(_.extend({}, @props.value, desc: value))
-      if @props.onRemove
-        R 'div', key: "remove",
-          R 'button', className: "btn btn-link btn-xs", onClick: @props.onRemove, 
-            "Remove"
+          R 'div', className: "col-md-6",
+            R ui.FormGroup, label: "Code",
+              R 'input', 
+                type: "text"
+                className: "form-control"
+                placeholder: "Code"
+                style: { width: "10em" }
+                value: @props.value.code
+                onChange: (ev) => @props.onChange(_.extend({}, @props.value, code: ev.target.value))
+        R 'div', className: "row",
+          R 'div', className: "col-md-12",
+            R ui.FormGroup, label: "Name",
+              R LocalizedStringEditorComp, value: @props.value.name, onChange: (value) => @props.onChange(_.extend({}, @props.value, name: value))
+        R 'div', className: "row",
+          R 'div', className: "col-md-12",
+            R ui.FormGroup, label: "Description",
+              R LocalizedStringEditorComp, value: @props.value.desc, onChange: (value) => @props.onChange(_.extend({}, @props.value, desc: value))
+        R 'div', className: "row", style: { float: "right" },
+          if @props.onMoveUp
+            R 'button', className: "btn btn-link btn-xs", onClick: @props.onMoveUp, 
+              "Move Up"
+          if @props.onMoveDown
+            R 'button', className: "btn btn-link btn-xs", onClick: @props.onMoveDown, 
+              "Move Down"
+          if @props.onRemove
+            R 'button', className: "btn btn-link btn-xs", onClick: @props.onRemove, 
+              "Remove"
 
 
     
