@@ -23,6 +23,7 @@ module.exports = class PropertyEditorComponent extends React.Component
     tableIds: PropTypes.arrayOf(PropTypes.string.isRequired)   # Ids of tables to include when using table feature
     createRoleEditElem: PropTypes.func
     forbiddenPropertyIds: PropTypes.arrayOf(PropTypes.string.isRequired) # Ids of properties that are not allowed as would be duplicates
+    variables: PropTypes.array # Variables that may be used in expressions 
     
   @defaultProps:
     features: []
@@ -94,6 +95,7 @@ module.exports = class PropertyEditorComponent extends React.Component
             types: [@props.property.type]
             enumValues: @props.property.enumValues
             idTable: @props.property.idTable
+            variables: @props.variables
             aggrStatuses: ["individual", "aggregate", "literal"]
             onChange: (expr) => @props.onChange(_.extend({}, @props.property, expr: expr))
 
@@ -105,6 +107,7 @@ module.exports = class PropertyEditorComponent extends React.Component
             table: @props.property.table or @props.table
             value: @props.property.conditionExpr
             types: ["boolean"]
+            variables: @props.variables
             onChange: (conditionExpr) => @props.onChange(_.extend({}, @props.property, conditionExpr: conditionExpr))
 
       if @props.property.type == "join"

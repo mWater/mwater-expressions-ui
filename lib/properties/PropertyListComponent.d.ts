@@ -1,4 +1,4 @@
-import { Column, Schema, DataSource, Section } from 'mwater-expressions'
+import { Column, Schema, DataSource, Section, Variable } from 'mwater-expressions'
 import React, { ReactNode } from 'react'
 
 export default class PropertyListComponent extends React.Component<{
@@ -12,7 +12,7 @@ export default class PropertyListComponent extends React.Component<{
   
   /** data source. Needed for expr feature */
   dataSource?: DataSource
-  
+
   /** Table that properties are of. Not required if table feature is on */
   table?: string
   
@@ -22,6 +22,9 @@ export default class PropertyListComponent extends React.Component<{
   /** Function to generate the ID of the property */
   propertyIdGenerator?: () => string
 
+  /** Variables that may be used in expressions */
+  variables?: Variable[]
+  
   // /** List of all property ids to prevent duplicates. Do not set directly! */
   // allPropertyIds?: arrayOf(PropTypes.string.isRequired)  
   

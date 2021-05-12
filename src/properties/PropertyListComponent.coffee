@@ -22,7 +22,8 @@ class PropertyListComponent extends React.Component
     tableIds: PropTypes.arrayOf(PropTypes.string.isRequired)   # Ids of tables to include when using table feature
     propertyIdGenerator: PropTypes.func # Function to generate the ID of the property
     allPropertyIds: PropTypes.arrayOf(PropTypes.string.isRequired)  # List of all property ids to prevent duplicates. Do not set directly!
-    
+    variables: PropTypes.array # Variables that may be used in expressions 
+
     # Array of features to be enabled apart from the defaults. Features are:
     # sql: include raw SQL editor
     # reverseSql: include reverse SQL editor. Use {value} for the value sql that will be replaced. e.g. {value}::text
@@ -140,6 +141,7 @@ class PropertyListComponent extends React.Component
             dataSource: @props.dataSource
             table: @props.table
             tableIds: @props.tableIds
+            variables: @props.variables
             onChange: (updatedProperty) => @setState(addingItem: updatedProperty)
             features: @props.features
             createRoleEditElem: @props.createRoleEditElem
@@ -153,6 +155,7 @@ class PropertyListComponent extends React.Component
         dataSource: @props.dataSource
         table: @props.table
         tableIds: @props.tableIds
+        variables: @props.variables
         features: @props.features
         onChange: @handleChange.bind(null, index)
         onDelete: @handleDelete.bind(null, index)
@@ -187,6 +190,7 @@ class PropertyComponent extends React.Component
     dataSource: PropTypes.object # data source. Needed for expr feature
     table: PropTypes.string    # Table that properties are of. Not required if table feature is on
     tableIds: PropTypes.arrayOf(PropTypes.string.isRequired)   # Ids of tables to include when using table feature
+    variables: PropTypes.array # Variables that may be used in expressions 
     features: PropTypes.array # Features to be enabled apart from the default features
     createRoleDisplayElem: PropTypes.func
     createRoleEditElem: PropTypes.func
@@ -278,6 +282,7 @@ class PropertyComponent extends React.Component
                 dataSource: @props.dataSource
                 table: @props.table
                 tableIds: @props.tableIds
+                variables: @props.variables
                 onChange: (updatedProperty) => @setState(editorProperty: updatedProperty)
                 features: @props.features
                 createRoleEditElem: @props.createRoleEditElem
@@ -324,6 +329,7 @@ class PropertyComponent extends React.Component
             dataSource: @props.dataSource
             table: @props.table
             tableIds: @props.tableIds
+            variables: @props.variables
             createRoleEditElem: @props.createRoleEditElem
             createRoleDisplayElem: @props.createRoleDisplayElem
             onCut: @props.onCut
