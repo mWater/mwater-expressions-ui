@@ -40,6 +40,9 @@ export class IdLiteralComponent extends React.Component<{
 
   /** Optional label expression to use. Will fallback to label column or primary key. Put "main" as tableAlias. JsonQL */
   labelExpr?: JsonQLExpr
+
+  /** Allow searching anywhere in label, not just start */
+  searchWithin?: boolean
 }> {}
 
 export class LiteralExprStringComponent extends React.Component<{

@@ -22,6 +22,7 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
     multi: PropTypes.bool      # Allow multiple values (id[] type)
     filter: PropTypes.object   # Optional extra filter. Put "main" as tableAlias. JsonQL
     labelExpr: PropTypes.object # Optional label expression to use. Defaults to label column or PK if none. JsonQL
+    searchWithin: PropTypes.bool # Allow searching anywhere in label, not just start
 
   focus: ->
     @select.focus()
@@ -104,13 +105,13 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
         op: "like"
         exprs: [
           { type: "op", op: "lower", exprs: [labelExpr] }
-          input.toLowerCase() + "%"
+          (if @props.searchWithin then "%" + input.toLowerCase() + "%" else input.toLowerCase() + "%")
         ]
       }
     else  
       where = null 
 
-    # select <label column> as value from <table> where <label column> ~* 'input%' limit 50
+    # select <label column> as value from <table> where lower(<label column>) like 'input%' limit 50
     query = {
       type: "query"
       selects: [
