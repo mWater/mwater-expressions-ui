@@ -1,5 +1,5 @@
-import { AggrStatus, DataSource, ExtensionExpr, LiteralType, LocalizedString, Schema, Variable } from 'mwater-expressions';
-import { ReactNode } from 'react';
+import { AggrStatus, DataSource, ExtensionExpr, LiteralType, LocalizedString, Schema, Variable } from "mwater-expressions";
+import { ReactNode } from "react";
 /** Extension to the expression language. Referenced by ExtentionExprs  */
 export interface ExprUIExtension<T extends ExtensionExpr> {
     /** Id of the expression type */

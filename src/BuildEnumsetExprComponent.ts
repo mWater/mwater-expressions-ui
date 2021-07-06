@@ -5,6 +5,7 @@ const R = React.createElement
 
 import { ExprUtils } from "mwater-expressions"
 import RemovableComponent from "./RemovableComponent"
+import ExprComponent from "./ExprComponent"
 
 interface BuildEnumsetExprComponentProps {
   schema: any
@@ -29,9 +30,6 @@ export default class BuildEnumsetExprComponent extends React.Component<BuildEnum
   }
 
   renderValues() {
-    // To avoid circularity
-    const ExprComponent = require("./ExprComponent")
-
     const exprUtils = new ExprUtils(this.props.schema)
 
     return R(

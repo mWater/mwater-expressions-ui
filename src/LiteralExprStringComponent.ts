@@ -3,24 +3,35 @@ import _ from "lodash"
 import React from "react"
 const R = React.createElement
 
-import { ExprCompiler } from "mwater-expressions"
+import { DataSource, EnumValue, ExprCompiler, LiteralExpr, Schema } from "mwater-expressions"
 import { ExprUtils } from "mwater-expressions"
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
 
 interface LiteralExprStringComponentProps {
-  schema: any
+  schema: Schema
+
   /** Data source to use to get values */
-  dataSource: any
+  dataSource: DataSource
+
   /** Current expression value */
-  value?: any
+  value: LiteralExpr
+
   /** Array of { id:, name: } of enum values that can be selected. Only when type = "enum" */
-  enumValues?: any
-  /** e.g. "en" */
+  enumValues?: EnumValue[]
+
+  /** e.g "en" */
   locale?: string
 }
 
+interface LiteralExprStringComponentState {
+  label: string
+}
+
 // Displays a literal expression as a string. Simple for non-id types. For id types, loads using a query
-export default class LiteralExprStringComponent extends AsyncLoadComponent<LiteralExprStringComponentProps> {
+export default class LiteralExprStringComponent extends AsyncLoadComponent<
+  LiteralExprStringComponentProps,
+  LiteralExprStringComponentState
+> {
   static contextTypes = { locale: PropTypes.string }
 
   // Override to determine if a load is needed. Not called on mounting

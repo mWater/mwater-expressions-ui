@@ -5,6 +5,7 @@ const R = React.createElement
 
 import { ExprUtils } from "mwater-expressions"
 import RemovableComponent from "./RemovableComponent"
+import ExprComponent from "./ExprComponent"
 
 interface ScoreExprComponentProps {
   schema: any
@@ -31,9 +32,6 @@ export default class ScoreExprComponent extends React.Component<ScoreExprCompone
   }
 
   renderScores() {
-    // To avoid circularity
-    const ExprComponent = require("./ExprComponent")
-
     const exprUtils = new ExprUtils(this.props.schema)
     // Get enum values
     const enumValues = exprUtils.getExprEnumValues(this.props.value.input)
@@ -87,9 +85,6 @@ export default class ScoreExprComponent extends React.Component<ScoreExprCompone
   }
 
   render() {
-    // To avoid circularity
-    const ExprComponent = require("./ExprComponent")
-
     return R(
       RemovableComponent,
       { onRemove: this.props.onChange ? this.props.onChange.bind(null, null) : undefined },
