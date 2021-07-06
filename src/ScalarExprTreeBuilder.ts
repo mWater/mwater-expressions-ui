@@ -1,6 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-let ScalarExprTreeBuilder
 import _ from "lodash"
 import { ExprUtils } from "mwater-expressions"
 
@@ -13,7 +10,7 @@ import { ExprUtils } from "mwater-expressions"
 //   isScalarExprTreeSectionMatch: optiona function to override filtering of a section. Passed { tableId: id of table, section: section object from schema, filter: optional string filter }
 //     Should return null for default, true to include, false to exclude
 //   variables: list of variables to show
-export default ScalarExprTreeBuilder = class ScalarExprTreeBuilder {
+export default class ScalarExprTreeBuilder {
   constructor(schema: any, options = {}) {
     this.schema = schema
     this.locale = options.locale

@@ -1,6 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-let ExprElementBuilder
 import PropTypes from "prop-types"
 import _ from "lodash"
 import React from "react"
@@ -16,7 +13,7 @@ import ExprLinkComponent from "./ExprLinkComponent"
 import { getExprUIExtensions } from "./extensions"
 
 // Builds a react element for an expression
-export default ExprElementBuilder = class ExprElementBuilder {
+export default class ExprElementBuilder {
   constructor(schema: any, dataSource: any, locale: any, variables = []) {
     this.schema = schema
     this.dataSource = dataSource
@@ -648,13 +645,12 @@ export default ExprElementBuilder = class ExprElementBuilder {
   }
 }
 
-// TODO DOC
-class WrappedLinkComponent extends React.Component {
-  static initClass() {
-    this.propTypes = { links: PropTypes.array.isRequired }
-    // Shape is label, onClick
-  }
+interface WrappedLinkComponentProps {
+  links: any
+}
 
+// TODO DOC
+class WrappedLinkComponent extends React.Component<WrappedLinkComponentProps> {
   renderLinks() {
     return R(
       "div",
@@ -709,4 +705,3 @@ class WrappedLinkComponent extends React.Component {
     )
   }
 }
-WrappedLinkComponent.initClass()

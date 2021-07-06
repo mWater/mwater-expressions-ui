@@ -20,12 +20,9 @@ import uuid from "uuid"
 //
 export default function (WrappedComponent: any) {
   let NestedListClipboardEnhancement
-  return NestedListClipboardEnhancement = (function () {
+  return (NestedListClipboardEnhancement = (function () {
     NestedListClipboardEnhancement = class NestedListClipboardEnhancement extends React.Component {
-      static initClass() {
-        this.childContextTypes = { clipboard: PropTypes.object }
-        // Clipboard accessible to the children
-      }
+      static childContextTypes = { clipboard: PropTypes.object }
 
       constructor(props: any) {
         super(props)
@@ -243,7 +240,6 @@ export default function (WrappedComponent: any) {
         return R(WrappedComponent, _.assign({}, this.props, newProps))
       }
     }
-    NestedListClipboardEnhancement.initClass()
     return NestedListClipboardEnhancement
-  })();
+  })())
 }

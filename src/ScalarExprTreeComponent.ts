@@ -1,53 +1,46 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-let ScalarExprTreeComponent
 import _ from "lodash"
 import PropTypes from "prop-types"
 import React from "react"
 import ReactDOM from "react-dom"
 const R = React.createElement
 
+interface ScalarExprTreeComponentProps {
+  /** Tree from ScalarExprTreeBuilder */
+  tree: any
+  /** Called with newly selected value */
+  onChange: any
+  /** Render height of the component */
+  height?: number
+  filter?: string
+}
+
 // Shows a tree that selects table + joins + expr of a scalar expression
 // Supports some React context properties for special. See individual classes
-export default ScalarExprTreeComponent = (function () {
-  ScalarExprTreeComponent = class ScalarExprTreeComponent extends React.Component {
-    static initClass() {
-      this.propTypes = {
-        tree: PropTypes.array.isRequired, // Tree from ScalarExprTreeBuilder
-        onChange: PropTypes.func.isRequired, // Called with newly selected value
-        height: PropTypes.number, // Render height of the component
-        filter: PropTypes.string
-      }
-      // Optional string filter
-    }
-
-    render() {
-      return R(
-        "div",
-        { style: { overflowY: this.props.height ? "auto" : undefined, height: this.props.height } },
-        R(ScalarExprTreeTreeComponent, {
-          tree: this.props.tree,
-          onChange: this.props.onChange,
-          filter: this.props.filter
-        })
-      )
-    }
+export default class ScalarExprTreeComponent extends React.Component<ScalarExprTreeComponentProps> {
+  render() {
+    return R(
+      "div",
+      { style: { overflowY: this.props.height ? "auto" : undefined, height: this.props.height } },
+      R(ScalarExprTreeTreeComponent, {
+        tree: this.props.tree,
+        onChange: this.props.onChange,
+        filter: this.props.filter
+      })
+    )
   }
-  ScalarExprTreeComponent.initClass()
-  return ScalarExprTreeComponent
-})()
+}
 
-class ScalarExprTreeTreeComponent extends React.Component {
-  static initClass() {
-    this.propTypes = {
-      tree: PropTypes.array.isRequired, // Tree from ScalarExprTreeBuilder
-      onChange: PropTypes.func.isRequired, // Called with newly selected value
-      prefix: PropTypes.string, // String to prefix names with
-      filter: PropTypes.string
-    }
-    // Optional string filter
-  }
+interface ScalarExprTreeTreeComponentProps {
+  /** Tree from ScalarExprTreeBuilder */
+  tree: any
+  /** Called with newly selected value */
+  onChange: any
+  /** String to prefix names with */
+  prefix?: string
+  filter?: string
+}
 
+class ScalarExprTreeTreeComponent extends React.Component<ScalarExprTreeTreeComponentProps> {
   render() {
     const elems = []
     // Get tree
@@ -78,17 +71,14 @@ class ScalarExprTreeTreeComponent extends React.Component {
     return R("div", null, elems)
   }
 }
-ScalarExprTreeTreeComponent.initClass()
 
-class ScalarExprTreeLeafComponent extends React.Component {
-  static initClass() {
-    this.propTypes = {
-      item: PropTypes.object.isRequired, // Contains item "name" and "value"
-      prefix: PropTypes.string
-    }
-    // String to prefix names with
-  }
+interface ScalarExprTreeLeafComponentProps {
+  /** Contains item "name" and "value" */
+  item: any
+  prefix?: string
+}
 
+class ScalarExprTreeLeafComponent extends React.Component<ScalarExprTreeLeafComponentProps> {
   handleClick = () => {
     return this.props.onChange(this.props.item.value)
   }
@@ -112,21 +102,27 @@ class ScalarExprTreeLeafComponent extends React.Component {
     )
   }
 }
-ScalarExprTreeLeafComponent.initClass()
 
-class ScalarExprTreeNodeComponent extends React.Component {
-  static initClass() {
-    this.propTypes = {
-      item: PropTypes.object.isRequired, // Item to display
-      onChange: PropTypes.func.isRequired, // Called when item is selected
-      filter: PropTypes.string // Optional string filter
-    }
+interface ScalarExprTreeNodeComponentProps {
+  /** Item to display */
+  item: any
+  /** Called when item is selected */
+  onChange: any
+  /** Optional string filter */
+  filter?: string
+}
 
-    this.contextTypes =
-      // Function to decorate the children component of a section. Passed { children: React element of children, tableId: id of table, section: section object from schema, filter: optional string filter }
-      // Should return decorated element
-      { decorateScalarExprTreeSectionChildren: PropTypes.func }
-  }
+interface ScalarExprTreeNodeComponentState {
+  collapse: any
+}
+
+class ScalarExprTreeNodeComponent extends React.Component<
+  ScalarExprTreeNodeComponentProps,
+  ScalarExprTreeNodeComponentState
+> {
+  static contextTypes = // Function to decorate the children component of a section. Passed { children: React element of children, tableId: id of table, section: section object from schema, filter: optional string filter }
+    // Should return decorated element
+    { decorateScalarExprTreeSectionChildren: PropTypes.func }
 
   constructor(props: any) {
     super(props)
@@ -246,4 +242,3 @@ class ScalarExprTreeNodeComponent extends React.Component {
     )
   }
 }
-ScalarExprTreeNodeComponent.initClass()

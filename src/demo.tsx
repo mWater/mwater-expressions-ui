@@ -109,7 +109,7 @@ class PropertyListContainerComponent extends React.Component {
       // createRoleEditElem: (roles, onChange) =>
       //   R 'input', className: "form-control", value: JSON.stringify(roles), onChange: (ev) -> onChange(JSON.parse(ev.target.value))
       R("div", { className: "col-md-6" }, R("pre", null, JSON.stringify(this.state.properties, null, 2)))
-    );
+    )
   }
 }
 PropertyListContainerComponent.initClass()
@@ -153,7 +153,7 @@ class ContentEditableTestComponent extends React.Component {
         },
         "Paste"
       )
-    );
+    )
   }
 }
 
@@ -630,7 +630,7 @@ class LiveTestComponent extends React.Component {
       const dataSource = new MWaterDataSource(apiUrl, null, false)
 
       return this.setState({ schema, dataSource })
-    });
+    })
   }
 
   handleValueChange = (value: any) => {
@@ -847,7 +847,7 @@ class MWaterDataSource extends DataSource {
       })
       .fail((xhr: any) => {
         return cb(new Error(xhr.responseText))
-      });
+      })
   }
 }
 
@@ -1238,7 +1238,7 @@ class LiveIdLiteralTestComponent extends React.Component {
       const dataSource = new MWaterDataSource(apiUrl, null, false)
 
       return this.setState({ schema, dataSource })
-    });
+    })
   }
 
   // handleValueChange: (value) =>

@@ -14,54 +14,52 @@ import ActionCancelModalComponent from "react-library/lib/ActionCancelModalCompo
 
 // List/add/edit properties
 class PropertyListComponent extends React.Component {
-  static initClass() {
-    this.propTypes = {
-      properties: PropTypes.array.isRequired, // array of properties
-      onChange: PropTypes.func.isRequired,
-      schema: PropTypes.object, // schema of all data. Needed for idType and expr features
-      dataSource: PropTypes.object, // data source. Needed for expr feature
-      table: PropTypes.string, // Table that properties are of. Not required if table feature is on
-      tableIds: PropTypes.arrayOf(PropTypes.string.isRequired), // Ids of tables to include when using table feature
-      propertyIdGenerator: PropTypes.func, // Function to generate the ID of the property
-      allPropertyIds: PropTypes.arrayOf(PropTypes.string.isRequired), // List of all property ids to prevent duplicates. Do not set directly!
-      variables: PropTypes.array, // Variables that may be used in expressions
+  static propTypes = {
+    properties: PropTypes.array.isRequired, // array of properties
+    onChange: PropTypes.func.isRequired,
+    schema: PropTypes.object, // schema of all data. Needed for idType and expr features
+    dataSource: PropTypes.object, // data source. Needed for expr feature
+    table: PropTypes.string, // Table that properties are of. Not required if table feature is on
+    tableIds: PropTypes.arrayOf(PropTypes.string.isRequired), // Ids of tables to include when using table feature
+    propertyIdGenerator: PropTypes.func, // Function to generate the ID of the property
+    allPropertyIds: PropTypes.arrayOf(PropTypes.string.isRequired), // List of all property ids to prevent duplicates. Do not set directly!
+    variables: PropTypes.array, // Variables that may be used in expressions
 
-      // Array of features to be enabled apart from the defaults. Features are:
-      // sql: include raw SQL editor
-      // reverseSql: include reverse SQL editor. Use {value} for the value sql that will be replaced. e.g. {value}::text
-      // idField: show id field for properties
-      // uniqueCode: allow uniqueCode flag on properties
-      // idType: allow id-type fields
-      // joinType: allow join-type fields
-      // code: show code of properties
-      // expr: allow fields with expr set
-      // conditionExpr: allow fields to set a condition expression if they are conditionally displayed
-      // section: allow adding sections
-      // table: each property contains table
-      // unique: allow unique flag on properties
-      // onDelete: allow undefined, "cascade" or "set_null"
-      // indexed: allow indexed flag on properties
-      // dataurlType: allow dataurl type
-      // required: allow required flag on properties
-      features: PropTypes.array,
+    // Array of features to be enabled apart from the defaults. Features are:
+    // sql: include raw SQL editor
+    // reverseSql: include reverse SQL editor. Use {value} for the value sql that will be replaced. e.g. {value}::text
+    // idField: show id field for properties
+    // uniqueCode: allow uniqueCode flag on properties
+    // idType: allow id-type fields
+    // joinType: allow join-type fields
+    // code: show code of properties
+    // expr: allow fields with expr set
+    // conditionExpr: allow fields to set a condition expression if they are conditionally displayed
+    // section: allow adding sections
+    // table: each property contains table
+    // unique: allow unique flag on properties
+    // onDelete: allow undefined, "cascade" or "set_null"
+    // indexed: allow indexed flag on properties
+    // dataurlType: allow dataurl type
+    // required: allow required flag on properties
+    features: PropTypes.array,
 
-      // function that returns the UI of the roles, called with a single argument, the array containing roles
-      createRoleDisplayElem: PropTypes.func,
+    // function that returns the UI of the roles, called with a single argument, the array containing roles
+    createRoleDisplayElem: PropTypes.func,
 
-      // function that returns the UI of the roles for editing, gets passed two arguments
-      // 1. the array containing roles
-      // 2. The callback function that should be called when the roles change
-      createRoleEditElem: PropTypes.func,
+    // function that returns the UI of the roles for editing, gets passed two arguments
+    // 1. the array containing roles
+    // 2. The callback function that should be called when the roles change
+    createRoleEditElem: PropTypes.func,
 
-      onCut: PropTypes.func, // supplied by NestedListClipboardEnhancement
-      onCopy: PropTypes.func, // supplied by NestedListClipboardEnhancement
-      onPaste: PropTypes.func, // supplied by NestedListClipboardEnhancement
-      onPasteInto: PropTypes.func, // supplied by NestedListClipboardEnhancement
-      listId: PropTypes.string // used internally
-    }
-
-    this.contextTypes = { clipboard: PropTypes.object }
+    onCut: PropTypes.func, // supplied by NestedListClipboardEnhancement
+    onCopy: PropTypes.func, // supplied by NestedListClipboardEnhancement
+    onPaste: PropTypes.func, // supplied by NestedListClipboardEnhancement
+    onPasteInto: PropTypes.func, // supplied by NestedListClipboardEnhancement
+    listId: PropTypes.string // used internally
   }
+
+  static contextTypes = { clipboard: PropTypes.object }
 
   constructor(props: any) {
     super(props)
@@ -178,10 +176,17 @@ class PropertyListComponent extends React.Component {
             createRoleEditElem: this.props.createRoleEditElem,
             forbiddenPropertyIds: allPropertyIds
           })
-    );
+    )
   }
 
-  renderProperty = (allPropertyIds: any, item: any, index: any, connectDragSource: any, connectDragPreview: any, connectDropTarget: any) => {
+  renderProperty = (
+    allPropertyIds: any,
+    item: any,
+    index: any,
+    connectDragSource: any,
+    connectDragPreview: any,
+    connectDropTarget: any
+  ) => {
     const elem = R(
       "div",
       { key: index },
@@ -226,49 +231,46 @@ class PropertyListComponent extends React.Component {
     )
   }
 }
-PropertyListComponent.initClass()
 
 class PropertyComponent extends React.Component {
-  static initClass() {
-    this.propTypes = {
-      property: PropTypes.object.isRequired, // The property
-      onChange: PropTypes.func.isRequired,
-      schema: PropTypes.object, // schema of all data. Needed for idType and expr features
-      dataSource: PropTypes.object, // data source. Needed for expr feature
-      table: PropTypes.string, // Table that properties are of. Not required if table feature is on
-      tableIds: PropTypes.arrayOf(PropTypes.string.isRequired), // Ids of tables to include when using table feature
-      variables: PropTypes.array, // Variables that may be used in expressions
-      features: PropTypes.array, // Features to be enabled apart from the default features
-      createRoleDisplayElem: PropTypes.func,
-      createRoleEditElem: PropTypes.func,
-      onCut: PropTypes.func.isRequired,
-      onCopy: PropTypes.func.isRequired,
-      onPaste: PropTypes.func.isRequired,
-      onPasteInto: PropTypes.func.isRequired,
-      onDelete: PropTypes.func.isRequired,
-      listId: PropTypes.string,
-      allPropertyIds: PropTypes.arrayOf(PropTypes.string.isRequired) // List of all property ids to prevent duplicates
-    }
-
-    this.iconMap = {
-      text: "fa fa-font",
-      number: "fa fa-calculator",
-      enum: "fa fa-check-circle-o",
-      enumset: "fa fa-check-square-o",
-      date: "fa fa-calendar-check-o",
-      datetime: "fa fa-calendar-check-o",
-      image: "fa fa-file-image-o",
-      imagelist: "fa fa-file-image-o",
-      section: "fa fa-folder",
-      geometry: "fa fa-map-marker",
-      boolean: "fa fa-toggle-on",
-      id: "fa fa-arrow-right",
-      join: "fa fa-link",
-      dataurl: "fa fa-file"
-    }
-
-    this.contextTypes = { clipboard: PropTypes.object }
+  static propTypes = {
+    property: PropTypes.object.isRequired, // The property
+    onChange: PropTypes.func.isRequired,
+    schema: PropTypes.object, // schema of all data. Needed for idType and expr features
+    dataSource: PropTypes.object, // data source. Needed for expr feature
+    table: PropTypes.string, // Table that properties are of. Not required if table feature is on
+    tableIds: PropTypes.arrayOf(PropTypes.string.isRequired), // Ids of tables to include when using table feature
+    variables: PropTypes.array, // Variables that may be used in expressions
+    features: PropTypes.array, // Features to be enabled apart from the default features
+    createRoleDisplayElem: PropTypes.func,
+    createRoleEditElem: PropTypes.func,
+    onCut: PropTypes.func.isRequired,
+    onCopy: PropTypes.func.isRequired,
+    onPaste: PropTypes.func.isRequired,
+    onPasteInto: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
+    listId: PropTypes.string,
+    allPropertyIds: PropTypes.arrayOf(PropTypes.string.isRequired) // List of all property ids to prevent duplicates
   }
+
+  static iconMap = {
+    text: "fa fa-font",
+    number: "fa fa-calculator",
+    enum: "fa fa-check-circle-o",
+    enumset: "fa fa-check-square-o",
+    date: "fa fa-calendar-check-o",
+    datetime: "fa fa-calendar-check-o",
+    image: "fa fa-file-image-o",
+    imagelist: "fa fa-file-image-o",
+    section: "fa fa-folder",
+    geometry: "fa fa-map-marker",
+    boolean: "fa fa-toggle-on",
+    id: "fa fa-arrow-right",
+    join: "fa fa-link",
+    dataurl: "fa fa-file"
+  }
+
+  static contextTypes = { clipboard: PropTypes.object }
 
   constructor(props: any) {
     super(props)
@@ -471,10 +473,9 @@ class PropertyComponent extends React.Component {
             })
           )
         : undefined
-    );
+    )
   }
 }
-PropertyComponent.initClass()
 
 export default NestedListClipboardEnhancement(PropertyListComponent)
 

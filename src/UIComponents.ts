@@ -14,11 +14,9 @@ import LinkComponent from "./LinkComponent"
 // Section with a title and icon
 let _SectionComponent = (SectionComponent = (function () {
   SectionComponent = class SectionComponent extends React.Component {
-    static initClass() {
-      this.propTypes = {
-        icon: PropTypes.string,
-        label: PropTypes.node
-      }
+    static propTypes = {
+      icon: PropTypes.string,
+      label: PropTypes.node
     }
 
     render() {
@@ -36,7 +34,6 @@ let _SectionComponent = (SectionComponent = (function () {
       )
     }
   }
-  SectionComponent.initClass()
   return SectionComponent
 })())
 
@@ -45,11 +42,9 @@ export { _SectionComponent as SectionComponent }
 // List of options with a name and description each
 let _OptionListComponent = (OptionListComponent = (function () {
   OptionListComponent = class OptionListComponent extends React.Component {
-    static initClass() {
-      this.propTypes = {
-        items: PropTypes.array.isRequired, // name, desc, onClick
-        hint: PropTypes.string
-      }
+    static propTypes = {
+      items: PropTypes.array.isRequired, // name, desc, onClick
+      hint: PropTypes.string
     }
 
     render() {
@@ -67,22 +62,19 @@ let _OptionListComponent = (OptionListComponent = (function () {
       )
     }
   }
-  OptionListComponent.initClass()
   return OptionListComponent
 })())
 
 export { _OptionListComponent as OptionListComponent }
 
-// Single option
-class OptionComponent extends React.Component {
-  static initClass() {
-    this.propTypes = {
-      name: PropTypes.string,
-      desc: PropTypes.string,
-      onClick: PropTypes.func.isRequired
-    }
-  }
+interface OptionComponentProps {
+  name?: string
+  desc?: string
+  onClick: any
+}
 
+// Single option
+class OptionComponent extends React.Component<OptionComponentProps> {
   render() {
     return R(
       "div",
@@ -92,17 +84,13 @@ class OptionComponent extends React.Component {
     )
   }
 }
-OptionComponent.initClass()
 
 // Switches views smoothly
 let _SwitchViewComponent = (SwitchViewComponent = (function () {
   SwitchViewComponent = class SwitchViewComponent extends React.Component {
-    static initClass() {
-      this.propTypes = {
-        views: PropTypes.object.isRequired, // Map of view id to view element
-        viewId: PropTypes.string.isRequired
-      }
-      // Current view id to display
+    static propTypes = {
+      views: PropTypes.object.isRequired, // Map of view id to view element
+      viewId: PropTypes.string.isRequired
     }
 
     constructor(props: any) {
@@ -192,10 +180,9 @@ let _SwitchViewComponent = (SwitchViewComponent = (function () {
 
         // Just display (but wrapped to keep same component)
         return R("div", null, R("div", { key: this.props.viewId }, this.props.views[this.props.viewId]))
-      });
+      })
     }
   }
-  SwitchViewComponent.initClass()
   return SwitchViewComponent
 })())
 
@@ -205,14 +192,12 @@ export { _SwitchViewComponent as SwitchViewComponent }
 // Editor can be node or can be function that takes onClose function as first parameter
 let _ToggleEditComponent = (ToggleEditComponent = (function () {
   ToggleEditComponent = class ToggleEditComponent extends React.Component {
-    static initClass() {
-      this.propTypes = {
-        forceOpen: PropTypes.bool,
-        initiallyOpen: PropTypes.bool,
-        label: PropTypes.node.isRequired,
-        editor: PropTypes.any.isRequired,
-        onRemove: PropTypes.func
-      }
+    static propTypes = {
+      forceOpen: PropTypes.bool,
+      initiallyOpen: PropTypes.bool,
+      label: PropTypes.node.isRequired,
+      editor: PropTypes.any.isRequired,
+      onRemove: PropTypes.func
     }
 
     constructor(props: any) {
@@ -258,7 +243,6 @@ let _ToggleEditComponent = (ToggleEditComponent = (function () {
       })
     }
   }
-  ToggleEditComponent.initClass()
   return ToggleEditComponent
 })())
 
@@ -267,18 +251,15 @@ export { _ToggleEditComponent as ToggleEditComponent }
 // Switch between several values as a series of radio buttons
 let _ButtonToggleComponent = (ButtonToggleComponent = (function () {
   ButtonToggleComponent = class ButtonToggleComponent extends React.Component {
-    static initClass() {
-      this.propTypes = {
-        value: PropTypes.any,
-        options: PropTypes.arrayOf(
-          PropTypes.shape({
-            label: PropTypes.node.isRequired,
-            value: PropTypes.any
-          })
-        ).isRequired, // List of layers
-        onChange: PropTypes.func.isRequired
-      }
-      // Called with value
+    static propTypes = {
+      value: PropTypes.any,
+      options: PropTypes.arrayOf(
+        PropTypes.shape({
+          label: PropTypes.node.isRequired,
+          value: PropTypes.any
+        })
+      ).isRequired, // List of layers
+      onChange: PropTypes.func.isRequired
     }
 
     render() {
@@ -299,7 +280,6 @@ let _ButtonToggleComponent = (ButtonToggleComponent = (function () {
       )
     }
   }
-  ButtonToggleComponent.initClass()
   return ButtonToggleComponent
 })())
 
