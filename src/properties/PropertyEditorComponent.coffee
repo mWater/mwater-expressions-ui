@@ -120,7 +120,7 @@ module.exports = class PropertyEditorComponent extends React.Component
       
       if @props.property.type in ["id", "id[]"]
         R ui.FormGroup, label: "ID Table",
-          R TableSelectComponent, value: @props.property.idTable, schema: @props.schema, onChange: ((table) => @props.onChange(_.extend({}, @props.property, idTable: table))),
+          R TableSelectComponent, value: @props.property.idTable, schema: @props.schema, onChange: ((table) => @props.onChange(_.extend({}, @props.property, idTable: table)))
       
       if _.includes(@props.features, "required")
         R ui.Checkbox, value: @props.property.required, onChange: ((value) => @props.onChange(_.extend({}, @props.property, required: value))),
@@ -226,7 +226,7 @@ class EnumValuesEditorComponent extends React.Component
           onChange: @handleChange.bind(null, i), 
           onRemove: @handleRemove.bind(null, i),
           onMoveUp: (if i > 0 then @handleMoveUp.bind(null, i)),
-          onMoveDown: (if i < items.length - 1 then @handleMoveDown.bind(null, i)),
+          onMoveDown: (if i < items.length - 1 then @handleMoveDown.bind(null, i))
 
       R 'button', type: "button", className: "btn btn-link", onClick: @handleAdd,
         "+ Add Value"    
