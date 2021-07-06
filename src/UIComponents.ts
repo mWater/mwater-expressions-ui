@@ -1,6 +1,6 @@
 // TODO: This file was created by bulk-decaffeinate.
 // Sanity-check the conversion and remove this comment.
-let ButtonToggleComponent, OptionListComponent, SectionComponent, SwitchViewComponent, ToggleEditComponent
+let ButtonToggleComponent, OptionListComponent, SectionComponent, SwitchViewComponent: any, ToggleEditComponent
 import _ from "lodash"
 import PropTypes from "prop-types"
 import React from "react"
@@ -105,14 +105,14 @@ let _SwitchViewComponent = (SwitchViewComponent = (function () {
       // Current view id to display
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
       this.state = {
         measuring: false
       }
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: any) {
       // If view changes, measure all components
       if (nextProps.viewId !== this.props.viewId) {
         return this.setState({ measuring: true })
@@ -120,12 +120,12 @@ let _SwitchViewComponent = (SwitchViewComponent = (function () {
     }
 
     // Save components
-    refCallback = (id, comp) => {
+    refCallback = (id: any, comp: any) => {
       this.comps = this.comps || {}
       return (this.comps[id] = comp)
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps: any, prevState: any) {
       // If measuring, get the heights to interpolate
       if (this.state.measuring) {
         this.heights = {}
@@ -148,7 +148,7 @@ let _SwitchViewComponent = (SwitchViewComponent = (function () {
         style[id] = motion.spring(id === this.props.viewId ? 1 : 0)
       }
 
-      return R(motion.Motion, { style }, (style) => {
+      return R(motion.Motion, { style }, (style: any) => {
         // If measuring, display all positioned at top
         if (this.state.measuring) {
           return R(
@@ -192,7 +192,7 @@ let _SwitchViewComponent = (SwitchViewComponent = (function () {
 
         // Just display (but wrapped to keep same component)
         return R("div", null, R("div", { key: this.props.viewId }, this.props.views[this.props.viewId]))
-      })
+      });
     }
   }
   SwitchViewComponent.initClass()
@@ -215,7 +215,7 @@ let _ToggleEditComponent = (ToggleEditComponent = (function () {
       }
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
       this.state = { open: props.initiallyOpen || false }
     }
@@ -238,7 +238,7 @@ let _ToggleEditComponent = (ToggleEditComponent = (function () {
     }
 
     // Save editor comp
-    editorRef = (editorComp) => {
+    editorRef = (editorComp: any) => {
       return (this.editorComp = editorComp)
     }
 

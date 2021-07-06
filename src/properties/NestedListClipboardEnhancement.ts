@@ -18,27 +18,27 @@ import uuid from "uuid"
 //
 // Also exposes a clipboard context, which can be accessed by the child nodes.
 //
-export default function (WrappedComponent) {
+export default function (WrappedComponent: any) {
   let NestedListClipboardEnhancement
-  return (NestedListClipboardEnhancement = (function () {
+  return NestedListClipboardEnhancement = (function () {
     NestedListClipboardEnhancement = class NestedListClipboardEnhancement extends React.Component {
       static initClass() {
         this.childContextTypes = { clipboard: PropTypes.object }
         // Clipboard accessible to the children
       }
 
-      constructor(props) {
+      constructor(props: any) {
         super(props)
         this.state = {
           clipboard: null
         }
       }
 
-      handleCut = (listId, itemId) => {
+      handleCut = (listId: any, itemId: any) => {
         return this.handleCopy(listId, itemId, true)
       }
 
-      findItemById = (listId, itemId) => {
+      findItemById = (listId: any, itemId: any) => {
         const value = _.cloneDeep(this.props.properties)
         const list = _.find(value, { id: itemId })
 
@@ -49,7 +49,7 @@ export default function (WrappedComponent) {
 
         let found = null
 
-        function find(listId, itemId, items) {
+        function find(listId: any, itemId: any, items: any) {
           for (let property of items) {
             if (property.id === listId) {
               return _.find(property.contents, { id: itemId })
@@ -66,7 +66,7 @@ export default function (WrappedComponent) {
         return find(listId, itemId, _.filter(value, { type: "section" }))
       }
 
-      handleCopy = (listId, itemId, cut = false) => {
+      handleCopy = (listId: any, itemId: any, cut = false) => {
         const property = this.findItemById(listId, itemId)
 
         // Only change id if copy
@@ -89,7 +89,7 @@ export default function (WrappedComponent) {
         })
       }
 
-      handlePasteInto = (listId, itemId) => {
+      handlePasteInto = (listId: any, itemId: any) => {
         if (!this.state.clipboard) {
           return
         }
@@ -121,7 +121,7 @@ export default function (WrappedComponent) {
           value[pasteIndex].contents.push(this.state.clipboard.property)
           didPaste = true
         } else {
-          var pasteInto = (listId, itemId, items) => {
+          var pasteInto = (listId: any, itemId: any, items: any) => {
             return (() => {
               const result = []
               for (let property of items) {
@@ -154,7 +154,7 @@ export default function (WrappedComponent) {
         }
       }
 
-      cut = (listId, itemId, items) => {
+      cut = (listId: any, itemId: any, items: any) => {
         let didCut = false
         for (let property of items) {
           if (property.id === listId) {
@@ -168,7 +168,7 @@ export default function (WrappedComponent) {
         return didCut
       }
 
-      paste = (listId, itemId, items) => {
+      paste = (listId: any, itemId: any, items: any) => {
         let didPaste = false
         for (let property of items) {
           if (property.id === listId) {
@@ -182,7 +182,7 @@ export default function (WrappedComponent) {
         return didPaste
       }
 
-      handlePaste = (listId, itemId) => {
+      handlePaste = (listId: any, itemId: any) => {
         if (!this.state.clipboard) {
           return
         }
@@ -245,5 +245,5 @@ export default function (WrappedComponent) {
     }
     NestedListClipboardEnhancement.initClass()
     return NestedListClipboardEnhancement
-  })())
+  })();
 }

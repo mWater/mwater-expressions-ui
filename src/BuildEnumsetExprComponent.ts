@@ -25,7 +25,7 @@ export default BuildEnumsetExprComponent = (function () {
       // e.g. "en"
     }
 
-    handleValueChange = (id, value) => {
+    handleValueChange = (id: any, value: any) => {
       const values = _.clone(this.props.value.values)
       values[id] = value
       return this.props.onChange(_.extend({}, this.props.value, { values }))

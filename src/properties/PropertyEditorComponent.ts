@@ -56,7 +56,7 @@ export default PropertyEditorComponent = (function () {
           ? [
               R(IdFieldComponent, {
                 value: this.props.property.id,
-                onChange: (value) => this.props.onChange(_.extend({}, this.props.property, { id: value }))
+                onChange: (value: any) => this.props.onChange(_.extend({}, this.props.property, { id: value }))
               }),
               this.props.forbiddenPropertyIds && this.props.forbiddenPropertyIds.includes(this.props.property.id)
                 ? R("div", { className: "alert alert-danger" }, "Duplicate IDs not allowed")
@@ -72,7 +72,7 @@ export default PropertyEditorComponent = (function () {
                 type: "text",
                 className: "form-control",
                 value: this.props.property.code,
-                onChange: (ev) => this.props.onChange(_.extend({}, this.props.property, { code: ev.target.value }))
+                onChange: (ev: any) => this.props.onChange(_.extend({}, this.props.property, { code: ev.target.value }))
               })
             )
           : undefined,
@@ -81,7 +81,7 @@ export default PropertyEditorComponent = (function () {
           { label: "Name" },
           R(LocalizedStringEditorComp, {
             value: this.props.property.name,
-            onChange: (value) => this.props.onChange(_.extend({}, this.props.property, { name: value }))
+            onChange: (value: any) => this.props.onChange(_.extend({}, this.props.property, { name: value }))
           })
         ),
         R(
@@ -89,7 +89,7 @@ export default PropertyEditorComponent = (function () {
           { label: "Description" },
           R(LocalizedStringEditorComp, {
             value: this.props.property.desc,
-            onChange: (value) => this.props.onChange(_.extend({}, this.props.property, { desc: value }))
+            onChange: (value: any) => this.props.onChange(_.extend({}, this.props.property, { desc: value }))
           })
         ),
         R(
@@ -100,7 +100,7 @@ export default PropertyEditorComponent = (function () {
             {
               className: "form-control",
               value: this.props.property.type,
-              onChange: (ev) => this.props.onChange(_.extend({}, this.props.property, { type: ev.target.value }))
+              onChange: (ev: any) => this.props.onChange(_.extend({}, this.props.property, { type: ev.target.value }))
             },
             R("option", { key: "", value: "" }, ""),
             R("option", { key: "text", value: "text" }, "Text"),
@@ -135,7 +135,7 @@ export default PropertyEditorComponent = (function () {
               { label: "Values" },
               R(EnumValuesEditorComponent, {
                 value: this.props.property.enumValues,
-                onChange: (value) => this.props.onChange(_.extend({}, this.props.property, { enumValues: value }))
+                onChange: (value: any) => this.props.onChange(_.extend({}, this.props.property, { enumValues: value }))
               })
             )
           : undefined,
@@ -159,7 +159,7 @@ export default PropertyEditorComponent = (function () {
                 idTable: this.props.property.idTable,
                 variables: this.props.variables,
                 aggrStatuses: ["individual", "aggregate", "literal"],
-                onChange: (expr) => this.props.onChange(_.extend({}, this.props.property, { expr }))
+                onChange: (expr: any) => this.props.onChange(_.extend({}, this.props.property, { expr }))
               })
             )
           : undefined,
@@ -175,7 +175,7 @@ export default PropertyEditorComponent = (function () {
                 value: this.props.property.conditionExpr,
                 types: ["boolean"],
                 variables: this.props.variables,
-                onChange: (conditionExpr) => this.props.onChange(_.extend({}, this.props.property, { conditionExpr }))
+                onChange: (conditionExpr: any) => this.props.onChange(_.extend({}, this.props.property, { conditionExpr }))
               })
             )
           : undefined,
@@ -200,7 +200,7 @@ export default PropertyEditorComponent = (function () {
               R(TableSelectComponent, {
                 value: this.props.property.idTable,
                 schema: this.props.schema,
-                onChange: (table) => this.props.onChange(_.extend({}, this.props.property, { idTable: table }))
+                onChange: (table: any) => this.props.onChange(_.extend({}, this.props.property, { idTable: table }))
               })
             )
           : undefined,
@@ -284,7 +284,7 @@ export default PropertyEditorComponent = (function () {
                 type: "text",
                 className: "form-control",
                 value: this.props.property.sql,
-                onChange: (ev) => this.props.onChange(_.extend({}, this.props.property, { sql: ev.target.value }))
+                onChange: (ev: any) => this.props.onChange(_.extend({}, this.props.property, { sql: ev.target.value }))
               })
             )
           : undefined,
@@ -297,8 +297,7 @@ export default PropertyEditorComponent = (function () {
                 type: "text",
                 className: "form-control",
                 value: this.props.property.reverseSql,
-                onChange: (ev) =>
-                  this.props.onChange(_.extend({}, this.props.property, { reverseSql: ev.target.value }))
+                onChange: (ev: any) => this.props.onChange(_.extend({}, this.props.property, { reverseSql: ev.target.value }))
               })
             )
           : undefined,
@@ -307,12 +306,11 @@ export default PropertyEditorComponent = (function () {
           ? R(
               ui.FormGroup,
               { label: "Roles" },
-              this.props.createRoleEditElem(this.props.property.roles || [], (roles) =>
-                this.props.onChange(_.extend({}, this.props.property, { roles }))
+              this.props.createRoleEditElem(this.props.property.roles || [], (roles: any) => this.props.onChange(_.extend({}, this.props.property, { roles }))
               )
             )
           : undefined
-      )
+      );
     }
   }
   PropertyEditorComponent.initClass()
@@ -358,7 +356,7 @@ class EnumValuesEditorComponent extends React.Component {
     // Called with new value
   }
 
-  handleChange = (i, item) => {
+  handleChange = (i: any, item: any) => {
     const value = (this.props.value || []).slice()
     value[i] = item
     return this.props.onChange(value)
@@ -370,13 +368,13 @@ class EnumValuesEditorComponent extends React.Component {
     return this.props.onChange(value)
   }
 
-  handleRemove = (i) => {
+  handleRemove = (i: any) => {
     const value = (this.props.value || []).slice()
     value.splice(i, 1)
     return this.props.onChange(value)
   }
 
-  handleMoveUp = (i) => {
+  handleMoveUp = (i: any) => {
     const value = (this.props.value || []).slice()
     const temp = value[i - 1]
     value[i - 1] = value[i]
@@ -384,7 +382,7 @@ class EnumValuesEditorComponent extends React.Component {
     return this.props.onChange(value)
   }
 
-  handleMoveDown = (i) => {
+  handleMoveDown = (i: any) => {
     const value = (this.props.value || []).slice()
     const temp = value[i + 1]
     value[i + 1] = value[i]
@@ -441,7 +439,7 @@ class EnumValueEditorComponent extends React.Component {
             { className: "col-md-6" },
             R(IdFieldComponent, {
               value: this.props.value.id,
-              onChange: (value) => this.props.onChange(_.extend({}, this.props.value, { id: value }))
+              onChange: (value: any) => this.props.onChange(_.extend({}, this.props.value, { id: value }))
             })
           ),
 
@@ -457,7 +455,7 @@ class EnumValueEditorComponent extends React.Component {
                 placeholder: "Code",
                 style: { width: "10em" },
                 value: this.props.value.code,
-                onChange: (ev) => this.props.onChange(_.extend({}, this.props.value, { code: ev.target.value }))
+                onChange: (ev: any) => this.props.onChange(_.extend({}, this.props.value, { code: ev.target.value }))
               })
             )
           )
@@ -473,7 +471,7 @@ class EnumValueEditorComponent extends React.Component {
               { label: "Name" },
               R(LocalizedStringEditorComp, {
                 value: this.props.value.name,
-                onChange: (value) => this.props.onChange(_.extend({}, this.props.value, { name: value }))
+                onChange: (value: any) => this.props.onChange(_.extend({}, this.props.value, { name: value }))
               })
             )
           )
@@ -489,7 +487,7 @@ class EnumValueEditorComponent extends React.Component {
               { label: "Description" },
               R(LocalizedStringEditorComp, {
                 value: this.props.value.desc,
-                onChange: (value) => this.props.onChange(_.extend({}, this.props.value, { desc: value }))
+                onChange: (value: any) => this.props.onChange(_.extend({}, this.props.value, { desc: value }))
               })
             )
           )
@@ -508,7 +506,7 @@ class EnumValueEditorComponent extends React.Component {
             : undefined
         )
       )
-    )
+    );
   }
 }
 EnumValueEditorComponent.initClass()

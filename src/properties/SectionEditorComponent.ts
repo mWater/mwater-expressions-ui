@@ -33,7 +33,7 @@ export default SectionEditorComponent = (function () {
           if (_.includes(this.props.features, "idField")) {
             R(IdFieldComponent, {
               value: this.props.property.id,
-              onChange: (value) => this.props.onChange(_.extend({}, this.props.property, { id: value }))
+              onChange: (value: any) => this.props.onChange(_.extend({}, this.props.property, { id: value }))
             })
             return R(
               ui.FormGroup,
@@ -42,10 +42,10 @@ export default SectionEditorComponent = (function () {
                 type: "text",
                 className: "form-control",
                 value: this.props.property.id,
-                onChange: (ev) => this.props.onChange(_.extend({}, this.props.property, { id: ev.target.value }))
+                onChange: (ev: any) => this.props.onChange(_.extend({}, this.props.property, { id: ev.target.value }))
               }),
               R("p", { className: "help-block" }, "Letters lowercase, numbers and _ only. No spaces or uppercase")
-            )
+            );
           }
         })(),
         _.includes(this.props.features, "code")
@@ -56,7 +56,7 @@ export default SectionEditorComponent = (function () {
                 type: "text",
                 className: "form-control",
                 value: this.props.property.code,
-                onChange: (ev) => this.props.onChange(_.extend({}, this.props.property, { code: ev.target.value }))
+                onChange: (ev: any) => this.props.onChange(_.extend({}, this.props.property, { code: ev.target.value }))
               })
             )
           : undefined,
@@ -65,7 +65,7 @@ export default SectionEditorComponent = (function () {
           { label: "Name" },
           R(LocalizedStringEditorComp, {
             value: this.props.property.name,
-            onChange: (value) => this.props.onChange(_.extend({}, this.props.property, { name: value }))
+            onChange: (value: any) => this.props.onChange(_.extend({}, this.props.property, { name: value }))
           })
         ),
         R(
@@ -73,10 +73,10 @@ export default SectionEditorComponent = (function () {
           { label: "Description" },
           R(LocalizedStringEditorComp, {
             value: this.props.property.desc,
-            onChange: (value) => this.props.onChange(_.extend({}, this.props.property, { desc: value }))
+            onChange: (value: any) => this.props.onChange(_.extend({}, this.props.property, { desc: value }))
           })
         )
-      )
+      );
     }
   }
   SectionEditorComponent.initClass()

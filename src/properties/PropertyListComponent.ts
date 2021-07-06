@@ -63,20 +63,20 @@ class PropertyListComponent extends React.Component {
     this.contextTypes = { clipboard: PropTypes.object }
   }
 
-  constructor(props) {
+  constructor(props: any) {
     super(props)
     this.state = {
       addingItem: null // Property being added
     }
   }
 
-  handleChange = (index, property) => {
+  handleChange = (index: any, property: any) => {
     const value = this.props.properties.slice()
     value[index] = property
     return this.props.onChange(value)
   }
 
-  handleDelete = (index) => {
+  handleDelete = (index: any) => {
     const value = this.props.properties.slice()
     _.pullAt(value, index)
     return this.props.onChange(value)
@@ -103,7 +103,7 @@ class PropertyListComponent extends React.Component {
     return this.setState({ addingItem: section })
   }
 
-  renderControls(allPropertyIds) {
+  renderControls(allPropertyIds: any) {
     return R(
       "div",
       { className: "btn-group pl-controls" },
@@ -135,7 +135,7 @@ class PropertyListComponent extends React.Component {
     )
   }
 
-  renderAddingModal(allPropertyIds) {
+  renderAddingModal(allPropertyIds: any) {
     if (!this.state.addingItem) {
       return null
     }
@@ -163,7 +163,7 @@ class PropertyListComponent extends React.Component {
       this.state.addingItem.type === "section"
         ? R(SectionEditorComponent, {
             property: this.state.addingItem,
-            onChange: (updatedProperty) => this.setState({ addingItem: updatedProperty }),
+            onChange: (updatedProperty: any) => this.setState({ addingItem: updatedProperty }),
             features: this.props.features
           })
         : R(PropertyEditorComponent, {
@@ -173,15 +173,15 @@ class PropertyListComponent extends React.Component {
             table: this.props.table,
             tableIds: this.props.tableIds,
             variables: this.props.variables,
-            onChange: (updatedProperty) => this.setState({ addingItem: updatedProperty }),
+            onChange: (updatedProperty: any) => this.setState({ addingItem: updatedProperty }),
             features: this.props.features,
             createRoleEditElem: this.props.createRoleEditElem,
             forbiddenPropertyIds: allPropertyIds
           })
-    )
+    );
   }
 
-  renderProperty = (allPropertyIds, item, index, connectDragSource, connectDragPreview, connectDropTarget) => {
+  renderProperty = (allPropertyIds: any, item: any, index: any, connectDragSource: any, connectDragPreview: any, connectDropTarget: any) => {
     const elem = R(
       "div",
       { key: index },
@@ -270,7 +270,7 @@ class PropertyComponent extends React.Component {
     this.contextTypes = { clipboard: PropTypes.object }
   }
 
-  constructor(props) {
+  constructor(props: any) {
     super(props)
     this.state = { editing: false, editorProperty: null }
   }
@@ -320,13 +320,13 @@ class PropertyComponent extends React.Component {
     )
   }
 
-  renderEnumValues = (values) => {
+  renderEnumValues = (values: any) => {
     const names = _.map(values, (value) => value.name[value._base || "en"])
 
     return R("span", null, `${names.join(" / ")}`)
   }
 
-  renderTable(table) {
+  renderTable(table: any) {
     return R(LocalizedStringComponent, { value: this.props.schema.getTable(table)?.name })
   }
 
@@ -364,7 +364,7 @@ class PropertyComponent extends React.Component {
             this.props.property.type === "section"
               ? R(SectionEditorComponent, {
                   property: this.state.editorProperty,
-                  onChange: (updatedProperty) => this.setState({ editorProperty: updatedProperty }),
+                  onChange: (updatedProperty: any) => this.setState({ editorProperty: updatedProperty }),
                   features: this.props.features
                 })
               : R(PropertyEditorComponent, {
@@ -374,7 +374,7 @@ class PropertyComponent extends React.Component {
                   table: this.props.table,
                   tableIds: this.props.tableIds,
                   variables: this.props.variables,
-                  onChange: (updatedProperty) => this.setState({ editorProperty: updatedProperty }),
+                  onChange: (updatedProperty: any) => this.setState({ editorProperty: updatedProperty }),
                   features: this.props.features,
                   createRoleEditElem: this.props.createRoleEditElem,
                   forbiddenPropertyIds: _.without(this.props.allPropertyIds, this.props.property.id)
@@ -462,7 +462,7 @@ class PropertyComponent extends React.Component {
               onPaste: this.props.onPaste,
               onPasteInto: this.props.onPasteInto,
               listId: this.props.property.id,
-              onChange: (list) => {
+              onChange: (list: any) => {
                 const newProperty = _.cloneDeep(this.props.property)
                 newProperty.contents = list
                 return this.props.onChange(newProperty)
@@ -471,7 +471,7 @@ class PropertyComponent extends React.Component {
             })
           )
         : undefined
-    )
+    );
   }
 }
 PropertyComponent.initClass()
@@ -479,8 +479,8 @@ PropertyComponent.initClass()
 export default NestedListClipboardEnhancement(PropertyListComponent)
 
 // Flatten a nested list of properties
-function flattenProperties(properties) {
-  let props = []
+function flattenProperties(properties: any) {
+  let props: any = []
 
   for (let prop of properties) {
     if (prop.contents) {

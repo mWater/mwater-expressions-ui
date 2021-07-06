@@ -24,11 +24,11 @@ export default ScoreExprComponent = (function () {
       // e.g. "en"
     }
 
-    handleInputChange = (expr) => {
+    handleInputChange = (expr: any) => {
       return this.props.onChange(_.extend({}, this.props.value, { input: expr }))
     }
 
-    handleScoreChange = (id, value) => {
+    handleScoreChange = (id: any, value: any) => {
       const scores = _.clone(this.props.value.scores)
       scores[id] = value
       return this.props.onChange(_.extend({}, this.props.value, { scores }))

@@ -18,7 +18,7 @@ export default LocalizedStringEditorComp = (function () {
         multiline: PropTypes.bool
       }
     }
-    constructor(props) {
+    constructor(props: any) {
       super(props)
       this.state = { selectedLanguageCode: "en" } // True to allow multiple lines
     }
@@ -29,7 +29,7 @@ export default LocalizedStringEditorComp = (function () {
       return this.props.onChange(names)
     }
 
-    handleChangeValue = (ev) => {
+    handleChangeValue = (ev: any) => {
       if (this.props.readonly) {
         return
       }
@@ -56,7 +56,7 @@ export default LocalizedStringEditorComp = (function () {
       return this.props.onChange(names)
     }
 
-    onLanguageSelectionClick = (languageCode) => {
+    onLanguageSelectionClick = (languageCode: any) => {
       return this.setState({ selectedLanguageCode: languageCode })
     }
 

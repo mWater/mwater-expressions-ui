@@ -23,7 +23,7 @@ export default StackedComponent = (function () {
       }
     }
 
-    renderRow(item, i, first, last) {
+    renderRow(item: any, i: any, first: any, last: any) {
       // Create row that has lines to the left
       return R(
         "div",

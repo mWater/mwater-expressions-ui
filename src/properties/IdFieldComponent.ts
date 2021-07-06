@@ -17,11 +17,11 @@ export default IdFieldComponent = (function () {
       // Called with new value
     }
 
-    isValid = (string) => {
-      return /^[a-z][a-z_0-9]*$/.test(string)
+    isValid = (string: any) => {
+      return /^[a-z][a-z_0-9]*$/.test(string);
     }
 
-    handleChange = (ev) => {
+    handleChange = (ev: any) => {
       return this.props.onChange(ev.target.value)
     }
 

@@ -42,7 +42,7 @@ export default SelectFieldExprComponent = (function () {
       }
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = {
@@ -54,12 +54,12 @@ export default SelectFieldExprComponent = (function () {
       return this.searchComp?.focus()
     }
 
-    handleSearchTextChange = (ev) => {
+    handleSearchTextChange = (ev: any) => {
       return this.setState({ searchText: ev.target.value })
     }
 
     // Handle a selection in the scalar expression tree. Called with { table, joins, expr }
-    handleTreeChange = (val) => {
+    handleTreeChange = (val: any) => {
       // Loses focus when selection made
       this.setState({ focused: false })
 
@@ -148,7 +148,7 @@ export default SelectFieldExprComponent = (function () {
         "div",
         null,
         R("input", {
-          ref: (c) => {
+          ref: (c: any) => {
             return (this.searchComp = c)
           },
           type: "text",
@@ -168,7 +168,7 @@ export default SelectFieldExprComponent = (function () {
             filter: this.state.searchText
           })
         )
-      )
+      );
     }
   }
   SelectFieldExprComponent.initClass()

@@ -128,14 +128,14 @@ class ScalarExprTreeNodeComponent extends React.Component {
       { decorateScalarExprTreeSectionChildren: PropTypes.func }
   }
 
-  constructor(props) {
+  constructor(props: any) {
     super(props)
     this.state = {
       collapse: this.props.item.initiallyOpen ? "open" : "closed"
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: any) {
     // If initially open changed, then update collapse
     if (nextProps.item.initiallyOpen !== this.props.item.initiallyOpen) {
       return this.setState({ collapse: nextProps.item.initiallyOpen ? "open" : "closed" })
@@ -160,7 +160,7 @@ class ScalarExprTreeNodeComponent extends React.Component {
   }
 
   render() {
-    let children, prefix
+    let children, prefix: any
     let arrow = null
     if (this.state.collapse === "closed") {
       arrow = R("i", { className: "fa fa-plus-square-o", style: { width: 15 } })

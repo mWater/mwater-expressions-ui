@@ -46,12 +46,12 @@ export default ExprComponent = (function () {
     }
 
     // Clean expression and pass up
-    handleChange = (expr) => {
+    handleChange = (expr: any) => {
       return this.props.onChange(this.cleanExpr(expr))
     }
 
     // Cleans an expression
-    cleanExpr(expr) {
+    cleanExpr(expr: any) {
       return new ExprCleaner(this.props.schema, this.props.variables).cleanExpr(expr, {
         table: this.props.table,
         types: this.props.types,
@@ -79,11 +79,11 @@ export default ExprComponent = (function () {
         placeholder: this.props.placeholder,
         // If no expression, pass a ref to use so that the expression editor can be opened
         exprLinkRef: !expr
-          ? (c) => {
+          ? (c: any) => {
               return (this.exprLink = c)
             }
           : undefined
-      })
+      });
     }
   }
   ExprComponent.initClass()

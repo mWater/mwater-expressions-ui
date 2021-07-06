@@ -30,7 +30,7 @@ export default LinkComponent = (function () {
       }
     }
 
-    renderDropdownItem = (item) => {
+    renderDropdownItem = (item: any) => {
       const id = item.id || item.value
       const name = item.name || item.label
 

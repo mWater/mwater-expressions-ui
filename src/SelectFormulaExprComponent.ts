@@ -25,7 +25,7 @@ export default SelectFormulaExprComponent = (function () {
       }
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = {
@@ -37,7 +37,7 @@ export default SelectFormulaExprComponent = (function () {
       return this.searchComp?.focus()
     }
 
-    handleSearchTextChange = (ev) => {
+    handleSearchTextChange = (ev: any) => {
       return this.setState({ searchText: ev.target.value })
     }
 
@@ -78,7 +78,7 @@ export default SelectFormulaExprComponent = (function () {
       return this.props.onChange(expr)
     }
 
-    handleOpSelected = (op) => {
+    handleOpSelected = (op: any) => {
       const expr = {
         type: "op",
         op,
@@ -92,7 +92,7 @@ export default SelectFormulaExprComponent = (function () {
     }
 
     render() {
-      let filter
+      let filter: any
       if (this.state.searchText) {
         filter = new RegExp(_.escapeRegExp(this.state.searchText), "i")
       }
@@ -185,7 +185,7 @@ export default SelectFormulaExprComponent = (function () {
         "div",
         null,
         R("input", {
-          ref: (c) => {
+          ref: (c: any) => {
             return (this.searchComp = c)
           },
           type: "text",
@@ -220,7 +220,7 @@ export default SelectFormulaExprComponent = (function () {
             )
           })
         )
-      )
+      );
     }
   }
   SelectFormulaExprComponent.initClass()

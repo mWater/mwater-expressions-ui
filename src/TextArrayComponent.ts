@@ -26,7 +26,7 @@ export default TextArrayComponent = (function () {
       return this.select.focus()
     }
 
-    handleChange = (value) => {
+    handleChange = (value: any) => {
       if (value && value.length > 0) {
         return this.props.onChange({ type: "literal", valueType: "text[]", value: _.pluck(value, "label") })
       } else {
@@ -34,11 +34,11 @@ export default TextArrayComponent = (function () {
       }
     }
 
-    escapeRegex(s) {
-      return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&")
+    escapeRegex(s: any) {
+      return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
     }
 
-    loadOptions = (input, cb) => {
+    loadOptions = (input: any, cb: any) => {
       // Create query to get matches ordered by most frequent to least
       const exprCompiler = new ExprCompiler(this.props.schema)
 
@@ -71,7 +71,7 @@ export default TextArrayComponent = (function () {
       }
 
       // Execute query
-      this.props.dataSource.performQuery(query, (err, rows) => {
+      this.props.dataSource.performQuery(query, (err: any, rows: any) => {
         if (err) {
           return
         }

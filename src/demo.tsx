@@ -53,7 +53,7 @@ registerExprUIExtension({
 })
 
 $(() =>
-  $.getJSON("https://api.mwater.co/v3/jsonql/schema", function (schemaJson) {
+  $.getJSON("https://api.mwater.co/v3/jsonql/schema", function (schemaJson: any) {
     const schema = new Schema(schemaJson)
     const dataSource = new MWaterDataSource("https://api.mwater.co/v3/", null, false)
 
@@ -76,7 +76,7 @@ class PropertyListContainerComponent extends React.Component {
     }
     // Table that properties are of
   }
-  constructor(props) {
+  constructor(props: any) {
     super(props)
 
     this.state = {
@@ -101,7 +101,7 @@ class PropertyListContainerComponent extends React.Component {
             table: this.props.table,
             // tableIds: ["entities.water_point", "entities.community"]
             features: ["idField", "joinType", "idType", "expr", "onDelete"],
-            onChange: (properties) => this.setState({ properties })
+            onChange: (properties: any) => this.setState({ properties })
           })
         )
       ),
@@ -109,7 +109,7 @@ class PropertyListContainerComponent extends React.Component {
       // createRoleEditElem: (roles, onChange) =>
       //   R 'input', className: "form-control", value: JSON.stringify(roles), onChange: (ev) -> onChange(JSON.parse(ev.target.value))
       R("div", { className: "col-md-6" }, R("pre", null, JSON.stringify(this.state.properties, null, 2)))
-    )
+    );
   }
 }
 PropertyListContainerComponent.initClass()
@@ -117,7 +117,7 @@ PropertyListContainerComponent.initClass()
 const PropertyListContainerComponentWrapped = DragDropContext(HTML5Backend)(PropertyListContainerComponent)
 
 class ContentEditableTestComponent extends React.Component {
-  constructor(props) {
+  constructor(props: any) {
     super(props)
 
     this.state = {
@@ -136,7 +136,7 @@ class ContentEditableTestComponent extends React.Component {
           return (this.editor = c)
         },
         html: this.state.html,
-        onChange: (elem) => {
+        onChange: (elem: any) => {
           console.log(elem)
           return this.setState({ html: elem.innerHTML })
         }
@@ -153,12 +153,12 @@ class ContentEditableTestComponent extends React.Component {
         },
         "Paste"
       )
-    )
+    );
   }
 }
 
 class MockTestInlineExprsEditorComponent extends React.Component {
-  constructor(props) {
+  constructor(props: any) {
     super(props)
 
     this.state = {
@@ -250,7 +250,7 @@ class MockTestInlineExprsEditorComponent extends React.Component {
 
     // Fake data source
     const dataSource = {
-      performQuery: (query, cb) => {
+      performQuery: (query: any, cb: any) => {
         return cb(null, [{ value: "abc" }, { value: "xyz" }])
       }
     }
@@ -258,7 +258,7 @@ class MockTestInlineExprsEditorComponent extends React.Component {
     return this.setState({ schema, dataSource })
   }
 
-  handleChange = (text, exprs) => {
+  handleChange = (text: any, exprs: any) => {
     console.log(`handleChange: ${text}`)
     return this.setState({ text, exprs })
   }
@@ -291,7 +291,7 @@ class MockTestInlineExprsEditorComponent extends React.Component {
 // R 'pre', null, JSON.stringify(@state.value, null, 2)
 
 class MockTestComponent extends React.Component {
-  constructor(props) {
+  constructor(props: any) {
     super(props)
     this.state = {
       value: null, // { type: "field", table: "t1", column: "1-2" }
@@ -410,7 +410,7 @@ class MockTestComponent extends React.Component {
 
     // Fake data source
     const dataSource = {
-      performQuery: (query, cb) => {
+      performQuery: (query: any, cb: any) => {
         return cb(null, [
           { value: "abc", label: "ABC" },
           { value: "xyz", label: "XYZ" }
@@ -421,7 +421,7 @@ class MockTestComponent extends React.Component {
     return this.setState({ schema, dataSource })
   }
 
-  handleValueChange = (value) => {
+  handleValueChange = (value: any) => {
     // value = new ExprCleaner(@state.schema).cleanExpr(value) #, { type: 'boolean' })
     return this.setState({ value })
   }
@@ -469,7 +469,7 @@ class MockTestComponent extends React.Component {
 }
 
 class MockPropertyEditorTestComponent extends React.Component {
-  constructor(props) {
+  constructor(props: any) {
     super(props)
     this.state = {
       value: null, // { type: "field", table: "t1", column: "1-2" }
@@ -583,7 +583,7 @@ class MockPropertyEditorTestComponent extends React.Component {
 
     // Fake data source
     const dataSource = {
-      performQuery: (query, cb) => {
+      performQuery: (query: any, cb: any) => {
         return cb(null, [
           { value: "abc", label: "ABC" },
           { value: "xyz", label: "XYZ" }
@@ -594,7 +594,7 @@ class MockPropertyEditorTestComponent extends React.Component {
     return this.setState({ schema, dataSource })
   }
 
-  handleValueChange = (value) => {
+  handleValueChange = (value: any) => {
     // value = new ExprCleaner(@state.schema).cleanExpr(value) #, { type: 'boolean' })
     return this.setState({ value })
   }
@@ -613,7 +613,7 @@ class MockPropertyEditorTestComponent extends React.Component {
 }
 
 class LiveTestComponent extends React.Component {
-  constructor(props) {
+  constructor(props: any) {
     super(props)
     this.state = {
       value: null,
@@ -625,15 +625,15 @@ class LiveTestComponent extends React.Component {
   componentWillMount() {
     // apiUrl = "http://localhost:1234/v3/"
     const apiUrl = "https://api.mwater.co/v3/"
-    return $.getJSON(apiUrl + "jsonql/schema", (schemaJson) => {
+    return $.getJSON(apiUrl + "jsonql/schema", (schemaJson: any) => {
       const schema = new Schema(schemaJson)
       const dataSource = new MWaterDataSource(apiUrl, null, false)
 
       return this.setState({ schema, dataSource })
-    })
+    });
   }
 
-  handleValueChange = (value) => {
+  handleValueChange = (value: any) => {
     // value = new ExprCleaner(@state.schema).cleanExpr(value, { aggrStatuses: ['literal', 'aggregate']}) #, { type: 'boolean' })
     return this.setState({ value })
   }
@@ -822,14 +822,14 @@ value = {
 // Caching data source for mWater. Requires jQuery
 class MWaterDataSource extends DataSource {
   // Caching allows server to send cached results
-  constructor(apiUrl, client, caching = true) {
+  constructor(apiUrl: any, client: any, caching = true) {
     super()
     this.apiUrl = apiUrl
     this.client = client
     this.caching = caching
   }
 
-  performQuery(query, cb) {
+  performQuery(query: any, cb: any) {
     let url = this.apiUrl + "jsonql?jsonql=" + encodeURIComponent(JSON.stringify(query))
     if (this.client) {
       url += `&client=${this.client}`
@@ -842,12 +842,12 @@ class MWaterDataSource extends DataSource {
     }
 
     return $.ajax({ dataType: "json", url, headers })
-      .done((rows) => {
+      .done((rows: any) => {
         return cb(null, rows)
       })
-      .fail((xhr) => {
+      .fail((xhr: any) => {
         return cb(new Error(xhr.responseText))
-      })
+      });
   }
 }
 
@@ -1221,7 +1221,7 @@ const properties = [
 ]
 
 class LiveIdLiteralTestComponent extends React.Component {
-  constructor(props) {
+  constructor(props: any) {
     super(props)
     this.state = {
       value: null,
@@ -1233,12 +1233,12 @@ class LiveIdLiteralTestComponent extends React.Component {
   componentWillMount() {
     // apiUrl = "http://localhost:1234/v3/"
     const apiUrl = "https://api.mwater.co/v3/"
-    return $.getJSON(apiUrl + "jsonql/schema", (schemaJson) => {
+    return $.getJSON(apiUrl + "jsonql/schema", (schemaJson: any) => {
       const schema = new Schema(schemaJson)
       const dataSource = new MWaterDataSource(apiUrl, null, false)
 
       return this.setState({ schema, dataSource })
-    })
+    });
   }
 
   // handleValueChange: (value) =>

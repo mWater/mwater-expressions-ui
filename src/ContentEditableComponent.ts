@@ -21,7 +21,7 @@ export default ContentEditableComponent = (function () {
       // Set to catch blur events
     }
 
-    handleInput = (ev) => {
+    handleInput = (ev: any) => {
       if (!this.editor) {
         return
       }
@@ -29,7 +29,7 @@ export default ContentEditableComponent = (function () {
       return this.props.onChange(this.editor)
     }
 
-    handleBlur = (ev) => {
+    handleBlur = (ev: any) => {
       this.props.onBlur?.(ev)
 
       // Cancel timer
@@ -45,7 +45,7 @@ export default ContentEditableComponent = (function () {
       return this.props.onChange(this.editor)
     }
 
-    handleFocus = (ev) => {
+    handleFocus = (ev: any) => {
       this.props.onFocus?.(ev)
 
       // Start selection saver (blur is not reliable in Firefox)
@@ -63,7 +63,7 @@ export default ContentEditableComponent = (function () {
       return this.editor.focus()
     }
 
-    pasteHTML(html) {
+    pasteHTML(html: any) {
       this.editor.focus()
 
       // Restore caret
@@ -90,7 +90,7 @@ export default ContentEditableComponent = (function () {
       return html
     }
 
-    shouldComponentUpdate(nextProps) {
+    shouldComponentUpdate(nextProps: any) {
       // Update if prop html has changed, or if inner html has changed
       const changed = !this.editor || nextProps.html !== this.props.html || this.editor.innerHTML !== this.lastInnerHTML
       // if changed
@@ -156,7 +156,7 @@ export default ContentEditableComponent = (function () {
 
 // http://stackoverflow.com/questions/6690752/insert-html-at-caret-in-a-contenteditable-div
 // TODO selectPastedContent doesn't work
-function pasteHtmlAtCaret(html) {
+function pasteHtmlAtCaret(html: any) {
   let range = undefined
   const sel = window.getSelection()
 

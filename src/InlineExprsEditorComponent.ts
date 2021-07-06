@@ -35,19 +35,19 @@ export default InlineExprsEditorComponent = (function () {
       return this.insertModal.open()
     }
 
-    handleInsert = (expr) => {
+    handleInsert = (expr: any) => {
       if (expr) {
         return this.contentEditable.pasteHTML(this.createExprHtml(expr))
       }
     }
 
-    handleUpdate = (expr, index) => {
+    handleUpdate = (expr: any, index: any) => {
       const exprs = this.props.exprs.slice()
       exprs[index] = expr
       return this.props.onChange(this.props.text, exprs)
     }
 
-    handleClick = (ev) => {
+    handleClick = (ev: any) => {
       // Get index of expression
       let index = ev.target.dataset["index"]
       if (index && index.match(/^\d+$/)) {
@@ -57,12 +57,12 @@ export default InlineExprsEditorComponent = (function () {
     }
 
     // Handle a change to the content editable element
-    handleChange = (elem) => {
+    handleChange = (elem: any) => {
       // console.log "handleChange: #{elem.innerHTML}"
 
       // Walk DOM tree, adding strings and expressions
       let text = ""
-      const exprs = []
+      const exprs: any = []
 
       // Keep track of <br> as a div after a br is not a new cr
       let wasBr = false
@@ -70,7 +70,7 @@ export default InlineExprsEditorComponent = (function () {
       // Which index of expression is current
       let index = 0
 
-      var processNode = (node, isFirst) => {
+      var processNode = (node: any, isFirst: any) => {
         if (node.nodeType === 1) {
           // Element
           // If br, add enter
@@ -142,7 +142,7 @@ export default InlineExprsEditorComponent = (function () {
     }
 
     // Create html for an expression
-    createExprHtml(expr, index) {
+    createExprHtml(expr: any, index: any) {
       // Create expr utils
       const exprUtils = new ExprUtils(this.props.schema)
 
@@ -199,26 +199,26 @@ export default InlineExprsEditorComponent = (function () {
 
     renderInsertModal() {
       return R(ExprInsertModalComponent, {
-        ref: (c) => {
+        ref: (c: any) => {
           return (this.insertModal = c)
         },
         schema: this.props.schema,
         dataSource: this.props.dataSource,
         table: this.props.table,
         onInsert: this.handleInsert
-      })
+      });
     }
 
     renderUpdateModal() {
       return R(ExprUpdateModalComponent, {
-        ref: (c) => {
+        ref: (c: any) => {
           return (this.updateModal = c)
         },
         schema: this.props.schema,
         dataSource: this.props.dataSource,
         table: this.props.table,
         onUpdate: this.handleUpdate
-      })
+      });
     }
 
     render() {
@@ -274,7 +274,7 @@ class ExprInsertModalComponent extends React.Component {
     // Called with expr to insert
   }
 
-  constructor(props) {
+  constructor(props: any) {
     super(props)
 
     this.state = {
@@ -315,10 +315,10 @@ class ExprInsertModalComponent extends React.Component {
           table: this.props.table,
           types: ["text", "number", "enum", "date", "datetime"],
           value: this.state.expr,
-          onChange: (expr) => this.setState({ expr })
+          onChange: (expr: any) => this.setState({ expr })
         })
       )
-    )
+    );
   }
 }
 ExprInsertModalComponent.initClass()
@@ -335,7 +335,7 @@ class ExprUpdateModalComponent extends React.Component {
     // Called with expr to update
   }
 
-  constructor(props) {
+  constructor(props: any) {
     super(props)
 
     this.state = {
@@ -345,7 +345,7 @@ class ExprUpdateModalComponent extends React.Component {
     }
   }
 
-  open(expr, index) {
+  open(expr: any, index: any) {
     return this.setState({ open: true, expr, index })
   }
 
@@ -377,10 +377,10 @@ class ExprUpdateModalComponent extends React.Component {
           table: this.props.table,
           types: ["text", "number", "enum", "date", "datetime"],
           value: this.state.expr,
-          onChange: (expr) => this.setState({ expr })
+          onChange: (expr: any) => this.setState({ expr })
         })
       )
-    )
+    );
   }
 }
 ExprUpdateModalComponent.initClass()

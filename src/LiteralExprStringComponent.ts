@@ -27,12 +27,12 @@ export default LiteralExprStringComponent = (function () {
     }
 
     // Override to determine if a load is needed. Not called on mounting
-    isLoadNeeded(newProps, oldProps) {
+    isLoadNeeded(newProps: any, oldProps: any) {
       return !_.isEqual(newProps.value, oldProps.value)
     }
 
     // Call callback with state changes
-    load(props, prevProps, callback) {
+    load(props: any, prevProps: any, callback: any) {
       // If no value or not id, id[]
       let labelColumn
       if (!props.value || !["id", "id[]"].includes(props.value.valueType)) {
@@ -68,7 +68,7 @@ export default LiteralExprStringComponent = (function () {
       }
 
       // Execute query
-      return props.dataSource.performQuery(query, (err, rows) => {
+      return props.dataSource.performQuery(query, (err: any, rows: any) => {
         if (err || !rows[0]) {
           callback({ label: "(error)" })
           return
@@ -78,7 +78,7 @@ export default LiteralExprStringComponent = (function () {
         } else {
           return callback({ label: _.pluck(rows, "label").join(", ") || "None" })
         }
-      })
+      });
     }
 
     render() {

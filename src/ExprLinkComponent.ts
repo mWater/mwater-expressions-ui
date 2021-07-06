@@ -47,7 +47,7 @@ export default ExprLinkComponent = (function () {
       }
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = {
@@ -90,7 +90,7 @@ export default ExprLinkComponent = (function () {
                 { id: "remove", name: [R("i", { className: "fa fa-remove text-muted" }), " Remove"] }
               ]
             : undefined,
-          onDropdownItemClicked: (id) => {
+          onDropdownItemClicked: (id: any) => {
             if (id === "edit") {
               return this.setState({ modalVisible: true })
             } else {
@@ -99,7 +99,7 @@ export default ExprLinkComponent = (function () {
           }
         },
         exprUtils.summarizeExpr(this.props.value)
-      )
+      );
     }
 
     renderLiteral = () => {
@@ -112,7 +112,7 @@ export default ExprLinkComponent = (function () {
                 { id: "remove", name: [R("i", { className: "fa fa-remove text-muted" }), " Remove"] }
               ]
             : undefined,
-          onDropdownItemClicked: (id) => {
+          onDropdownItemClicked: (id: any) => {
             if (id === "edit") {
               return this.setState({ modalVisible: true })
             } else {
@@ -126,7 +126,7 @@ export default ExprLinkComponent = (function () {
           value: this.props.value,
           enumValues: this.props.enumValues
         })
-      )
+      );
     }
 
     render() {
@@ -164,7 +164,7 @@ export default ExprLinkComponent = (function () {
               onCancel: () => {
                 return this.setState({ modalVisible: false })
               },
-              onSelect: (expr) => {
+              onSelect: (expr: any) => {
                 this.setState({ modalVisible: false })
                 return this.props.onChange(expr)
               }
@@ -180,7 +180,7 @@ export default ExprLinkComponent = (function () {
             return this.renderLiteral()
           }
         })()
-      )
+      );
     }
   }
   ExprLinkComponent.initClass()

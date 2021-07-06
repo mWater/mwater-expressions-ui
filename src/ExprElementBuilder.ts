@@ -17,7 +17,7 @@ import { getExprUIExtensions } from "./extensions"
 
 // Builds a react element for an expression
 export default ExprElementBuilder = class ExprElementBuilder {
-  constructor(schema, dataSource, locale, variables = []) {
+  constructor(schema: any, dataSource: any, locale: any, variables = []) {
     this.schema = schema
     this.dataSource = dataSource
     this.locale = locale
@@ -39,7 +39,7 @@ export default ExprElementBuilder = class ExprElementBuilder {
   //   aggrStatuses: statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] or ["literal"] if not table
   //   placeholder: empty placeholder
   //   exprLinkRef: ref to put on expr link component
-  build(expr, table, onChange, options = {}) {
+  build(expr: any, table: any, onChange: any, options = {}) {
     let elem
     _.defaults(options, {
       aggrStatuses: table ? ["individual", "literal"] : ["literal"]
@@ -137,7 +137,7 @@ export default ExprElementBuilder = class ExprElementBuilder {
     const links = []
 
     // Create a link to wrap the expression with an op. type is "n" for +/* that can take n, "binary" for -//, "unary" for sum, etc.
-    const createWrapOp = (op, name, type = "unary") => {
+    const createWrapOp = (op: any, name: any, type = "unary") => {
       if (!(options.suppressWrapOps || []).includes(op)) {
         if (type === "unary") {
           return links.push({ label: name, onClick: () => onChange({ type: "op", op, table, exprs: [expr] }) })
@@ -223,7 +223,7 @@ export default ExprElementBuilder = class ExprElementBuilder {
   }
 
   // Build an id component. Displays table name. Only remove option
-  buildId(expr, onChange, options = {}) {
+  buildId(expr: any, onChange: any, options = {}) {
     return R(
       LinkComponent,
       {
@@ -237,7 +237,7 @@ export default ExprElementBuilder = class ExprElementBuilder {
   }
 
   // Build a variable component. Displays variable name. Only remove option
-  buildVariable(expr, onChange, options = {}) {
+  buildVariable(expr: any, onChange: any, options = {}) {
     return R(
       LinkComponent,
       {
@@ -250,7 +250,7 @@ export default ExprElementBuilder = class ExprElementBuilder {
     )
   }
 
-  buildScalar(expr, onChange, options = {}) {
+  buildScalar(expr: any, onChange: any, options = {}) {
     // Get joins string
     let innerElem
     let destTable = expr.table
@@ -283,7 +283,7 @@ export default ExprElementBuilder = class ExprElementBuilder {
       )
     } else {
       // Create inner expression onChange
-      const innerOnChange = (value) => {
+      const innerOnChange = (value: any) => {
         return onChange(_.extend({}, expr, { expr: value }))
       }
 
@@ -320,7 +320,7 @@ export default ExprElementBuilder = class ExprElementBuilder {
   }
 
   // Builds on op component
-  buildOp(expr, table, onChange, options = {}) {
+  buildOp(expr: any, table: any, onChange: any, options = {}) {
     let rhsElem
     switch (expr.op) {
       // For vertical ops (ones with n values or other arithmetic)
@@ -333,7 +333,7 @@ export default ExprElementBuilder = class ExprElementBuilder {
         // Create inner items
         var items = _.map(expr.exprs, (innerExpr, i) => {
           // Create onChange that switched single value
-          const innerElemOnChange = (newValue) => {
+          const innerElemOnChange = (newValue: any) => {
             const newExprs = expr.exprs.slice()
             newExprs[i] = newValue
 
@@ -395,7 +395,7 @@ export default ExprElementBuilder = class ExprElementBuilder {
 
         var innerAggrStatuses = opItem.aggr ? ["literal", "individual"] : options.aggrStatuses
 
-        var lhsOnChange = (newValue) => {
+        var lhsOnChange = (newValue: any) => {
           const newExprs = expr.exprs.slice()
           newExprs[0] = newValue
 
@@ -420,7 +420,7 @@ export default ExprElementBuilder = class ExprElementBuilder {
 
         // Special case for between
         if (expr.op === "between") {
-          const rhs1OnChange = (newValue) => {
+          const rhs1OnChange = (newValue: any) => {
             const newExprs = expr.exprs.slice()
             newExprs[1] = newValue
 
@@ -428,7 +428,7 @@ export default ExprElementBuilder = class ExprElementBuilder {
             return onChange(_.extend({}, expr, { exprs: newExprs }))
           }
 
-          const rhs2OnChange = (newValue) => {
+          const rhs2OnChange = (newValue: any) => {
             const newExprs = expr.exprs.slice()
             newExprs[2] = newValue
 
@@ -460,7 +460,7 @@ export default ExprElementBuilder = class ExprElementBuilder {
           ]
         } else if (opItem.exprTypes.length > 1) {
           // If has two expressions
-          const rhsOnChange = (newValue) => {
+          const rhsOnChange = (newValue: any) => {
             const newExprs = expr.exprs.slice()
             newExprs[1] = newValue
 
@@ -510,7 +510,7 @@ export default ExprElementBuilder = class ExprElementBuilder {
                   }))
                 )
               : undefined,
-            onDropdownItemClicked: (op) => {
+            onDropdownItemClicked: (op: any) => {
               if (op === "_remove") {
                 return onChange(null)
               } else {
@@ -543,7 +543,7 @@ export default ExprElementBuilder = class ExprElementBuilder {
     }
   }
 
-  buildCase(expr, onChange, options) {
+  buildCase(expr: any, onChange: any, options: any) {
     // Style for labels "if", "then", "else"
     const labelStyle = {
       flex: "0 0 auto", // Don't resize
@@ -554,13 +554,13 @@ export default ExprElementBuilder = class ExprElementBuilder {
     // Create inner elements
     const items = _.map(expr.cases, (cse, i) => {
       // Create onChange functions
-      const innerElemOnWhenChange = (newWhen) => {
+      const innerElemOnWhenChange = (newWhen: any) => {
         const cases = expr.cases.slice()
         cases[i] = _.extend({}, cases[i], { when: newWhen })
         return onChange(_.extend({}, expr, { cases }))
       }
 
-      const innerElemOnThenChange = (newThen) => {
+      const innerElemOnThenChange = (newThen: any) => {
         const cases = expr.cases.slice()
         cases[i] = _.extend({}, cases[i], { then: newThen })
         return onChange(_.extend({}, expr, { cases }))
@@ -605,7 +605,7 @@ export default ExprElementBuilder = class ExprElementBuilder {
     })
 
     // Add else
-    const onElseChange = (newValue) => {
+    const onElseChange = (newValue: any) => {
       return onChange(_.extend({}, expr, { else: newValue }))
     }
 
@@ -628,7 +628,7 @@ export default ExprElementBuilder = class ExprElementBuilder {
     return R(StackedComponent, { items })
   }
 
-  buildScore(expr, onChange, options) {
+  buildScore(expr: any, onChange: any, options: any) {
     return R(ScoreExprComponent, {
       schema: this.schema,
       dataSource: this.dataSource,
@@ -637,7 +637,7 @@ export default ExprElementBuilder = class ExprElementBuilder {
     })
   }
 
-  buildBuildEnumset(expr, onChange, options) {
+  buildBuildEnumset(expr: any, onChange: any, options: any) {
     return R(BuildEnumsetExprComponent, {
       schema: this.schema,
       dataSource: this.dataSource,

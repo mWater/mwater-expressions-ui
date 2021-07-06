@@ -37,7 +37,7 @@ export default FilterExprComponent = (function () {
       }
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = { displayNull: false } // Set true when initial null value should be displayed
@@ -61,12 +61,12 @@ export default FilterExprComponent = (function () {
     }
 
     // Clean expression and pass up
-    handleChange = (expr) => {
+    handleChange = (expr: any) => {
       return this.props.onChange(this.cleanExpr(expr))
     }
 
     // Cleans an expression
-    cleanExpr(expr) {
+    cleanExpr(expr: any) {
       return new ExprCleaner(this.props.schema, this.props.variables).cleanExpr(expr, {
         table: this.props.table,
         types: ["boolean"]
@@ -74,11 +74,11 @@ export default FilterExprComponent = (function () {
     }
 
     // Handle change to a single item
-    handleAndChange = (i, expr) => {
+    handleAndChange = (i: any, expr: any) => {
       return this.handleChange(update(this.props.value, { exprs: { $splice: [[i, 1, expr]] } }))
     }
 
-    handleAndRemove = (i) => {
+    handleAndRemove = (i: any) => {
       return this.handleChange(update(this.props.value, { exprs: { $splice: [[i, 1]] } }))
     }
 
@@ -150,7 +150,7 @@ export default FilterExprComponent = (function () {
         )
       } else if (this.state.displayNull) {
         return R(ExprLinkComponent, {
-          ref: (c) => {
+          ref: (c: any) => {
             return (this.newExpr = c)
           },
           schema: this.props.schema,
@@ -158,7 +158,7 @@ export default FilterExprComponent = (function () {
           variables: this.props.variables,
           table: this.props.table,
           onChange: this.props.onChange ? this.handleChange : undefined
-        })
+        });
       } else {
         return this.renderAddFilter()
       }

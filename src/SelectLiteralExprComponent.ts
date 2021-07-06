@@ -33,7 +33,7 @@ export default SelectLiteralExprComponent = (function () {
       // expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = {
@@ -53,11 +53,11 @@ export default SelectLiteralExprComponent = (function () {
       return this.inputComp?.focus()
     }
 
-    handleChange = (value) => {
+    handleChange = (value: any) => {
       return this.setState({ value, changed: true, inputText: null })
     }
 
-    handleDateSelected = (date) => {
+    handleDateSelected = (date: any) => {
       if (date) {
         return this.setState({
           value: { type: "literal", valueType: "date", value: date.format("YYYY-MM-DD") },
@@ -68,7 +68,7 @@ export default SelectLiteralExprComponent = (function () {
       }
     }
 
-    handleDateTimeSelected = (datetime) => {
+    handleDateTimeSelected = (datetime: any) => {
       if (datetime) {
         return this.setState({
           value: { type: "literal", valueType: "datetime", value: datetime.toISOString() },
@@ -120,7 +120,7 @@ export default SelectLiteralExprComponent = (function () {
       }
     }
 
-    handleTextChange = (ev) => {
+    handleTextChange = (ev: any) => {
       return this.setState({ inputText: ev.target.value, changed: true })
     }
 
@@ -140,7 +140,7 @@ export default SelectLiteralExprComponent = (function () {
     }
 
     renderInput() {
-      let idTable
+      let idTable: any
       const expr = this.state.value
 
       // Get current expression type
@@ -282,7 +282,7 @@ class EnumAsListComponent extends React.Component {
     // e.g. "en"
   }
 
-  handleChange = (val) => {
+  handleChange = (val: any) => {
     if (!val) {
       return this.props.onChange(null)
     } else {
@@ -337,7 +337,7 @@ class EnumsetAsListComponent extends React.Component {
     // e.g. "en"
   }
 
-  handleToggle = (val) => {
+  handleToggle = (val: any) => {
     let items = this.props.value?.value || []
     if (items.includes(val)) {
       items = _.without(items, val)
@@ -399,7 +399,7 @@ class EnumComponent extends React.Component {
     // e.g. "en"
   }
 
-  handleChange = (val) => {
+  handleChange = (val: any) => {
     if (!val) {
       return this.props.onChange(null)
     } else {

@@ -37,12 +37,12 @@ export default IdLiteralComponent = (function () {
     }
 
     // Override to determine if a load is needed. Not called on mounting
-    isLoadNeeded(newProps, oldProps) {
+    isLoadNeeded(newProps: any, oldProps: any) {
       return newProps.value !== oldProps.value || newProps.idTable !== oldProps.idTable
     }
 
     // Call callback with state changes
-    load(props, prevProps, callback) {
+    load(props: any, prevProps: any, callback: any) {
       // Create query to get current value
       if (!props.value) {
         callback({ currentValue: null })
@@ -71,7 +71,7 @@ export default IdLiteralComponent = (function () {
       }
 
       // Execute query
-      return props.dataSource.performQuery(query, (err, rows) => {
+      return props.dataSource.performQuery(query, (err: any, rows: any) => {
         if (err || !rows[0]) {
           callback({ currentValue: null })
           return
@@ -81,10 +81,10 @@ export default IdLiteralComponent = (function () {
         } else {
           return callback({ currentValue: rows })
         }
-      })
+      });
     }
 
-    handleChange = (value) => {
+    handleChange = (value: any) => {
       if (this.props.multi) {
         if (value && value.length === 0) {
           return this.props.onChange(null)
@@ -110,7 +110,7 @@ export default IdLiteralComponent = (function () {
       return { type: "op", op: "::text", exprs: [{ type: "field", tableAlias: "main", column: table.primaryKey }] }
     }
 
-    loadOptions = (input, cb) => {
+    loadOptions = (input: any, cb: any) => {
       let where
       const table = this.props.schema.getTable(this.props.idTable)
 
@@ -162,7 +162,7 @@ export default IdLiteralComponent = (function () {
       }
 
       // Execute query
-      this.props.dataSource.performQuery(query, (err, rows) => {
+      this.props.dataSource.performQuery(query, (err: any, rows: any) => {
         if (err) {
           return
         }

@@ -14,7 +14,7 @@ import { ExprUtils } from "mwater-expressions"
 //     Should return null for default, true to include, false to exclude
 //   variables: list of variables to show
 export default ScalarExprTreeBuilder = class ScalarExprTreeBuilder {
-  constructor(schema, options = {}) {
+  constructor(schema: any, options = {}) {
     this.schema = schema
     this.locale = options.locale
     this.isScalarExprTreeSectionInitiallyOpen = options.isScalarExprTreeSectionInitiallyOpen
@@ -67,7 +67,7 @@ export default ScalarExprTreeBuilder = class ScalarExprTreeBuilder {
   // initialValue: initial value to flesh out TODO REMOVE
   // filter: optional string filter
   // depth: current depth. First level is 0
-  createTableChildNodes(options) {
+  createTableChildNodes(options: any) {
     let node
     let nodes = []
     const table = this.schema.getTable(options.table)
@@ -154,7 +154,7 @@ export default ScalarExprTreeBuilder = class ScalarExprTreeBuilder {
   // initialValue: initial value to flesh out TODO REMOVE
   // filter: optional string filter
   // depth: current depth. First level is 0
-  createNodes(contents, options) {
+  createNodes(contents: any, options: any) {
     const nodes = []
 
     for (let item of contents) {
@@ -244,8 +244,8 @@ export default ScalarExprTreeBuilder = class ScalarExprTreeBuilder {
   }
 
   // Include column, startTable, joins, initialValue, table, types, filter, idTable
-  createColumnNode(options) {
-    let joins
+  createColumnNode(options: any) {
+    let joins: any
     const { column } = options
 
     const node = {
@@ -429,7 +429,7 @@ export default ScalarExprTreeBuilder = class ScalarExprTreeBuilder {
 }
 
 // Filters text based on lower-case
-function filterMatches(filter, text) {
+function filterMatches(filter: any, text: any) {
   if (!filter) {
     return true
   }
