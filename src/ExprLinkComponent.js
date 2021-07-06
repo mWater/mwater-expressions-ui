@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ExprLinkComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -47,11 +49,6 @@ export default ExprLinkComponent = (function() {
     }
 
     constructor(props) {
-      this.showModal = this.showModal.bind(this);
-      this.handleClick = this.handleClick.bind(this);
-      this.renderNone = this.renderNone.bind(this);
-      this.renderField = this.renderField.bind(this);
-      this.renderLiteral = this.renderLiteral.bind(this);
       super(props);
 
       this.state = {
@@ -60,16 +57,16 @@ export default ExprLinkComponent = (function() {
     }
 
     // Opens the editor modal
-    showModal() {
+    showModal = () => {
       return this.setState({modalVisible: true});
-    }
+    };
 
-    handleClick() {
+    handleClick = () => {
       return this.setState({modalVisible: true});
-    }
+    };
 
     // Display placeholder if no value. If readonly, use "None" instead of "Select..."
-    renderNone() {
+    renderNone = () => {
       if (this.props.onChange) {
         return R('a', {onClick: this.handleClick, style: { cursor: "pointer", fontStyle: "italic", color: "#478" }}, 
           this.props.onChange ? this.props.placeholder : "None");
@@ -77,11 +74,10 @@ export default ExprLinkComponent = (function() {
         return R('div', {className: "link-component-readonly", style: { fontStyle: "italic" }},
           "None");
       }
-    }
-
+    };
 
     // Display summary if field
-    renderField() {
+    renderField = () => {
       const exprUtils = new ExprUtils(this.props.schema);
 
       return R(LinkComponent, { 
@@ -95,9 +91,9 @@ export default ExprLinkComponent = (function() {
         })
       },
         exprUtils.summarizeExpr(this.props.value));
-    }
+    };
 
-    renderLiteral() {
+    renderLiteral = () => {
       return R(LinkComponent, { 
         dropdownItems: this.props.onChange ? [{ id: "edit", name: [R('i', {className: "fa fa-pencil text-muted"}), " Edit"] }, { id: "remove", name: [R('i', {className: "fa fa-remove text-muted"}), " Remove"] }] : undefined,
         onDropdownItemClicked: (id => { 
@@ -116,7 +112,7 @@ export default ExprLinkComponent = (function() {
         }
         )
       );
-    }
+    };
 
     render() {
       let {

@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ScalarExprTreeBuilder;
 import _ from 'lodash';
 import { ExprUtils } from "mwater-expressions";
@@ -367,7 +369,7 @@ export default ScalarExprTreeBuilder = class ScalarExprTreeBuilder {
 };
 
 // Filters text based on lower-case
-var filterMatches = function(filter, text) {
+function filterMatches(filter, text) {
   if (!filter) {
     return true;
   }
@@ -380,4 +382,4 @@ var filterMatches = function(filter, text) {
     return true;
   }
   return false;
-};
+}

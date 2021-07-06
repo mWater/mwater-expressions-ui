@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ContentEditableComponent;
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -7,13 +9,6 @@ import selection from './saveSelection';
 // Content editable component with cursor restoring
 export default ContentEditableComponent = (function() {
   ContentEditableComponent = class ContentEditableComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.handleInput = this.handleInput.bind(this);
-      this.handleBlur = this.handleBlur.bind(this);
-      this.handleFocus = this.handleFocus.bind(this);
-    }
-
     static initClass() {
       this.propTypes = {
         html: PropTypes.string.isRequired,
@@ -26,15 +21,15 @@ export default ContentEditableComponent = (function() {
         // Set to catch blur events
     }
 
-    handleInput(ev) { 
+    handleInput = ev => { 
       if (!this.editor) {
         return; 
       }
 
       return this.props.onChange(this.editor);
-    }
+    };
 
-    handleBlur(ev) {
+    handleBlur = ev => {
       this.props.onBlur?.(ev);
 
       // Cancel timer
@@ -48,9 +43,9 @@ export default ContentEditableComponent = (function() {
       }
 
       return this.props.onChange(this.editor);
-    }
+    };
 
-    handleFocus(ev) {
+    handleFocus = ev => {
       this.props.onFocus?.(ev);
 
       // Start selection saver (blur is not reliable in Firefox)
@@ -62,7 +57,7 @@ export default ContentEditableComponent = (function() {
       if (!this.selSaver) {
         return this.selSaver = setTimeout(saveRange, 200);
       }
-    }
+    };
 
     focus() {
       return this.editor.focus();
@@ -105,12 +100,12 @@ export default ContentEditableComponent = (function() {
       //   console.log @lastInnerHTML
       return changed;
     }
- 
+
     componentWillUpdate() {
       // Save caret
       return this.range = selection.save(this.editor);
     }
-    
+
     componentDidMount() {
       if (this.editor) {
         // Set inner html
@@ -161,7 +156,7 @@ export default ContentEditableComponent = (function() {
 
 // http://stackoverflow.com/questions/6690752/insert-html-at-caret-in-a-contenteditable-div
 // TODO selectPastedContent doesn't work
-var pasteHtmlAtCaret = function(html) {
+function pasteHtmlAtCaret(html) {
   let range = undefined;
   const sel = window.getSelection();
 
@@ -186,7 +181,7 @@ var pasteHtmlAtCaret = function(html) {
     sel.removeAllRanges();
     return sel.addRange(range);
   }
-};
+}
 
 // if selectPastedContent
 //       range.setStartBefore firstNode

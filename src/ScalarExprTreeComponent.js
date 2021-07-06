@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ScalarExprTreeComponent;
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -66,11 +68,6 @@ class ScalarExprTreeTreeComponent extends React.Component {
 ScalarExprTreeTreeComponent.initClass();
 
 class ScalarExprTreeLeafComponent extends React.Component {
-  constructor(...args) {
-    super(...args);
-    this.handleClick = this.handleClick.bind(this);
-  }
-
   static initClass() {
     this.propTypes = {
       item: PropTypes.object.isRequired, // Contains item "name" and "value"
@@ -78,10 +75,10 @@ class ScalarExprTreeLeafComponent extends React.Component {
     };
                 // String to prefix names with
   }
-  
-  handleClick() {
+
+  handleClick = () => {
     return this.props.onChange(this.props.item.value);
-  }
+  };
 
   render() {
     const style = {
@@ -117,8 +114,6 @@ class ScalarExprTreeNodeComponent extends React.Component {
   }
 
   constructor(props) {
-    this.handleArrowClick = this.handleArrowClick.bind(this);
-    this.handleItemClick = this.handleItemClick.bind(this);
     super(props);
     this.state = { 
       collapse: this.props.item.initiallyOpen ? "open" : "closed" 
@@ -132,22 +127,22 @@ class ScalarExprTreeNodeComponent extends React.Component {
     }
   }
 
-  handleArrowClick() {
+  handleArrowClick = () => {
     if (this.state.collapse === "open") { 
       return this.setState({collapse: "closed"});
     } else if (this.state.collapse === "closed") { 
       return this.setState({collapse: "open"});
     }
-  }
+  };
 
-  handleItemClick() {
+  handleItemClick = () => {
     // If no value, treat as arrow click
     if (!this.props.item.value) {
       return this.handleArrowClick();
     } else {
       return this.props.onChange(this.props.item.value);      
     }
-  }
+  };
 
   render() {
     let children, prefix;

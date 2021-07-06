@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let PropertyEditorComponent;
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -219,15 +221,6 @@ TableSelectComponent.initClass();
 
 // Edits a list of enum values
 class EnumValuesEditorComponent extends React.Component {
-  constructor(...args) {
-    super(...args);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleAdd = this.handleAdd.bind(this);
-    this.handleRemove = this.handleRemove.bind(this);
-    this.handleMoveUp = this.handleMoveUp.bind(this);
-    this.handleMoveDown = this.handleMoveDown.bind(this);
-  }
-
   static initClass() {
     this.propTypes = { 
       value: PropTypes.array,  // Array of enum values to edit
@@ -236,39 +229,39 @@ class EnumValuesEditorComponent extends React.Component {
       // Called with new value
   }
 
-  handleChange(i, item) {
+  handleChange = (i, item) => {
     const value = (this.props.value || []).slice();
     value[i] = item;
     return this.props.onChange(value);
-  }
+  };
 
-  handleAdd() {
+  handleAdd = () => {
     const value = (this.props.value || []).slice();
     value.push({ id: "", name: {} });
     return this.props.onChange(value);
-  }
+  };
 
-  handleRemove(i) {
+  handleRemove = i => {
     const value = (this.props.value || []).slice();
     value.splice(i, 1);
     return this.props.onChange(value);    
-  }
+  };
 
-  handleMoveUp(i) {
+  handleMoveUp = i => {
     const value = (this.props.value || []).slice();
     const temp = value[i - 1];
     value[i - 1] = value[i];
     value[i] = temp;
     return this.props.onChange(value);    
-  }
+  };
 
-  handleMoveDown(i) {
+  handleMoveDown = i => {
     const value = (this.props.value || []).slice();
     const temp = value[i + 1];
     value[i + 1] = value[i];
     value[i] = temp;
     return this.props.onChange(value);    
-  }
+  };
 
   render() {
     const items = this.props.value || [];

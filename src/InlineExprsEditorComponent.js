@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let InlineExprsEditorComponent;
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -13,15 +15,6 @@ import ContentEditableComponent from './ContentEditableComponent';
 // Editor that is a text box with embeddable expressions
 export default InlineExprsEditorComponent = (function() {
   InlineExprsEditorComponent = class InlineExprsEditorComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.handleInsertClick = this.handleInsertClick.bind(this);
-      this.handleInsert = this.handleInsert.bind(this);
-      this.handleUpdate = this.handleUpdate.bind(this);
-      this.handleClick = this.handleClick.bind(this);
-      this.handleChange = this.handleChange.bind(this);
-    }
-
     static initClass() {
       this.propTypes = {
         schema: PropTypes.object.isRequired,   // Schema to use
@@ -39,31 +32,31 @@ export default InlineExprsEditorComponent = (function() {
         {exprs: []};
     }
 
-    handleInsertClick() { return this.insertModal.open(); }
+    handleInsertClick = () => { return this.insertModal.open(); };
 
-    handleInsert(expr) {
+    handleInsert = expr => {
       if (expr) {
         return this.contentEditable.pasteHTML(this.createExprHtml(expr));
       }
-    }
+    };
 
-    handleUpdate(expr, index) {
+    handleUpdate = (expr, index) => {
       const exprs = this.props.exprs.slice();
       exprs[index] = expr;
       return this.props.onChange(this.props.text, exprs);
-    }
+    };
 
-    handleClick(ev) {
+    handleClick = ev => {
       // Get index of expression
       let index = ev.target.dataset["index"];
       if (index && index.match(/^\d+$/)) {
         index = parseInt(index);
         return this.updateModal.open(this.props.exprs[index], index);
       }
-    }
+    };
 
     // Handle a change to the content editable element
-    handleChange(elem) { 
+    handleChange = elem => { 
       // console.log "handleChange: #{elem.innerHTML}"
 
       // Walk DOM tree, adding strings and expressions
@@ -145,7 +138,7 @@ export default InlineExprsEditorComponent = (function() {
 
       // console.log "onChange: #{text}"
       return this.props.onChange(text, exprs);
-    }
+    };
 
     // Create html for an expression
     createExprHtml(expr, index) {

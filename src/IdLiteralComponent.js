@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let IdLiteralComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -13,12 +15,6 @@ import AsyncLoadComponent from 'react-library/lib/AsyncLoadComponent';
 // create index on some_table (lower(label_column) text_pattern_ops);
 export default IdLiteralComponent = (function() {
   IdLiteralComponent = class IdLiteralComponent extends AsyncLoadComponent {
-    constructor(...args) {
-      super(...args);
-      this.handleChange = this.handleChange.bind(this);
-      this.loadOptions = this.loadOptions.bind(this);
-    }
-
     static initClass() {
       this.propTypes = { 
         value: PropTypes.any, // String value of primary key or array of primary keys
@@ -91,7 +87,7 @@ export default IdLiteralComponent = (function() {
       });
     }
 
-    handleChange(value) {
+    handleChange = value => {
       if (this.props.multi) {
         if (value && (value.length === 0)) {
           return this.props.onChange(null);
@@ -101,7 +97,7 @@ export default IdLiteralComponent = (function() {
       } else {
         return this.props.onChange(value?.value);
       }
-    }
+    };
 
     getLabelExpr() {
       if (this.props.labelExpr) {
@@ -117,7 +113,7 @@ export default IdLiteralComponent = (function() {
       return { type: "op", op: "::text", exprs: [{ type: "field", tableAlias: "main", column: table.primaryKey }] };
     }
 
-    loadOptions(input, cb) {
+    loadOptions = (input, cb) => {
       let where;
       const table = this.props.schema.getTable(this.props.idTable);
 
@@ -180,7 +176,7 @@ export default IdLiteralComponent = (function() {
         return cb(rows);
       });
 
-    }
+    };
 
     render() {
       return R('div', {style: { width: "100%" }},

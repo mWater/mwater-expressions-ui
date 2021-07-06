@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let SelectFormulaExprComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -24,11 +26,6 @@ export default SelectFormulaExprComponent = (function() {
     }
 
     constructor(props) {
-      this.handleSearchTextChange = this.handleSearchTextChange.bind(this);
-      this.handleIfSelected = this.handleIfSelected.bind(this);
-      this.handleScoreSelected = this.handleScoreSelected.bind(this);
-      this.handleBuildEnumsetSelected = this.handleBuildEnumsetSelected.bind(this);
-      this.handleOpSelected = this.handleOpSelected.bind(this);
       super(props);
 
       this.state = {
@@ -40,11 +37,11 @@ export default SelectFormulaExprComponent = (function() {
       return this.searchComp?.focus();
     }
 
-    handleSearchTextChange(ev) {
+    handleSearchTextChange = ev => {
       return this.setState({searchText: ev.target.value});
-    }
+    };
 
-    handleIfSelected() {
+    handleIfSelected = () => {
       const ifExpr = {
         type: "case",
         cases: [{ when: null, then: null }],
@@ -55,9 +52,9 @@ export default SelectFormulaExprComponent = (function() {
       }
 
       return this.props.onChange(ifExpr);
-    }
+    };
 
-    handleScoreSelected() {
+    handleScoreSelected = () => {
       const scoreExpr = {
         type: "score",
         input: null,
@@ -68,9 +65,9 @@ export default SelectFormulaExprComponent = (function() {
       }
 
       return this.props.onChange(scoreExpr);
-    }
+    };
 
-    handleBuildEnumsetSelected() {
+    handleBuildEnumsetSelected = () => {
       const expr = {
         type: "build enumset",
         values: {}
@@ -79,9 +76,9 @@ export default SelectFormulaExprComponent = (function() {
         expr.table = this.props.table;
       }
       return this.props.onChange(expr);
-    }
+    };
 
-    handleOpSelected(op) {
+    handleOpSelected = op => {
       const expr = {
         type: "op",
         op,
@@ -92,7 +89,7 @@ export default SelectFormulaExprComponent = (function() {
       }
 
       return this.props.onChange(expr);
-    }
+    };
 
     render() {
       let filter;

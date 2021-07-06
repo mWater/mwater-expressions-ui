@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let LinkComponent;
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -8,11 +10,6 @@ import _ from 'lodash';
 // Also has a dropdown component if dropdown items are specified
 export default LinkComponent = (function() {
   LinkComponent = class LinkComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.renderDropdownItem = this.renderDropdownItem.bind(this);
-    }
-
     static initClass() {
       this.propTypes = {
         onClick: PropTypes.func, // Called on click
@@ -30,7 +27,7 @@ export default LinkComponent = (function() {
       }
     }
 
-    renderDropdownItem(item) {
+    renderDropdownItem = item => {
       const id = item.id || item.value;
       const name = item.name || item.label;
     
@@ -47,7 +44,7 @@ export default LinkComponent = (function() {
 
       return R('li', {key},
         R('a', {key: id, onClick: this.props.onDropdownItemClicked.bind(null, id)}, name));
-    }
+    };
 
     render() {
       // Simple case

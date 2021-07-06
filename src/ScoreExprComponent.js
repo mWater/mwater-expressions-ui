@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ScoreExprComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -10,12 +12,6 @@ import RemovableComponent from './RemovableComponent';
 // Score 
 export default ScoreExprComponent = (function() {
   ScoreExprComponent = class ScoreExprComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.handleInputChange = this.handleInputChange.bind(this);
-      this.handleScoreChange = this.handleScoreChange.bind(this);
-    }
-
     static initClass() {
       this.propTypes = {
         schema: PropTypes.object.isRequired,
@@ -29,15 +25,15 @@ export default ScoreExprComponent = (function() {
         // e.g. "en"
     }
 
-    handleInputChange(expr) {
+    handleInputChange = expr => {
       return this.props.onChange(_.extend({}, this.props.value, { input: expr }));
-    }
+    };
 
-    handleScoreChange(id, value) {
+    handleScoreChange = (id, value) => {
       const scores = _.clone(this.props.value.scores);
       scores[id] = value;
       return this.props.onChange(_.extend({}, this.props.value, { scores }));
-    }
+    };
 
     renderScores() {
       // To avoid circularity

@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ExprComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -12,12 +14,6 @@ import ExprElementBuilder from './ExprElementBuilder';
 // Cleans expression as a convenience
 export default ExprComponent = (function() {
   ExprComponent = class ExprComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.openEditor = this.openEditor.bind(this);
-      this.handleChange = this.handleChange.bind(this);
-    }
-
     static initClass() {
       this.propTypes = {
         schema: PropTypes.object.isRequired,
@@ -47,14 +43,14 @@ export default ExprComponent = (function() {
     }
 
     // Opens the editor popup. Only works if expression is blank
-    openEditor() {
+    openEditor = () => {
       return this.exprLink?.showModal();
-    }
+    };
 
     // Clean expression and pass up
-    handleChange(expr) {
+    handleChange = expr => {
       return this.props.onChange(this.cleanExpr(expr));
-    }
+    };
 
     // Cleans an expression
     cleanExpr(expr) {

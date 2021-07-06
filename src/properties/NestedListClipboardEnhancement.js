@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -25,36 +27,29 @@ export default function(WrappedComponent) {
           {clipboard: PropTypes.object};
          // Clipboard accessible to the children
       }
-    
+
       constructor(props) {
-        this.handleCut = this.handleCut.bind(this);
-        this.findItemById = this.findItemById.bind(this);
-        this.handleCopy = this.handleCopy.bind(this);
-        this.handlePasteInto = this.handlePasteInto.bind(this);
-        this.cut = this.cut.bind(this);
-        this.paste = this.paste.bind(this);
-        this.handlePaste = this.handlePaste.bind(this);
-        this.getChildContext = this.getChildContext.bind(this);
         super(props);
         this.state = {
           clipboard: null
         };
       }
-      
-      handleCut(listId, itemId) {
+
+      handleCut = (listId, itemId) => {
         return this.handleCopy(listId, itemId, true);
-      }
-      
-      findItemById(listId, itemId) {
+      };
+
+      findItemById = (listId, itemId) => {
         const value = _.cloneDeep(this.props.properties);
         const list = _.find(value, { id: itemId });
-      
+
         if (list) { // check in the root array first
           return list;
         }
-      
-        let found = null;  
-        var find = function(listId, itemId, items) {  
+
+        let found = null;
+
+        function find(listId, itemId, items) {  
           for (let property of items) {
             if (property.id === listId) {
               return _.find(property.contents, { id: itemId });
@@ -65,13 +60,13 @@ export default function(WrappedComponent) {
               }
             }
           }
-        };
-            
+        }
+
         // if not root then only iterate through section type properties
         return find(listId, itemId, (_.filter(value, {type: "section"})));
-      }
-    
-      handleCopy(listId, itemId, cut = false) {
+      };
+
+      handleCopy = (listId, itemId, cut = false) => {
         const property = this.findItemById(listId, itemId);
 
         // Only change id if copy
@@ -90,9 +85,9 @@ export default function(WrappedComponent) {
           property,
           cut
         }});
-      }
-      
-      handlePasteInto(listId, itemId) {
+      };
+
+      handlePasteInto = (listId, itemId) => {
         if (!this.state.clipboard) {
           return;
         }
@@ -151,10 +146,9 @@ export default function(WrappedComponent) {
           this.setState({clipboard: null});
           return this.props.onChange(value);
         }
-      }
-        
-        
-      cut(listId, itemId, items) {
+      };
+
+      cut = (listId, itemId, items) => {
         let didCut = false;
         for (let property of items) {
           if (property.id === listId) {
@@ -166,9 +160,9 @@ export default function(WrappedComponent) {
           }
         }
         return didCut;
-      }
-          
-      paste(listId, itemId, items) {
+      };
+
+      paste = (listId, itemId, items) => {
         let didPaste = false;
         for (let property of items) {
           if (property.id === listId) {
@@ -180,9 +174,9 @@ export default function(WrappedComponent) {
           }
         }
         return didPaste;
-      }
-          
-      handlePaste(listId, itemId) {
+      };
+
+      handlePaste = (listId, itemId) => {
         if (!this.state.clipboard) {
           return;
         }
@@ -220,14 +214,14 @@ export default function(WrappedComponent) {
           this.setState({clipboard: null});
           return this.props.onChange(value);
         }
-      }
-    
-      getChildContext() {
+      };
+
+      getChildContext = () => {
         return {
           clipboard: this.state.clipboard
         };
-      }
-    
+      };
+
       render() {
         const newProps = { 
           onCut: this.handleCut,

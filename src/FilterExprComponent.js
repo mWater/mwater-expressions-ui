@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let FilterExprComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -37,18 +39,13 @@ export default FilterExprComponent = (function() {
     }
 
     constructor(props) {
-      this.handleAddFilter = this.handleAddFilter.bind(this);
-      this.handleChange = this.handleChange.bind(this);
-      this.handleAndChange = this.handleAndChange.bind(this);
-      this.handleAndRemove = this.handleAndRemove.bind(this);
-      this.handleRemove = this.handleRemove.bind(this);
       super(props);
 
       this.state = { displayNull: false }; // Set true when initial null value should be displayed
     }
 
     // Handle add filter clicked by wrapping in "and" if existing, otherwise adding a null
-    handleAddFilter() {
+    handleAddFilter = () => {
       // If already "and", add null
       if (this.props.value && (this.props.value.op === "and")) {
         this.props.onChange(update(this.props.value, {exprs: { $push: [null] }}));
@@ -62,12 +59,12 @@ export default FilterExprComponent = (function() {
       }
 
       return this.setState({displayNull: true}, () => this.newExpr?.showModal());
-    }
+    };
 
     // Clean expression and pass up
-    handleChange(expr) {
+    handleChange = expr => {
       return this.props.onChange(this.cleanExpr(expr));
-    }
+    };
 
     // Cleans an expression
     cleanExpr(expr) {
@@ -78,18 +75,18 @@ export default FilterExprComponent = (function() {
     }
 
     // Handle change to a single item
-    handleAndChange(i, expr) {
+    handleAndChange = (i, expr) => {
       return this.handleChange(update(this.props.value, {exprs: { $splice: [[i, 1, expr]]}}));
-    }
+    };
 
-    handleAndRemove(i) {
+    handleAndRemove = i => {
       return this.handleChange(update(this.props.value, {exprs: { $splice: [[i, 1]]}}));    
-    }
+    };
 
-    handleRemove() {
+    handleRemove = () => {
       this.setState({displayNull: false});
       return this.handleChange(null);    
-    }
+    };
 
     renderAddFilter() {
       return R('div', null, 

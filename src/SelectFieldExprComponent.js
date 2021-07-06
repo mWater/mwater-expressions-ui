@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let SelectFieldExprComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -41,8 +43,6 @@ export default SelectFieldExprComponent = (function() {
     }
 
     constructor(props) {
-      this.handleSearchTextChange = this.handleSearchTextChange.bind(this);
-      this.handleTreeChange = this.handleTreeChange.bind(this);
       super(props);
 
       this.state = {
@@ -54,12 +54,12 @@ export default SelectFieldExprComponent = (function() {
       return this.searchComp?.focus();
     }
 
-    handleSearchTextChange(ev) {
+    handleSearchTextChange = ev => {
       return this.setState({searchText: ev.target.value});
-    }
+    };
 
     // Handle a selection in the scalar expression tree. Called with { table, joins, expr }
-    handleTreeChange(val) { 
+    handleTreeChange = val => { 
       // Loses focus when selection made
       this.setState({focused: false});
 
@@ -127,7 +127,7 @@ export default SelectFieldExprComponent = (function() {
       } else {
         return this.props.onChange({ type: "scalar", table: this.props.table, joins: val.joins, expr });
       }
-    }
+    };
 
     render() {
       // Create tree 

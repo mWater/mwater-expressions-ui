@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import PropTypes from 'prop-types';
 import React from 'react';
 const R = React.createElement;
@@ -61,32 +63,27 @@ class PropertyListComponent extends React.Component {
     this.contextTypes =
       {clipboard: PropTypes.object};
   }
-  
+
   constructor(props) {
-    this.handleChange = this.handleChange.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
-    this.handleNewProperty = this.handleNewProperty.bind(this);
-    this.handleNewSection = this.handleNewSection.bind(this);
-    this.renderProperty = this.renderProperty.bind(this);
     super(props);
     this.state = {
       addingItem: null  // Property being added
     };
   }
 
-  handleChange(index, property) {
+  handleChange = (index, property) => {
     const value = this.props.properties.slice();
     value[index] = property;
     return this.props.onChange(value);
-  }
-    
-  handleDelete(index) {
+  };
+
+  handleDelete = index => {
     const value = this.props.properties.slice();
     _.pullAt(value, index);
     return this.props.onChange(value);
-  }
-    
-  handleNewProperty() {
+  };
+
+  handleNewProperty = () => {
     const property = {
       type: "text"
     };
@@ -96,17 +93,17 @@ class PropertyListComponent extends React.Component {
     }
 
     return this.setState({addingItem: property});
-  }
-    
-  handleNewSection() {
+  };
+
+  handleNewSection = () => {
     const section = {
       type: "section",
       contents: []
     };
     
     return this.setState({addingItem: section});
-  }
-    
+  };
+
   renderControls(allPropertyIds) {
     return R('div', {className: "btn-group pl-controls"},
       this.renderAddingModal(allPropertyIds),
@@ -125,7 +122,7 @@ class PropertyListComponent extends React.Component {
       )
     );
   }
-    
+
   renderAddingModal(allPropertyIds) {
     if (!this.state.addingItem) {
       return null;
@@ -172,8 +169,15 @@ class PropertyListComponent extends React.Component {
           )
     );
   }
-    
-  renderProperty(allPropertyIds, item, index, connectDragSource, connectDragPreview, connectDropTarget) {
+
+  renderProperty = (
+    allPropertyIds,
+    item,
+    index,
+    connectDragSource,
+    connectDragPreview,
+    connectDropTarget
+  ) => {
     const elem = R('div', {key: index},
       R(PropertyComponent, { 
         property: item,
@@ -197,8 +201,8 @@ class PropertyListComponent extends React.Component {
       )
     );
     return connectDragPreview(connectDropTarget(connectDragSource(elem)));
-  }
-    
+  };
+
   render() {
     // Compute list of all property ids, recursively
     const allPropertyIds = _.pluck(flattenProperties(this.props.properties), "id");
@@ -259,18 +263,16 @@ class PropertyComponent extends React.Component {
     this.contextTypes =
       {clipboard: PropTypes.object};
   }
-  
+
   constructor(props) {
-    this.handleEdit = this.handleEdit.bind(this);
-    this.renderEnumValues = this.renderEnumValues.bind(this);
     super(props);
     this.state = { editing: false , editorProperty: null};
   }
-  
-  handleEdit() {
+
+  handleEdit = () => {
     return this.setState({editing: true, editorProperty: this.props.property});
-  }
-  
+  };
+
   renderControls() {
     return R('div', {className: "pl-item-controls"},
       R('a', {className: "pl-item-control", onClick: this.handleEdit}, "Edit"),
@@ -284,17 +286,17 @@ class PropertyComponent extends React.Component {
       
       R('a', {className: "pl-item-control", onClick: (() => this.props.onDelete())}, "Delete"));
   }
-  
-  renderEnumValues(values) {
+
+  renderEnumValues = values => {
     const names = _.map(values, value => value.name[value._base || "en"]);
       
     return R('span', null, `${names.join(" / ")}`);
-  }
+  };
 
   renderTable(table) {
     return R(LocalizedStringComponent, {value: this.props.schema.getTable(table)?.name});
   }
-  
+
   render() {
     const classNames = ["pl-property"];
     if (this.props.property.deprecated) { 
@@ -412,7 +414,7 @@ PropertyComponent.initClass();
 export default NestedListClipboardEnhancement(PropertyListComponent);
 
 // Flatten a nested list of properties
-var flattenProperties = function(properties) {
+function flattenProperties(properties) {
   let props = [];
 
   for (let prop of properties) {
@@ -424,4 +426,4 @@ var flattenProperties = function(properties) {
   }
 
   return props;
-};
+}

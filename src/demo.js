@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import $ from 'jquery';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -140,7 +142,6 @@ class ContentEditableTestComponent extends React.Component {
 
 class MockTestInlineExprsEditorComponent extends React.Component {
   constructor(props) {
-    this.handleChange = this.handleChange.bind(this);
     super(props);
 
     this.state = { 
@@ -192,10 +193,10 @@ class MockTestInlineExprsEditorComponent extends React.Component {
     return this.setState({schema, dataSource});
   }
 
-  handleChange(text, exprs) { 
+  handleChange = (text, exprs) => { 
     console.log(`handleChange: ${text}`);
     return this.setState({text, exprs});
-  }
+  };
 
   render() {
     if (!this.state.schema) {
@@ -226,7 +227,6 @@ class MockTestInlineExprsEditorComponent extends React.Component {
 
 class MockTestComponent extends React.Component {
   constructor(props) {
-    this.handleValueChange = this.handleValueChange.bind(this);
     super(props);
     this.state = { 
       value: null, // { type: "field", table: "t1", column: "1-2" }
@@ -285,10 +285,10 @@ class MockTestComponent extends React.Component {
     return this.setState({schema, dataSource});
   }
 
-  handleValueChange(value) { 
+  handleValueChange = value => { 
     // value = new ExprCleaner(@state.schema).cleanExpr(value) #, { type: 'boolean' })
     return this.setState({value});
-  }
+  };
 
   render() {
     if (!this.state.schema) {
@@ -332,7 +332,6 @@ class MockTestComponent extends React.Component {
 
 class MockPropertyEditorTestComponent extends React.Component {
   constructor(props) {
-    this.handleValueChange = this.handleValueChange.bind(this);
     super(props);
     this.state = { 
       value: null, // { type: "field", table: "t1", column: "1-2" }
@@ -388,10 +387,10 @@ class MockPropertyEditorTestComponent extends React.Component {
     return this.setState({schema, dataSource});
   }
 
-  handleValueChange(value) { 
+  handleValueChange = value => { 
     // value = new ExprCleaner(@state.schema).cleanExpr(value) #, { type: 'boolean' })
     return this.setState({value});
-  }
+  };
 
   render() {
     if (!this.state.schema) {
@@ -409,7 +408,6 @@ class MockPropertyEditorTestComponent extends React.Component {
 
 class LiveTestComponent extends React.Component {
   constructor(props) {
-    this.handleValueChange = this.handleValueChange.bind(this);
     super(props);
     this.state = { 
       value: null,
@@ -429,10 +427,10 @@ class LiveTestComponent extends React.Component {
     });
   }
 
-  handleValueChange(value) { 
+  handleValueChange = value => { 
     // value = new ExprCleaner(@state.schema).cleanExpr(value, { aggrStatuses: ['literal', 'aggregate']}) #, { type: 'boolean' })
     return this.setState({value});
-  }
+  };
 
   render() {
     if (!this.state.schema) {

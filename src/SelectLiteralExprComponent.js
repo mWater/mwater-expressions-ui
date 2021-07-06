@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let SelectLiteralExprComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -32,11 +34,6 @@ export default SelectLiteralExprComponent = (function() {
     }
 
     constructor(props) {
-      this.handleChange = this.handleChange.bind(this);
-      this.handleDateSelected = this.handleDateSelected.bind(this);
-      this.handleDateTimeSelected = this.handleDateTimeSelected.bind(this);
-      this.handleAccept = this.handleAccept.bind(this);
-      this.handleTextChange = this.handleTextChange.bind(this);
       super(props);
 
       this.state = {
@@ -56,27 +53,27 @@ export default SelectLiteralExprComponent = (function() {
       return this.inputComp?.focus();
     }
 
-    handleChange(value) {
+    handleChange = value => {
       return this.setState({value, changed: true, inputText: null});
-    }
+    };
 
-    handleDateSelected(date) {
+    handleDateSelected = date => {
       if (date) {
         return this.setState({value: { type: "literal", valueType: "date", value: date.format("YYYY-MM-DD") }, changed: true});
       } else {
         return this.setState({value: null, changed: true});
       }
-    }
+    };
 
-    handleDateTimeSelected(datetime) {
+    handleDateTimeSelected = datetime => {
       if (datetime) {
         return this.setState({value: { type: "literal", valueType: "datetime", value: datetime.toISOString() }, changed: true});
       } else {
         return this.setState({value: null, changed: true});
       }
-    }
+    };
 
-    handleAccept() {
+    handleAccept = () => {
       // Parse text value if text
       let value;
       if (this.state.inputText != null) {
@@ -103,11 +100,11 @@ export default SelectLiteralExprComponent = (function() {
       } else {
         return this.props.onChange(this.state.value);
       }
-    }
+    };
 
-    handleTextChange(ev) {
+    handleTextChange = ev => {
       return this.setState({inputText: ev.target.value, changed: true});
-    }
+    };
 
     // Render a text box for inputting text/number
     renderTextBox() {
@@ -217,7 +214,7 @@ export default SelectLiteralExprComponent = (function() {
 
       return R('div', {className: "text-warning"}, "Literal input not supported for this type");
     }
-    
+
     render() {
       return R('div', null,
         R('div', {style: { paddingBottom: 10 }}, 
@@ -237,11 +234,6 @@ export default SelectLiteralExprComponent = (function() {
 
 // Component which displays an enum as a list
 class EnumAsListComponent extends React.Component {
-  constructor(...args) {
-    super(...args);
-    this.handleChange = this.handleChange.bind(this);
-  }
-
   static initClass() {
     this.propTypes = { 
       value: PropTypes.object,
@@ -254,13 +246,13 @@ class EnumAsListComponent extends React.Component {
       // e.g. "en"
   }
 
-  handleChange(val) {
+  handleChange = val => {
     if (!val) {
       return this.props.onChange(null);
     } else {
       return this.props.onChange({ type: "literal", valueType: "enum", value: val });
     }
-  }
+  };
 
   render() {
     const value = this.props.value?.value;
@@ -289,11 +281,6 @@ EnumAsListComponent.initClass();
 
 // Component which displays an enumset as a list
 class EnumsetAsListComponent extends React.Component {
-  constructor(...args) {
-    super(...args);
-    this.handleToggle = this.handleToggle.bind(this);
-  }
-
   static initClass() {
     this.propTypes = { 
       value: PropTypes.object,
@@ -306,7 +293,7 @@ class EnumsetAsListComponent extends React.Component {
       // e.g. "en"
   }
 
-  handleToggle(val) {
+  handleToggle = val => {
     let items = this.props.value?.value || [];
     if (items.includes(val)) {
       items = _.without(items, val);
@@ -319,7 +306,7 @@ class EnumsetAsListComponent extends React.Component {
     } else {
       return this.props.onChange({ type: "literal", valueType: "enumset", value: items });
     }
-  }
+  };
 
   render() {
     const items = this.props.value?.value || [];
@@ -348,11 +335,6 @@ EnumsetAsListComponent.initClass();
 
 // Component which displays an enum dropdown
 class EnumComponent extends React.Component {
-  constructor(...args) {
-    super(...args);
-    this.handleChange = this.handleChange.bind(this);
-  }
-
   static initClass() {
     this.propTypes = { 
       value: PropTypes.object,
@@ -365,13 +347,13 @@ class EnumComponent extends React.Component {
       // e.g. "en"
   }
 
-  handleChange(val) {
+  handleChange = val => {
     if (!val) {
       return this.props.onChange(null);
     } else {
       return this.props.onChange({ type: "literal", valueType: "enum", value: JSON.parse(val) });
     }
-  }
+  };
 
   render() {
     const {

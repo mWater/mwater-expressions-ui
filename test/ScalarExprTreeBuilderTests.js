@@ -1,10 +1,18 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import { assert } from 'chai';
 import _ from 'lodash';
 import ScalarExprTreeBuilder from '../src/ScalarExprTreeBuilder';
 import { Schema } from "mwater-expressions";
 import canonical from 'canonical-json';
 
-const compare = (actual, expected) => assert.equal(canonical(actual), canonical(expected), "\n" + canonical(actual) + "\n" + canonical(expected) + "\n");
+function compare(actual, expected) {
+  return assert.equal(
+    canonical(actual),
+    canonical(expected),
+    "\n" + canonical(actual) + "\n" + canonical(expected) + "\n"
+  );
+}
 
 describe("ScalarExprTreeBuilder", function() {
   beforeEach(function() {

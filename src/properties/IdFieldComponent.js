@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let IdFieldComponent;
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -14,21 +16,15 @@ export default IdFieldComponent = (function() {
       };
         // Called with new value
     }
-    
-    constructor(props) {
-      this.isValid = this.isValid.bind(this);
-      this.handleChange = this.handleChange.bind(this);
-      super(props);
-    }
-    
-    isValid(string) {
+
+    isValid = string => {
       return /^[a-z][a-z_0-9]*$/.test(string);
-    }
-    
-    handleChange(ev) {
+    };
+
+    handleChange = ev => {
       return this.props.onChange(ev.target.value);
-    }
-    
+    };
+
     render() {
       return R(ui.FormGroup, {label: "ID", hasWarnings: !this.isValid(this.props.value)},
         R('input', {type: "text", className: "form-control", value: this.props.value || "", onChange: this.handleChange}),

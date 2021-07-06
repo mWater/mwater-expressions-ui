@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let TextArrayComponent;
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -9,12 +11,6 @@ import { ExprCompiler } from "mwater-expressions";
 // Displays a combo box that allows selecting multiple text values from an expression
 export default TextArrayComponent = (function() {
   TextArrayComponent = class TextArrayComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.handleChange = this.handleChange.bind(this);
-      this.loadOptions = this.loadOptions.bind(this);
-    }
-
     static initClass() {
       this.propTypes = { 
         value: PropTypes.object,
@@ -30,19 +26,19 @@ export default TextArrayComponent = (function() {
       return this.select.focus();
     }
 
-    handleChange(value) {
+    handleChange = value => {
       if (value && (value.length > 0)) {
         return this.props.onChange({ type: "literal", valueType: "text[]", value: _.pluck(value, "label") });
       } else {
         return this.props.onChange(null);
       }
-    }
+    };
 
     escapeRegex(s) {
       return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
     }
 
-    loadOptions(input, cb) {
+    loadOptions = (input, cb) => {
       // Create query to get matches ordered by most frequent to least
       const exprCompiler = new ExprCompiler(this.props.schema);
 
@@ -82,7 +78,7 @@ export default TextArrayComponent = (function() {
         })));
       });
 
-    }
+    };
 
     render() {
       const value = _.map(this.props.value?.value, v => ({ label: v, value: v }));

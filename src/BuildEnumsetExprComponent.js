@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let BuildEnumsetExprComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -10,11 +12,6 @@ import RemovableComponent from './RemovableComponent';
 // Build enumset
 export default BuildEnumsetExprComponent = (function() {
   BuildEnumsetExprComponent = class BuildEnumsetExprComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.handleValueChange = this.handleValueChange.bind(this);
-    }
-
     static initClass() {
       this.propTypes = {
         schema: PropTypes.object.isRequired,
@@ -29,11 +26,11 @@ export default BuildEnumsetExprComponent = (function() {
         // e.g. "en"
     }
 
-    handleValueChange(id, value) {
+    handleValueChange = (id, value) => {
       const values = _.clone(this.props.value.values);
       values[id] = value;
       return this.props.onChange(_.extend({}, this.props.value, { values }));
-    }
+    };
 
     renderValues() {
       // To avoid circularity

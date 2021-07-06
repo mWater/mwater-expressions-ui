@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let LocalizedStringEditorComp;
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -18,21 +20,18 @@ export default LocalizedStringEditorComp = (function() {
       }; 
     }
     constructor(props) {
-      this.handleRemoveValue = this.handleRemoveValue.bind(this);
-      this.handleChangeValue = this.handleChangeValue.bind(this);
-      this.onLanguageSelectionClick = this.onLanguageSelectionClick.bind(this);
       super(props);
       this.state = { selectedLanguageCode: "en" };  // True to allow multiple lines
     }
-  
 
-    handleRemoveValue() {
+
+    handleRemoveValue = () => {
       const names = _.clone(this.props.value);
       delete names[this.state.selectedLanguageCode];
       return this.props.onChange(names);
-    }
+    };
 
-    handleChangeValue(ev) {
+    handleChangeValue = ev => {
       if (this.props.readonly) {
         return;
       }
@@ -57,11 +56,11 @@ export default LocalizedStringEditorComp = (function() {
         names._base = this.state.selectedLanguageCode;
       }
       return this.props.onChange(names);
-    }
+    };
 
-    onLanguageSelectionClick(languageCode) {
+    onLanguageSelectionClick = languageCode => {
       return this.setState({selectedLanguageCode: languageCode});
-    }
+    };
 
     render() {
       let currentText, placeholder;
