@@ -27,7 +27,7 @@
 //       comp = new TestComponent(elem)
 //       @toDestroy.push(comp)
 //       return comp
-     
+
 //     @value = null
 //     @onChange = (value) => @value = value
 
@@ -119,18 +119,17 @@
 //         type: "case"
 //         table: "t1"
 //         cases: [
-//           { 
+//           {
 //             when: { type: "op", table: "t1", op: "= any", exprs: [{ type: "field", table: "t1", column: "enum"}, { type: "literal", valueType: "enumset", value: ["a"] }] }
-//             then: { type: "literal", valueType: "enum", value: "aa" } 
+//             then: { type: "literal", valueType: "enum", value: "aa" }
 //           }
-//           { 
+//           {
 //             when: { type: "op", table: "t1", op: "= any", exprs: [{ type: "field", table: "t1", column: "enum"}, { type: "literal", valueType: "enumset", value: ["b"] }] }
-//             then: { type: "literal", valueType: "enum", value: "bb" } 
+//             then: { type: "literal", valueType: "enum", value: "bb" }
 //           }
 //         ]
 //         else: null
 //       })
-
 
 //   describe "null with enum type specified", ->
 //     it "allows searching for item"
@@ -166,7 +165,6 @@
 //       assert.isNull @value
 
 //     it "allows switching to formula mode"
-
 
 //   describe "if/then", ->
 //     beforeEach ->

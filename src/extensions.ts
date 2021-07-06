@@ -1,5 +1,13 @@
-import { AggrStatus, DataSource, ExtensionExpr, LiteralType, LocalizedString, Schema, Variable } from 'mwater-expressions'
-import { ReactNode } from 'react'
+import {
+  AggrStatus,
+  DataSource,
+  ExtensionExpr,
+  LiteralType,
+  LocalizedString,
+  Schema,
+  Variable
+} from "mwater-expressions"
+import { ReactNode } from "react"
 
 /** Global list of extensions */
 const exprUIExtensions: ExprUIExtension<ExtensionExpr>[] = []
@@ -33,7 +41,7 @@ export interface ExprUIExtension<T extends ExtensionExpr> {
     onExprChange: (expr: T | null) => void
     schema: Schema
     dataSource: DataSource
-    variables: Variable[] 
+    variables: Variable[]
     aggrStatuses: AggrStatus[]
     locale: string | null
     types?: LiteralType[]
@@ -41,7 +49,7 @@ export interface ExprUIExtension<T extends ExtensionExpr> {
   }): ReactNode
 }
 
-/** Register an extension to expressions UI 
+/** Register an extension to expressions UI
  */
 export function registerExprUIExtension(extension: ExprUIExtension<ExtensionExpr>) {
   exprUIExtensions.push(extension)

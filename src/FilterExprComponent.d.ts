@@ -1,5 +1,5 @@
-import { Schema, DataSource, Variable, Expr } from "mwater-expressions";
-import React from "react";
+import { Schema, DataSource, Variable, Expr } from "mwater-expressions"
+import React from "react"
 
 /** Displays a boolean filter expression. Just shows "+ Add filter" (or other add label) when empty */
 export default class FilterExprComponent extends React.Component<{

@@ -2,7 +2,7 @@ import _ from "lodash"
 import { Expr, ExprUtils, Schema } from "mwater-expressions"
 import React, { ReactElement } from "react"
 import { createContext, ReactNode, useContext } from "react"
-import ReactSelect from 'react-select'
+import ReactSelect from "react-select"
 
 /* NOTE: NOT CURRENTLY USED, BUT SHOULD REPLACE THE ONE IN mwater-visualization and SWITCH TO NEW REACT CONTEXT */
 /** Factory to create a custom table select component */
@@ -56,17 +56,22 @@ export const TableSelectComponent = (props: {
     return <div>{customTableSelectComponentFactory(props)}</div>
   }
 
-  const tables = props.schema.getTables().filter(table => !table.deprecated)
-  const options = _.sortBy(tables.map(table => ({ value: table.id, label: ExprUtils.localizeString(table.name, locale) })), "label")
+  const tables = props.schema.getTables().filter((table) => !table.deprecated)
+  const options = _.sortBy(
+    tables.map((table) => ({ value: table.id, label: ExprUtils.localizeString(table.name, locale) })),
+    "label"
+  )
 
-  return <ReactSelect 
-    value={value ? options.find(t => t.value == props.value) : null} 
-    options={options} 
-    onChange={v => {
-      props.onChange(v ? v.value : null)
-    }} 
-    menuPortalTarget={document.body}
-    styles={{ menuPortal: style => ({ ...style, zIndex: 2000 })}}
-    placeholder="Select..."
-  />
+  return (
+    <ReactSelect
+      value={value ? options.find((t) => t.value == props.value) : null}
+      options={options}
+      onChange={(v) => {
+        props.onChange(v ? v.value : null)
+      }}
+      menuPortalTarget={document.body}
+      styles={{ menuPortal: (style) => ({ ...style, zIndex: 2000 }) }}
+      placeholder="Select..."
+    />
+  )
 }

@@ -1,15 +1,15 @@
-import React from 'react'
-import { Schema, DataSource, EnumValue, LiteralExpr } from 'mwater-expressions'
-import { JsonQLExpr } from 'jsonql'
+import React from "react"
+import { Schema, DataSource, EnumValue, LiteralExpr } from "mwater-expressions"
+import { JsonQLExpr } from "jsonql"
 
-export { default as PropertyListComponent } from './properties/PropertyListComponent'
+export { default as PropertyListComponent } from "./properties/PropertyListComponent"
 
-export { default as ExprComponent } from './ExprComponent'
-export { default as FilterExprComponent } from './FilterExprComponent'
+export { default as ExprComponent } from "./ExprComponent"
+export { default as FilterExprComponent } from "./FilterExprComponent"
 
-export * from './TableSelectComponent'
+export * from "./TableSelectComponent"
 
-export * from './extensions'
+export * from "./extensions"
 
 export class IdLiteralComponent extends React.Component<{
   /** Value of primary key or array of primary keys */

@@ -91,7 +91,7 @@
 
 //     # Open dropdown
 //     TestComponent.click(comp.findComponentByText(/^is$/))
-    
+
 //     # Switch to "is greater than"
 //     TestComponent.click(comp.findComponentByText(/is greater than/))
 
@@ -150,7 +150,7 @@
 
 //     # Finds dest column listed
 //     assert comp.findComponentByText(/Number/)
-  
+
 //   #   describe "number required", ->
 //   #     it "does not show text fields", ->
 //   #       comp = @render(value: {}, type: "number")
@@ -272,9 +272,7 @@
 //   #   # Check enumValues
 //   #   compare(enumComp.props.enumValues, @schema.getColumn("t1", "enum").values)
 
-    
 //   # it "allows switching of scalar aggr", ->
-
 
 //   # it "creates literal components for nulls on rhs of expressions", ->
 //   #   expr = {
