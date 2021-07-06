@@ -1,19 +1,35 @@
-exports.ExprComponent = require './ExprComponent'
-exports.FilterExprComponent = require './FilterExprComponent'
-exports.LinkComponent = require './LinkComponent'
-exports.InlineExprsEditorComponent = require './InlineExprsEditorComponent'
-exports.ContentEditableComponent = require './ContentEditableComponent'
-exports.IdLiteralComponent = require './IdLiteralComponent'
-exports.PropertyListComponent = require './properties/PropertyListComponent'
-exports.LiteralExprStringComponent = require './LiteralExprStringComponent'
+export let ExprComponent = require('./ExprComponent');
+export let FilterExprComponent = require('./FilterExprComponent');
+export let LinkComponent = require('./LinkComponent');
+export let InlineExprsEditorComponent = require('./InlineExprsEditorComponent');
+export let ContentEditableComponent = require('./ContentEditableComponent');
+export let IdLiteralComponent = require('./IdLiteralComponent');
+export let PropertyListComponent = require('./properties/PropertyListComponent');
+export let LiteralExprStringComponent = require('./LiteralExprStringComponent');
 
-exports.CustomTableSelectComponentFactoryContext = require('./TableSelectComponent').CustomTableSelectComponentFactoryContext
-exports.LocaleContext = require('./TableSelectComponent').LocaleContext
-exports.ActiveTablesContext = require('./TableSelectComponent').ActiveTablesContext
-exports.TableSelectComponent = require('./TableSelectComponent').TableSelectComponent
+export let {
+  CustomTableSelectComponentFactoryContext
+} = require('./TableSelectComponent');
 
-exports.registerExprUIExtension = require('./extensions').registerExprUIExtension
-exports.getExprUIExtensions = require('./extensions').getExprUIExtensions
+export let {
+  LocaleContext
+} = require('./TableSelectComponent');
 
-require "./index.css"
+export let {
+  ActiveTablesContext
+} = require('./TableSelectComponent');
+
+export let {
+  TableSelectComponent
+} = require('./TableSelectComponent');
+
+export let {
+  registerExprUIExtension
+} = require('./extensions');
+
+export let {
+  getExprUIExtensions
+} = require('./extensions');
+
+import "./index.css";
  

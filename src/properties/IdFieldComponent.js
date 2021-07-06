@@ -1,25 +1,40 @@
-PropTypes = require('prop-types')
-React = require 'react'
-R = React.createElement
-_ = require 'lodash'
+let IdFieldComponent;
+import PropTypes from 'prop-types';
+import React from 'react';
+const R = React.createElement;
+import _ from 'lodash';
+import ui from 'react-library/lib/bootstrap';
 
-ui = require 'react-library/lib/bootstrap'
-
-module.exports = class IdFieldComponent extends React.Component
-  @propTypes: 
-    value: PropTypes.string  # The value
-    onChange: PropTypes.func.isRequired  # Called with new value
+export default IdFieldComponent = (function() {
+  IdFieldComponent = class IdFieldComponent extends React.Component {
+    static initClass() {
+      this.propTypes = { 
+        value: PropTypes.string,  // The value
+        onChange: PropTypes.func.isRequired
+      };
+        // Called with new value
+    }
     
-  constructor: (props) ->
-    super(props)
+    constructor(props) {
+      this.isValid = this.isValid.bind(this);
+      this.handleChange = this.handleChange.bind(this);
+      super(props);
+    }
     
-  isValid: (string) =>
-    return /^[a-z][a-z_0-9]*$/.test(string)
+    isValid(string) {
+      return /^[a-z][a-z_0-9]*$/.test(string);
+    }
     
-  handleChange: (ev) =>
-    @props.onChange(ev.target.value)
+    handleChange(ev) {
+      return this.props.onChange(ev.target.value);
+    }
     
-  render: ->
-    R ui.FormGroup, label: "ID", hasWarnings: not @isValid(@props.value),
-      R 'input', type: "text", className: "form-control", value: @props.value or "", onChange: @handleChange
-      R 'p', className: "help-block", "Lowercase, numbers and underscores"
+    render() {
+      return R(ui.FormGroup, {label: "ID", hasWarnings: !this.isValid(this.props.value)},
+        R('input', {type: "text", className: "form-control", value: this.props.value || "", onChange: this.handleChange}),
+        R('p', {className: "help-block"}, "Lowercase, numbers and underscores"));
+    }
+  };
+  IdFieldComponent.initClass();
+  return IdFieldComponent;
+})();

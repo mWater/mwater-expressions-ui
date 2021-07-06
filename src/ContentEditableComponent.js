@@ -1,147 +1,194 @@
-PropTypes = require('prop-types')
-React = require 'react'
-R = React.createElement
-selection = require './saveSelection'
+let ContentEditableComponent;
+import PropTypes from 'prop-types';
+import React from 'react';
+const R = React.createElement;
+import selection from './saveSelection';
 
-# Content editable component with cursor restoring
-module.exports = class ContentEditableComponent extends React.Component
-  @propTypes:
-    html: PropTypes.string.isRequired
-    onChange: PropTypes.func.isRequired  # Called with element
-    style: PropTypes.object # Style to add to div
-    onClick: PropTypes.func  # Set to catch click events
-    onFocus: PropTypes.func  # Set to catch focus events
-    onBlur: PropTypes.func  # Set to catch blur events
+// Content editable component with cursor restoring
+export default ContentEditableComponent = (function() {
+  ContentEditableComponent = class ContentEditableComponent extends React.Component {
+    constructor(...args) {
+      super(...args);
+      this.handleInput = this.handleInput.bind(this);
+      this.handleBlur = this.handleBlur.bind(this);
+      this.handleFocus = this.handleFocus.bind(this);
+    }
 
-  handleInput: (ev) => 
-    if not @editor
-      return 
+    static initClass() {
+      this.propTypes = {
+        html: PropTypes.string.isRequired,
+        onChange: PropTypes.func.isRequired,  // Called with element
+        style: PropTypes.object, // Style to add to div
+        onClick: PropTypes.func,  // Set to catch click events
+        onFocus: PropTypes.func,  // Set to catch focus events
+        onBlur: PropTypes.func
+      };
+        // Set to catch blur events
+    }
 
-    @props.onChange(@editor)
+    handleInput(ev) { 
+      if (!this.editor) {
+        return; 
+      }
 
-  handleBlur: (ev) =>
-    @props.onBlur?(ev)
+      return this.props.onChange(this.editor);
+    }
 
-    # Cancel timer
-    if @selSaver
-      clearTimeout(@selSaver)
-      @selSaver = null
+    handleBlur(ev) {
+      this.props.onBlur?.(ev);
 
-    if not @editor
-      return 
+      // Cancel timer
+      if (this.selSaver) {
+        clearTimeout(this.selSaver);
+        this.selSaver = null;
+      }
 
-    @props.onChange(@editor)
+      if (!this.editor) {
+        return; 
+      }
 
-  handleFocus: (ev) =>
-    @props.onFocus?(ev)
+      return this.props.onChange(this.editor);
+    }
 
-    # Start selection saver (blur is not reliable in Firefox)
-    saveRange = =>
-      @range = selection.save(@editor)
-      @selSaver = setTimeout(saveRange, 200)
+    handleFocus(ev) {
+      this.props.onFocus?.(ev);
 
-    if not @selSaver
-      @selSaver = setTimeout(saveRange, 200)
+      // Start selection saver (blur is not reliable in Firefox)
+      var saveRange = () => {
+        this.range = selection.save(this.editor);
+        return this.selSaver = setTimeout(saveRange, 200);
+      };
 
-  focus: ->
-    @editor.focus()
+      if (!this.selSaver) {
+        return this.selSaver = setTimeout(saveRange, 200);
+      }
+    }
 
-  pasteHTML: (html) ->
-    @editor.focus()
+    focus() {
+      return this.editor.focus();
+    }
 
-    # Restore caret
-    if @range
-      selection.restore(@editor, @range)
+    pasteHTML(html) {
+      this.editor.focus();
 
-    pasteHtmlAtCaret(html)
+      // Restore caret
+      if (this.range) {
+        selection.restore(this.editor, this.range);
+      }
 
-    @props.onChange(@editor)
+      pasteHtmlAtCaret(html);
 
-  getSelectedHTML: ->
-    html = ''
-    sel = window.getSelection()
-    if sel.rangeCount
-      container = document.createElement("div")
-      for i in [0...sel.rangeCount]
-        container.appendChild(sel.getRangeAt(i).cloneContents())
-    html = container.innerHTML
-    return html
+      return this.props.onChange(this.editor);
+    }
 
-  shouldComponentUpdate: (nextProps) ->
-    # Update if prop html has changed, or if inner html has changed
-    changed = not @editor or nextProps.html != @props.html or @editor.innerHTML != @lastInnerHTML
-    # if changed
-    #   console.log nextProps.html
-    #   console.log @props.html 
-    #   console.log @editor.innerHTML 
-    #   console.log @lastInnerHTML
-    return changed
+    getSelectedHTML() {
+      let container;
+      let html = '';
+      const sel = window.getSelection();
+      if (sel.rangeCount) {
+        container = document.createElement("div");
+        for (let i = 0, end = sel.rangeCount, asc = 0 <= end; asc ? i < end : i > end; asc ? i++ : i--) {
+          container.appendChild(sel.getRangeAt(i).cloneContents());
+        }
+      }
+      html = container.innerHTML;
+      return html;
+    }
+
+    shouldComponentUpdate(nextProps) {
+      // Update if prop html has changed, or if inner html has changed
+      const changed = !this.editor || (nextProps.html !== this.props.html) || (this.editor.innerHTML !== this.lastInnerHTML);
+      // if changed
+      //   console.log nextProps.html
+      //   console.log @props.html 
+      //   console.log @editor.innerHTML 
+      //   console.log @lastInnerHTML
+      return changed;
+    }
  
-  componentWillUpdate: ->
-    # Save caret
-    @range = selection.save(@editor)
+    componentWillUpdate() {
+      // Save caret
+      return this.range = selection.save(this.editor);
+    }
     
-  componentDidMount: ->
-    if @editor
-      # Set inner html
-      @editor.innerHTML = @props.html
-      @lastInnerHTML = @editor.innerHTML
+    componentDidMount() {
+      if (this.editor) {
+        // Set inner html
+        this.editor.innerHTML = this.props.html;
+        return this.lastInnerHTML = this.editor.innerHTML;
+      }
+    }
 
-  componentDidUpdate: ->
-    if @editor
-      # Set inner html
-      @editor.innerHTML = @props.html
-      @lastInnerHTML = @editor.innerHTML
+    componentDidUpdate() {
+      if (this.editor) {
+        // Set inner html
+        this.editor.innerHTML = this.props.html;
+        this.lastInnerHTML = this.editor.innerHTML;
+      }
 
-    # Restore caret if still focused
-    if document.activeElement == @editor and @range
-      selection.restore(@editor, @range)
+      // Restore caret if still focused
+      if ((document.activeElement === this.editor) && this.range) {
+        return selection.restore(this.editor, this.range);
+      }
+    }
 
-  componentWillUnmount: ->
-    # Cancel timer
-    if @selSaver
-      clearTimeout @selSaver
-      @selSaver = null
+    componentWillUnmount() {
+      // Cancel timer
+      if (this.selSaver) {
+        clearTimeout(this.selSaver);
+        return this.selSaver = null;
+      }
+    }
 
-  render: ->
-    R 'div', 
-      contentEditable: true
-      spellCheck: true
-      ref: (c) => @editor = c
-      onClick: @props.onClick
-      style: @props.style
-      onInput: @handleInput
-      onFocus: @handleFocus
-      onBlur: @handleBlur
+    render() {
+      return R('div', { 
+        contentEditable: true,
+        spellCheck: true,
+        ref: c => { return this.editor = c; },
+        onClick: this.props.onClick,
+        style: this.props.style,
+        onInput: this.handleInput,
+        onFocus: this.handleFocus,
+        onBlur: this.handleBlur
+      }
+      );
+    }
+  };
+  ContentEditableComponent.initClass();
+  return ContentEditableComponent;
+})();
 
 
-# http://stackoverflow.com/questions/6690752/insert-html-at-caret-in-a-contenteditable-div
-# TODO selectPastedContent doesn't work
-pasteHtmlAtCaret = (html) ->
-  range = undefined
-  sel = window.getSelection()
+// http://stackoverflow.com/questions/6690752/insert-html-at-caret-in-a-contenteditable-div
+// TODO selectPastedContent doesn't work
+var pasteHtmlAtCaret = function(html) {
+  let range = undefined;
+  const sel = window.getSelection();
 
-  if sel.getRangeAt and sel.rangeCount
-    range = sel.getRangeAt(0)
-    range.deleteContents()
+  if (sel.getRangeAt && sel.rangeCount) {
+    range = sel.getRangeAt(0);
+    range.deleteContents();
 
-    # Create fragment to insert  
-    el = document.createElement('div')
-    el.innerHTML = html
-    frag = document.createDocumentFragment()
-    node = undefined
-    lastNode = undefined
-    while node = el.firstChild
-      lastNode = frag.appendChild(node)
-    firstNode = frag.firstChild
+    // Create fragment to insert  
+    const el = document.createElement('div');
+    el.innerHTML = html;
+    const frag = document.createDocumentFragment();
+    let node = undefined;
+    let lastNode = undefined;
+    while ((node = el.firstChild)) {
+      lastNode = frag.appendChild(node);
+    }
+    const firstNode = frag.firstChild;
 
-    range = range.cloneRange()
-    range.insertNode(frag)
-    range.collapse(true)
-    sel.removeAllRanges()
-    sel.addRange(range)
+    range = range.cloneRange();
+    range.insertNode(frag);
+    range.collapse(true);
+    sel.removeAllRanges();
+    return sel.addRange(range);
+  }
+};
 
-    # if selectPastedContent
-    #       range.setStartBefore firstNode
-    #     else
-    #       range.collapse true
+// if selectPastedContent
+//       range.setStartBefore firstNode
+//     else
+//       range.collapse true

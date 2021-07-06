@@ -1,119 +1,155 @@
-PropTypes = require('prop-types')
-_ = require 'lodash'
-React = require 'react'
-R = React.createElement
+let FilterExprComponent;
+import PropTypes from 'prop-types';
+import _ from 'lodash';
+import React from 'react';
+const R = React.createElement;
 
-update = require 'update-object'
-ExprCleaner = require("mwater-expressions").ExprCleaner
-ExprElementBuilder = require './ExprElementBuilder'
-StackedComponent = require './StackedComponent'
-RemovableComponent = require './RemovableComponent'
-ExprLinkComponent = require './ExprLinkComponent'
+import update from 'update-object';
+import { ExprCleaner } from "mwater-expressions";
+import ExprElementBuilder from './ExprElementBuilder';
+import StackedComponent from './StackedComponent';
+import RemovableComponent from './RemovableComponent';
+import ExprLinkComponent from './ExprLinkComponent';
 
-# Displays a boolean filter expression. Just shows "+ Add filter" (or other add label) when empty
-module.exports = class FilterExprComponent extends React.Component
-  @propTypes:
-    schema: PropTypes.object.isRequired
-    dataSource: PropTypes.object.isRequired # Data source to use to get values
-    variables: PropTypes.array
+// Displays a boolean filter expression. Just shows "+ Add filter" (or other add label) when empty
+export default FilterExprComponent = (function() {
+  FilterExprComponent = class FilterExprComponent extends React.Component {
+    static initClass() {
+      this.propTypes = {
+        schema: PropTypes.object.isRequired,
+        dataSource: PropTypes.object.isRequired, // Data source to use to get values
+        variables: PropTypes.array,
+  
+        table: PropTypes.string.isRequired, // Current table
+  
+        value: PropTypes.object,   // Current value
+        onChange: PropTypes.func,  // Called with new expression
+        addLabel: PropTypes.node  // Label for adding item. Default "+ Add Label"
+      };
+  
+      this.contextTypes =
+        {locale: PropTypes.string};  // e.g. "en"
+  
+      this.defaultProps = {
+        addLabel: "+ Add Filter",
+        variables: []
+      };
+    }
 
-    table: PropTypes.string.isRequired # Current table
+    constructor(props) {
+      this.handleAddFilter = this.handleAddFilter.bind(this);
+      this.handleChange = this.handleChange.bind(this);
+      this.handleAndChange = this.handleAndChange.bind(this);
+      this.handleAndRemove = this.handleAndRemove.bind(this);
+      this.handleRemove = this.handleRemove.bind(this);
+      super(props);
 
-    value: PropTypes.object   # Current value
-    onChange: PropTypes.func  # Called with new expression
-    addLabel: PropTypes.node  # Label for adding item. Default "+ Add Label"
+      this.state = { displayNull: false }; // Set true when initial null value should be displayed
+    }
 
-  @contextTypes:
-    locale: PropTypes.string  # e.g. "en"
+    // Handle add filter clicked by wrapping in "and" if existing, otherwise adding a null
+    handleAddFilter() {
+      // If already "and", add null
+      if (this.props.value && (this.props.value.op === "and")) {
+        this.props.onChange(update(this.props.value, {exprs: { $push: [null] }}));
+        return;
+      }
 
-  @defaultProps:
-    addLabel: "+ Add Filter"
-    variables: []
+      // If already has value, wrap in and
+      if (this.props.value) {
+        this.props.onChange({ type: "op", op: "and", table: this.props.table, exprs: [this.props.value, null] });
+        return;
+      }
 
-  constructor: (props) ->
-    super(props)
+      return this.setState({displayNull: true}, () => this.newExpr?.showModal());
+    }
 
-    @state = { displayNull: false } # Set true when initial null value should be displayed
+    // Clean expression and pass up
+    handleChange(expr) {
+      return this.props.onChange(this.cleanExpr(expr));
+    }
 
-  # Handle add filter clicked by wrapping in "and" if existing, otherwise adding a null
-  handleAddFilter: =>
-    # If already "and", add null
-    if @props.value and @props.value.op == "and"
-      @props.onChange(update(@props.value, exprs: { $push: [null] }))
-      return
+    // Cleans an expression
+    cleanExpr(expr) {
+      return new ExprCleaner(this.props.schema, this.props.variables).cleanExpr(expr, {
+        table: this.props.table,
+        types: ["boolean"]
+      });
+    }
 
-    # If already has value, wrap in and
-    if @props.value
-      @props.onChange({ type: "op", op: "and", table: @props.table, exprs: [@props.value, null] })
-      return
+    // Handle change to a single item
+    handleAndChange(i, expr) {
+      return this.handleChange(update(this.props.value, {exprs: { $splice: [[i, 1, expr]]}}));
+    }
 
-    @setState(displayNull: true, => @newExpr?.showModal())
+    handleAndRemove(i) {
+      return this.handleChange(update(this.props.value, {exprs: { $splice: [[i, 1]]}}));    
+    }
 
-  # Clean expression and pass up
-  handleChange: (expr) =>
-    @props.onChange(@cleanExpr(expr))
+    handleRemove() {
+      this.setState({displayNull: false});
+      return this.handleChange(null);    
+    }
 
-  # Cleans an expression
-  cleanExpr: (expr) ->
-    return new ExprCleaner(@props.schema, @props.variables).cleanExpr(expr, {
-      table: @props.table
-      types: ["boolean"]
-    })
+    renderAddFilter() {
+      return R('div', null, 
+        R('a', {onClick: this.handleAddFilter}, this.props.addLabel));
+    }
 
-  # Handle change to a single item
-  handleAndChange: (i, expr) =>
-    @handleChange(update(@props.value, exprs: { $splice: [[i, 1, expr]]}))
+    render() {
+      const expr = this.cleanExpr(this.props.value);
 
-  handleAndRemove: (i) =>
-    @handleChange(update(@props.value, exprs: { $splice: [[i, 1]]}))    
-
-  handleRemove: =>
-    @setState(displayNull: false)
-    @handleChange(null)    
-
-  renderAddFilter: ->
-    R 'div', null, 
-      R 'a', onClick: @handleAddFilter, @props.addLabel
-
-  render: ->
-    expr = @cleanExpr(@props.value)
-
-    # Render each item of and
-    if expr and expr.op == "and"
-      return R 'div', null,
-        R StackedComponent, 
-          joinLabel: "and"
-          items: _.map expr.exprs, (subexpr, i) =>
-            elem: new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale, @props.variables).build(subexpr, @props.table, (if @props.onChange then @handleAndChange.bind(null, i)), { 
-              types: ["boolean"]
-              preferLiteral: false
-              suppressWrapOps: ['and']   # Don't allow wrapping in and since this is an and control
+      // Render each item of and
+      if (expr && (expr.op === "and")) {
+        return R('div', null,
+          R(StackedComponent, { 
+            joinLabel: "and",
+            items: _.map(expr.exprs, (subexpr, i) => {
+              return {
+                elem: new ExprElementBuilder(this.props.schema, this.props.dataSource, this.context.locale, this.props.variables).build(subexpr, this.props.table, (this.props.onChange ? this.handleAndChange.bind(null, i) : undefined), { 
+                  types: ["boolean"],
+                  preferLiteral: false,
+                  suppressWrapOps: ['and']   // Don't allow wrapping in and since this is an and control
+                }),
+                onRemove: this.props.onChange ? this.handleAndRemove.bind(null, i) : undefined
+              };
             })
-            onRemove: if @props.onChange then @handleAndRemove.bind(null, i)
+          }
+          ),
 
-        # Only display add if last item is not null
-        if _.last(expr.exprs) != null and @props.onChange
-          @renderAddFilter()
+          // Only display add if last item is not null
+          (_.last(expr.exprs) !== null) && this.props.onChange ?
+            this.renderAddFilter() : undefined
+        );
 
-    else if expr 
-      return R 'div', null,
-        R RemovableComponent, 
-          onRemove: if @props.onChange then @handleRemove,
-          new ExprElementBuilder(@props.schema, @props.dataSource, @context.locale, @props.variables).build(expr, @props.table, (if @props.onChange then @handleChange), { 
-            types: ["boolean"]
-            preferLiteral: false
-            suppressWrapOps: ['and']  # Don't allow wrapping in and since this is an and control
-          })
+      } else if (expr) { 
+        return R('div', null,
+          R(RemovableComponent, 
+            {onRemove: this.props.onChange ? this.handleRemove : undefined},
+            new ExprElementBuilder(this.props.schema, this.props.dataSource, this.context.locale, this.props.variables).build(expr, this.props.table, (this.props.onChange ? this.handleChange : undefined), { 
+              types: ["boolean"],
+              preferLiteral: false,
+              suppressWrapOps: ['and']  // Don't allow wrapping in and since this is an and control
+            })
+          ),
 
-        # Only display add if has a value
-        @renderAddFilter()
-    else if @state.displayNull
-      R ExprLinkComponent, 
-        ref: (c) => @newExpr = c
-        schema: @props.schema
-        dataSource: @props.dataSource
-        variables: @props.variables
-        table: @props.table
-        onChange: if @props.onChange then @handleChange
-    else
-      @renderAddFilter()
+          // Only display add if has a value
+          this.renderAddFilter());
+      } else if (this.state.displayNull) {
+        return R(ExprLinkComponent, { 
+          ref: c => { return this.newExpr = c; },
+          schema: this.props.schema,
+          dataSource: this.props.dataSource,
+          variables: this.props.variables,
+          table: this.props.table,
+          onChange: this.props.onChange ? this.handleChange : undefined
+        }
+        );
+      } else {
+        return this.renderAddFilter();
+      }
+    }
+  };
+  FilterExprComponent.initClass();
+  return FilterExprComponent;
+})();

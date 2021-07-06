@@ -1,124 +1,151 @@
-PropTypes = require('prop-types')
-_ = require 'lodash'
-React = require 'react'
-R = React.createElement
+let SelectExprModalComponent;
+import PropTypes from 'prop-types';
+import _ from 'lodash';
+import React from 'react';
+const R = React.createElement;
 
-ExprUtils = require("mwater-expressions").ExprUtils
-ModalWindowComponent = require('react-library/lib/ModalWindowComponent')
-TabbedComponent = require('react-library/lib/TabbedComponent')
+import { ExprUtils } from "mwater-expressions";
+import ModalWindowComponent from 'react-library/lib/ModalWindowComponent';
+import TabbedComponent from 'react-library/lib/TabbedComponent';
+import SelectFieldExprComponent from './SelectFieldExprComponent';
+import SelectFormulaExprComponent from './SelectFormulaExprComponent';
+import SelectLiteralExprComponent from './SelectLiteralExprComponent';
+import SelectVariableExprComponent from './SelectVariableExprComponent';
 
-SelectFieldExprComponent = require './SelectFieldExprComponent'
-SelectFormulaExprComponent = require './SelectFormulaExprComponent'
-SelectLiteralExprComponent = require './SelectLiteralExprComponent'
-SelectVariableExprComponent = require './SelectVariableExprComponent'
+export default SelectExprModalComponent = (function() {
+  SelectExprModalComponent = class SelectExprModalComponent extends React.Component {
+    static initClass() {
+      this.propTypes = {
+        onSelect: PropTypes.func.isRequired, // Called with new expression
+        onCancel: PropTypes.func.isRequired, // Modal was cancelled
+  
+        schema: PropTypes.object.isRequired,
+        dataSource: PropTypes.object.isRequired, // Data source to use to get values
+        variables: PropTypes.array.isRequired,
+  
+        table: PropTypes.string,   // Current table. If none, then literal-only
+        value: PropTypes.object,   // Current expression value
+  
+        // Props to narrow down choices
+        types: PropTypes.array,    // If specified, the types (value type) of expression required. e.g. ["boolean"]
+        enumValues: PropTypes.array, // Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
+        idTable: PropTypes.string, // If specified the table from which id-type expressions must come
+        initialMode: PropTypes.oneOf(['field', 'formula', 'literal']), // Initial mode. Default "field" unless no table, then "literal"
+        allowCase: PropTypes.bool,    // Allow case statements
+        aggrStatuses: PropTypes.array, // statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
+        refExpr: PropTypes.object,     // expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
+        booleanOnly: PropTypes.bool,   // Hint that must be boolean (even though boolean can take any type)
+  
+        placeholder: PropTypes.string // Placeholder text (default Select...)
+      };
+   
+      this.contextTypes =
+        {locale: PropTypes.string};  // e.g. "en"
+  
+      this.defaultProps = {
+        placeholder: "Select...",
+        initialMode: "field",
+        aggrStatuses: ['individual', 'literal']
+      };
+    }
 
-module.exports = class SelectExprModalComponent extends React.Component
-  @propTypes:
-    onSelect: PropTypes.func.isRequired # Called with new expression
-    onCancel: PropTypes.func.isRequired # Modal was cancelled
+    renderContents() {
+      const table = this.props.table ? this.props.schema.getTable(this.props.table) : undefined;
 
-    schema: PropTypes.object.isRequired
-    dataSource: PropTypes.object.isRequired # Data source to use to get values
-    variables: PropTypes.array.isRequired
+      const tabs = [];
 
-    table: PropTypes.string   # Current table. If none, then literal-only
-    value: PropTypes.object   # Current expression value
+      if (table) {
+        tabs.push({
+          id: "field",
+          label: [R('i', {className: "fa fa-table"}), ` ${ExprUtils.localizeString(table.name, this.context.locale)} Field`],
+          elem: R(SelectFieldExprComponent, {
+            schema: this.props.schema,
+            dataSource: this.props.dataSource,
+            variables: this.props.variables,
+            onChange: this.props.onSelect,
+            table: this.props.table,
+            types: this.props.types,
+            allowCase: this.props.allowCase,
+            enumValues: this.props.enumValues,
+            idTable: this.props.idTable,
+            aggrStatuses: this.props.aggrStatuses
+          }
+          )
+        });
+      }
 
-    # Props to narrow down choices
-    types: PropTypes.array    # If specified, the types (value type) of expression required. e.g. ["boolean"]
-    enumValues: PropTypes.array # Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
-    idTable: PropTypes.string # If specified the table from which id-type expressions must come
-    initialMode: PropTypes.oneOf(['field', 'formula', 'literal']) # Initial mode. Default "field" unless no table, then "literal"
-    allowCase: PropTypes.bool    # Allow case statements
-    aggrStatuses: PropTypes.array # statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
-    refExpr: PropTypes.object     # expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
-    booleanOnly: PropTypes.bool   # Hint that must be boolean (even though boolean can take any type)
+      if (table || this.props.aggrStatuses.includes("literal")) {
+        tabs.push({
+          id: "formula",
+          label: [R('i', {className: "fa fa-calculator"}), " Formula"],
+          elem: R(SelectFormulaExprComponent, {
+            table: this.props.table,
+            onChange: this.props.onSelect,
+            types: this.props.types,
+            allowCase: this.props.allowCase,
+            aggrStatuses: this.props.aggrStatuses,
+            enumValues: this.props.enumValues,
+            locale: this.context.locale
+          }
+          )
+        });
+      }
 
-    placeholder: PropTypes.string # Placeholder text (default Select...)
- 
-  @contextTypes:
-    locale: PropTypes.string  # e.g. "en"
+      if (this.props.aggrStatuses.includes("literal")) {
+        tabs.push({
+          id: "literal",
+          label: [R('i', {className: "fa fa-pencil"}), " Value"],
+          elem: R(SelectLiteralExprComponent, {
+            value: this.props.value,
+            onChange: this.props.onSelect,
+            onCancel: this.props.onCancel,
+            schema: this.props.schema,
+            dataSource: this.props.dataSource,
+            types: this.props.booleanOnly ? ["boolean"] : this.props.types,
+            enumValues: this.props.enumValues,
+            idTable: this.props.idTable,
+            refExpr: this.props.refExpr
+          }
+          )
+        });
+      }
 
-  @defaultProps:
-    placeholder: "Select..."
-    initialMode: "field"
-    aggrStatuses: ['individual', 'literal']
+      if ((this.props.variables || []).length > 0) {
+        tabs.push({
+          id: "variables",
+          label: ["Variables"],
+          elem: R(SelectVariableExprComponent, {
+            value: this.props.value,
+            variables: this.props.variables,
+            onChange: this.props.onSelect,
+            types: this.props.types,
+            enumValues: this.props.enumValues,
+            idTable: this.props.idTable
+          }
+          )
+        });
+      }
 
-  renderContents: ->
-    table = if @props.table then @props.schema.getTable(@props.table)
+      return R('div', null,
+        R('h3', {style: { marginTop: 0 }}, "Select Field, Formula or Value"),
+        R(TabbedComponent, {
+          tabs,
+          initialTabId: table ? this.props.initialMode : "literal"
+        }
+        )
+      );
+    }
 
-    tabs = []
-
-    if table
-      tabs.push({
-        id: "field"
-        label: [R('i', className: "fa fa-table"), " #{ExprUtils.localizeString(table.name, @context.locale)} Field"]
-        elem: R SelectFieldExprComponent,
-          schema: @props.schema
-          dataSource: @props.dataSource
-          variables: @props.variables
-          onChange: @props.onSelect
-          table: @props.table
-          types: @props.types
-          allowCase: @props.allowCase
-          enumValues: @props.enumValues
-          idTable: @props.idTable
-          aggrStatuses: @props.aggrStatuses
-      })
-
-    if table or "literal" in @props.aggrStatuses
-      tabs.push({
-        id: "formula"
-        label: [R('i', className: "fa fa-calculator"), " Formula"]
-        elem: R SelectFormulaExprComponent,
-          table: @props.table
-          onChange: @props.onSelect
-          types: @props.types
-          allowCase: @props.allowCase
-          aggrStatuses: @props.aggrStatuses
-          enumValues: @props.enumValues
-          locale: @context.locale
-      })
-
-    if "literal" in @props.aggrStatuses
-      tabs.push({
-        id: "literal"
-        label: [R('i', className: "fa fa-pencil"), " Value"]
-        elem: R SelectLiteralExprComponent,
-          value: @props.value
-          onChange: @props.onSelect
-          onCancel: @props.onCancel
-          schema: @props.schema
-          dataSource: @props.dataSource
-          types: if @props.booleanOnly then ["boolean"] else @props.types
-          enumValues: @props.enumValues
-          idTable: @props.idTable
-          refExpr: @props.refExpr
-      })
-
-    if (@props.variables or []).length > 0
-      tabs.push({
-        id: "variables"
-        label: ["Variables"]
-        elem: R SelectVariableExprComponent,
-          value: @props.value
-          variables: @props.variables
-          onChange: @props.onSelect
-          types: @props.types
-          enumValues: @props.enumValues
-          idTable: @props.idTable
-      })
-
-    R 'div', null,
-      R 'h3', style: { marginTop: 0 }, "Select Field, Formula or Value"
-      R TabbedComponent,
-        tabs: tabs
-        initialTabId: if table then @props.initialMode else "literal"
-
-  render: ->
-    R ModalWindowComponent, 
-      isOpen: true
-      onRequestClose: @props.onCancel,
-        @renderContents()
+    render() {
+      return R(ModalWindowComponent, { 
+        isOpen: true,
+        onRequestClose: this.props.onCancel
+      },
+          this.renderContents());
+    }
+  };
+  SelectExprModalComponent.initClass();
+  return SelectExprModalComponent;
+})();
 
   

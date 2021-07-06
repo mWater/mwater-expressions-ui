@@ -1,184 +1,245 @@
-_ = require 'lodash'
-PropTypes = require('prop-types')
-React = require 'react'
-R = React.createElement
-uuid = require 'uuid'
+import _ from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
+const R = React.createElement;
+import uuid from 'uuid';
 
-# A wrapper for nested list for property editor
-#  
-# The problem with nested list is that the the item component will need to render the list component
-# passing back all the required props. Also, the events in the nensted list would need to 
-# be propagated back to the all the parent nodes.  
-#
-# What this HOC does is to wrap the outermost list node, which will eventually handle the cut/copy/paste
-# operation for the entire tree, so the children and nested nodes will just get the 
-# cut/copy/paste handlers provided by this one.
-# 
-# Also exposes a clipboard context, which can be accessed by the child nodes.
-#
-module.exports = (WrappedComponent) ->
-  return class NestedListClipboardEnhancement extends React.Component
-    @childContextTypes:
-      clipboard: PropTypes.object # Clipboard accessible to the children
+// A wrapper for nested list for property editor
+//  
+// The problem with nested list is that the the item component will need to render the list component
+// passing back all the required props. Also, the events in the nensted list would need to 
+// be propagated back to the all the parent nodes.  
+//
+// What this HOC does is to wrap the outermost list node, which will eventually handle the cut/copy/paste
+// operation for the entire tree, so the children and nested nodes will just get the 
+// cut/copy/paste handlers provided by this one.
+// 
+// Also exposes a clipboard context, which can be accessed by the child nodes.
+//
+export default function(WrappedComponent) {
+  let NestedListClipboardEnhancement;
+  return NestedListClipboardEnhancement = (function() {
+    NestedListClipboardEnhancement = class NestedListClipboardEnhancement extends React.Component {
+      static initClass() {
+        this.childContextTypes =
+          {clipboard: PropTypes.object};
+         // Clipboard accessible to the children
+      }
     
-    constructor: (props) ->
-      super(props)
-      @state = {
-        clipboard: null
+      constructor(props) {
+        this.handleCut = this.handleCut.bind(this);
+        this.findItemById = this.findItemById.bind(this);
+        this.handleCopy = this.handleCopy.bind(this);
+        this.handlePasteInto = this.handlePasteInto.bind(this);
+        this.cut = this.cut.bind(this);
+        this.paste = this.paste.bind(this);
+        this.handlePaste = this.handlePaste.bind(this);
+        this.getChildContext = this.getChildContext.bind(this);
+        super(props);
+        this.state = {
+          clipboard: null
+        };
       }
       
-    handleCut: (listId, itemId) =>
-      @handleCopy(listId, itemId, true)
+      handleCut(listId, itemId) {
+        return this.handleCopy(listId, itemId, true);
+      }
       
-    findItemById: (listId, itemId) =>
-      value = _.cloneDeep @props.properties
-      list = _.find value, { id: itemId }
+      findItemById(listId, itemId) {
+        const value = _.cloneDeep(this.props.properties);
+        const list = _.find(value, { id: itemId });
       
-      if list # check in the root array first
-        return list
+        if (list) { // check in the root array first
+          return list;
+        }
       
-      found = null  
-      find = (listId, itemId, items) ->  
-        for property in items
-          if property.id == listId
-            return _.find property.contents, { id: itemId }
-          else
-            found = find(listId, itemId, (_.filter property.contents, {type: "section"})) 
-            if found 
-              return found
+        let found = null;  
+        var find = function(listId, itemId, items) {  
+          for (let property of items) {
+            if (property.id === listId) {
+              return _.find(property.contents, { id: itemId });
+            } else {
+              found = find(listId, itemId, (_.filter(property.contents, {type: "section"}))); 
+              if (found) { 
+                return found;
+              }
+            }
+          }
+        };
             
-      # if not root then only iterate through section type properties
-      return find(listId, itemId, (_.filter value, {type: "section"}))
-    
-    handleCopy: (listId, itemId, cut = false) =>
-      property = @findItemById(listId, itemId)
-
-      # Only change id if copy
-      if not cut
-        # Id is used as key, so the id needs to be regenerated
-        if @props.propertyIdGenerator
-          property.id = @props.propertyIdGenerator()
-        else 
-          property.id = uuid.v4().split("-")[0]
-      
-      @setState(clipboard: {
-        listId: listId
-        itemId: itemId
-        property: property
-        cut: cut
-      })
-      
-    handlePasteInto: (listId, itemId) =>
-      if not @state.clipboard
-        return
-        
-      value = _.cloneDeep @props.properties
-      didPaste = false
-      didCut = false
-      
-      if @state.clipboard.cut
-        cutIndex = _.findIndex value, { id: @state.clipboard.itemId }
-        
-        if cutIndex > -1
-          _.pullAt value, cutIndex
-          didCut = true
-        else 
-          didCut = @cut(@state.clipboard.listId, @state.clipboard.itemId, (_.filter value, {type: "section"}))
-          
-      pasteIndex = _.findIndex value, { id: itemId } # check in the root array first
-      if pasteIndex > -1
-        if not value[pasteIndex].contents
-          value[pasteIndex].contents = []
-        value[pasteIndex].contents.push(@state.clipboard.property)
-        didPaste = true
-      else
-        pasteInto = (listId, itemId, items) =>
-          for property in items
-            if property.id == listId
-              pasteIndex = _.findIndex property.contents, { id: itemId }
-              if not property.contents[pasteIndex].contents
-                property.contents[pasteIndex].contents = []
-              property.contents[pasteIndex].contents.push(@state.clipboard.property)
-              didPaste = true
-            else 
-              didPaste = pasteInto(listId, itemId, (_.filter property.contents, {type: "section"}))
-        pasteInto(listId, itemId, (_.filter value, {type: "section"}))
-      
-      # Dont update state untill all required operations are successfull
-      # Required to avoid the conditions where user would cut and copy an item into its own children
-      if didPaste
-        if @state.clipboard.cut and not didCut
-          return
-          
-        @setState(clipboard: null)
-        @props.onChange(value)
-        
-        
-    cut: (listId, itemId, items) =>
-      didCut = false
-      for property in items
-        if property.id == listId
-          cutIndex = _.findIndex property.contents, { id: @state.clipboard.itemId }
-          _.pullAt property.contents, cutIndex
-          didCut = true
-        else 
-          didCut = @cut(listId, itemId, (_.filter property.contents, {type: "section"}))
-      return didCut
-          
-    paste: (listId, itemId, items) =>
-      didPaste = false
-      for property in items
-        if property.id == listId
-          pasteIndex = _.findIndex property.contents, { id: itemId }
-          property.contents.splice(pasteIndex, 0, @state.clipboard.property)
-          didPaste = true
-        else 
-          didPaste = @paste(listId, itemId, (_.filter property.contents, {type: "section"}))
-      return didPaste
-          
-    handlePaste: (listId, itemId) =>
-      if not @state.clipboard
-        return
-        
-      value = _.cloneDeep @props.properties
-      
-      didPaste = false
-      didCut = false
-      
-      if @state.clipboard.cut
-        cutIndex = _.findIndex value, { id: @state.clipboard.itemId }
-        if cutIndex > -1
-          _.pullAt value, cutIndex
-          didCut = true
-        else 
-          didCut = @cut(@state.clipboard.listId, @state.clipboard.itemId, (_.filter value, {type: "section"}))
-      
-      pasteIndex = _.findIndex value, { id: itemId } # check in the root array first
-      if pasteIndex > -1
-        value.splice(pasteIndex, 0, @state.clipboard.property)
-        didPaste = true
-      else
-        didPaste = @paste(listId, itemId, (_.filter value, {type: "section"}))
-      
-      # Dont update state untill all required operations are successfull
-      # Required to avoid the conditions where user would cut and copy an item into its own children
-      if didPaste
-        if @state.clipboard.cut and not didCut
-          return
-          
-        @setState(clipboard: null)
-        @props.onChange(value)
-    
-    getChildContext: =>
-      return {
-        clipboard: @state.clipboard
+        // if not root then only iterate through section type properties
+        return find(listId, itemId, (_.filter(value, {type: "section"})));
       }
     
-    render: ->
-      newProps = 
-        onCut: @handleCut
-        onCopy: @handleCopy
-        onPaste: @handlePaste
-        onPasteInto: @handlePasteInto
-      # Inject cut/copy/paste/pasteInto handlers and render the outermost list component
-      R WrappedComponent, _.assign({}, @props, newProps)
+      handleCopy(listId, itemId, cut = false) {
+        const property = this.findItemById(listId, itemId);
+
+        // Only change id if copy
+        if (!cut) {
+          // Id is used as key, so the id needs to be regenerated
+          if (this.props.propertyIdGenerator) {
+            property.id = this.props.propertyIdGenerator();
+          } else { 
+            property.id = uuid.v4().split("-")[0];
+          }
+        }
+      
+        return this.setState({clipboard: {
+          listId,
+          itemId,
+          property,
+          cut
+        }});
+      }
+      
+      handlePasteInto(listId, itemId) {
+        if (!this.state.clipboard) {
+          return;
+        }
+        
+        const value = _.cloneDeep(this.props.properties);
+        let didPaste = false;
+        let didCut = false;
+      
+        if (this.state.clipboard.cut) {
+          const cutIndex = _.findIndex(value, { id: this.state.clipboard.itemId });
+        
+          if (cutIndex > -1) {
+            _.pullAt(value, cutIndex);
+            didCut = true;
+          } else { 
+            didCut = this.cut(this.state.clipboard.listId, this.state.clipboard.itemId, (_.filter(value, {type: "section"})));
+          }
+        }
+          
+        let pasteIndex = _.findIndex(value, { id: itemId }); // check in the root array first
+        if (pasteIndex > -1) {
+          if (!value[pasteIndex].contents) {
+            value[pasteIndex].contents = [];
+          }
+          value[pasteIndex].contents.push(this.state.clipboard.property);
+          didPaste = true;
+        } else {
+          var pasteInto = (listId, itemId, items) => {
+            return (() => {
+              const result = [];
+              for (let property of items) {
+                if (property.id === listId) {
+                  pasteIndex = _.findIndex(property.contents, { id: itemId });
+                  if (!property.contents[pasteIndex].contents) {
+                    property.contents[pasteIndex].contents = [];
+                  }
+                  property.contents[pasteIndex].contents.push(this.state.clipboard.property);
+                  result.push(didPaste = true);
+                } else { 
+                  result.push(didPaste = pasteInto(listId, itemId, (_.filter(property.contents, {type: "section"}))));
+                }
+              }
+              return result;
+            })();
+          };
+          pasteInto(listId, itemId, (_.filter(value, {type: "section"})));
+        }
+      
+        // Dont update state untill all required operations are successfull
+        // Required to avoid the conditions where user would cut and copy an item into its own children
+        if (didPaste) {
+          if (this.state.clipboard.cut && !didCut) {
+            return;
+          }
+          
+          this.setState({clipboard: null});
+          return this.props.onChange(value);
+        }
+      }
+        
+        
+      cut(listId, itemId, items) {
+        let didCut = false;
+        for (let property of items) {
+          if (property.id === listId) {
+            const cutIndex = _.findIndex(property.contents, { id: this.state.clipboard.itemId });
+            _.pullAt(property.contents, cutIndex);
+            didCut = true;
+          } else { 
+            didCut = this.cut(listId, itemId, (_.filter(property.contents, {type: "section"})));
+          }
+        }
+        return didCut;
+      }
+          
+      paste(listId, itemId, items) {
+        let didPaste = false;
+        for (let property of items) {
+          if (property.id === listId) {
+            const pasteIndex = _.findIndex(property.contents, { id: itemId });
+            property.contents.splice(pasteIndex, 0, this.state.clipboard.property);
+            didPaste = true;
+          } else { 
+            didPaste = this.paste(listId, itemId, (_.filter(property.contents, {type: "section"})));
+          }
+        }
+        return didPaste;
+      }
+          
+      handlePaste(listId, itemId) {
+        if (!this.state.clipboard) {
+          return;
+        }
+        
+        const value = _.cloneDeep(this.props.properties);
+      
+        let didPaste = false;
+        let didCut = false;
+      
+        if (this.state.clipboard.cut) {
+          const cutIndex = _.findIndex(value, { id: this.state.clipboard.itemId });
+          if (cutIndex > -1) {
+            _.pullAt(value, cutIndex);
+            didCut = true;
+          } else { 
+            didCut = this.cut(this.state.clipboard.listId, this.state.clipboard.itemId, (_.filter(value, {type: "section"})));
+          }
+        }
+      
+        const pasteIndex = _.findIndex(value, { id: itemId }); // check in the root array first
+        if (pasteIndex > -1) {
+          value.splice(pasteIndex, 0, this.state.clipboard.property);
+          didPaste = true;
+        } else {
+          didPaste = this.paste(listId, itemId, (_.filter(value, {type: "section"})));
+        }
+      
+        // Dont update state untill all required operations are successfull
+        // Required to avoid the conditions where user would cut and copy an item into its own children
+        if (didPaste) {
+          if (this.state.clipboard.cut && !didCut) {
+            return;
+          }
+          
+          this.setState({clipboard: null});
+          return this.props.onChange(value);
+        }
+      }
+    
+      getChildContext() {
+        return {
+          clipboard: this.state.clipboard
+        };
+      }
+    
+      render() {
+        const newProps = { 
+          onCut: this.handleCut,
+          onCopy: this.handleCopy,
+          onPaste: this.handlePaste,
+          onPasteInto: this.handlePasteInto
+        };
+        // Inject cut/copy/paste/pasteInto handlers and render the outermost list component
+        return R(WrappedComponent, _.assign({}, this.props, newProps));
+      }
+    };
+    NestedListClipboardEnhancement.initClass();
+    return NestedListClipboardEnhancement;
+  })();
+};

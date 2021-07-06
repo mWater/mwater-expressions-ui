@@ -1,147 +1,208 @@
-_ = require 'lodash'
-PropTypes = require('prop-types')
-React = require 'react'
-ReactDOM = require 'react-dom'
-R = React.createElement
+let ScalarExprTreeComponent;
+import _ from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
+import ReactDOM from 'react-dom';
+const R = React.createElement;
 
-# Shows a tree that selects table + joins + expr of a scalar expression
-# Supports some React context properties for special. See individual classes
-module.exports = class ScalarExprTreeComponent extends React.Component 
-  @propTypes: 
-    tree: PropTypes.array.isRequired    # Tree from ScalarExprTreeBuilder
-    onChange: PropTypes.func.isRequired # Called with newly selected value
-    height: PropTypes.number            # Render height of the component
-    filter: PropTypes.string            # Optional string filter 
+// Shows a tree that selects table + joins + expr of a scalar expression
+// Supports some React context properties for special. See individual classes
+export default ScalarExprTreeComponent = (function() {
+  ScalarExprTreeComponent = class ScalarExprTreeComponent extends React.Component {
+    static initClass() { 
+      this.propTypes = { 
+        tree: PropTypes.array.isRequired,    // Tree from ScalarExprTreeBuilder
+        onChange: PropTypes.func.isRequired, // Called with newly selected value
+        height: PropTypes.number,            // Render height of the component
+        filter: PropTypes.string
+      };
+                  // Optional string filter 
+    }
 
-  render: ->
-    R 'div', style: { overflowY: (if @props.height then "auto"), height: @props.height },
-      R(ScalarExprTreeTreeComponent,
-        tree: @props.tree,
-        onChange: @props.onChange
-        filter: @props.filter
-      )
+    render() {
+      return R('div', {style: { overflowY: (this.props.height ? "auto" : undefined), height: this.props.height }},
+        R(ScalarExprTreeTreeComponent, {
+          tree: this.props.tree,
+          onChange: this.props.onChange,
+          filter: this.props.filter
+        }
+        )
+      );
+    }
+  };
+  ScalarExprTreeComponent.initClass();
+  return ScalarExprTreeComponent;
+})();
 
-class ScalarExprTreeTreeComponent extends React.Component
-  @propTypes:
-    tree: PropTypes.array.isRequired    # Tree from ScalarExprTreeBuilder
-    onChange: PropTypes.func.isRequired # Called with newly selected value
-    prefix: PropTypes.string            # String to prefix names with
-    filter: PropTypes.string            # Optional string filter 
+class ScalarExprTreeTreeComponent extends React.Component {
+  static initClass() {
+    this.propTypes = {
+      tree: PropTypes.array.isRequired,    // Tree from ScalarExprTreeBuilder
+      onChange: PropTypes.func.isRequired, // Called with newly selected value
+      prefix: PropTypes.string,            // String to prefix names with
+      filter: PropTypes.string
+    };
+                // Optional string filter 
+  }
 
-  render: ->
-    elems = []
-    # Get tree
-    for item, i in @props.tree
-      if item.children
+  render() {
+    const elems = [];
+    // Get tree
+    for (let i = 0; i < this.props.tree.length; i++) {
+      const item = this.props.tree[i];
+      if (item.children) {
         elems.push(
-          R(ScalarExprTreeNodeComponent, key: item.key, item: item, prefix: @props.prefix, onChange: @props.onChange, filter: @props.filter))
-      else 
+          R(ScalarExprTreeNodeComponent, {key: item.key, item, prefix: this.props.prefix, onChange: this.props.onChange, filter: this.props.filter}));
+      } else { 
         elems.push(
-          R(ScalarExprTreeLeafComponent, key: item.key, item: item, prefix: @props.prefix, onChange: @props.onChange))
+          R(ScalarExprTreeLeafComponent, {key: item.key, item, prefix: this.props.prefix, onChange: this.props.onChange}));
+      }
+    }
 
-    R 'div', null, 
-      elems
+    return R('div', null, 
+      elems);
+  }
+}
+ScalarExprTreeTreeComponent.initClass();
 
-class ScalarExprTreeLeafComponent extends React.Component
-  @propTypes:
-    item: PropTypes.object.isRequired # Contains item "name" and "value"
-    prefix: PropTypes.string            # String to prefix names with
+class ScalarExprTreeLeafComponent extends React.Component {
+  constructor(...args) {
+    super(...args);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  static initClass() {
+    this.propTypes = {
+      item: PropTypes.object.isRequired, // Contains item "name" and "value"
+      prefix: PropTypes.string
+    };
+                // String to prefix names with
+  }
   
-  handleClick: =>
-    @props.onChange(@props.item.value)
+  handleClick() {
+    return this.props.onChange(this.props.item.value);
+  }
 
-  render: ->
-    style = {
-      padding: 4
-      borderRadius: 4
-      cursor: "pointer"
+  render() {
+    const style = {
+      padding: 4,
+      borderRadius: 4,
+      cursor: "pointer",
       color: "#478"
+    };
+
+    return R('div', {style, className: "hover-grey-background", onClick: this.handleClick, "data-key": this.props.item.key},
+      this.props.prefix ?
+        R('span', {className: "text-muted"}, this.props.prefix) : undefined,
+      this.props.item.name,
+      this.props.item.desc ?
+        R('span', {className: "text-muted", style: { fontSize: 12, paddingLeft: 3 }}, " - " + this.props.item.desc) : undefined
+    );
+  }
+}
+ScalarExprTreeLeafComponent.initClass();
+
+class ScalarExprTreeNodeComponent extends React.Component {
+  static initClass() {
+    this.propTypes = {
+      item: PropTypes.object.isRequired, // Item to display
+      onChange: PropTypes.func.isRequired, // Called when item is selected
+      filter: PropTypes.string            // Optional string filter 
+    };
+  
+    this.contextTypes =
+      // Function to decorate the children component of a section. Passed { children: React element of children, tableId: id of table, section: section object from schema, filter: optional string filter }
+      // Should return decorated element
+      {decorateScalarExprTreeSectionChildren: PropTypes.func}; 
+  }
+
+  constructor(props) {
+    this.handleArrowClick = this.handleArrowClick.bind(this);
+    this.handleItemClick = this.handleItemClick.bind(this);
+    super(props);
+    this.state = { 
+      collapse: this.props.item.initiallyOpen ? "open" : "closed" 
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // If initially open changed, then update collapse
+    if (nextProps.item.initiallyOpen !== this.props.item.initiallyOpen) {
+      return this.setState({collapse: nextProps.item.initiallyOpen ? "open" : "closed"}); 
+    }
+  }
+
+  handleArrowClick() {
+    if (this.state.collapse === "open") { 
+      return this.setState({collapse: "closed"});
+    } else if (this.state.collapse === "closed") { 
+      return this.setState({collapse: "open"});
+    }
+  }
+
+  handleItemClick() {
+    // If no value, treat as arrow click
+    if (!this.props.item.value) {
+      return this.handleArrowClick();
+    } else {
+      return this.props.onChange(this.props.item.value);      
+    }
+  }
+
+  render() {
+    let children, prefix;
+    let arrow = null;
+    if (this.state.collapse === "closed") {
+      arrow = R('i', {className: "fa fa-plus-square-o", style: { width: 15 }});
+    } else if (this.state.collapse === "open") {
+      arrow = R('i', {className: "fa fa-minus-square-o", style: { width: 15 }});
     }
 
-    R 'div', style: style, className: "hover-grey-background", onClick: @handleClick, "data-key": @props.item.key,
-      if @props.prefix
-        R 'span', className: "text-muted", @props.prefix
-      @props.item.name
-      if @props.item.desc
-        R 'span', className: "text-muted", style: { fontSize: 12, paddingLeft: 3 }, " - " + @props.item.desc
+    if (this.state.collapse === "open") {
+      // Compute new prefix, adding when going into joins
+      prefix = this.props.prefix || "";
+      if (this.props.item.item.type === "join") {
+        prefix = prefix + this.props.item.name + " > ";
+      }
 
-class ScalarExprTreeNodeComponent extends React.Component
-  @propTypes:
-    item: PropTypes.object.isRequired # Item to display
-    onChange: PropTypes.func.isRequired # Called when item is selected
-    filter: PropTypes.string            # Optional string filter 
+      // Render child items
+      const childItems = this.props.item.children();
 
-  @contextTypes:
-    # Function to decorate the children component of a section. Passed { children: React element of children, tableId: id of table, section: section object from schema, filter: optional string filter }
-    # Should return decorated element
-    decorateScalarExprTreeSectionChildren: PropTypes.func 
+      children = _.map(childItems, item => {
+        if (item.children) {
+          return R(ScalarExprTreeNodeComponent, {key: item.key, item, prefix, onChange: this.props.onChange, filter: this.props.filter});
+        } else { 
+          return R(ScalarExprTreeLeafComponent, {key: item.key, item, prefix, onChange: this.props.onChange});
+        }
+      });
 
-  constructor: (props) ->
-    super(props)
-    @state = { 
-      collapse: if @props.item.initiallyOpen then "open" else "closed" 
+      // Decorate children if section
+      if (this.context.decorateScalarExprTreeSectionChildren && (this.props.item.item.type === "section")) {
+        children = this.context.decorateScalarExprTreeSectionChildren({ children, tableId: this.props.item.tableId, section: this.props.item.item, filter: this.props.filter });
+      }
+
+      // Pad left and give key
+      children = R('div', {style: { paddingLeft: 18 }, key: "tree"},
+        children);
     }
 
-  componentWillReceiveProps: (nextProps) ->
-    # If initially open changed, then update collapse
-    if nextProps.item.initiallyOpen != @props.item.initiallyOpen
-      @setState(collapse: if nextProps.item.initiallyOpen then "open" else "closed") 
+    const color = this.props.item.value ? "#478" : undefined; 
 
-  handleArrowClick: =>
-    if @state.collapse == "open" 
-      @setState(collapse: "closed")
-    else if @state.collapse == "closed" 
-      @setState(collapse: "open")
-
-  handleItemClick: =>
-    # If no value, treat as arrow click
-    if not @props.item.value
-      @handleArrowClick()
-    else
-      @props.onChange(@props.item.value)      
-
-  render: ->
-    arrow = null
-    if @state.collapse == "closed"
-      arrow = R 'i', className: "fa fa-plus-square-o", style: { width: 15 }
-    else if @state.collapse == "open"
-      arrow = R 'i', className: "fa fa-minus-square-o", style: { width: 15 }
-
-    if @state.collapse == "open"
-      # Compute new prefix, adding when going into joins
-      prefix = @props.prefix or ""
-      if @props.item.item.type == "join"
-        prefix = prefix + @props.item.name + " > "
-
-      # Render child items
-      childItems = @props.item.children()
-
-      children = _.map childItems, (item) =>
-        if item.children
-          R ScalarExprTreeNodeComponent, key: item.key, item: item, prefix: prefix, onChange: @props.onChange, filter: @props.filter
-        else 
-          R ScalarExprTreeLeafComponent, key: item.key, item: item, prefix: prefix, onChange: @props.onChange
-
-      # Decorate children if section
-      if @context.decorateScalarExprTreeSectionChildren and @props.item.item.type == "section"
-        children = @context.decorateScalarExprTreeSectionChildren({ children: children, tableId: @props.item.tableId, section: @props.item.item, filter: @props.filter })
-
-      # Pad left and give key
-      children = R 'div', style: { paddingLeft: 18 }, key: "tree",
-        children
-
-    color = if @props.item.value then "#478" 
-
-    R 'div', null,
-      R 'div', style: { cursor: "pointer", padding: 4, marginLeft: 20, position: "relative" }, key: "item", className: (if @props.item.value then "hover-grey-background"),
-        R 'span', style: { color: "#478", cursor: "pointer", position: "absolute", left: -15 }, onClick: @handleArrowClick, arrow
-        R 'div', style: { color: color, display: "inline-block" }, onClick: @handleItemClick, 
-          if @props.prefix
-            R 'span', className: "text-muted", @props.prefix
-          @props.item.name
-          # if @props.item.item.type == "join"
-          #   R 'i', className: "fa fa-link", style: { paddingRight: 5, paddingLeft: 5 }
-          if @props.item.desc
-            R 'span', className: "text-muted", style: { fontSize: 12, paddingLeft: 3 }, " - " + @props.item.desc
-      children
+    return R('div', null,
+      R('div', {style: { cursor: "pointer", padding: 4, marginLeft: 20, position: "relative" }, key: "item", className: (this.props.item.value ? "hover-grey-background" : undefined)},
+        R('span', {style: { color: "#478", cursor: "pointer", position: "absolute", left: -15 }, onClick: this.handleArrowClick}, arrow),
+        R('div', {style: { color, display: "inline-block" }, onClick: this.handleItemClick}, 
+          this.props.prefix ?
+            R('span', {className: "text-muted"}, this.props.prefix) : undefined,
+          this.props.item.name,
+          // if @props.item.item.type == "join"
+          //   R 'i', className: "fa fa-link", style: { paddingRight: 5, paddingLeft: 5 }
+          this.props.item.desc ?
+            R('span', {className: "text-muted", style: { fontSize: 12, paddingLeft: 3 }}, " - " + this.props.item.desc) : undefined
+        )
+      ),
+      children);
+  }
+}
+ScalarExprTreeNodeComponent.initClass();
       

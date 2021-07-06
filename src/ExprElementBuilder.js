@@ -1,487 +1,571 @@
-PropTypes = require('prop-types')
-_ = require 'lodash'
-React = require 'react'
-R = React.createElement
+let ExprElementBuilder;
+import PropTypes from 'prop-types';
+import _ from 'lodash';
+import React from 'react';
+const R = React.createElement;
 
-ExprUtils = require("mwater-expressions").ExprUtils
-LinkComponent = require './LinkComponent'
-StackedComponent = require './StackedComponent'
-IdLiteralComponent = require './IdLiteralComponent'
-ScoreExprComponent = require './ScoreExprComponent'
-BuildEnumsetExprComponent = require './BuildEnumsetExprComponent'
-ExprLinkComponent = require './ExprLinkComponent'
-getExprUIExtensions = require('./extensions').getExprUIExtensions
+import { ExprUtils } from "mwater-expressions";
+import LinkComponent from './LinkComponent';
+import StackedComponent from './StackedComponent';
+import IdLiteralComponent from './IdLiteralComponent';
+import ScoreExprComponent from './ScoreExprComponent';
+import BuildEnumsetExprComponent from './BuildEnumsetExprComponent';
+import ExprLinkComponent from './ExprLinkComponent';
+import { getExprUIExtensions } from './extensions';
 
-# Builds a react element for an expression
-module.exports = class ExprElementBuilder
-  constructor: (schema, dataSource, locale, variables = []) ->
-    @schema = schema
-    @dataSource = dataSource
-    @locale = locale
-    @variables = variables
+// Builds a react element for an expression
+export default ExprElementBuilder = class ExprElementBuilder {
+  constructor(schema, dataSource, locale, variables = []) {
+    this.schema = schema;
+    this.dataSource = dataSource;
+    this.locale = locale;
+    this.variables = variables;
 
-    @exprUtils = new ExprUtils(@schema, variables)
+    this.exprUtils = new ExprUtils(this.schema, variables);
+  }
 
-  # Build the tree for an expression
-  # Options include:
-  #   types: required value types of expression e.g. ['boolean']
-  #   key: key of the resulting element
-  #   enumValues: array of { id, name } for the enumerable values to display
-  #   idTable: the table from which id-type expressions must come
-  #   refExpr: expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
-  #   preferLiteral: to preferentially choose literal expressions (used for RHS of expressions)
-  #   suppressWrapOps: pass ops to *not* offer to wrap in
-  #   includeAggr: true to include count (id) item at root level in expression selector
-  #   aggrStatuses: statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] or ["literal"] if not table
-  #   placeholder: empty placeholder
-  #   exprLinkRef: ref to put on expr link component
-  build: (expr, table, onChange, options = {}) ->
+  // Build the tree for an expression
+  // Options include:
+  //   types: required value types of expression e.g. ['boolean']
+  //   key: key of the resulting element
+  //   enumValues: array of { id, name } for the enumerable values to display
+  //   idTable: the table from which id-type expressions must come
+  //   refExpr: expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
+  //   preferLiteral: to preferentially choose literal expressions (used for RHS of expressions)
+  //   suppressWrapOps: pass ops to *not* offer to wrap in
+  //   includeAggr: true to include count (id) item at root level in expression selector
+  //   aggrStatuses: statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] or ["literal"] if not table
+  //   placeholder: empty placeholder
+  //   exprLinkRef: ref to put on expr link component
+  build(expr, table, onChange, options = {}) {
+    let elem;
     _.defaults(options, {
-      aggrStatuses: if table then ["individual", "literal"] else ["literal"]
-      })
+      aggrStatuses: table ? ["individual", "literal"] : ["literal"]
+      });
 
-    # True if a boolean expression is required
-    booleanOnly = options.types and options.types.length == 1 and options.types[0] == "boolean" 
+    // True if a boolean expression is required
+    const booleanOnly = options.types && (options.types.length === 1) && (options.types[0] === "boolean"); 
 
-    # True if an aggregate number or individual boolean is required, in which case any expression can be transformed into it
-    anyTypeAllowed = false
-    if not options.types
-      anyTypeAllowed = true
-    else if ("boolean" in options.types and ("individual" in options.aggrStatuses or "literal" in options.aggrStatuses) and options.types.length == 1) 
-      anyTypeAllowed = true
-    else if ("number" in options.types and "aggregate" in options.aggrStatuses and "individual" not in options.aggrStatuses)
-      anyTypeAllowed = true
+    // True if an aggregate number or individual boolean is required, in which case any expression can be transformed into it
+    let anyTypeAllowed = false;
+    if (!options.types) {
+      anyTypeAllowed = true;
+    } else if (options.types.includes("boolean") && (options.aggrStatuses.includes("individual") || options.aggrStatuses.includes("literal")) && (options.types.length === 1)) { 
+      anyTypeAllowed = true;
+    } else if (options.types.includes("number") && options.aggrStatuses.includes("aggregate") && !options.aggrStatuses.includes("individual")) {
+      anyTypeAllowed = true;
+    }
 
-    # Get current expression type
-    exprType = @exprUtils.getExprType(expr)
+    // Get current expression type
+    const exprType = this.exprUtils.getExprType(expr);
 
-    # Handle empty and literals and fields with ExprLinkComponent
-    if not expr or not expr.type or expr.type == "literal" or expr.type == "field"
-      elem = R ExprLinkComponent,
-        schema: @schema
-        dataSource: @dataSource
-        variables: @variables
-        table: table
-        value: expr
-        onChange: onChange
-        # Allow any type if transformable
-        types: if not anyTypeAllowed then options.types
-        # Case statements only when not boolean
-        allowCase: not booleanOnly
-        enumValues: options.enumValues
-        idTable: options.idTable
-        initialMode: if options.preferLiteral then "literal"
-        includeAggr: options.includeAggr
-        aggrStatuses: options.aggrStatuses
-        placeholder: options.placeholder
-        refExpr: options.refExpr
-        ref: options.exprLinkRef
-        # Hint that requires boolean
-        booleanOnly: booleanOnly
+    // Handle empty and literals and fields with ExprLinkComponent
+    if (!expr || !expr.type || (expr.type === "literal") || (expr.type === "field")) {
+      elem = R(ExprLinkComponent, {
+        schema: this.schema,
+        dataSource: this.dataSource,
+        variables: this.variables,
+        table,
+        value: expr,
+        onChange,
+        // Allow any type if transformable
+        types: !anyTypeAllowed ? options.types : undefined,
+        // Case statements only when not boolean
+        allowCase: !booleanOnly,
+        enumValues: options.enumValues,
+        idTable: options.idTable,
+        initialMode: options.preferLiteral ? "literal" : undefined,
+        includeAggr: options.includeAggr,
+        aggrStatuses: options.aggrStatuses,
+        placeholder: options.placeholder,
+        refExpr: options.refExpr,
+        ref: options.exprLinkRef,
+        // Hint that requires boolean
+        booleanOnly
+      }
+      );
 
-    else if expr.type == "op"
-      elem = @buildOp(expr, table, onChange, options)
-    # else if expr.type == "field"
-    #   elem = @buildField(expr, onChange, { key: options.key })
-    else if expr.type == "scalar"
-      elem = @buildScalar(expr, onChange, { key: options.key, types: options.types, enumValues: options.enumValues })
-    else if expr.type == "case"
-      elem = @buildCase(expr, onChange, { key: options.key, types: options.types, enumValues: options.enumValues })
-    else if expr.type == "id"
-      elem = @buildId(expr, onChange, { key: options.key })
-    else if expr.type == "score"
-      elem = @buildScore(expr, onChange, { key: options.key })
-    else if expr.type == "build enumset"
-      elem = @buildBuildEnumset(expr, onChange, { key: options.key, enumValues: options.enumValues })
-    else if expr.type == "variable"
-      elem = @buildVariable(expr, onChange, { key: options.key })
-    else if expr.type == "extension"
-      extension = _.findWhere(getExprUIExtensions(), { id: expr.extension })
-      if not extension
-        return "Unsupported extension #{expr.extension}"
+    } else if (expr.type === "op") {
+      elem = this.buildOp(expr, table, onChange, options);
+    // else if expr.type == "field"
+    //   elem = @buildField(expr, onChange, { key: options.key })
+    } else if (expr.type === "scalar") {
+      elem = this.buildScalar(expr, onChange, { key: options.key, types: options.types, enumValues: options.enumValues });
+    } else if (expr.type === "case") {
+      elem = this.buildCase(expr, onChange, { key: options.key, types: options.types, enumValues: options.enumValues });
+    } else if (expr.type === "id") {
+      elem = this.buildId(expr, onChange, { key: options.key });
+    } else if (expr.type === "score") {
+      elem = this.buildScore(expr, onChange, { key: options.key });
+    } else if (expr.type === "build enumset") {
+      elem = this.buildBuildEnumset(expr, onChange, { key: options.key, enumValues: options.enumValues });
+    } else if (expr.type === "variable") {
+      elem = this.buildVariable(expr, onChange, { key: options.key });
+    } else if (expr.type === "extension") {
+      const extension = _.findWhere(getExprUIExtensions(), { id: expr.extension });
+      if (!extension) {
+        return `Unsupported extension ${expr.extension}`;
+      }
       elem = extension.createExprElement({
-        expr: expr, 
+        expr, 
         onExprChange: onChange, 
-        schema: @schema, 
-        dataSource: @dataSource, 
-        variables: @variables or [], 
-        locale: @locale,
+        schema: this.schema, 
+        dataSource: this.dataSource, 
+        variables: this.variables || [], 
+        locale: this.locale,
         aggrStatuses: options.aggrStatuses,
         types: options.types,
         idTable: options.idTable
-      })
-    else
-      throw new Error("Unhandled expression type #{expr.type}")
-
-    # Wrap element with hover links to build more complex expressions or to clear it
-    links = []
-
-    # Create a link to wrap the expression with an op. type is "n" for +/* that can take n, "binary" for -//, "unary" for sum, etc.
-    createWrapOp = (op, name, type = "unary") =>
-      if op not in (options.suppressWrapOps or [])
-        if type == "unary"
-          links.push({ label: name, onClick: => onChange({ type: "op", op: op, table: table, exprs: [expr] }) })
-        # Prevent nesting when simple adding would work
-        else if expr.op != op or type == "binary"
-          links.push({ label: name, onClick: => onChange({ type: "op", op: op, table: table, exprs: [expr, null] }) })
-        else
-          # Just add extra element for n items
-          links.push({ label: name, onClick: => 
-            exprs = expr.exprs.slice()
-            exprs.push(null)
-            onChange(_.extend({}, expr, { exprs: exprs }))
-          })
-
-    # If boolean, add and/or link. 
-    if exprType == "boolean"
-      createWrapOp("and", "+ And", "n")
-      createWrapOp("or", "+ Or", "n")
-      createWrapOp("not", "Not", "unary")
-      createWrapOp("is null", "Is blank", "unary")
-
-    if exprType == "number"
-      createWrapOp("+", "+", "n")
-      createWrapOp("-", "-", "binary")
-      createWrapOp("*", "*", "n")
-      createWrapOp("/", "/", "binary")
-
-      # If option to wrap in sum
-      if "aggregate" in options.aggrStatuses and @exprUtils.getExprAggrStatus(expr) == "individual"
-        createWrapOp("sum", "Total", "unary")
-
-    # Add + If
-    if expr and expr.type == "case"
-      links.push({ label: "+ If", onClick: => 
-        cases = expr.cases.slice()
-        cases.push({ when: null, then: null })
-        onChange(_.extend({}, expr, { cases: cases }))
-      })
-
-    # Add case mapping for enum
-    if exprType == "enum"
-      links.push({ label: "Map Values", onClick: => 
-        newExpr = {
-          type: "case"
-          table: expr.table
-          cases: _.map(@exprUtils.getExprEnumValues(expr), (ev) =>
-            literal = { type: "literal", valueType: "enum", value: ev.id }
-
-            return { 
-              when: { type: "op", table: expr.table, op: "=", exprs: [expr, literal] }
-              then: { type: "literal", valueType: "text", value: ExprUtils.localizeString(ev.name) }
-            }
-          )
-          else: null
-        }
-
-        onChange(newExpr)
-      })
-
-    # links.push({ label: "Remove", onClick: => onChange(null) })
-    if links.length > 0 and onChange
-      elem = R WrappedLinkComponent, links: links, elem
-
-    return elem
-
-  # Build an id component. Displays table name. Only remove option
-  buildId: (expr, onChange, options = {}) ->
-    return R(LinkComponent, 
-      dropdownItems: if onChange then [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
-      onDropdownItemClicked: => onChange(null),
-      @exprUtils.summarizeExpr(expr)) 
-
-  # Build a variable component. Displays variable name. Only remove option
-  buildVariable: (expr, onChange, options = {}) ->
-    return R(LinkComponent, 
-      dropdownItems: if onChange then [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
-      onDropdownItemClicked: => onChange(null),
-      @exprUtils.summarizeExpr(expr)) 
-
-  buildScalar: (expr, onChange, options = {}) ->
-    # Get joins string
-    destTable = expr.table
-    joinsStr = ""
-    for join in expr.joins
-      joinCol = @schema.getColumn(destTable, join)
-      joinsStr += ExprUtils.localizeString(joinCol.name, @locale) + " > "
-      destTable = if joinCol.type == "join" then joinCol.join.toTable else joinCol.idTable
-
-    # If just a field or id inside, add to string and make a simple link control
-    if expr.expr and expr.expr.type in ["field", "id"]
-      # Summarize without aggregation
-      summary = @exprUtils.summarizeExpr(_.omit(expr, "aggr"))
-
-      return R 'div', style: { display: "flex", alignItems: "baseline" },
-        # Aggregate dropdown
-        R(LinkComponent, 
-          dropdownItems: if onChange then [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
-          onDropdownItemClicked: => onChange(null),
-          summary)
-    else
-      # Create inner expression onChange
-      innerOnChange = (value) =>
-        onChange(_.extend({}, expr, { expr: value }))
-
-      # Determine if can allow aggregation
-      multipleJoins = @exprUtils.isMultipleJoins(expr.table, expr.joins)
-      innerAggrStatuses = if multipleJoins then ["literal", "aggregate"] else ["literal", "individual"]
-
-      # True if an individual boolean is required, in which case any expression can be transformed into it
-      anyTypeAllowed = not options.types or ("boolean" in options.types and options.types.length == 1)
-
-      innerElem = @build(expr.expr, destTable, (if onChange then innerOnChange), { 
-        types: if not anyTypeAllowed then options.types
-        idTable: options.idTable
-        enumValues: options.enumValues
-        aggrStatuses: innerAggrStatuses 
-      })
-
-    return R 'div', style: { display: "flex", alignItems: "baseline" },
-      R(LinkComponent, 
-        dropdownItems: if onChange then [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
-        onDropdownItemClicked: => onChange(null),
-        joinsStr)
-      innerElem
-
-  # Builds on op component
-  buildOp: (expr, table, onChange, options = {}) ->
-    switch expr.op
-      # For vertical ops (ones with n values or other arithmetic)
-      when 'and', 'or', '+', '*', '-', "/"
-        # Create inner items
-        items = _.map expr.exprs, (innerExpr, i) =>
-          # Create onChange that switched single value
-          innerElemOnChange = (newValue) =>
-            newExprs = expr.exprs.slice()
-            newExprs[i] = newValue
-
-            # Set expr value
-            onChange(_.extend({}, expr, { exprs: newExprs }))
-
-          types = if expr.op in ['and', 'or'] then ["boolean"] else ["number"]
-          elem = @build(innerExpr, table, (if onChange then innerElemOnChange), types: types, aggrStatuses: options.aggrStatuses, suppressWrapOps: [expr.op], key: "expr#{i}")
-          handleRemove = =>
-            exprs = expr.exprs.slice()
-            exprs.splice(i, 1)
-
-            # If only one left, remove op entirely
-            if exprs.length == 1
-              onChange(exprs[0])
-            else
-              onChange(_.extend({}, expr, { exprs: exprs }))          
-
-          return { elem: elem, onRemove: handleRemove }
-        
-        # Create stacked expression
-        R(StackedComponent, joinLabel: expr.op, items: items)
-      else
-        # Horizontal expression. Render each part
-        opItems = @exprUtils.findMatchingOpItems(op: expr.op, resultTypes: options.types, lhsExpr: expr.exprs[0])
-        opItem = opItems[0]
-        if not opItem
-          throw new Error("No opItem defined for op:#{expr.op}, resultType: #{options.types}, lhs:#{JSON.stringify(expr.exprs[0])}")
-
-        # Special case for no expressions
-        if opItem.exprTypes.length == 0
-          return R(LinkComponent, 
-            dropdownItems: if onChange then [{ id: "remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }]
-            onDropdownItemClicked: (=> onChange(null)),
-              @exprUtils.summarizeExpr(expr, @locale))
-
-        innerAggrStatuses = if opItem.aggr then ["literal", "individual"] else options.aggrStatuses
-
-        lhsOnChange = (newValue) =>
-          newExprs = expr.exprs.slice()
-          newExprs[0] = newValue
-
-          # Set expr value
-          onChange(_.extend({}, expr, { exprs: newExprs }))
-        
-        # lhs type is matching op item
-        lhsTypes = [opItem.exprTypes[0]]
-
-        # However, if there are multiple possibilities and there is no existing lhs, allow all (as in days difference can take date or datetime)
-        if not expr.exprs[0]
-          lhsTypes = _.map(opItems, (oi) -> oi.exprTypes[0])
-
-        lhsElem = @build(expr.exprs[0], table, (if onChange then lhsOnChange), types: lhsTypes, aggrStatuses: innerAggrStatuses, key: "lhs", placeholder: opItem.lhsPlaceholder)
-
-        # Special case for between 
-        if expr.op == "between"
-          rhs1OnChange = (newValue) =>
-            newExprs = expr.exprs.slice()
-            newExprs[1] = newValue
-
-            # Set expr value
-            onChange(_.extend({}, expr, { exprs: newExprs }))
-
-          rhs2OnChange = (newValue) =>
-            newExprs = expr.exprs.slice()
-            newExprs[2] = newValue
-
-            # Set expr value
-            onChange(_.extend({}, expr, { exprs: newExprs }))
-
-          # Build rhs
-          rhsElem = [
-            @build(expr.exprs[1], table, (if onChange then rhs1OnChange), types: [opItem.exprTypes[1]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true, aggrStatuses: innerAggrStatuses, key: "expr1")
-            "\u00A0and\u00A0"
-            @build(expr.exprs[2], table, (if onChange then rhs2OnChange), types: [opItem.exprTypes[2]], enumValues: @exprUtils.getExprEnumValues(expr.exprs[0]), idTable: @exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true, aggrStatuses: innerAggrStatuses, key: "expr2")
-          ]
-        else if opItem.exprTypes.length > 1 # If has two expressions
-          rhsOnChange = (newValue) =>
-            newExprs = expr.exprs.slice()
-            newExprs[1] = newValue
-
-            # Set expr value
-            onChange(_.extend({}, expr, { exprs: newExprs }))
-
-          rhsElem = @build(expr.exprs[1], table, (if onChange then rhsOnChange), {
-            key: "rhs"
-            types: _.uniq(_.map(opItems, (oi) => oi.exprTypes[1]))
-            enumValues: if opItem.exprTypes[1] in ['enum', 'enumset'] then @exprUtils.getExprEnumValues(expr.exprs[0])  # Only include if type is enum or enumset
-            idTable: @exprUtils.getExprIdTable(expr.exprs[0])
-            refExpr: expr.exprs[0]
-            preferLiteral: opItem.rhsLiteral
-            aggrStatuses: innerAggrStatuses            
-            placeholder: opItem.rhsPlaceholder
-          })
-
-        # Create op dropdown (finding matching type and lhs, not op). Allow aggregates if appropriate
-        aggr = null
-        if "aggregate" not in options.aggrStatuses
-          aggr = false
-
-        opItems = @exprUtils.findMatchingOpItems(resultTypes: options.types, lhsExpr: expr.exprs[0], aggr: aggr)
-
-        # Remove current op
-        opItems = _.filter(opItems, (oi) -> oi.op != expr.op)
-
-        # Prefix toggle must be the same as current expr
-        opItems = _.filter(opItems, (oi) -> oi.prefix == opItem.prefix)
-
-        # Keep distinct ops
-        opItems = _.uniq(opItems, "op")
-
-        opElem = R(LinkComponent, 
-          dropdownItems: if onChange then [{ id: "_remove", name: [R('i', className: "fa fa-remove text-muted"), " Remove"] }].concat(_.map(opItems, (oi) -> { id: oi.op, name: oi.name }))
-          onDropdownItemClicked: (op) =>
-            if op == "_remove"
-              onChange(null)
-            else
-              onChange(_.extend({}, expr, { op: op }))
-          , opItem.prefixLabel or opItem.name)
-
-        # Some ops have prefix (e.g. "latitude of")
-        if opItem.prefix
-          return R 'div', style: { display: "flex", alignItems: "baseline", flexWrap: "wrap" },
-            opElem
-            lhsElem
-            if opItem.joiner then R('span', style: { paddingLeft: 5, paddingRight: 5 }, opItem.joiner)
-            rhsElem
-        else
-          return R 'div', style: { display: "flex", alignItems: "baseline", flexWrap: "wrap" },
-            lhsElem, opElem, rhsElem
-
-  buildCase: (expr, onChange, options) ->
-    # Style for labels "if", "then", "else"
-    labelStyle = { 
-      flex: "0 0 auto"  # Don't resize
-      padding: 5
-      color: "#AAA"
+      });
+    } else {
+      throw new Error(`Unhandled expression type ${expr.type}`);
     }
 
-    # Create inner elements
-    items = _.map expr.cases, (cse, i) =>
-      # Create onChange functions
-      innerElemOnWhenChange = (newWhen) =>
-        cases = expr.cases.slice()
-        cases[i] = _.extend({}, cases[i], { when: newWhen })
-        onChange(_.extend({}, expr, { cases: cases }))
+    // Wrap element with hover links to build more complex expressions or to clear it
+    const links = [];
 
-      innerElemOnThenChange = (newThen) =>
-        cases = expr.cases.slice()
-        cases[i] = _.extend({}, cases[i], { then: newThen })
-        onChange(_.extend({}, expr, { cases: cases }))
+    // Create a link to wrap the expression with an op. type is "n" for +/* that can take n, "binary" for -//, "unary" for sum, etc.
+    const createWrapOp = (op, name, type = "unary") => {
+      if (!(options.suppressWrapOps || []).includes(op)) {
+        if (type === "unary") {
+          return links.push({ label: name, onClick: () => onChange({ type: "op", op, table, exprs: [expr] }) });
+        // Prevent nesting when simple adding would work
+        } else if ((expr.op !== op) || (type === "binary")) {
+          return links.push({ label: name, onClick: () => onChange({ type: "op", op, table, exprs: [expr, null] }) });
+        } else {
+          // Just add extra element for n items
+          return links.push({ label: name, onClick: () => { 
+            const exprs = expr.exprs.slice();
+            exprs.push(null);
+            return onChange(_.extend({}, expr, { exprs }));
+          }
+          });
+        }
+      }
+    };
 
-      # Build a flexbox that wraps with a when and then flexbox
-      elem = R 'div', key: "#{i}", style: { display: "flex", alignItems: "baseline"  },
-        R 'div', key: "when", style: { display: "flex", alignItems: "baseline" },
-          R 'div', key: "label", style: labelStyle, "if"
-          @build(cse.when, expr.table, (if onChange then innerElemOnWhenChange), key: "content", types: ["boolean"], suppressWrapOps: ["if"], aggrStatuses: options.aggrStatuses)
-        R 'div', key: "then", style: { display: "flex", alignItems: "baseline" },
-          R 'div', key: "label", style: labelStyle, "then"
-          @build(cse.then, expr.table, (if onChange then innerElemOnThenChange), key: "content", types: options.types, preferLiteral: true, enumValues: options.enumValues, aggrStatuses: options.aggrStatuses)
+    // If boolean, add and/or link. 
+    if (exprType === "boolean") {
+      createWrapOp("and", "+ And", "n");
+      createWrapOp("or", "+ Or", "n");
+      createWrapOp("not", "Not", "unary");
+      createWrapOp("is null", "Is blank", "unary");
+    }
 
-      handleRemove = =>
-        cases = expr.cases.slice()
-        cases.splice(i, 1)
-        onChange(_.extend({}, expr, { cases: cases })) 
+    if (exprType === "number") {
+      createWrapOp("+", "+", "n");
+      createWrapOp("-", "-", "binary");
+      createWrapOp("*", "*", "n");
+      createWrapOp("/", "/", "binary");
 
-      return { elem: elem, onRemove: (if onChange then handleRemove) }
+      // If option to wrap in sum
+      if (options.aggrStatuses.includes("aggregate") && (this.exprUtils.getExprAggrStatus(expr) === "individual")) {
+        createWrapOp("sum", "Total", "unary");
+      }
+    }
+
+    // Add + If
+    if (expr && (expr.type === "case")) {
+      links.push({ label: "+ If", onClick: () => { 
+        const cases = expr.cases.slice();
+        cases.push({ when: null, then: null });
+        return onChange(_.extend({}, expr, { cases }));
+      }
+      });
+    }
+
+    // Add case mapping for enum
+    if (exprType === "enum") {
+      links.push({ label: "Map Values", onClick: () => { 
+        const newExpr = {
+          type: "case",
+          table: expr.table,
+          cases: _.map(this.exprUtils.getExprEnumValues(expr), ev => {
+            const literal = { type: "literal", valueType: "enum", value: ev.id };
+
+            return { 
+              when: { type: "op", table: expr.table, op: "=", exprs: [expr, literal] },
+              then: { type: "literal", valueType: "text", value: ExprUtils.localizeString(ev.name) }
+            };
+          }),
+          else: null
+        };
+
+        return onChange(newExpr);
+      }
+      });
+    }
+
+    // links.push({ label: "Remove", onClick: => onChange(null) })
+    if ((links.length > 0) && onChange) {
+      elem = R(WrappedLinkComponent, {links}, elem);
+    }
+
+    return elem;
+  }
+
+  // Build an id component. Displays table name. Only remove option
+  buildId(expr, onChange, options = {}) {
+    return R(LinkComponent, { 
+      dropdownItems: onChange ? [{ id: "remove", name: [R('i', {className: "fa fa-remove text-muted"}), " Remove"] }] : undefined,
+      onDropdownItemClicked: () => onChange(null)
+    },
+      this.exprUtils.summarizeExpr(expr)); 
+  }
+
+  // Build a variable component. Displays variable name. Only remove option
+  buildVariable(expr, onChange, options = {}) {
+    return R(LinkComponent, { 
+      dropdownItems: onChange ? [{ id: "remove", name: [R('i', {className: "fa fa-remove text-muted"}), " Remove"] }] : undefined,
+      onDropdownItemClicked: () => onChange(null)
+    },
+      this.exprUtils.summarizeExpr(expr)); 
+  }
+
+  buildScalar(expr, onChange, options = {}) {
+    // Get joins string
+    let innerElem;
+    let destTable = expr.table;
+    let joinsStr = "";
+    for (let join of expr.joins) {
+      const joinCol = this.schema.getColumn(destTable, join);
+      joinsStr += ExprUtils.localizeString(joinCol.name, this.locale) + " > ";
+      destTable = joinCol.type === "join" ? joinCol.join.toTable : joinCol.idTable;
+    }
+
+    // If just a field or id inside, add to string and make a simple link control
+    if (expr.expr && ["field", "id"].includes(expr.expr.type)) {
+      // Summarize without aggregation
+      const summary = this.exprUtils.summarizeExpr(_.omit(expr, "aggr"));
+
+      return R('div', {style: { display: "flex", alignItems: "baseline" }},
+        // Aggregate dropdown
+        R(LinkComponent, { 
+          dropdownItems: onChange ? [{ id: "remove", name: [R('i', {className: "fa fa-remove text-muted"}), " Remove"] }] : undefined,
+          onDropdownItemClicked: () => onChange(null)
+        },
+          summary)
+      );
+    } else {
+      // Create inner expression onChange
+      const innerOnChange = value => {
+        return onChange(_.extend({}, expr, { expr: value }));
+      };
+
+      // Determine if can allow aggregation
+      const multipleJoins = this.exprUtils.isMultipleJoins(expr.table, expr.joins);
+      const innerAggrStatuses = multipleJoins ? ["literal", "aggregate"] : ["literal", "individual"];
+
+      // True if an individual boolean is required, in which case any expression can be transformed into it
+      const anyTypeAllowed = !options.types || (options.types.includes("boolean") && (options.types.length === 1));
+
+      innerElem = this.build(expr.expr, destTable, (onChange ? innerOnChange : undefined), { 
+        types: !anyTypeAllowed ? options.types : undefined,
+        idTable: options.idTable,
+        enumValues: options.enumValues,
+        aggrStatuses: innerAggrStatuses 
+      });
+    }
+
+    return R('div', {style: { display: "flex", alignItems: "baseline" }},
+      R(LinkComponent, { 
+        dropdownItems: onChange ? [{ id: "remove", name: [R('i', {className: "fa fa-remove text-muted"}), " Remove"] }] : undefined,
+        onDropdownItemClicked: () => onChange(null)
+      },
+        joinsStr),
+      innerElem);
+  }
+
+  // Builds on op component
+  buildOp(expr, table, onChange, options = {}) {
+    let rhsElem;
+    switch (expr.op) {
+      // For vertical ops (ones with n values or other arithmetic)
+      case 'and': case 'or': case '+': case '*': case '-': case "/":
+        // Create inner items
+        var items = _.map(expr.exprs, (innerExpr, i) => {
+          // Create onChange that switched single value
+          const innerElemOnChange = newValue => {
+            const newExprs = expr.exprs.slice();
+            newExprs[i] = newValue;
+
+            // Set expr value
+            return onChange(_.extend({}, expr, { exprs: newExprs }));
+          };
+
+          const types = ['and', 'or'].includes(expr.op) ? ["boolean"] : ["number"];
+          const elem = this.build(innerExpr, table, (onChange ? innerElemOnChange : undefined), {types, aggrStatuses: options.aggrStatuses, suppressWrapOps: [expr.op], key: `expr${i}`});
+          const handleRemove = () => {
+            const exprs = expr.exprs.slice();
+            exprs.splice(i, 1);
+
+            // If only one left, remove op entirely
+            if (exprs.length === 1) {
+              return onChange(exprs[0]);
+            } else {
+              return onChange(_.extend({}, expr, { exprs }));          
+            }
+          };
+
+          return { elem, onRemove: handleRemove };
+      });
+        
+        // Create stacked expression
+        return R(StackedComponent, {joinLabel: expr.op, items});
+      default:
+        // Horizontal expression. Render each part
+        var opItems = this.exprUtils.findMatchingOpItems({op: expr.op, resultTypes: options.types, lhsExpr: expr.exprs[0]});
+        var opItem = opItems[0];
+        if (!opItem) {
+          throw new Error(`No opItem defined for op:${expr.op}, resultType: ${options.types}, lhs:${JSON.stringify(expr.exprs[0])}`);
+        }
+
+        // Special case for no expressions
+        if (opItem.exprTypes.length === 0) {
+          return R(LinkComponent, { 
+            dropdownItems: onChange ? [{ id: "remove", name: [R('i', {className: "fa fa-remove text-muted"}), " Remove"] }] : undefined,
+            onDropdownItemClicked: (() => onChange(null))
+          },
+              this.exprUtils.summarizeExpr(expr, this.locale));
+        }
+
+        var innerAggrStatuses = opItem.aggr ? ["literal", "individual"] : options.aggrStatuses;
+
+        var lhsOnChange = newValue => {
+          const newExprs = expr.exprs.slice();
+          newExprs[0] = newValue;
+
+          // Set expr value
+          return onChange(_.extend({}, expr, { exprs: newExprs }));
+        };
+        
+        // lhs type is matching op item
+        var lhsTypes = [opItem.exprTypes[0]];
+
+        // However, if there are multiple possibilities and there is no existing lhs, allow all (as in days difference can take date or datetime)
+        if (!expr.exprs[0]) {
+          lhsTypes = _.map(opItems, oi => oi.exprTypes[0]);
+        }
+
+        var lhsElem = this.build(expr.exprs[0], table, (onChange ? lhsOnChange : undefined), {types: lhsTypes, aggrStatuses: innerAggrStatuses, key: "lhs", placeholder: opItem.lhsPlaceholder});
+
+        // Special case for between 
+        if (expr.op === "between") {
+          const rhs1OnChange = newValue => {
+            const newExprs = expr.exprs.slice();
+            newExprs[1] = newValue;
+
+            // Set expr value
+            return onChange(_.extend({}, expr, { exprs: newExprs }));
+          };
+
+          const rhs2OnChange = newValue => {
+            const newExprs = expr.exprs.slice();
+            newExprs[2] = newValue;
+
+            // Set expr value
+            return onChange(_.extend({}, expr, { exprs: newExprs }));
+          };
+
+          // Build rhs
+          rhsElem = [
+            this.build(expr.exprs[1], table, (onChange ? rhs1OnChange : undefined), {types: [opItem.exprTypes[1]], enumValues: this.exprUtils.getExprEnumValues(expr.exprs[0]), idTable: this.exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true, aggrStatuses: innerAggrStatuses, key: "expr1"}),
+            "\u00A0and\u00A0",
+            this.build(expr.exprs[2], table, (onChange ? rhs2OnChange : undefined), {types: [opItem.exprTypes[2]], enumValues: this.exprUtils.getExprEnumValues(expr.exprs[0]), idTable: this.exprUtils.getExprIdTable(expr.exprs[0]), refExpr: expr.exprs[0], preferLiteral: true, aggrStatuses: innerAggrStatuses, key: "expr2"})
+          ];
+        } else if (opItem.exprTypes.length > 1) { // If has two expressions
+          const rhsOnChange = newValue => {
+            const newExprs = expr.exprs.slice();
+            newExprs[1] = newValue;
+
+            // Set expr value
+            return onChange(_.extend({}, expr, { exprs: newExprs }));
+          };
+
+          rhsElem = this.build(expr.exprs[1], table, (onChange ? rhsOnChange : undefined), {
+            key: "rhs",
+            types: _.uniq(_.map(opItems, oi => oi.exprTypes[1])),
+            enumValues: ['enum', 'enumset'].includes(opItem.exprTypes[1]) ? this.exprUtils.getExprEnumValues(expr.exprs[0]) : undefined,  // Only include if type is enum or enumset
+            idTable: this.exprUtils.getExprIdTable(expr.exprs[0]),
+            refExpr: expr.exprs[0],
+            preferLiteral: opItem.rhsLiteral,
+            aggrStatuses: innerAggrStatuses,            
+            placeholder: opItem.rhsPlaceholder
+          });
+        }
+
+        // Create op dropdown (finding matching type and lhs, not op). Allow aggregates if appropriate
+        var aggr = null;
+        if (!options.aggrStatuses.includes("aggregate")) {
+          aggr = false;
+        }
+
+        opItems = this.exprUtils.findMatchingOpItems({resultTypes: options.types, lhsExpr: expr.exprs[0], aggr});
+
+        // Remove current op
+        opItems = _.filter(opItems, oi => oi.op !== expr.op);
+
+        // Prefix toggle must be the same as current expr
+        opItems = _.filter(opItems, oi => oi.prefix === opItem.prefix);
+
+        // Keep distinct ops
+        opItems = _.uniq(opItems, "op");
+
+        var opElem = R(LinkComponent, { 
+          dropdownItems: onChange ? [{ id: "_remove", name: [R('i', {className: "fa fa-remove text-muted"}), " Remove"] }].concat(_.map(opItems, oi => ({
+            id: oi.op,
+            name: oi.name
+          }))) : undefined,
+          onDropdownItemClicked: op => {
+            if (op === "_remove") {
+              return onChange(null);
+            } else {
+              return onChange(_.extend({}, expr, { op }));
+            }
+          }
+        }
+          , opItem.prefixLabel || opItem.name);
+
+        // Some ops have prefix (e.g. "latitude of")
+        if (opItem.prefix) {
+          return R('div', {style: { display: "flex", alignItems: "baseline", flexWrap: "wrap" }},
+            opElem,
+            lhsElem,
+            opItem.joiner ? R('span', {style: { paddingLeft: 5, paddingRight: 5 }}, opItem.joiner) : undefined,
+            rhsElem);
+        } else {
+          return R('div', {style: { display: "flex", alignItems: "baseline", flexWrap: "wrap" }},
+            lhsElem, opElem, rhsElem);
+        }
+    }
+  }
+
+  buildCase(expr, onChange, options) {
+    // Style for labels "if", "then", "else"
+    const labelStyle = { 
+      flex: "0 0 auto",  // Don't resize
+      padding: 5,
+      color: "#AAA"
+    };
+
+    // Create inner elements
+    const items = _.map(expr.cases, (cse, i) => {
+      // Create onChange functions
+      const innerElemOnWhenChange = newWhen => {
+        const cases = expr.cases.slice();
+        cases[i] = _.extend({}, cases[i], { when: newWhen });
+        return onChange(_.extend({}, expr, { cases }));
+      };
+
+      const innerElemOnThenChange = newThen => {
+        const cases = expr.cases.slice();
+        cases[i] = _.extend({}, cases[i], { then: newThen });
+        return onChange(_.extend({}, expr, { cases }));
+      };
+
+      // Build a flexbox that wraps with a when and then flexbox
+      const elem = R('div', {key: `${i}`, style: { display: "flex", alignItems: "baseline"  }},
+        R('div', {key: "when", style: { display: "flex", alignItems: "baseline" }},
+          R('div', {key: "label", style: labelStyle}, "if"),
+          this.build(cse.when, expr.table, (onChange ? innerElemOnWhenChange : undefined), {key: "content", types: ["boolean"], suppressWrapOps: ["if"], aggrStatuses: options.aggrStatuses})),
+        R('div', {key: "then", style: { display: "flex", alignItems: "baseline" }},
+          R('div', {key: "label", style: labelStyle}, "then"),
+          this.build(cse.then, expr.table, (onChange ? innerElemOnThenChange : undefined), {key: "content", types: options.types, preferLiteral: true, enumValues: options.enumValues, aggrStatuses: options.aggrStatuses}))
+      );
+
+      const handleRemove = () => {
+        const cases = expr.cases.slice();
+        cases.splice(i, 1);
+        return onChange(_.extend({}, expr, { cases })); 
+      };
+
+      return { elem, onRemove: (onChange ? handleRemove : undefined) };
+  });
     
-    # Add else
-    onElseChange = (newValue) =>
-      onChange(_.extend({}, expr, { else: newValue }))
+    // Add else
+    const onElseChange = newValue => {
+      return onChange(_.extend({}, expr, { else: newValue }));
+    };
 
     items.push({
-      elem: R 'div', key: "when", style: { display: "flex", alignItems: "baseline" },
-        R 'div', key: "label", style: labelStyle, "else"
-        @build(expr.else, expr.table, (if onChange then onElseChange), key: "content", types: options.types, preferLiteral: true, enumValues: options.enumValues, aggrStatuses: options.aggrStatuses)  
-    })
+      elem: R('div', {key: "when", style: { display: "flex", alignItems: "baseline" }},
+        R('div', {key: "label", style: labelStyle}, "else"),
+        this.build(expr.else, expr.table, (onChange ? onElseChange : undefined), {key: "content", types: options.types, preferLiteral: true, enumValues: options.enumValues, aggrStatuses: options.aggrStatuses}))  
+    });
 
-    # Create stacked expression
-    R(StackedComponent, items: items)
+    // Create stacked expression
+    return R(StackedComponent, {items});
+  }
 
-  buildScore: (expr, onChange, options) ->
-    return R ScoreExprComponent,
-      schema: @schema
-      dataSource: @dataSource
-      value: expr
-      onChange: onChange
+  buildScore(expr, onChange, options) {
+    return R(ScoreExprComponent, {
+      schema: this.schema,
+      dataSource: this.dataSource,
+      value: expr,
+      onChange
+    }
+    );
+  }
 
-  buildBuildEnumset: (expr, onChange, options) ->
-    return R BuildEnumsetExprComponent,
-      schema: @schema
-      dataSource: @dataSource
-      value: expr
-      enumValues: options.enumValues
-      onChange: onChange
+  buildBuildEnumset(expr, onChange, options) {
+    return R(BuildEnumsetExprComponent, {
+      schema: this.schema,
+      dataSource: this.dataSource,
+      value: expr,
+      enumValues: options.enumValues,
+      onChange
+    }
+    );
+  }
+};
 
-# TODO DOC
-class WrappedLinkComponent extends React.Component
-  @propTypes:
-    links: PropTypes.array.isRequired # Shape is label, onClick
+// TODO DOC
+class WrappedLinkComponent extends React.Component {
+  static initClass() {
+    this.propTypes =
+      {links: PropTypes.array.isRequired};
+     // Shape is label, onClick
+  }
 
-  renderLinks: ->
-    R 'div', style: { 
-      position: "absolute"
-      left: 10
-      bottom: 0 
+  renderLinks() {
+    return R('div', { style: { 
+      position: "absolute",
+      left: 10,
+      bottom: 0, 
       whiteSpace: "nowrap"
-    }, className: "hover-display-child",
-      _.map @props.links, (link, i) =>
-        R 'a', key: "#{i}", style: { 
-          paddingLeft: 3
-          paddingRight: 3
-          backgroundColor: "white"
-          cursor: "pointer"
+    }, className: "hover-display-child"
+  },
+      _.map(this.props.links, (link, i) => {
+        return R('a', { key: `${i}`, style: { 
+          paddingLeft: 3,
+          paddingRight: 3,
+          backgroundColor: "white",
+          cursor: "pointer",
           fontSize: 12
-        }, onClick: link.onClick,
-          link.label
+        }, onClick: link.onClick
+      },
+          link.label);
+      })
+    );
+  }
 
-  render: ->
-    R 'div', style: { paddingBottom: 20, position: "relative" }, className: "hover-display-parent",
-      R 'div', style: { 
-        position: "absolute"
-        height: 10
-        bottom: 10
-        left: 0
-        right: 0
-        borderLeft: "solid 1px #DDD" 
-        borderBottom: "solid 1px #DDD" 
+  render() {
+    return R('div', {style: { paddingBottom: 20, position: "relative" }, className: "hover-display-parent"},
+      R('div', { style: { 
+        position: "absolute",
+        height: 10,
+        bottom: 10,
+        left: 0,
+        right: 0,
+        borderLeft: "solid 1px #DDD", 
+        borderBottom: "solid 1px #DDD", 
         borderRight: "solid 1px #DDD" 
       }, className: "hover-display-child"
-      @renderLinks(),
-        @props.children
+    }
+      ),
+      this.renderLinks(),
+        this.props.children);
+  }
+}
+WrappedLinkComponent.initClass();
 
