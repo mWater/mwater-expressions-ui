@@ -1,5 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 import "./index.css"
 
 export { default as ExprComponent } from "./ExprComponent"

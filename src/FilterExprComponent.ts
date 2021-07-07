@@ -3,6 +3,7 @@ import _ from "lodash"
 import React from "react"
 const R = React.createElement
 
+import { Schema, DataSource, Variable, Expr } from "mwater-expressions"
 import update from "update-object"
 import { ExprCleaner } from "mwater-expressions"
 import ExprElementBuilder from "./ExprElementBuilder"
@@ -11,25 +12,26 @@ import RemovableComponent from "./RemovableComponent"
 import ExprLinkComponent from "./ExprLinkComponent"
 
 interface FilterExprComponentProps {
-  schema: any
-  /** Data source to use to get values */
-  dataSource: any
-  variables?: any
+  schema: Schema
+  dataSource: DataSource
+  variables?: Variable[]
   /** Current table */
   table: string
   /** Current value */
-  value?: any
+  value?: Expr
+
   /** Called with new expression */
-  onChange?: any
+  onChange?: (expr: Expr) => void
+
   /** Label for adding item. Default "+ Add Label" */
-  addLabel?: any
+  addLabel?: React.ReactNode
 }
 
 interface FilterExprComponentState {
   displayNull: any
 }
 
-// Displays a boolean filter expression. Just shows "+ Add filter" (or other add label) when empty
+/** Displays a boolean filter expression. Just shows "+ Add filter" (or other add label) when empty */
 export default class FilterExprComponent extends React.Component<FilterExprComponentProps, FilterExprComponentState> {
   static contextTypes = { locale: PropTypes.string }
 
@@ -38,7 +40,9 @@ export default class FilterExprComponent extends React.Component<FilterExprCompo
     variables: []
   }
 
-  constructor(props: any) {
+  newExpr: ExprLinkComponent | null | undefined
+
+  constructor(props: FilterExprComponentProps) {
     super(props)
 
     this.state = { displayNull: false } // Set true when initial null value should be displayed
@@ -47,14 +51,14 @@ export default class FilterExprComponent extends React.Component<FilterExprCompo
   // Handle add filter clicked by wrapping in "and" if existing, otherwise adding a null
   handleAddFilter = () => {
     // If already "and", add null
-    if (this.props.value && this.props.value.op === "and") {
-      this.props.onChange(update(this.props.value, { exprs: { $push: [null] } }))
+    if (this.props.value && this.props.value.type == "op" && this.props.value.op === "and") {
+      this.props.onChange!(update(this.props.value, { exprs: { $push: [null] } }))
       return
     }
 
     // If already has value, wrap in and
     if (this.props.value) {
-      this.props.onChange({ type: "op", op: "and", table: this.props.table, exprs: [this.props.value, null] })
+      this.props.onChange!({ type: "op", op: "and", table: this.props.table, exprs: [this.props.value, null] })
       return
     }
 
@@ -63,7 +67,7 @@ export default class FilterExprComponent extends React.Component<FilterExprCompo
 
   // Clean expression and pass up
   handleChange = (expr: any) => {
-    return this.props.onChange(this.cleanExpr(expr))
+    return this.props.onChange!(this.cleanExpr(expr))
   }
 
   // Cleans an expression
@@ -96,7 +100,7 @@ export default class FilterExprComponent extends React.Component<FilterExprCompo
     const expr = this.cleanExpr(this.props.value)
 
     // Render each item of and
-    if (expr && expr.op === "and") {
+    if (expr && expr.type == "op" && expr.op === "and") {
       return R(
         "div",
         null,

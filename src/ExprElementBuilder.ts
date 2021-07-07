@@ -3,7 +3,7 @@ import _ from "lodash"
 import React from "react"
 const R = React.createElement
 
-import { ExprUtils } from "mwater-expressions"
+import { DataSource, ExprUtils, Schema, Variable } from "mwater-expressions"
 import LinkComponent from "./LinkComponent"
 import StackedComponent from "./StackedComponent"
 import IdLiteralComponent from "./IdLiteralComponent"
@@ -14,11 +14,17 @@ import { getExprUIExtensions } from "./extensions"
 
 // Builds a react element for an expression
 export default class ExprElementBuilder {
-  constructor(schema: any, dataSource: any, locale: any, variables = []) {
+  schema: Schema
+  dataSource: DataSource
+  locale: string | undefined
+  variables: Variable[]
+  exprUtils: ExprUtils
+
+  constructor(schema: any, dataSource: any, locale?: any, variables?: Variable[]) {
     this.schema = schema
     this.dataSource = dataSource
     this.locale = locale
-    this.variables = variables
+    this.variables = variables || []
 
     this.exprUtils = new ExprUtils(this.schema, variables)
   }

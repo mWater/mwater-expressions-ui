@@ -1,64 +1,102 @@
 // TODO: This file was created by bulk-decaffeinate.
 // Sanity-check the conversion and remove this comment.
 import PropTypes from "prop-types"
-import React from "react"
-const R = React.createElement
 import _ from "lodash"
-import uuid from "uuid"
 import ReorderableListComponent from "react-library/lib/reorderable/ReorderableListComponent"
 import LocalizedStringComponent from "../LocalizedStringComponent"
 import PropertyEditorComponent from "./PropertyEditorComponent"
 import SectionEditorComponent from "./SectionEditorComponent"
 import NestedListClipboardEnhancement from "./NestedListClipboardEnhancement"
 import ActionCancelModalComponent from "react-library/lib/ActionCancelModalComponent"
+import { Column, Schema, DataSource, Section, Variable } from "mwater-expressions"
+import React, { ReactNode } from "react"
+const R = React.createElement
 
-// List/add/edit properties
-class PropertyListComponent extends React.Component {
-  static propTypes = {
-    properties: PropTypes.array.isRequired, // array of properties
-    onChange: PropTypes.func.isRequired,
-    schema: PropTypes.object, // schema of all data. Needed for idType and expr features
-    dataSource: PropTypes.object, // data source. Needed for expr feature
-    table: PropTypes.string, // Table that properties are of. Not required if table feature is on
-    tableIds: PropTypes.arrayOf(PropTypes.string.isRequired), // Ids of tables to include when using table feature
-    propertyIdGenerator: PropTypes.func, // Function to generate the ID of the property
-    allPropertyIds: PropTypes.arrayOf(PropTypes.string.isRequired), // List of all property ids to prevent duplicates. Do not set directly!
-    variables: PropTypes.array, // Variables that may be used in expressions
+class PropertyListComponent extends React.Component<{
+  /** # array of properties */
+  properties: (Column | Section)[]
 
-    // Array of features to be enabled apart from the defaults. Features are:
-    // sql: include raw SQL editor
-    // reverseSql: include reverse SQL editor. Use {value} for the value sql that will be replaced. e.g. {value}::text
-    // idField: show id field for properties
-    // uniqueCode: allow uniqueCode flag on properties
-    // idType: allow id-type fields
-    // joinType: allow join-type fields
-    // code: show code of properties
-    // expr: allow fields with expr set
-    // conditionExpr: allow fields to set a condition expression if they are conditionally displayed
-    // section: allow adding sections
-    // table: each property contains table
-    // unique: allow unique flag on properties
-    // onDelete: allow undefined, "cascade" or "set_null"
-    // indexed: allow indexed flag on properties
-    // dataurlType: allow dataurl type
-    // required: allow required flag on properties
-    features: PropTypes.array,
+  onChange: (properties: (Column | Section)[]) => void
 
-    // function that returns the UI of the roles, called with a single argument, the array containing roles
-    createRoleDisplayElem: PropTypes.func,
+  /** schema of all data. Needed for idType and expr features */
+  schema?: Schema
 
-    // function that returns the UI of the roles for editing, gets passed two arguments
-    // 1. the array containing roles
-    // 2. The callback function that should be called when the roles change
-    createRoleEditElem: PropTypes.func,
+  /** data source. Needed for expr feature */
+  dataSource?: DataSource
 
-    onCut: PropTypes.func, // supplied by NestedListClipboardEnhancement
-    onCopy: PropTypes.func, // supplied by NestedListClipboardEnhancement
-    onPaste: PropTypes.func, // supplied by NestedListClipboardEnhancement
-    onPasteInto: PropTypes.func, // supplied by NestedListClipboardEnhancement
-    listId: PropTypes.string // used internally
-  }
+  /** Table that properties are of. Not required if table feature is on */
+  table?: string
 
+  /** Ids of tables to include when using table feature */
+  tableIds?: string[]
+
+  /** Function to generate the ID of the property */
+  propertyIdGenerator?: () => string
+
+  /** Variables that may be used in expressions */
+  variables?: Variable[]
+
+  // /** List of all property ids to prevent duplicates. Do not set directly! */
+  // allPropertyIds?: arrayOf(PropTypes.string.isRequired)
+
+  /* Array of features to be enabled apart from the defaults. Features are:
+   * sql: include raw SQL editor. Use {alias} for the table name
+   * reverseSql: include reverse SQL editor. Use {value} for the value sql that will be replaced. e.g. {value}::text
+   * idField: show id field for properties
+   * uniqueCode: allow uniqueCode flag on properties
+   * idType: allow id-type fields
+   * joinType: allow join-type fields
+   * code: show code of properties
+   * expr: allow fields with expr set
+   * conditionExpr: allow fields to set a condition expression if they are conditionally displayed
+   * section: allow adding sections
+   * table: each property contains table
+   * unique: allow unique flag on properties
+   * onDelete: allow undefined, "cascade" or "set_null"
+   * dataurlType: allow dataurl type fields
+   * indexed: allow indexed flag on properties
+   * required: allow required flag on properties
+   */
+  features?: (
+    | "sql"
+    | "idField"
+    | "uniqueCode"
+    | "idType"
+    | "joinType"
+    | "code"
+    | "expr"
+    | "conditionExpr"
+    | "section"
+    | "table"
+    | "unique"
+    | "onDelete"
+    | "dataurlType"
+    | "indexed"
+    | "reverseSql"
+    | "required"
+  )[]
+
+  /** function that returns the UI of the roles, called with a single argument, the array containing roles */
+  createRoleDisplayElem?: (roles: any[]) => ReactNode
+
+  /** function that returns the UI of the roles for editing, gets passed two arguments
+   * 1. the array containing roles
+   * 2. The callback function that should be called when the roles change */
+  createRoleEditElem?: (roles: any[], onChange: (roles: any[]) => void) => ReactNode
+
+  /** supplied by NestedListClipboardEnhancement */
+  onCut?: () => void 
+  /** supplied by NestedListClipboardEnhancement */
+  onCopy?: () => void 
+  /** supplied by NestedListClipboardEnhancement */
+  onPaste?: () => void 
+  /** supplied by NestedListClipboardEnhancement */
+  onPasteInto?: () => void 
+
+  /** used internally */
+  listId?: string 
+
+}> {
   static contextTypes = { clipboard: PropTypes.object }
 
   constructor(props: any) {
@@ -232,7 +270,7 @@ class PropertyListComponent extends React.Component {
   }
 }
 
-class PropertyComponent extends React.Component {
+class PropertyComponent extends React.Component<any> {
   static propTypes = {
     property: PropTypes.object.isRequired, // The property
     onChange: PropTypes.func.isRequired,
