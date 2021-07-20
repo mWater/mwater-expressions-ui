@@ -3,7 +3,7 @@ import React from "react"
 import { default as AsyncReactSelect } from "react-select/async"
 import { DataSource, ExprCompiler, Schema } from "mwater-expressions"
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
-import { JsonQLExpr } from "jsonql"
+import { JsonQLExpr, JsonQLQuery } from "jsonql"
 const R = React.createElement
 
 interface IdLiteralComponentProps {
@@ -44,7 +44,9 @@ interface IdLiteralComponentProps {
 // Needs two indexes to work fast:
 // create index on some_table (label_column);
 // create index on some_table (lower(label_column) text_pattern_ops);
-export default class IdLiteralComponent extends AsyncLoadComponent<IdLiteralComponentProps> {
+export default class IdLiteralComponent extends AsyncLoadComponent<IdLiteralComponentProps, { currentValue: any }> {
+  select?: any
+
   focus() {
     return this.select.focus()
   }
@@ -57,7 +59,7 @@ export default class IdLiteralComponent extends AsyncLoadComponent<IdLiteralComp
   // Call callback with state changes
   load(props: any, prevProps: any, callback: any) {
     // Create query to get current value
-    if (!props.value) {
+    if (props.value == null) {
       callback({ currentValue: null })
       return
     }
@@ -109,14 +111,14 @@ export default class IdLiteralComponent extends AsyncLoadComponent<IdLiteralComp
     }
   }
 
-  getLabelExpr() {
+  getLabelExpr(): JsonQLExpr {
     if (this.props.labelExpr) {
       return this.props.labelExpr
     }
 
-    const table = this.props.schema.getTable(this.props.idTable)
+    const table = this.props.schema.getTable(this.props.idTable)!
     if (table.label) {
-      return { type: "field", tableAlias: "main", column: table.label }
+      return { type: "field", tableAlias: "main", column: table.label } as JsonQLExpr
     }
 
     // Use primary key. Ugly, but what else to do?. Cast to text.
@@ -124,12 +126,12 @@ export default class IdLiteralComponent extends AsyncLoadComponent<IdLiteralComp
   }
 
   loadOptions = (input: any, cb: any) => {
-    let where
-    const table = this.props.schema.getTable(this.props.idTable)
+    let where: JsonQLExpr
+    const table = this.props.schema.getTable(this.props.idTable)!
 
     // Primary key column
-    const idColumn = { type: "field", tableAlias: "main", column: table.primaryKey }
-    const labelExpr = this.getLabelExpr()
+    const idColumn: JsonQLExpr = { type: "field", tableAlias: "main", column: table.primaryKey }
+    const labelExpr: JsonQLExpr = this.getLabelExpr()
 
     if (input) {
       where = {
@@ -145,7 +147,7 @@ export default class IdLiteralComponent extends AsyncLoadComponent<IdLiteralComp
     }
 
     // select <label column> as value from <table> where lower(<label column>) like 'input%' limit 50
-    const query = {
+    const query: JsonQLQuery = {
       type: "query",
       selects: [
         { type: "select", expr: idColumn, alias: "value" },
@@ -181,7 +183,7 @@ export default class IdLiteralComponent extends AsyncLoadComponent<IdLiteralComp
       }
 
       // Filter null and blank
-      rows = _.filter(rows, (r) => r.label)
+      rows = _.filter(rows, (r: any) => r.label)
 
       return cb(rows)
     })

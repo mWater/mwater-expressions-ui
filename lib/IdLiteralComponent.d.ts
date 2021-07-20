@@ -25,12 +25,15 @@ interface IdLiteralComponentProps {
     /** Allow searching anywhere in label, not just start */
     searchWithin?: boolean;
 }
-export default class IdLiteralComponent extends AsyncLoadComponent<IdLiteralComponentProps> {
+export default class IdLiteralComponent extends AsyncLoadComponent<IdLiteralComponentProps, {
+    currentValue: any;
+}> {
+    select?: any;
     focus(): any;
     isLoadNeeded(newProps: any, oldProps: any): boolean;
     load(props: any, prevProps: any, callback: any): any;
-    handleChange: (value: any) => any;
-    getLabelExpr(): any;
+    handleChange: (value: any) => void;
+    getLabelExpr(): JsonQLExpr;
     loadOptions: (input: any, cb: any) => void;
     render(): React.DetailedReactHTMLElement<{
         style: {
