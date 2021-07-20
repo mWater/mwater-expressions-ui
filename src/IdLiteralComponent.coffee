@@ -34,7 +34,7 @@ module.exports = class IdLiteralComponent extends AsyncLoadComponent
   # Call callback with state changes
   load: (props, prevProps, callback) ->
     # Create query to get current value
-    if props.value == null
+    if not props.value?
       callback(currentValue: null)
       return
 
