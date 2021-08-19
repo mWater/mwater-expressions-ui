@@ -2,7 +2,7 @@ import PropTypes from "prop-types"
 import React from "react"
 const R = React.createElement
 import _ from "lodash"
-import ui from "react-library/lib/bootstrap"
+import * as ui from "react-library/lib/bootstrap"
 import LocalizedStringEditorComp from "../LocalizedStringEditorComp"
 import ExprComponent from "../ExprComponent"
 import { ExprUtils } from "mwater-expressions"
