@@ -27,7 +27,7 @@
     "jsonql": "github:mWater/jsonql",
     "lodash": "^3.10.1",
     "moment": "^2.27.0",
-    "mwater-expressions": "github:mWater/mwater-expressions",
+    "mwater-expressions": "github:mWater/mwater-expressions#typescript",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-bootstrap-daterangepicker": "^1.0.3",
