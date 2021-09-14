@@ -1,44 +1,38 @@
-import PropTypes from "prop-types";
-import React from "react";
-declare const _default: {
-    new (props: any): {
-        handleCut: (listId: any, itemId: any) => void;
-        findItemById: (listId: any, itemId: any) => any;
-        handleCopy: (listId: any, itemId: any, cut?: boolean) => void;
-        handlePasteInto: (listId: any, itemId: any) => any;
-        cut: (listId: any, itemId: any, items: any) => any;
-        paste: (listId: any, itemId: any, items: any) => any;
-        handlePaste: (listId: any, itemId: any) => any;
-        getChildContext: () => {
-            clipboard: any;
-        };
-        render(): React.DetailedReactHTMLElement<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
-        context: any;
-        setState<K extends never>(state: {} | ((prevState: Readonly<{}>, props: Readonly<{}>) => {} | Pick<{}, K> | null) | Pick<{}, K> | null, callback?: (() => void) | undefined): void;
-        forceUpdate(callback?: (() => void) | undefined): void;
-        readonly props: Readonly<{}> & Readonly<{
-            children?: React.ReactNode;
-        }>;
-        state: Readonly<{}>;
-        refs: {
-            [key: string]: React.ReactInstance;
-        };
-        componentDidMount?(): void;
-        shouldComponentUpdate?(nextProps: Readonly<{}>, nextState: Readonly<{}>, nextContext: any): boolean;
-        componentWillUnmount?(): void;
-        componentDidCatch?(error: Error, errorInfo: React.ErrorInfo): void;
-        getSnapshotBeforeUpdate?(prevProps: Readonly<{}>, prevState: Readonly<{}>): any;
-        componentDidUpdate?(prevProps: Readonly<{}>, prevState: Readonly<{}>, snapshot?: any): void;
-        componentWillMount?(): void;
-        UNSAFE_componentWillMount?(): void;
-        componentWillReceiveProps?(nextProps: Readonly<{}>, nextContext: any): void;
-        UNSAFE_componentWillReceiveProps?(nextProps: Readonly<{}>, nextContext: any): void;
-        componentWillUpdate?(nextProps: Readonly<{}>, nextState: Readonly<{}>, nextContext: any): void;
-        UNSAFE_componentWillUpdate?(nextProps: Readonly<{}>, nextState: Readonly<{}>, nextContext: any): void;
-    };
-    childContextTypes: {
-        clipboard: PropTypes.Requireable<object>;
-    };
-    contextType?: React.Context<any> | undefined;
-};
+import { Column, Schema, DataSource, Section, Variable } from "mwater-expressions";
+import React, { ReactNode } from "react";
+export interface PropertyListComponentProps {
+    /** # array of properties */
+    properties: (Column | Section)[];
+    onChange: (properties: (Column | Section)[]) => void;
+    /** schema of all data. Needed for idType and expr features */
+    schema?: Schema;
+    /** data source. Needed for expr feature */
+    dataSource?: DataSource;
+    /** Table that properties are of. Not required if table feature is on */
+    table?: string;
+    /** Ids of tables to include when using table feature */
+    tableIds?: string[];
+    /** Function to generate the ID of the property */
+    propertyIdGenerator?: () => string;
+    /** Variables that may be used in expressions */
+    variables?: Variable[];
+    features?: ("sql" | "idField" | "uniqueCode" | "idType" | "joinType" | "code" | "expr" | "conditionExpr" | "section" | "table" | "unique" | "onDelete" | "dataurlType" | "indexed" | "reverseSql" | "required")[];
+    /** function that returns the UI of the roles, called with a single argument, the array containing roles */
+    createRoleDisplayElem?: (roles: any[]) => ReactNode;
+    /** function that returns the UI of the roles for editing, gets passed two arguments
+     * 1. the array containing roles
+     * 2. The callback function that should be called when the roles change */
+    createRoleEditElem?: (roles: any[], onChange: (roles: any[]) => void) => ReactNode;
+    /** supplied by NestedListClipboardEnhancement */
+    onCut?: () => void;
+    /** supplied by NestedListClipboardEnhancement */
+    onCopy?: () => void;
+    /** supplied by NestedListClipboardEnhancement */
+    onPaste?: () => void;
+    /** supplied by NestedListClipboardEnhancement */
+    onPasteInto?: () => void;
+    /** used internally */
+    listId?: string;
+}
+declare const _default: React.Component<PropertyListComponentProps, {}, any>;
 export default _default;

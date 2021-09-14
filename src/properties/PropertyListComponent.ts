@@ -12,7 +12,7 @@ import { Column, Schema, DataSource, Section, Variable } from "mwater-expression
 import React, { ReactNode } from "react"
 const R = React.createElement
 
-class PropertyListComponent extends React.Component<{
+export interface PropertyListComponentProps {
   /** # array of properties */
   properties: (Column | Section)[]
 
@@ -95,8 +95,9 @@ class PropertyListComponent extends React.Component<{
 
   /** used internally */
   listId?: string 
+}
 
-}> {
+class PropertyListComponent extends React.Component<PropertyListComponentProps> {
   static contextTypes = { clipboard: PropTypes.object }
 
   constructor(props: any) {
@@ -109,13 +110,13 @@ class PropertyListComponent extends React.Component<{
   handleChange = (index: any, property: any) => {
     const value = this.props.properties.slice()
     value[index] = property
-    return this.props.onChange(value)
+    this.props.onChange(value)
   }
 
   handleDelete = (index: any) => {
     const value = this.props.properties.slice()
     _.pullAt(value, index)
-    return this.props.onChange(value)
+    this.props.onChange(value)
   }
 
   handleNewProperty = () => {
@@ -127,7 +128,7 @@ class PropertyListComponent extends React.Component<{
       property["id"] = this.props.propertyIdGenerator()
     }
 
-    return this.setState({ addingItem: property })
+    this.setState({ addingItem: property })
   }
 
   handleNewSection = () => {
@@ -136,7 +137,7 @@ class PropertyListComponent extends React.Component<{
       contents: []
     }
 
-    return this.setState({ addingItem: section })
+    this.setState({ addingItem: section })
   }
 
   renderControls(allPropertyIds: any) {
@@ -164,7 +165,7 @@ class PropertyListComponent extends React.Component<{
         "ul",
         { className: "dropdown-menu text-left", role: "menu" },
         R("li", { key: "property" }, R("a", { onClick: this.handleNewProperty }, "Property")),
-        _.includes(this.props.features, "section")
+        _.includes(this.props.features || [], "section")
           ? R("li", { key: "section" }, R("a", { onClick: this.handleNewSection }, "Section"))
           : undefined
       )
@@ -515,7 +516,7 @@ class PropertyComponent extends React.Component<any> {
   }
 }
 
-export default NestedListClipboardEnhancement(PropertyListComponent)
+export default (NestedListClipboardEnhancement(PropertyListComponent) as any as React.Component<PropertyListComponentProps>)
 
 // Flatten a nested list of properties
 function flattenProperties(properties: any) {
