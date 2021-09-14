@@ -97,7 +97,7 @@ export interface PropertyListComponentProps {
   listId?: string 
 }
 
-class PropertyListComponent extends React.Component<PropertyListComponentProps> {
+class InnerPropertyListComponent extends React.Component<PropertyListComponentProps> {
   static contextTypes = { clipboard: PropTypes.object }
 
   constructor(props: any) {
@@ -488,7 +488,7 @@ class PropertyComponent extends React.Component<any> {
         ? R(
             "div",
             { className: "pl-item-section" },
-            R(PropertyListComponent, {
+            R(InnerPropertyListComponent, {
               properties: this.props.property.contents || [],
               features: this.props.features,
               schema: this.props.schema,
@@ -516,7 +516,13 @@ class PropertyComponent extends React.Component<any> {
   }
 }
 
-export default (NestedListClipboardEnhancement(PropertyListComponent) as any as React.Component<PropertyListComponentProps>)
+const WrappedPropertyListComponent = NestedListClipboardEnhancement(InnerPropertyListComponent)
+
+export default class PropertyListComponent extends React.Component<PropertyListComponentProps> {
+  render() {
+    return R(WrappedPropertyListComponent, this.props) as any
+  }
+}
 
 // Flatten a nested list of properties
 function flattenProperties(properties: any) {

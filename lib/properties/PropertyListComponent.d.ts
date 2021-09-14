@@ -34,5 +34,6 @@ export interface PropertyListComponentProps {
     /** used internally */
     listId?: string;
 }
-declare const _default: React.Component<PropertyListComponentProps, {}, any>;
-export default _default;
+export default class PropertyListComponent extends React.Component<PropertyListComponentProps> {
+    render(): any;
+}
