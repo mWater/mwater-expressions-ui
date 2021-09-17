@@ -88,8 +88,10 @@ export default class ContentEditableComponent extends React.Component<ContentEdi
   }
 
   shouldComponentUpdate(nextProps: any) {
-    // Update if prop html has changed, or if inner html has changed
-    const changed = !this.editor || nextProps.html !== this.props.html || this.editor.innerHTML !== this.lastInnerHTML
+    // Update if prop html has changed
+    // Note: this used to check if inner html has changed (i.e. this.editor.innerHTML !== this.lastInnerHTML)
+    // but that caused problems with delayed refreshes https://github.com/mWater/mwater-visualization/issues/460
+    const changed = !this.editor || nextProps.html !== this.props.html
     // if changed
     //   console.log nextProps.html
     //   console.log @props.html
