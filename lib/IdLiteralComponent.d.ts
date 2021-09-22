@@ -2,7 +2,7 @@ import React from "react";
 import { DataSource, Schema } from "mwater-expressions";
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent";
 import { JsonQLExpr } from "jsonql";
-interface IdLiteralComponentProps {
+export interface IdLiteralComponentProps {
     /** Value of primary key or array of primary keys */
     value: string | string[] | number | number[] | null;
     /** Called with primary key or array of primary keys */
@@ -27,6 +27,7 @@ interface IdLiteralComponentProps {
 }
 export default class IdLiteralComponent extends AsyncLoadComponent<IdLiteralComponentProps, {
     currentValue: any;
+    loading: boolean;
 }> {
     select?: any;
     focus(): any;
@@ -41,4 +42,3 @@ export default class IdLiteralComponent extends AsyncLoadComponent<IdLiteralComp
         };
     }, HTMLElement>;
 }
-export {};
