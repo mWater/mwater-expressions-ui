@@ -152,7 +152,7 @@ class InnerPropertyListComponent extends React.Component<PropertyListComponentPr
           key: "default_add",
           type: "button",
           className: "btn btn-sm btn-secondary dropdown-toggle",
-          "data-toggle": "dropdown"
+          "data-bs-toggle": "dropdown"
         },
         R("i", { className: "fa fa-plus" }),
         " ",
@@ -164,7 +164,7 @@ class InnerPropertyListComponent extends React.Component<PropertyListComponentPr
         { className: "dropdown-menu", role: "menu" },
         R("li", { key: "property" }, R("a", { onClick: this.handleNewProperty }, "Property")),
         _.includes(this.props.features || [], "section")
-          ? R("li", { key: "section" }, R("a", { onClick: this.handleNewSection }, "Section"))
+          ? R("li", { key: "section" }, R("a", { className: "dropdown-item", onClick: this.handleNewSection }, "Section"))
           : undefined
       )
     )

@@ -66,7 +66,7 @@ export default class SelectVariableExprComponent extends React.Component<SelectV
               padding: 4,
               borderRadius: 4,
               cursor: "pointer",
-              color: "#478"
+              color: "var(--bs-primary)"
             },
             className: "hover-grey-background",
             onClick: item.onClick

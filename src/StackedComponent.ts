@@ -37,7 +37,7 @@ export default class StackedComponent extends React.Component<StackedComponentPr
               "a",
               {
                 onClick: item.onRemove,
-                style: { fontSize: "80%", cursor: "pointer", marginLeft: 5, color: "#337ab7" }
+                style: { fontSize: "80%", cursor: "pointer", marginLeft: 5, color: "var(--bs-primary)" }
               },
               R("i", { className: "fa fa-remove" })
             )

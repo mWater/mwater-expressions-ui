@@ -22,7 +22,7 @@ export default class IdFieldComponent extends React.Component<IdFieldComponentPr
   render() {
     return R(
       ui.FormGroup,
-      { label: "ID", hasWarnings: !this.isValid(this.props.value) },
+      { label: "ID" },
       R("input", {
         type: "text",
         className: "form-control",

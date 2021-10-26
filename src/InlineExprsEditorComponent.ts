@@ -251,7 +251,7 @@ export default class InlineExprsEditorComponent extends React.Component<InlineEx
         "a",
         {
           onClick: this.handleInsertClick,
-          style: { cursor: "pointer", position: "absolute", right: 5, top: 8, fontStyle: "italic", color: "#337ab7" }
+          style: { cursor: "pointer", position: "absolute", right: 5, top: 8, fontStyle: "italic", color: "var(--bs-primary)" }
         },
         "f",
         R("sub", null, "x")

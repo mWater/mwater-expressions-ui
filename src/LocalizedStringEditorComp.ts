@@ -107,7 +107,7 @@ export default class LocalizedStringEditorComp extends React.Component<
         { className: "" },
         R(
           "button",
-          { type: "button", className: "btn btn-secondary dropdown-toggle", "data-toggle": "dropdown" },
+          { type: "button", className: "btn btn-secondary dropdown-toggle", "data-bs-toggle": "dropdown" },
           this.state.selectedLanguageCode
         ),
 
@@ -120,7 +120,7 @@ export default class LocalizedStringEditorComp extends React.Component<
               { key: availableLanguage.id },
               R(
                 "a",
-                { onClick: this.onLanguageSelectionClick.bind(null, availableLanguage.id) },
+                { className: "dropdown-item", onClick: this.onLanguageSelectionClick.bind(null, availableLanguage.id) },
                 availableLanguage.name
               )
             )

@@ -21,7 +21,7 @@ export default class RemovableComponent extends React.Component<RemovableCompone
               "a",
               {
                 onClick: this.props.onRemove,
-                style: { fontSize: "80%", cursor: "pointer", marginLeft: 5, color: "#337ab7" }
+                style: { fontSize: "80%", cursor: "pointer", marginLeft: 5, color: "var(--bs-primary)" }
               },
               R("i", { className: "fa fa-remove" })
             )

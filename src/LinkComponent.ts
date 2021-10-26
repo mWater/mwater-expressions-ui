@@ -41,7 +41,7 @@ export default class LinkComponent extends React.Component<LinkComponentProps> {
       key = JSON.stringify(key)
     }
 
-    return R("li", { key }, R("a", { key: id, onClick: this.props.onDropdownItemClicked.bind(null, id) }, name))
+    return R("li", { key }, R("a", { key: id, className: "dropdown-item", onClick: this.props.onDropdownItemClicked.bind(null, id) }, name))
   }
 
   render() {
@@ -56,7 +56,7 @@ export default class LinkComponent extends React.Component<LinkComponentProps> {
 
     const elem = R(
       "div",
-      { className: "link-component", "data-toggle": "dropdown" },
+      { className: "link-component", "data-bs-toggle": "dropdown" },
       R("div", { style: { display: "inline-block" }, onClick: this.props.onClick }, this.props.children),
       this.renderRemove()
     )

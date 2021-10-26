@@ -678,7 +678,7 @@ class WrappedLinkComponent extends React.Component<WrappedLinkComponentProps> {
               paddingLeft: 3,
               paddingRight: 3,
               backgroundColor: "white",
-              color: "#337ab7",
+              color: "var(--bs-primary)",
               cursor: "pointer",
               fontSize: 12
             },

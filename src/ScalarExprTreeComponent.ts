@@ -88,7 +88,7 @@ class ScalarExprTreeLeafComponent extends React.Component<ScalarExprTreeLeafComp
       padding: 4,
       borderRadius: 4,
       cursor: "pointer",
-      color: "#478"
+      color: "var(--bs-primary)"
     }
 
     return R(
@@ -202,7 +202,7 @@ class ScalarExprTreeNodeComponent extends React.Component<
       children = R("div", { style: { paddingLeft: 18 }, key: "tree" }, children)
     }
 
-    const color = this.props.item.value ? "#478" : undefined
+    const color = this.props.item.value ? "var(--bs-primary)" : undefined
 
     return R(
       "div",
@@ -217,7 +217,7 @@ class ScalarExprTreeNodeComponent extends React.Component<
         R(
           "span",
           {
-            style: { color: "#478", cursor: "pointer", position: "absolute", left: -15 },
+            style: { color: "var(--bs-primary)", cursor: "pointer", position: "absolute", left: -15 },
             onClick: this.handleArrowClick
           },
           arrow
