@@ -35,7 +35,10 @@ export default class StackedComponent extends React.Component<StackedComponentPr
             { style: { flex: "0 0 auto", alignSelf: "center" }, className: "hover-display-child" },
             R(
               "a",
-              { onClick: item.onRemove, style: { fontSize: "80%", cursor: "pointer", marginLeft: 5 } },
+              {
+                onClick: item.onRemove,
+                style: { fontSize: "80%", cursor: "pointer", marginLeft: 5, color: "#337ab7" }
+              },
               R("i", { className: "fa fa-remove" })
             )
           )

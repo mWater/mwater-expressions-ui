@@ -67,7 +67,7 @@ export default class ExprComponent extends React.Component<ExprComponentProps> {
       types: this.props.types,
       enumValueIds: this.props.enumValues ? _.pluck(this.props.enumValues, "id") : undefined,
       idTable: this.props.idTable,
-      aggrStatuses: !this.props.table ? ["literal"] : (this.props.aggrStatuses || ["individual", "literal"])
+      aggrStatuses: !this.props.table ? ["literal"] : this.props.aggrStatuses || ["individual", "literal"]
     })
   }
 
@@ -85,7 +85,7 @@ export default class ExprComponent extends React.Component<ExprComponentProps> {
       preferLiteral: this.props.preferLiteral,
       idTable: this.props.idTable,
       includeAggr: (this.props.aggrStatuses || ["individual", "literal"]).includes("aggregate"),
-      aggrStatuses: !this.props.table ? ["literal"] : (this.props.aggrStatuses || ["individual", "literal"]),
+      aggrStatuses: !this.props.table ? ["literal"] : this.props.aggrStatuses || ["individual", "literal"],
       placeholder: this.props.placeholder,
       // If no expression, pass a ref to use so that the expression editor can be opened
       exprLinkRef: !expr

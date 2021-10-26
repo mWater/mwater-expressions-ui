@@ -30,26 +30,13 @@ export default class ScalarExprTreeBuilder {
         tableId: any;
         key: string;
     }[];
-    createNodes(contents: any, options: any): ({
+    createNodes(contents: any, options: any): {
         name: string;
         desc: string;
         tableId: any;
         item: any;
         key: any;
-    } | {
-        name: string;
-        desc: string;
-        children: () => ({
-            name: string;
-            desc: string;
-            tableId: any;
-            item: any;
-            key: any;
-        } | any)[];
-        tableId: any;
-        item: any;
-        key: any;
-    })[];
+    }[];
     createColumnNode(options: any): {
         name: string;
         desc: string;

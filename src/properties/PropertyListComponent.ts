@@ -85,16 +85,16 @@ export interface PropertyListComponentProps {
   createRoleEditElem?: (roles: any[], onChange: (roles: any[]) => void) => ReactNode
 
   /** supplied by NestedListClipboardEnhancement */
-  onCut?: () => void 
+  onCut?: () => void
   /** supplied by NestedListClipboardEnhancement */
-  onCopy?: () => void 
+  onCopy?: () => void
   /** supplied by NestedListClipboardEnhancement */
-  onPaste?: () => void 
+  onPaste?: () => void
   /** supplied by NestedListClipboardEnhancement */
-  onPasteInto?: () => void 
+  onPasteInto?: () => void
 
   /** used internally */
-  listId?: string 
+  listId?: string
 }
 
 class InnerPropertyListComponent extends React.Component<PropertyListComponentProps> {
@@ -151,19 +151,17 @@ class InnerPropertyListComponent extends React.Component<PropertyListComponentPr
         {
           key: "default_add",
           type: "button",
-          className: "btn btn-xs btn-default dropdown-toggle",
+          className: "btn btn-sm btn-secondary dropdown-toggle",
           "data-toggle": "dropdown"
         },
         R("i", { className: "fa fa-plus" }),
         " ",
-        "Add",
-        " ",
-        R("span", { className: "caret" })
+        "Add"
       ),
 
       R(
         "ul",
-        { className: "dropdown-menu text-left", role: "menu" },
+        { className: "dropdown-menu", role: "menu" },
         R("li", { key: "property" }, R("a", { onClick: this.handleNewProperty }, "Property")),
         _.includes(this.props.features || [], "section")
           ? R("li", { key: "section" }, R("a", { onClick: this.handleNewSection }, "Section"))

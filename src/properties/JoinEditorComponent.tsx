@@ -51,7 +51,7 @@ export const JoinEditorComponent = (props: {
   if (forceAdvanced || !fromTable || (join && !isStandard1toN)) {
     return (
       <div>
-        <button type="button" className="btn btn-xs btn-link" style={{ float: "right" }} onClick={handleReset}>
+        <button type="button" className="btn btn-sm btn-link" style={{ float: "right" }} onClick={handleReset}>
           Reset
         </button>
         <FormGroup key="type" label="Type">
@@ -76,7 +76,7 @@ export const JoinEditorComponent = (props: {
           <div>
             <button
               type="button"
-              className="btn btn-xs btn-link"
+              className="btn btn-sm btn-link"
               style={{ float: "right" }}
               onClick={() => {
                 setForceJsonQLMode(false)
@@ -96,7 +96,7 @@ export const JoinEditorComponent = (props: {
           <div>
             <button
               type="button"
-              className="btn btn-xs btn-link"
+              className="btn btn-sm btn-link"
               style={{ float: "right" }}
               onClick={() => setForceJsonQLMode(true)}
             >
@@ -161,7 +161,7 @@ export const JoinEditorComponent = (props: {
     <div>
       <button
         type="button"
-        className="btn btn-xs btn-link"
+        className="btn btn-sm btn-link"
         style={{ float: "right" }}
         onClick={() => setForceAdvanced(true)}
       >

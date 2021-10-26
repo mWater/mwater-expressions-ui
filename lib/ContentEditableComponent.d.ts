@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import React from "react";
 interface ContentEditableComponentProps {
     html: string;

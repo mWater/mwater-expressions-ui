@@ -104,13 +104,11 @@ export default class LocalizedStringEditorComp extends React.Component<
 
       R(
         "div",
-        { className: "input-group-btn" },
+        { className: "" },
         R(
           "button",
-          { type: "button", className: "btn btn-default dropdown-toggle", "data-toggle": "dropdown" },
-          this.state.selectedLanguageCode,
-          " ",
-          R("span", { className: "caret" })
+          { type: "button", className: "btn btn-secondary dropdown-toggle", "data-toggle": "dropdown" },
+          this.state.selectedLanguageCode
         ),
 
         R(

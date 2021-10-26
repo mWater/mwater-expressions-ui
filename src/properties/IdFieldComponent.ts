@@ -29,7 +29,7 @@ export default class IdFieldComponent extends React.Component<IdFieldComponentPr
         value: this.props.value || "",
         onChange: this.handleChange
       }),
-      R("p", { className: "help-block" }, "Lowercase, numbers and underscores")
+      R("div", { className: "form-text text-muted" }, "Lowercase, numbers and underscores")
     )
   }
 }

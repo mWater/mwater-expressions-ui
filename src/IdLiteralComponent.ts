@@ -44,7 +44,10 @@ export interface IdLiteralComponentProps {
 // Needs two indexes to work fast:
 // create index on some_table (label_column);
 // create index on some_table (lower(label_column) text_pattern_ops);
-export default class IdLiteralComponent extends AsyncLoadComponent<IdLiteralComponentProps, { currentValue: any, loading: boolean }> {
+export default class IdLiteralComponent extends AsyncLoadComponent<
+  IdLiteralComponentProps,
+  { currentValue: any; loading: boolean }
+> {
   select?: any
 
   focus() {

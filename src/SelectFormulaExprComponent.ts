@@ -195,7 +195,7 @@ export default class SelectFormulaExprComponent extends React.Component<
         },
         type: "text",
         placeholder: "Search Formulas...",
-        className: "form-control input-lg",
+        className: "form-control form-control-lg",
         value: this.state.searchText,
         onChange: this.handleSearchTextChange
       }),

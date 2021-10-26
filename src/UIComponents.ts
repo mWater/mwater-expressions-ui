@@ -265,13 +265,13 @@ let _ButtonToggleComponent = (ButtonToggleComponent = (function () {
     render() {
       return R(
         "div",
-        { className: "btn-group btn-group-xs" },
+        { className: "btn-group btn-group-sm" },
         _.map(this.props.options, (option, i) => {
           return R(
             "button",
             {
               type: "button",
-              className: option.value === this.props.value ? "btn btn-primary active" : "btn btn-default",
+              className: option.value === this.props.value ? "btn btn-primary active" : "btn btn-outline-primary",
               onClick: this.props.onChange.bind(null, option.value)
             },
             option.label

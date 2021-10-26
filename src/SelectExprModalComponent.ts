@@ -123,7 +123,7 @@ export default class SelectExprModalComponent extends React.Component {
     return R(
       "div",
       null,
-      R("h3", { style: { marginTop: 0 } }, "Select Field, Formula or Value"),
+      R("h5", null, "Select Field, Formula or Value"),
       R(TabbedComponent, {
         tabs,
         initialTabId: table ? this.props.initialMode : "literal"

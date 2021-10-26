@@ -264,7 +264,7 @@ export default class SelectLiteralExprComponent extends React.Component<
           " OK"
         ),
         " ",
-        R("button", { type: "button", className: "btn btn-default", onClick: this.props.onCancel }, "Cancel")
+        R("button", { type: "button", className: "btn btn-secondary", onClick: this.props.onCancel }, "Cancel")
       ),
       this.renderInput()
     )

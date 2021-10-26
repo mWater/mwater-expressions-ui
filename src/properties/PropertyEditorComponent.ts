@@ -92,7 +92,7 @@ export default class PropertyEditorComponent extends React.Component {
         R(
           "select",
           {
-            className: "form-control",
+            className: "form-select",
             value: this.props.property.type,
             onChange: (ev: any) => this.props.onChange(_.extend({}, this.props.property, { type: ev.target.value }))
           },
@@ -408,10 +408,10 @@ class EnumValueEditorComponent extends React.Component {
   render() {
     return R(
       "div",
-      { className: "panel panel-default" },
+      { className: "card" },
       R(
         "div",
-        { className: "panel-body" },
+        { className: "card-body" },
         R(
           "div",
           { className: "row" },
@@ -477,13 +477,13 @@ class EnumValueEditorComponent extends React.Component {
           "div",
           { className: "row", style: { float: "right" } },
           this.props.onMoveUp
-            ? R("button", { className: "btn btn-link btn-xs", onClick: this.props.onMoveUp }, "Move Up")
+            ? R("button", { className: "btn btn-link btn-sm", onClick: this.props.onMoveUp }, "Move Up")
             : undefined,
           this.props.onMoveDown
-            ? R("button", { className: "btn btn-link btn-xs", onClick: this.props.onMoveDown }, "Move Down")
+            ? R("button", { className: "btn btn-link btn-sm", onClick: this.props.onMoveDown }, "Move Down")
             : undefined,
           this.props.onRemove
-            ? R("button", { className: "btn btn-link btn-xs", onClick: this.props.onRemove }, "Remove")
+            ? R("button", { className: "btn btn-link btn-sm", onClick: this.props.onRemove }, "Remove")
             : undefined
         )
       )

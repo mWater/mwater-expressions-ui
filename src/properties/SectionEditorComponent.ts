@@ -41,7 +41,11 @@ export default class SectionEditorComponent extends React.Component<SectionEdito
               value: this.props.property.id,
               onChange: (ev: any) => this.props.onChange(_.extend({}, this.props.property, { id: ev.target.value }))
             }),
-            R("p", { className: "help-block" }, "Letters lowercase, numbers and _ only. No spaces or uppercase")
+            R(
+              "div",
+              { className: "form-text text-muted" },
+              "Letters lowercase, numbers and _ only. No spaces or uppercase"
+            )
           )
         }
       })(),
