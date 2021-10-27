@@ -93,7 +93,7 @@ export default class FilterExprComponent extends React.Component<FilterExprCompo
   }
 
   renderAddFilter() {
-    return R("div", null, R("a", { onClick: this.handleAddFilter, style: { color: "var(--bs-primary)" } }, this.props.addLabel))
+    return R("div", null, R("a", { onClick: this.handleAddFilter, className: "link-plain" }, this.props.addLabel))
   }
 
   render() {

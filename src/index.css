@@ -1,3 +1,10 @@
+/** Plain link with cursor pointer. Can be span or a */
+.link-plain {
+  color: var(--bs-primary);
+  cursor: pointer;
+  text-decoration: none;
+}
+
 .link-component {
   color: var(--bs-primary);
   cursor: pointer;
