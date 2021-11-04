@@ -1,31 +1,37 @@
 import _ from "lodash"
-import PropTypes from "prop-types"
 import React from "react"
 const R = React.createElement
 import { default as AsyncReactSelect } from "react-select/async"
-import { ExprCompiler } from "mwater-expressions"
+import { DataSource, Expr, ExprCompiler, FieldExpr, OpExpr, Schema } from "mwater-expressions"
+import { JsonQLSelectQuery } from "jsonql"
 
 interface TextArrayComponentProps {
   value?: any
   onChange: any
+
   /** Expression for the text values to select from */
-  refExpr: any
+  refExpr: Expr
+
   /** Schema of the database */
-  schema: any
-  dataSource: any
+  schema: Schema
+
+  /** Data source to use */
+  dataSource: DataSource
 }
 
-// Displays a combo box that allows selecting multiple text values from an expression
+/** Displays a combo box that allows selecting multiple text values from an expression */
 export default class TextArrayComponent extends React.Component<TextArrayComponentProps> {
+  select: AsyncReactSelect<any, boolean> | null
+
   focus() {
-    return this.select.focus()
+    this.select!.focus()
   }
 
   handleChange = (value: any) => {
     if (value && value.length > 0) {
-      return this.props.onChange({ type: "literal", valueType: "text[]", value: _.pluck(value, "label") })
+      this.props.onChange({ type: "literal", valueType: "text[]", value: _.pluck(value, "label") })
     } else {
-      return this.props.onChange(null)
+      this.props.onChange(null)
     }
   }
 
@@ -38,7 +44,7 @@ export default class TextArrayComponent extends React.Component<TextArrayCompone
     const exprCompiler = new ExprCompiler(this.props.schema)
 
     // select <compiled expr> as value, count(*) as number from <table> where <compiled expr> like 'input%' group by value order by number desc limit 50
-    const query = {
+    const query: JsonQLSelectQuery = {
       type: "query",
       selects: [
         {
@@ -48,7 +54,7 @@ export default class TextArrayComponent extends React.Component<TextArrayCompone
         },
         { type: "select", expr: { type: "op", op: "count", exprs: [] }, alias: "number" }
       ],
-      from: exprCompiler.compileTable(this.props.refExpr.table, "main"),
+      from: exprCompiler.compileTable((this.props.refExpr as FieldExpr).table, "main"),
       where: {
         type: "op",
         op: "~*",
@@ -66,7 +72,7 @@ export default class TextArrayComponent extends React.Component<TextArrayCompone
     }
 
     // Execute query
-    this.props.dataSource.performQuery(query, (err: any, rows: any) => {
+    this.props.dataSource.performQuery(query, (err, rows) => {
       if (err) {
         return
       }
@@ -74,7 +80,7 @@ export default class TextArrayComponent extends React.Component<TextArrayCompone
       // Filter null and blank
       rows = _.filter(rows, (r) => r.value)
 
-      return cb(
+      cb(
         _.map(rows, (r) => ({
           value: r.value,
           label: r.value
