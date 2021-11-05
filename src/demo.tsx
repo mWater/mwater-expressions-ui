@@ -61,7 +61,7 @@ $(() =>
     // ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
     // ReactDOM.render(R(PropertyListContainerComponentWrapped, schema: schema, dataSource: dataSource, table: "entities.water_system"), document.getElementById("main"))
     // ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
-    return ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
+    ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
   })
 )
 // ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
@@ -346,6 +346,7 @@ class MockTestComponent extends React.Component {
         },
         { id: "id2", name: { en: "Id2" }, type: "id", idTable: "t2" },
         { id: "id2[]", name: { en: "Id2[]" }, type: "id[]", idTable: "t2" },
+        { id: "text[]", name: { en: "Text[]" }, type: "text[]" },
 
         // Expressions
         {
@@ -623,11 +624,13 @@ class LiveTestComponent extends React.Component {
   }
 
   componentWillMount() {
+    const client = window.location.hash ? window.location.hash.substr(1) || null : null
+
     // apiUrl = "http://localhost:1234/v3/"
     const apiUrl = "https://api.mwater.co/v3/"
-    return $.getJSON(apiUrl + "jsonql/schema", (schemaJson: any) => {
+    return $.getJSON(apiUrl + `jsonql/schema?client=${client || ""}`, (schemaJson: any) => {
       const schema = new Schema(schemaJson)
-      const dataSource = new MWaterDataSource(apiUrl, null, false)
+      const dataSource = new MWaterDataSource(apiUrl, client, false)
 
       return this.setState({ schema, dataSource })
     })
