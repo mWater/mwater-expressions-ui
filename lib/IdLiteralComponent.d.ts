@@ -4,7 +4,7 @@ import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent";
 import { JsonQLExpr } from "jsonql";
 export interface IdLiteralComponentProps {
     /** Value of primary key or array of primary keys */
-    value: string | string[] | number | number[] | null;
+    value: string | string[] | number | number[] | null | undefined;
     /** Called with primary key or array of primary keys */
     onChange: (value: string | string[] | number | number[] | null) => void;
     idTable: string;
