@@ -56,7 +56,7 @@ export default class LinkComponent extends React.Component<LinkComponentProps> {
 
     const elem = R(
       "div",
-      { className: "link-component", "data-bs-toggle": "dropdown" },
+      { className: "link-component", "data-bs-toggle": this.props.dropdownItems ? "dropdown" : undefined },
       R("div", { style: { display: "inline-block" }, onClick: this.props.onClick }, this.props.children),
       this.renderRemove()
     )
