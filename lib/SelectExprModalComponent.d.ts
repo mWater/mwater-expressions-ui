@@ -29,5 +29,5 @@ export default class SelectExprModalComponent extends React.Component {
         aggrStatuses: string[];
     };
     renderContents(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-    render(): React.CElement<any, ModalWindowComponent>;
+    render(): React.CElement<import("react-library/lib/ModalWindowComponent").ModalWindowComponentProps, ModalWindowComponent>;
 }
