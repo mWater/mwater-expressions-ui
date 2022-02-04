@@ -1,9 +1,8 @@
-import PropTypes from "prop-types"
 import _ from "lodash"
-import React from "react"
+import React, { ReactNode } from "react"
 const R = React.createElement
 
-import { DataSource, ExprUtils, Schema, Variable } from "mwater-expressions"
+import { AggrStatus, DataSource, EnumValue, Expr, ExprUtils, LiteralType, OpExpr, Schema, Variable } from "mwater-expressions"
 import LinkComponent from "./LinkComponent"
 import StackedComponent from "./StackedComponent"
 import IdLiteralComponent from "./IdLiteralComponent"
@@ -11,6 +10,41 @@ import ScoreExprComponent from "./ScoreExprComponent"
 import BuildEnumsetExprComponent from "./BuildEnumsetExprComponent"
 import ExprLinkComponent from "./ExprLinkComponent"
 import { getExprUIExtensions } from "./extensions"
+
+export interface BuildOptions {
+  /** required value types of expression e.g. ['boolean'] */
+  types?: LiteralType[]
+
+  /** key of the resulting element */
+  key?: string
+
+  /** array of { id, name } for the enumerable values to display */
+  enumValues?: EnumValue[]
+
+  /** the table from which id-type expressions must come */
+  idTable?: string
+
+  /** expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values */
+  refExpr?: Expr
+
+  /** to preferentially choose literal expressions (used for RHS of expressions) */
+  preferLiteral?: boolean
+
+  /** pass ops to *not* offer to wrap in */
+  suppressWrapOps?: string[]
+
+  /** true to include count (id) item at root level in expression selector */
+  includeAggr?: boolean
+
+  /** statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] or ["literal"] if not table */
+  aggrStatuses?: AggrStatus[]
+
+  /** empty placeholder */
+  placeholder?: ReactNode
+
+  /** ref to put on expr link component */
+  exprLinkRef?: React.Ref<any>
+}
 
 // Builds a react element for an expression
 export default class ExprElementBuilder {
@@ -42,7 +76,7 @@ export default class ExprElementBuilder {
   //   aggrStatuses: statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] or ["literal"] if not table
   //   placeholder: empty placeholder
   //   exprLinkRef: ref to put on expr link component
-  build(expr: any, table: any, onChange: any, options = {}) {
+  build(expr: Expr, table: string, onChange: (expr: Expr) => void, options: BuildOptions = {}): ReactNode {
     let elem
     _.defaults(options, {
       aggrStatuses: table ? ["individual", "literal"] : ["literal"]
@@ -57,14 +91,14 @@ export default class ExprElementBuilder {
       anyTypeAllowed = true
     } else if (
       options.types.includes("boolean") &&
-      (options.aggrStatuses.includes("individual") || options.aggrStatuses.includes("literal")) &&
+      (options.aggrStatuses!.includes("individual") || options.aggrStatuses!.includes("literal")) &&
       options.types.length === 1
     ) {
       anyTypeAllowed = true
     } else if (
       options.types.includes("number") &&
-      options.aggrStatuses.includes("aggregate") &&
-      !options.aggrStatuses.includes("individual")
+      options.aggrStatuses!.includes("aggregate") &&
+      !options.aggrStatuses!.includes("individual")
     ) {
       anyTypeAllowed = true
     }
@@ -127,8 +161,8 @@ export default class ExprElementBuilder {
         schema: this.schema,
         dataSource: this.dataSource,
         variables: this.variables || [],
-        locale: this.locale,
-        aggrStatuses: options.aggrStatuses,
+        locale: this.locale || null,
+        aggrStatuses: options.aggrStatuses!,
         types: options.types,
         idTable: options.idTable
       })
@@ -140,21 +174,21 @@ export default class ExprElementBuilder {
     const links = []
 
     // Create a link to wrap the expression with an op. type is "n" for +/* that can take n, "binary" for -//, "unary" for sum, etc.
-    const createWrapOp = (op: any, name: any, type = "unary") => {
+    const createWrapOp = (op: string, name: string, type = "unary") => {
       if (!(options.suppressWrapOps || []).includes(op)) {
         if (type === "unary") {
-          return links.push({ label: name, onClick: () => onChange({ type: "op", op, table, exprs: [expr] }) })
+          links.push({ label: name, onClick: () => onChange({ type: "op", op, table, exprs: [expr] }) })
           // Prevent nesting when simple adding would work
-        } else if (expr.op !== op || type === "binary") {
-          return links.push({ label: name, onClick: () => onChange({ type: "op", op, table, exprs: [expr, null] }) })
+        } else if ((expr as OpExpr).op !== op || type === "binary") {
+          links.push({ label: name, onClick: () => onChange({ type: "op", op, table, exprs: [expr, null] }) })
         } else {
           // Just add extra element for n items
-          return links.push({
+          links.push({
             label: name,
             onClick: () => {
-              const exprs = expr.exprs.slice()
+              const exprs = (expr as OpExpr).exprs.slice()
               exprs.push(null)
-              return onChange(_.extend({}, expr, { exprs }))
+              onChange({ ...(expr as OpExpr),  exprs })
             }
           })
         }
@@ -176,7 +210,7 @@ export default class ExprElementBuilder {
       createWrapOp("/", "/", "binary")
 
       // If option to wrap in sum
-      if (options.aggrStatuses.includes("aggregate") && this.exprUtils.getExprAggrStatus(expr) === "individual") {
+      if (options.aggrStatuses!.includes("aggregate") && this.exprUtils.getExprAggrStatus(expr) === "individual") {
         createWrapOp("sum", "Total", "unary")
       }
     }
@@ -188,7 +222,7 @@ export default class ExprElementBuilder {
         onClick: () => {
           const cases = expr.cases.slice()
           cases.push({ when: null, then: null })
-          return onChange(_.extend({}, expr, { cases }))
+          return onChange({ ...expr, cases })
         }
       })
     }
@@ -226,7 +260,7 @@ export default class ExprElementBuilder {
   }
 
   // Build an id component. Displays table name. Only remove option
-  buildId(expr: any, onChange: any, options = {}) {
+  buildId(expr: any, onChange: any, options = {}): ReactNode {
     return R(
       LinkComponent,
       {
@@ -240,7 +274,7 @@ export default class ExprElementBuilder {
   }
 
   // Build a variable component. Displays variable name. Only remove option
-  buildVariable(expr: any, onChange: any, options = {}) {
+  buildVariable(expr: any, onChange: any, options = {}): ReactNode {
     return R(
       LinkComponent,
       {
@@ -253,7 +287,7 @@ export default class ExprElementBuilder {
     )
   }
 
-  buildScalar(expr: any, onChange: any, options = {}) {
+  buildScalar(expr: any, onChange: any, options = {}): ReactNode {
     // Get joins string
     let innerElem
     let destTable = expr.table
@@ -323,7 +357,7 @@ export default class ExprElementBuilder {
   }
 
   // Builds on op component
-  buildOp(expr: any, table: any, onChange: any, options = {}) {
+  buildOp(expr: any, table: any, onChange: any, options = {}): ReactNode {
     let rhsElem
     switch (expr.op) {
       // For vertical ops (ones with n values or other arithmetic)
@@ -546,7 +580,7 @@ export default class ExprElementBuilder {
     }
   }
 
-  buildCase(expr: any, onChange: any, options: any) {
+  buildCase(expr: any, onChange: any, options: any): ReactNode {
     // Style for labels "if", "then", "else"
     const labelStyle = {
       flex: "0 0 auto", // Don't resize
@@ -631,7 +665,7 @@ export default class ExprElementBuilder {
     return R(StackedComponent, { items })
   }
 
-  buildScore(expr: any, onChange: any, options: any) {
+  buildScore(expr: any, onChange: any, options: any): ReactNode {
     return R(ScoreExprComponent, {
       schema: this.schema,
       dataSource: this.dataSource,
@@ -640,7 +674,7 @@ export default class ExprElementBuilder {
     })
   }
 
-  buildBuildEnumset(expr: any, onChange: any, options: any) {
+  buildBuildEnumset(expr: any, onChange: any, options: any): ReactNode {
     return R(BuildEnumsetExprComponent, {
       schema: this.schema,
       dataSource: this.dataSource,
