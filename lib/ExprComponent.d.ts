@@ -34,6 +34,6 @@ export default class ExprComponent extends React.Component<ExprComponentProps> {
     openEditor: () => any;
     handleChange: (expr: any) => void;
     cleanExpr(expr: any): Expr;
-    render(): any;
+    render(): React.ReactNode;
 }
 export {};
