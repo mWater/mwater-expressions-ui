@@ -162,7 +162,7 @@ class InnerPropertyListComponent extends React.Component<PropertyListComponentPr
       R(
         "ul",
         { className: "dropdown-menu", role: "menu" },
-        R("li", { key: "property" }, R("a", { onClick: this.handleNewProperty }, "Property")),
+        R("li", { key: "property" }, R("a", { className: "dropdown-item", onClick: this.handleNewProperty }, "Property")),
         _.includes(this.props.features || [], "section")
           ? R("li", { key: "section" }, R("a", { className: "dropdown-item", onClick: this.handleNewSection }, "Section"))
           : undefined
