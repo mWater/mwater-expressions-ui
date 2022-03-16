@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { AggrStatus, DataSource, EnumValue, Expr, ExprUtils, LiteralType, Schema, Variable } from "mwater-expressions";
+import { AggrStatus, DataSource, EnumValue, Expr, ExprUtils, LiteralType, OpExpr, Schema, Variable } from "mwater-expressions";
 export interface BuildOptions {
     /** required value types of expression e.g. ['boolean'] */
     types?: LiteralType[];
@@ -35,7 +35,7 @@ export default class ExprElementBuilder {
     buildId(expr: any, onChange: any, options?: {}): ReactNode;
     buildVariable(expr: any, onChange: any, options?: {}): ReactNode;
     buildScalar(expr: any, onChange: any, options?: {}): ReactNode;
-    buildOp(expr: any, table: any, onChange: any, options?: {}): ReactNode;
+    buildOp(expr: OpExpr, table: any, onChange: any, options?: {}): ReactNode;
     buildCase(expr: any, onChange: any, options: any): ReactNode;
     buildScore(expr: any, onChange: any, options: any): ReactNode;
     buildBuildEnumset(expr: any, onChange: any, options: any): ReactNode;

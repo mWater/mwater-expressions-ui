@@ -451,8 +451,8 @@ class MockTestComponent extends React.Component {
         dataSource: this.state.dataSource,
         table: "t1",
         variables,
-        // types: ["text", "enum", "boolean", "date", "number", "datetime"]
-        types: ["boolean"],
+        types: ["text", "enum", "boolean", "date", "number", "datetime"],
+        // types: ["boolean"],
         // enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}]
         // idTable: "t4"
         // types: ['number', 'boolean', 'date', 'datetime', 'text', 'enum']

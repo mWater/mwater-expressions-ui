@@ -5,11 +5,12 @@ const R = React.createElement
 import { AggrStatus, DataSource, EnumValue, Expr, ExprUtils, LiteralType, OpExpr, Schema, Variable } from "mwater-expressions"
 import LinkComponent from "./LinkComponent"
 import StackedComponent from "./StackedComponent"
-import IdLiteralComponent from "./IdLiteralComponent"
 import ScoreExprComponent from "./ScoreExprComponent"
 import BuildEnumsetExprComponent from "./BuildEnumsetExprComponent"
 import ExprLinkComponent from "./ExprLinkComponent"
 import { getExprUIExtensions } from "./extensions"
+import { ListEditorComponent } from "react-library/lib/ListEditorComponent"
+import RemovableComponent from "./RemovableComponent"
 
 export interface BuildOptions {
   /** required value types of expression e.g. ['boolean'] */
@@ -357,7 +358,7 @@ export default class ExprElementBuilder {
   }
 
   // Builds on op component
-  buildOp(expr: any, table: any, onChange: any, options = {}): ReactNode {
+  buildOp(expr: OpExpr, table: any, onChange: any, options = {}): ReactNode {
     let rhsElem
     switch (expr.op) {
       // For vertical ops (ones with n values or other arithmetic)
@@ -402,6 +403,26 @@ export default class ExprElementBuilder {
 
         // Create stacked expression
         return R(StackedComponent, { joinLabel: expr.op, items })
+      // Expressions with list of values
+      case "concat":
+        const opItem2 = this.exprUtils.findMatchingOpItems({
+          op: expr.op,
+          resultTypes: options.types
+        })[0]
+
+        return R("div", null, 
+          R(RemovableComponent, { onRemove: () => onChange(null) }, 
+            opItem2.name + ":"
+          ),  
+          R("div", { style: { display: "inline-block", minWidth: 200 }}, 
+            R(ListEditorComponent, {
+              items: expr.exprs,
+              onItemsChange: (exprs: Expr[]) => onChange({ ...expr, exprs: exprs }),
+              renderItem: (item: Expr, index, onItemChange) => this.build(item, table, onItemChange, { ...options, types: [opItem2.exprTypes[0]] }),
+              createNew: () => (null as any)
+            })
+          )
+        )
       default:
         // Horizontal expression. Render each part
         var opItems = this.exprUtils.findMatchingOpItems({
