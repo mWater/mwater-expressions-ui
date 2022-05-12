@@ -77,7 +77,7 @@ export default class ExprElementBuilder {
   //   aggrStatuses: statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] or ["literal"] if not table
   //   placeholder: empty placeholder
   //   exprLinkRef: ref to put on expr link component
-  build(expr: Expr, table: string, onChange: (expr: Expr) => void, options: BuildOptions = {}): ReactNode {
+  build(expr: Expr, table: string | undefined, onChange: (expr: Expr) => void, options: BuildOptions = {}): ReactNode {
     let elem
     _.defaults(options, {
       aggrStatuses: table ? ["individual", "literal"] : ["literal"]

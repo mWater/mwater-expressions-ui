@@ -25,6 +25,8 @@ interface ExprComponentProps {
     aggrStatuses?: AggrStatus[];
     /** placeholder for empty value */
     placeholder?: string;
+    /** expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values */
+    refExpr?: Expr;
 }
 export default class ExprComponent extends React.Component<ExprComponentProps> {
     static contextTypes: {

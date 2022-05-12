@@ -31,7 +31,7 @@ export default class ExprElementBuilder {
     variables: Variable[];
     exprUtils: ExprUtils;
     constructor(schema: any, dataSource: any, locale?: any, variables?: Variable[]);
-    build(expr: Expr, table: string, onChange: (expr: Expr) => void, options?: BuildOptions): ReactNode;
+    build(expr: Expr, table: string | undefined, onChange: (expr: Expr) => void, options?: BuildOptions): ReactNode;
     buildId(expr: any, onChange: any, options?: {}): ReactNode;
     buildVariable(expr: any, onChange: any, options?: {}): ReactNode;
     buildScalar(expr: any, onChange: any, options?: {}): ReactNode;

@@ -41,6 +41,9 @@ interface ExprComponentProps {
 
   /** placeholder for empty value */
   placeholder?: string
+
+  /** expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values */
+  refExpr?: Expr
 }
 
 // Display/editor component for an expression
@@ -87,6 +90,7 @@ export default class ExprComponent extends React.Component<ExprComponentProps> {
       includeAggr: (this.props.aggrStatuses || ["individual", "literal"]).includes("aggregate"),
       aggrStatuses: !this.props.table ? ["literal"] : this.props.aggrStatuses || ["individual", "literal"],
       placeholder: this.props.placeholder,
+      refExpr: this.props.refExpr,
       // If no expression, pass a ref to use so that the expression editor can be opened
       exprLinkRef: !expr
         ? (c: any) => {
