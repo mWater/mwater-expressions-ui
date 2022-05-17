@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
+import RemovableComponent from "./RemovableComponent";
 interface ScoreExprComponentProps {
     schema: any;
     /** Data source to use to get values */
@@ -18,6 +19,6 @@ export default class ScoreExprComponent extends React.Component<ScoreExprCompone
     renderScores(): React.DetailedReactHTMLElement<{
         className: string;
     }, HTMLElement> | null;
-    render(): any;
+    render(): React.CElement<import("./RemovableComponent").RemovableComponentProps, RemovableComponent>;
 }
 export {};

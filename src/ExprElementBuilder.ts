@@ -2,7 +2,7 @@ import _ from "lodash"
 import React, { ReactNode } from "react"
 const R = React.createElement
 
-import { AggrStatus, DataSource, EnumValue, Expr, ExprUtils, LiteralType, OpExpr, Schema, Variable } from "mwater-expressions"
+import { AggrStatus, BuildEnumsetExpr, DataSource, EnumValue, Expr, ExprUtils, LiteralType, OpExpr, Schema, Variable } from "mwater-expressions"
 import LinkComponent from "./LinkComponent"
 import StackedComponent from "./StackedComponent"
 import ScoreExprComponent from "./ScoreExprComponent"
@@ -695,7 +695,7 @@ export default class ExprElementBuilder {
     })
   }
 
-  buildBuildEnumset(expr: any, onChange: any, options: any): ReactNode {
+  buildBuildEnumset(expr: BuildEnumsetExpr, onChange: any, options: any): ReactNode {
     return R(BuildEnumsetExprComponent, {
       schema: this.schema,
       dataSource: this.dataSource,

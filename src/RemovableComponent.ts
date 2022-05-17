@@ -2,8 +2,8 @@ import PropTypes from "prop-types"
 import React from "react"
 const R = React.createElement
 
-interface RemovableComponentProps {
-  onRemove?: any
+export interface RemovableComponentProps {
+  onRemove?: () => void
 }
 
 // Component with a remove x to the right

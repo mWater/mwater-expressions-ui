@@ -1,22 +1,26 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { BuildEnumsetExpr, DataSource, EnumValue, Expr, Schema } from "mwater-expressions";
+import RemovableComponent from "./RemovableComponent";
 interface BuildEnumsetExprComponentProps {
-    schema: any;
+    schema: Schema;
     /** Data source to use to get values */
-    dataSource: any;
+    dataSource: DataSource;
     /** Current expression value */
-    value?: any;
+    value: BuildEnumsetExpr;
     /** enum values. Can't display without them */
-    enumValues?: any;
+    enumValues?: EnumValue[];
     /** Called with new expression */
-    onChange?: any;
+    onChange: (value: Expr) => void;
 }
 export default class BuildEnumsetExprComponent extends React.Component<BuildEnumsetExprComponentProps> {
     static contextTypes: {
         locale: PropTypes.Requireable<string>;
     };
-    handleValueChange: (id: any, value: any) => any;
-    renderValues(): any;
-    render(): any;
+    handleValueChange: (id: any, value: any) => void;
+    renderValues(): React.DetailedReactHTMLElement<{
+        className: string;
+    }, HTMLElement>;
+    render(): React.CElement<import("./RemovableComponent").RemovableComponentProps, RemovableComponent>;
 }
 export {};

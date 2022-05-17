@@ -1,13 +1,10 @@
-import $ from "jquery"
-import PropTypes from "prop-types"
 import React from "react"
 const R = React.createElement
-import moment from "moment"
 import { default as DatePicker } from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import "./DateTimePickerComponent.css"
 
-interface DateTimePickerComponentProps {
+export interface DateTimePickerComponentProps {
   /** do we need time picker? */
   timepicker?: boolean
   /** callback on date change */

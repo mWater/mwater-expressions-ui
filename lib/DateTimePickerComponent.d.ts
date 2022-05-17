@@ -1,7 +1,7 @@
 import React from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import "./DateTimePickerComponent.css";
-interface DateTimePickerComponentProps {
+export interface DateTimePickerComponentProps {
     /** do we need time picker? */
     timepicker?: boolean;
     /** callback on date change */
@@ -31,4 +31,3 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
         onChange: any;
     }, any, any>>;
 }
-export {};

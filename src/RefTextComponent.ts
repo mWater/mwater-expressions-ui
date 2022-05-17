@@ -5,9 +5,12 @@ import { default as AsyncReactSelect } from "react-select/async"
 import { DataSource, Expr, ExprCompiler, ExprUtils, FieldExpr, OpExpr, Schema } from "mwater-expressions"
 import { JsonQLSelectQuery } from "jsonql"
 
-interface TextArrayComponentProps {
-  value?: any
-  onChange: any
+export interface RefTextComponentProps {
+  value?: Expr
+  onChange: (value: Expr) => void
+
+  /** Type of expression (text or text[]) */
+  type: "text" | "text[]"
 
   /** Expression for the text values to select from */
   refExpr: Expr
@@ -19,8 +22,8 @@ interface TextArrayComponentProps {
   dataSource: DataSource
 }
 
-/** Displays a combo box that allows selecting multiple text values from an expression */
-export default class TextArrayComponent extends React.Component<TextArrayComponentProps> {
+/** Displays a combo box that allows selecting single text values from an expression */
+export default class RefTextComponent extends React.Component<RefTextComponentProps> {
   select: AsyncReactSelect<any, boolean> | null
 
   focus() {
@@ -28,10 +31,19 @@ export default class TextArrayComponent extends React.Component<TextArrayCompone
   }
 
   handleChange = (value: any) => {
-    if (value && value.length > 0) {
-      this.props.onChange({ type: "literal", valueType: "text[]", value: _.pluck(value, "label") })
-    } else {
-      this.props.onChange(null)
+    if (this.props.type == "text") {
+      if (value) {
+        this.props.onChange({ type: "literal", valueType: "text", value: value.value })
+      } else {
+        this.props.onChange(null)
+      }
+    }
+    else {
+      if (value && value.length > 0) {
+        this.props.onChange({ type: "literal", valueType: "text[]", value: _.pluck(value, "value") })
+      } else {
+        this.props.onChange(null)
+      }
     }
   }
 
@@ -138,7 +150,20 @@ export default class TextArrayComponent extends React.Component<TextArrayCompone
   }
 
   render() {
-    const value = _.map(this.props.value?.value, (v) => ({ label: v, value: v }))
+    let value: any = null
+
+    if (this.props.value) {
+      if (this.props.type == "text") {
+        if (this.props.value.type == "literal" && this.props.value.valueType == "text" && this.props.value.value) {
+          value ={ label: this.props.value.value, value: this.props.value.value } 
+        }
+      }
+      else {
+        if (this.props.value.type == "literal" && this.props.value.valueType == "text[]" && this.props.value.value) {
+          value = (this.props.value.value as string[]).map(v => ({ label: v, value: v }))
+        }
+      }
+    }
 
     return R(
       "div",
@@ -148,8 +173,8 @@ export default class TextArrayComponent extends React.Component<TextArrayCompone
           return (this.select = c)
         },
         value,
-        isMulti: true,
         placeholder: "Select...",
+        isMulti: this.props.type == "text[]",
         defaultOptions: true,
         loadOptions: this.loadOptions,
         onChange: this.handleChange

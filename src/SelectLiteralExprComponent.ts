@@ -4,11 +4,11 @@ import React from "react"
 const R = React.createElement
 
 import moment from "moment"
-import { ExprUtils } from "mwater-expressions"
+import { DataSource, EnumValue, Expr, ExprUtils, Schema } from "mwater-expressions"
 import DateTimePickerComponent from "./DateTimePickerComponent"
-import TextArrayComponent from "./TextArrayComponent"
 import IdLiteralComponent from "./IdLiteralComponent"
 import { Toggle } from "react-library/lib/bootstrap"
+import RefTextComponent from "./RefTextComponent"
 
 interface SelectLiteralExprComponentProps {
   /** Current expression value */
@@ -17,19 +17,20 @@ interface SelectLiteralExprComponentProps {
   onChange: any
   /** Called to cancel */
   onCancel: any
-  schema: any
-  dataSource: any
+  schema: Schema
+  dataSource: DataSource
   /** Props to narrow down choices */
   types?: any
   /** Array of { id:, name: } of enum values that can be selected. Only when type = "enum" */
-  enumValues?: any
+  enumValues?: EnumValue[]
   /** If specified the table from which id-type expressions must come */
   idTable?: string
-  refExpr?: any
+  refExpr?: Expr
 }
 
 interface SelectLiteralExprComponentState {
-  inputText: any
+  // Unparsed input text. Null if not used
+  inputText: string | null
   value: any
   inputTextError: any
   changed: any
@@ -39,24 +40,16 @@ export default class SelectLiteralExprComponent extends React.Component<
   SelectLiteralExprComponentProps,
   SelectLiteralExprComponentState
 > {
-  constructor(props: any) {
+  constructor(props: SelectLiteralExprComponentProps) {
     super(props)
 
     this.state = {
       value: props.value,
-      inputText: null, // Unparsed input text. Null if not used
+      // Set input text to value if text/number
+      inputText: (props.value && ["text", "number"].includes(props.value.valueType)) ? "" + props.value.value : null, 
       changed: false,
       inputTextError: false
     }
-
-    // Set input text to value if text/number
-    if (props.value && ["text", "number"].includes(props.value.valueType)) {
-      this.state.inputText = "" + props.value.value
-    }
-  }
-
-  componentDidMount() {
-    return this.inputComp?.focus()
   }
 
   handleChange = (value: any) => {
@@ -167,17 +160,18 @@ export default class SelectLiteralExprComponent extends React.Component<
     }
 
     // If text[], enumset or id literal, use special component
-    if (exprType === "text[]" || _.isEqual(this.props.types, ["text[]"])) {
-      return R(TextArrayComponent, {
+    if ((exprType === "text[]" || _.isEqual(this.props.types, ["text[]"])) && this.props.refExpr) {
+      return R(RefTextComponent, {
         value: expr,
         refExpr: this.props.refExpr,
+        type: "text[]",
         schema: this.props.schema,
         dataSource: this.props.dataSource,
         onChange: this.handleChange
       })
     }
 
-    if (exprType === "enum" || _.isEqual(this.props.types, ["enum"])) {
+    if ((exprType === "enum" || _.isEqual(this.props.types, ["enum"])) && this.props.enumValues) {
       return R(EnumAsListComponent, {
         value: expr,
         enumValues: this.props.enumValues,
@@ -185,7 +179,7 @@ export default class SelectLiteralExprComponent extends React.Component<
       })
     }
 
-    if (exprType === "enumset" || _.isEqual(this.props.types, ["enumset"])) {
+    if ((exprType === "enumset" || _.isEqual(this.props.types, ["enumset"])) && this.props.enumValues) {
       return R(EnumsetAsListComponent, {
         value: expr,
         enumValues: this.props.enumValues,
@@ -212,13 +206,25 @@ export default class SelectLiteralExprComponent extends React.Component<
         schema: this.props.schema,
         dataSource: this.props.dataSource,
         multi: true,
-        onChange: (value) =>
+        onChange: (value: string[] | number[] | null) =>
           this.handleChange(value && value.length > 0 ? { type: "literal", valueType: "id[]", idTable, value } : null)
       })
     }
 
+    // If text and has a reference expression
+    if ((exprType === "text" || _.isEqual(this.props.types, ["text"])) && this.props.refExpr) {
+      return R(RefTextComponent, {
+        value: expr,
+        refExpr: this.props.refExpr,
+        type: "text",
+        schema: this.props.schema,
+        dataSource: this.props.dataSource,
+        onChange: this.handleChange
+      })
+    }
+
     // If already text/number, or text/number accepted, render field
-    if (
+    if (exprType &&
       ["text", "number"].includes(exprType) ||
       !this.props.types ||
       this.props.types.includes("text") ||
@@ -275,7 +281,7 @@ interface EnumAsListComponentProps {
   value?: any
   onChange: any
   /** Array of id and name (localized string) */
-  enumValues: any
+  enumValues: EnumValue[]
 }
 
 // Component which displays an enum as a list
@@ -327,7 +333,7 @@ interface EnumsetAsListComponentProps {
   value?: any
   onChange: any
   /** Array of id and name (localized string) */
-  enumValues: any
+  enumValues: EnumValue[]
 }
 
 // Component which displays an enumset as a list
@@ -377,46 +383,6 @@ class EnumsetAsListComponent extends React.Component<EnumsetAsListComponentProps
           " ",
           ExprUtils.localizeString(val.name, this.context.locale)
         )
-      })
-    )
-  }
-}
-
-interface EnumComponentProps {
-  value?: any
-  onChange: any
-  /** Array of id and name (localized string) */
-  enumValues: any
-}
-
-// Component which displays an enum dropdown
-class EnumComponent extends React.Component<EnumComponentProps> {
-  static contextTypes = { locale: PropTypes.string }
-
-  handleChange = (val: any) => {
-    if (!val) {
-      return this.props.onChange(null)
-    } else {
-      return this.props.onChange({ type: "literal", valueType: "enum", value: JSON.parse(val) })
-    }
-  }
-
-  render() {
-    const { value } = this.props.value
-
-    // Use JSON to allow non-strings as ids
-    const options = _.map(this.props.enumValues, (val) => ({
-      value: JSON.stringify(val.id),
-      label: ExprUtils.localizeString(val.name, this.context.locale)
-    }))
-    return R(
-      "div",
-      { style: { width: "100%" } },
-      React.createElement(ReactSelect, {
-        value,
-        multi: false,
-        options,
-        onChange: this.handleChange
       })
     )
   }

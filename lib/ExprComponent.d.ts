@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { AggrStatus, DataSource, EnumValue, Expr, LiteralType, Schema, Variable } from "mwater-expressions";
-interface ExprComponentProps {
+export interface ExprComponentProps {
     schema: Schema;
     /** Data source to use to get values */
     dataSource: DataSource;
@@ -38,4 +38,3 @@ export default class ExprComponent extends React.Component<ExprComponentProps> {
     cleanExpr(expr: any): Expr;
     render(): React.ReactNode;
 }
-export {};

@@ -3,20 +3,20 @@ import _ from "lodash"
 import React from "react"
 const R = React.createElement
 
-import { ExprUtils } from "mwater-expressions"
+import { BuildEnumsetExpr, DataSource, EnumValue, Expr, ExprUtils, Schema } from "mwater-expressions"
 import RemovableComponent from "./RemovableComponent"
 import ExprComponent from "./ExprComponent"
 
 interface BuildEnumsetExprComponentProps {
-  schema: any
+  schema: Schema
   /** Data source to use to get values */
-  dataSource: any
+  dataSource: DataSource
   /** Current expression value */
-  value?: any
+  value: BuildEnumsetExpr
   /** enum values. Can't display without them */
-  enumValues?: any
+  enumValues?: EnumValue[]
   /** Called with new expression */
-  onChange?: any
+  onChange: (value: Expr) => void
 }
 
 // Build enumset
@@ -26,7 +26,7 @@ export default class BuildEnumsetExprComponent extends React.Component<BuildEnum
   handleValueChange = (id: any, value: any) => {
     const values = _.clone(this.props.value.values)
     values[id] = value
-    return this.props.onChange(_.extend({}, this.props.value, { values }))
+    return this.props.onChange({ ...this.props.value, values })
   }
 
   renderValues() {
@@ -49,7 +49,7 @@ export default class BuildEnumsetExprComponent extends React.Component<BuildEnum
       R(
         "tbody",
         null,
-        _.map(this.props.enumValues, (enumValue) => {
+        _.map(this.props.enumValues!, (enumValue) => {
           return R(
             "tr",
             { key: enumValue.id },

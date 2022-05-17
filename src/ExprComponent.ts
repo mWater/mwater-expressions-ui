@@ -6,7 +6,7 @@ const R = React.createElement
 import { AggrStatus, DataSource, EnumValue, Expr, ExprCleaner, LiteralType, Schema, Variable } from "mwater-expressions"
 import ExprElementBuilder from "./ExprElementBuilder"
 
-interface ExprComponentProps {
+export interface ExprComponentProps {
   schema: Schema
 
   /** Data source to use to get values */

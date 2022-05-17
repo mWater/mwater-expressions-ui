@@ -60,8 +60,8 @@ $(() =>
     // ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
     // ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
     // ReactDOM.render(R(PropertyListContainerComponentWrapped, schema: schema, dataSource: dataSource, table: "entities.water_system"), document.getElementById("main"))
-    // ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
-    ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
+    ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+    // ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
   })
 )
 // ReactDOM.render(R(ContentEditableTestComponent), document.getElementById("main"))
@@ -663,7 +663,7 @@ class LiveTestComponent extends React.Component {
         // enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}]
         // idTable: "t4"
         value: this.state.value,
-        onChange: this.handleValueChange,
+        // onChange: this.handleValueChange,
         variables
       }),
       // R(FilterExprComponent,
