@@ -5,34 +5,48 @@ const R = React.createElement
 
 import SelectExprModalComponent from "./SelectExprModalComponent"
 import LinkComponent from "./LinkComponent"
-import { ExprUtils } from "mwater-expressions"
+import { AggrStatus, DataSource, EnumValue, Expr, ExprUtils, LiteralExpr, LiteralType, Schema, Variable } from "mwater-expressions"
 import LiteralExprStringComponent from "./LiteralExprStringComponent"
 
+export interface ExprLinkComponentProps {
+  schema: Schema
+  /** Data source to use to get values */
+  dataSource: DataSource
+
+  variables: Variable[]
+
+  /** Current table */
+  table?: string 
+  /** Current expression value */
+  value?: Expr 
+  onChange?: (value: Expr) => void
+
+  // Props to narrow down choices
+  /** If specified, the types (value type) of expression required. e.g. ["boolean"] */
+  types?: LiteralType[]
+  /** Array of { id:, name: } of enum values that can be selected. Only when type = "enum" */
+  enumValues?: EnumValue[]
+  /** If specified the table from which id-type expressions must come */
+  idTable?: string
+  /** Initial mode. Default field */
+  initialMode?: "field" | "formula" | "literal"
+  /** Allow case statements */
+  allowCase?: boolean 
+  /** Statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] */
+  aggrStatuses?: AggrStatus[]
+  /** expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values */
+  refExpr?: Expr
+
+  /** Placeholder text (default Select...) */
+  placeholder?: string
+
+  /** Hint that must be boolean (even though boolean can take any type) */
+  booleanOnly?: boolean
+}
+
+
 // Allows user to select an expression or display an existing one. Shows as a link
-export default class ExprLinkComponent extends React.Component {
-  static propTypes = {
-    schema: PropTypes.object.isRequired,
-    dataSource: PropTypes.object.isRequired, // Data source to use to get values
-    variables: PropTypes.array.isRequired,
-
-    table: PropTypes.string, // Current table
-    value: PropTypes.object, // Current expression value
-    onChange: PropTypes.func, // Called with new expression
-
-    // Props to narrow down choices
-    types: PropTypes.array, // If specified, the types (value type) of expression required. e.g. ["boolean"]
-    enumValues: PropTypes.array, // Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
-    idTable: PropTypes.string, // If specified the table from which id-type expressions must come
-    initialMode: PropTypes.oneOf(["field", "formula", "literal"]), // Initial mode. Default field
-    allowCase: PropTypes.bool, // Allow case statements
-    aggrStatuses: PropTypes.array, // statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
-    refExpr: PropTypes.object, // expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
-
-    placeholder: PropTypes.string, // Placeholder text (default Select...)
-
-    booleanOnly: PropTypes.bool // Hint that must be boolean (even though boolean can take any type)
-  }
-
+export default class ExprLinkComponent extends React.Component<ExprLinkComponentProps> {
   static contextTypes = { locale: PropTypes.string }
 
   static defaultProps = {
@@ -64,7 +78,7 @@ export default class ExprLinkComponent extends React.Component {
       return R(
         "a",
         { onClick: this.handleClick, style: { cursor: "pointer", fontStyle: "italic", color: "var(--bs-primary)" } },
-        this.props.onChange ? this.props.placeholder : "None"
+        this.props.placeholder ? this.props.placeholder : "None"
       )
     } else {
       return R("div", { className: "link-component-readonly", style: { fontStyle: "italic" } }, "None")
@@ -86,9 +100,9 @@ export default class ExprLinkComponent extends React.Component {
           : undefined,
         onDropdownItemClicked: (id: any) => {
           if (id === "edit") {
-            return this.setState({ modalVisible: true })
+            this.setState({ modalVisible: true })
           } else {
-            return this.props.onChange(null)
+            this.props.onChange!(null)
           }
         }
       },
@@ -117,7 +131,7 @@ export default class ExprLinkComponent extends React.Component {
       R(LiteralExprStringComponent, {
         schema: this.props.schema,
         dataSource: this.props.dataSource,
-        value: this.props.value,
+        value: this.props.value as LiteralExpr,
         enumValues: this.props.enumValues
       })
     )

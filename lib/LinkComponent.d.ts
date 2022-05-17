@@ -1,5 +1,5 @@
 import React from "react";
-interface LinkComponentProps {
+export interface LinkComponentProps {
     /** Called on click */
     onClick?: any;
     /** Adds an x if specified */
@@ -20,4 +20,3 @@ export default class LinkComponent extends React.Component<LinkComponentProps> {
         className: string;
     }, HTMLElement>;
 }
-export {};

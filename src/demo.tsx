@@ -663,7 +663,7 @@ class LiveTestComponent extends React.Component {
         // enumValues: [{ id: "aa", name: { en: "A" }}, { id: "bb", name: { en: "B" }}]
         // idTable: "t4"
         value: this.state.value,
-        // onChange: this.handleValueChange,
+        onChange: this.handleValueChange,
         variables
       }),
       // R(FilterExprComponent,

@@ -1,9 +1,8 @@
-import PropTypes from "prop-types"
 import React from "react"
 const R = React.createElement
 import _ from "lodash"
 
-interface LinkComponentProps {
+export interface LinkComponentProps {
   /** Called on click */
   onClick?: any
   /** Adds an x if specified */
