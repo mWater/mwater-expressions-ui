@@ -6,6 +6,7 @@ const R = React.createElement
 import { DataSource, EnumValue, ExprCompiler, LiteralExpr, Schema } from "mwater-expressions"
 import { ExprUtils } from "mwater-expressions"
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
+import { JsonQLExpr, JsonQLSelectQuery } from "jsonql"
 
 interface LiteralExprStringComponentProps {
   schema: Schema
@@ -25,6 +26,7 @@ interface LiteralExprStringComponentProps {
 
 interface LiteralExprStringComponentState {
   label: string
+  loading: boolean
 }
 
 // Displays a literal expression as a string. Simple for non-id types. For id types, loads using a query
@@ -35,32 +37,32 @@ export default class LiteralExprStringComponent extends AsyncLoadComponent<
   static contextTypes = { locale: PropTypes.string }
 
   // Override to determine if a load is needed. Not called on mounting
-  isLoadNeeded(newProps: any, oldProps: any) {
+  isLoadNeeded(newProps: LiteralExprStringComponentProps, oldProps: LiteralExprStringComponentProps) {
     return !_.isEqual(newProps.value, oldProps.value)
   }
 
   // Call callback with state changes
-  load(props: any, prevProps: any, callback: any) {
+  load(props: LiteralExprStringComponentProps, prevProps: LiteralExprStringComponentProps, callback: any) {
     // If no value or not id, id[]
-    let labelColumn
+    let labelColumn: JsonQLExpr
     if (!props.value || !["id", "id[]"].includes(props.value.valueType)) {
       callback({ label: null })
       return
     }
 
     // Create query to get current value
-    const table = props.schema.getTable(props.value.idTable)
+    const table = props.schema.getTable(props.value.idTable!)!
 
     // Primary key column
-    const idColumn = { type: "field", tableAlias: "main", column: table.primaryKey }
-    if (table.label) {
+    const idColumn = { type: "field", tableAlias: "main", column: table.primaryKey } as JsonQLExpr
+    if (table.label && typeof table.label === "string") {
       labelColumn = { type: "field", tableAlias: "main", column: table.label }
     } else {
       // Use primary key. Ugly, but what else to do?
       labelColumn = idColumn
     }
 
-    const query = {
+    const query: JsonQLSelectQuery = {
       type: "query",
       selects: [{ type: "select", expr: labelColumn, alias: "label" }],
       from: { type: "table", table: table.id, alias: "main" },
