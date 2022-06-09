@@ -159,11 +159,30 @@ export default class SelectLiteralExprComponent extends React.Component<
       })
     }
 
-    // If text[], enumset or id literal, use special component
-    if ((exprType === "text[]" || _.isEqual(this.props.types, ["text[]"])) && this.props.refExpr) {
+    // Simplify reference expression if it is a scalar, as they are more limited
+    // in options and more difficult to compute.
+    let refExpr = this.props.refExpr
+    if (refExpr && refExpr.type == "scalar") {
+      refExpr = refExpr.expr
+    }
+
+    // If text and has a reference expression
+    if ((exprType === "text" || _.isEqual(this.props.types, ["text"])) && refExpr) {
       return R(RefTextComponent, {
         value: expr,
-        refExpr: this.props.refExpr,
+        refExpr: refExpr,
+        type: "text",
+        schema: this.props.schema,
+        dataSource: this.props.dataSource,
+        onChange: this.handleChange
+      })
+    }
+    
+    // If text[] and has refExpr, use special component
+    if ((exprType === "text[]" || _.isEqual(this.props.types, ["text[]"])) && refExpr) {
+      return R(RefTextComponent, {
+        value: expr,
+        refExpr: refExpr,
         type: "text[]",
         schema: this.props.schema,
         dataSource: this.props.dataSource,
@@ -208,18 +227,6 @@ export default class SelectLiteralExprComponent extends React.Component<
         multi: true,
         onChange: (value: string[] | number[] | null) =>
           this.handleChange(value && value.length > 0 ? { type: "literal", valueType: "id[]", idTable, value } : null)
-      })
-    }
-
-    // If text and has a reference expression
-    if ((exprType === "text" || _.isEqual(this.props.types, ["text"])) && this.props.refExpr) {
-      return R(RefTextComponent, {
-        value: expr,
-        refExpr: this.props.refExpr,
-        type: "text",
-        schema: this.props.schema,
-        dataSource: this.props.dataSource,
-        onChange: this.handleChange
       })
     }
 

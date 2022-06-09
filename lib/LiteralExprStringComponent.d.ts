@@ -15,13 +15,14 @@ interface LiteralExprStringComponentProps {
 }
 interface LiteralExprStringComponentState {
     label: string;
+    loading: boolean;
 }
 export default class LiteralExprStringComponent extends AsyncLoadComponent<LiteralExprStringComponentProps, LiteralExprStringComponentState> {
     static contextTypes: {
         locale: PropTypes.Requireable<string>;
     };
-    isLoadNeeded(newProps: any, oldProps: any): boolean;
-    load(props: any, prevProps: any, callback: any): any;
+    isLoadNeeded(newProps: LiteralExprStringComponentProps, oldProps: LiteralExprStringComponentProps): boolean;
+    load(props: LiteralExprStringComponentProps, prevProps: LiteralExprStringComponentProps, callback: any): void;
     render(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
 }
 export {};
