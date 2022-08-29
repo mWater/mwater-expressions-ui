@@ -1,19 +1,23 @@
+import { LocalizedString } from "mwater-expressions";
 import React from "react";
-interface LocalizedStringEditorCompProps {
-    value?: any;
-    onChange: any;
-    /** Contains id and name of languages */
-    availableLanguages?: any;
+export interface LocalizedStringEditorCompProps {
+    value?: LocalizedString;
+    onChange: (str: LocalizedString) => void;
+    availableLanguages?: Array<{
+        id: string;
+        name: string;
+    }>;
     readonly?: boolean;
     multiline?: boolean;
+    placeholder?: string;
 }
 interface LocalizedStringEditorCompState {
     selectedLanguageCode: any;
 }
 export default class LocalizedStringEditorComp extends React.Component<LocalizedStringEditorCompProps, LocalizedStringEditorCompState> {
     constructor(props: any);
-    handleRemoveValue: () => any;
-    handleChangeValue: (ev: any) => any;
+    handleRemoveValue: () => void;
+    handleChangeValue: (ev: any) => void;
     onLanguageSelectionClick: (languageCode: any) => void;
     render(): React.DetailedReactHTMLElement<{
         className: string;

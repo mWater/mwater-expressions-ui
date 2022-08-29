@@ -1,15 +1,15 @@
 import _ from "lodash"
-import PropTypes from "prop-types"
+import { LocalizedString } from "mwater-expressions"
 import React from "react"
 const R = React.createElement
 
-interface LocalizedStringEditorCompProps {
-  value?: any
-  onChange: any
-  /** Contains id and name of languages */
-  availableLanguages?: any
+export interface LocalizedStringEditorCompProps {
+  value?: LocalizedString
+  onChange: (str: LocalizedString) => void
+  availableLanguages?: Array<{ id: string; name: string }>
   readonly?: boolean
   multiline?: boolean
+  placeholder?: string
 }
 
 interface LocalizedStringEditorCompState {
@@ -23,11 +23,12 @@ export default class LocalizedStringEditorComp extends React.Component<
 > {
   constructor(props: any) {
     super(props)
+
     this.state = { selectedLanguageCode: "en" } // True to allow multiple lines
   }
 
   handleRemoveValue = () => {
-    const names = _.clone(this.props.value)
+    const names = _.clone(this.props.value || {}) as any
     delete names[this.state.selectedLanguageCode]
     return this.props.onChange(names)
   }
@@ -73,14 +74,32 @@ export default class LocalizedStringEditorComp extends React.Component<
         placeholder = this.props.value[this.props.value._base]
       }
     }
+    else {
+      placeholder = this.props.placeholder
+    }
 
     const availableLanguages = this.props.availableLanguages || [
-      { id: "en", name: "en" },
-      { id: "fr", name: "fr" },
-      { id: "es", name: "es" },
-      { id: "pt", name: "pt" },
-      { id: "tet", name: "tet" },
-      { id: "ht", name: "ht" }
+      { id: "en", name: "English" },
+      { id: "fr", name: "Français" },
+      { id: "es", name: "Español" },
+      { id: "pt", name: "Português" },
+      { id: "sw", name: "Kiswahili" },
+      { id: "tet", name: "Tetum" },
+      { id: "id", name: "Bahasa Indonesia" },
+      { id: "ht", name: "Créole Haïtien" },
+      { id: "my", name: "Burmese" },
+      { id: "km", name: "Khmer" },
+      { id: "am", name: "Amharic" },
+      { id: "hi", name: "Hindi" },
+      { id: "bn", name: "Bangla" },
+      { id: "rw", name: "Kinyarwanda" },
+      { id: "ne", name: "Nepali" },
+      { id: "sd", name: "Sindhi" },
+      { id: "ur", name: "Urdu" },
+      { id: "so", name: "Somali" },
+      { id: "de", name: "German" },
+      { id: "it", name: "Italian" },
+      { id: "ja", name: "Japanese" }
     ]
 
     return R(
@@ -91,41 +110,38 @@ export default class LocalizedStringEditorComp extends React.Component<
             className: "form-control",
             rows: 5,
             onChange: this.handleChangeValue,
-            value: currentText,
+            value: currentText || "",
             placeholder
           })
         : R("input", {
             type: "text",
             className: "form-control",
             onChange: this.handleChangeValue,
-            value: currentText,
+            value: currentText || "",
             placeholder
           }),
 
       R(
-        "div",
-        { className: "" },
-        R(
-          "button",
-          { type: "button", className: "btn btn-secondary dropdown-toggle", "data-bs-toggle": "dropdown" },
-          this.state.selectedLanguageCode
-        ),
+        "button",
+        { type: "button", className: "btn btn-secondary dropdown-toggle", "data-bs-toggle": "dropdown" },
+        this.state.selectedLanguageCode
+      ),
 
-        R(
-          "ul",
-          { className: "dropdown-menu" },
-          _.map(availableLanguages, (availableLanguage) => {
-            return R(
-              "li",
-              { key: availableLanguage.id },
-              R(
-                "a",
-                { className: "dropdown-item", onClick: this.onLanguageSelectionClick.bind(null, availableLanguage.id) },
-                availableLanguage.name
-              )
+      R(
+        "ul",
+        { className: "dropdown-menu dropdown-menu-end" },
+        R("li", { className: "dropdown-header" }, "Select Language to Edit"),
+        _.map(availableLanguages, (availableLanguage) => {
+          return R(
+            "li",
+            null,
+            R(
+              "a",
+              { className: "dropdown-item", onClick: this.onLanguageSelectionClick.bind(null, availableLanguage.id) },
+              availableLanguage.name
             )
-          })
-        )
+          )
+        })
       )
     )
   }
