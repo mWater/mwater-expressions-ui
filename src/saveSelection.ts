@@ -1,5 +1,5 @@
 // Gets the offset of a node within another node. Text nodes are counted a n where n is the length. Entering (or passing) an element is one offset. Exiting is 0.
-getNodeOffset = function (start: any, dest: any) {
+ function getNodeOffset(start: any, dest: any) {
   var offset = 0
 
   var node = start
@@ -46,7 +46,7 @@ getNodeOffset = function (start: any, dest: any) {
 }
 
 // Calculate the total offsets of a node
-calculateNodeOffset = function (node: any) {
+function calculateNodeOffset(node: any) {
   var offset = 0
 
   // If text, count length
@@ -63,11 +63,11 @@ calculateNodeOffset = function (node: any) {
 }
 
 // Determine total offset length from returned offset from ranges
-totalOffsets = function (parentNode: any, offset: any) {
+function totalOffsets(parentNode: any, offset: any) {
   if (parentNode.nodeType == 3) return offset
 
   if (parentNode.nodeType == 1) {
-    total = 0
+    var total = 0
     // Get child nodes
     for (var i = 0; i < offset; i++) {
       total += calculateNodeOffset(parentNode.childNodes[i])
@@ -78,7 +78,7 @@ totalOffsets = function (parentNode: any, offset: any) {
   return 0
 }
 
-getNodeAndOffsetAt = function (start: any, offset: any) {
+function getNodeAndOffsetAt(start: any, offset: any) {
   var node = start
   var stack = []
 
@@ -128,7 +128,7 @@ getNodeAndOffsetAt = function (start: any, offset: any) {
   }
 }
 
-exports.save = function (containerEl: any) {
+export function save(containerEl: any) {
   // Get range
   var selection = window.getSelection()
   if (selection.rangeCount > 0) {
@@ -140,10 +140,10 @@ exports.save = function (containerEl: any) {
   } else return null
 }
 
-exports.restore = function (containerEl: any, savedSel: any) {
+export function restore(containerEl: any, savedSel: any) {
   if (!savedSel) return
 
-  range = document.createRange()
+  var range = document.createRange()
 
   var startNodeOffset, endNodeOffset
   startNodeOffset = getNodeAndOffsetAt(containerEl, savedSel.start)
