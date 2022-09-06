@@ -4,11 +4,11 @@ import PropTypes from "prop-types"
 import _ from "lodash"
 import ReorderableListComponent from "react-library/lib/reorderable/ReorderableListComponent"
 import LocalizedStringComponent from "./LocalizedStringComponent"
-import PropertyEditorComponent from "./PropertyEditorComponent"
+import PropertyEditorComponent, { Property } from "./PropertyEditorComponent"
 import SectionEditorComponent from "./SectionEditorComponent"
 import NestedListClipboardEnhancement from "./NestedListClipboardEnhancement"
 import ActionCancelModalComponent from "react-library/lib/ActionCancelModalComponent"
-import { Column, Schema, DataSource, Section, Variable } from "mwater-expressions"
+import { Column, Schema, DataSource, Section, Variable, EnumValue } from "mwater-expressions"
 import React, { ReactNode } from "react"
 const R = React.createElement
 
@@ -97,7 +97,7 @@ export interface PropertyListComponentProps {
   listId?: string
 }
 
-class InnerPropertyListComponent extends React.Component<PropertyListComponentProps> {
+class InnerPropertyListComponent extends React.Component<PropertyListComponentProps, { addingItem: Partial<Property | Section> | null }> {
   static contextTypes = { clipboard: PropTypes.object }
 
   constructor(props: any) {
@@ -120,7 +120,7 @@ class InnerPropertyListComponent extends React.Component<PropertyListComponentPr
   }
 
   handleNewProperty = () => {
-    const property = {
+    const property: Partial<Property> = {
       type: "text"
     }
 
@@ -132,7 +132,7 @@ class InnerPropertyListComponent extends React.Component<PropertyListComponentPr
   }
 
   handleNewSection = () => {
-    const section = {
+    const section: Partial<Property | Section> = {
       type: "section",
       contents: []
     }
@@ -188,7 +188,7 @@ class InnerPropertyListComponent extends React.Component<PropertyListComponentPr
               return alert("Duplicate ids not allowed")
             }
             const value = this.props.properties.slice()
-            value.push(this.state.addingItem)
+            value.push(this.state.addingItem as Property)
             this.props.onChange(value)
             return this.setState({ addingItem: null })
           }
@@ -202,7 +202,7 @@ class InnerPropertyListComponent extends React.Component<PropertyListComponentPr
             features: this.props.features
           })
         : R(PropertyEditorComponent, {
-            property: this.state.addingItem,
+            property: this.state.addingItem as Property,
             schema: this.props.schema,
             dataSource: this.props.dataSource,
             table: this.props.table,
@@ -259,9 +259,9 @@ class InnerPropertyListComponent extends React.Component<PropertyListComponentPr
       { className: "pl-editor-container" },
       R(ReorderableListComponent, {
         items: this.props.properties,
-        onReorder: (list) => this.props.onChange(list),
+        onReorder: (list: Property[]) => this.props.onChange(list),
         renderItem: this.renderProperty.bind(this, allPropertyIds),
-        getItemId: (item) => item.id,
+        getItemId: (item: Property) => item.id,
         element: R("div", { className: "pl-container" })
       }),
       this.renderControls(allPropertyIds)
@@ -269,27 +269,49 @@ class InnerPropertyListComponent extends React.Component<PropertyListComponentPr
   }
 }
 
-class PropertyComponent extends React.Component<any> {
-  static propTypes = {
-    property: PropTypes.object.isRequired, // The property
-    onChange: PropTypes.func.isRequired,
-    schema: PropTypes.object, // schema of all data. Needed for idType and expr features
-    dataSource: PropTypes.object, // data source. Needed for expr feature
-    table: PropTypes.string, // Table that properties are of. Not required if table feature is on
-    tableIds: PropTypes.arrayOf(PropTypes.string.isRequired), // Ids of tables to include when using table feature
-    variables: PropTypes.array, // Variables that may be used in expressions
-    features: PropTypes.array, // Features to be enabled apart from the default features
-    createRoleDisplayElem: PropTypes.func,
-    createRoleEditElem: PropTypes.func,
-    onCut: PropTypes.func.isRequired,
-    onCopy: PropTypes.func.isRequired,
-    onPaste: PropTypes.func.isRequired,
-    onPasteInto: PropTypes.func.isRequired,
-    onDelete: PropTypes.func.isRequired,
-    listId: PropTypes.string,
-    allPropertyIds: PropTypes.arrayOf(PropTypes.string.isRequired) // List of all property ids to prevent duplicates
-  }
+class PropertyComponent extends React.Component<{
+  property: Property | Section
+  onChange: (property: Property | Section) => void
+  /** schema of all data. Needed for idType and expr features */
+  schema?: Schema
+  
+  /** data source. Needed for expr feature */
+  dataSource?: DataSource
+  
+  /** Table that properties are of. Not required if table feature is on */
+  table?: string
+  
+  /** Ids of tables to include when using table feature */
+  tableIds?: string[]
+  
+  /** Variables that may be used in expressions */
+  variables?: Variable[]
+  
+  /** Features to be enabled apart from the default features */
+  features: string[]
+  
+  /** function that returns the UI of the roles, called with a single argument, the array containing roles */
+  createRoleDisplayElem?: (roles: any[]) => ReactNode
 
+  /** function that returns the UI of the roles for editing, gets passed two arguments
+   * 1. the array containing roles
+   * 2. The callback function that should be called when the roles change */
+  createRoleEditElem?: (roles: any[], onChange: (roles: any[]) => void) => ReactNode
+
+  onCut: (listId: string, propertyId: string) => void
+  onCopy: (listId: string, propertyId: string) => void
+  onPaste: (listId: string, propertyId: string) => void
+  onPasteInto: (listId: string, propertyId: string) => void
+  onDelete: () => void
+  listId: string
+
+  /** List of all property ids to prevent duplicates */
+  allPropertyIds: string[]
+
+}, {
+  editing: boolean
+  editorProperty: Property | Section | null
+}> {
   static iconMap = {
     text: "fa fa-font",
     number: "fa fa-calculator",
@@ -325,12 +347,12 @@ class PropertyComponent extends React.Component<any> {
       R("a", { className: "pl-item-control", onClick: this.handleEdit }, "Edit"),
       R(
         "a",
-        { className: "pl-item-control", onClick: () => this.props.onCopy(this.props.listId, this.props.property.id) },
+        { className: "pl-item-control", onClick: () => this.props.onCopy(this.props.listId, this.props.property.id!) },
         "Copy"
       ),
       R(
         "a",
-        { className: "pl-item-control", onClick: () => this.props.onCut(this.props.listId, this.props.property.id) },
+        { className: "pl-item-control", onClick: () => this.props.onCut(this.props.listId, this.props.property.id!) },
         "Cut"
       ),
       this.context.clipboard
@@ -338,7 +360,7 @@ class PropertyComponent extends React.Component<any> {
             "a",
             {
               className: "pl-item-control",
-              onClick: () => this.props.onPaste(this.props.listId, this.props.property.id)
+              onClick: () => this.props.onPaste(this.props.listId, this.props.property.id!)
             },
             "Paste"
           )
@@ -349,7 +371,7 @@ class PropertyComponent extends React.Component<any> {
             "a",
             {
               className: "pl-item-control",
-              onClick: () => this.props.onPasteInto(this.props.listId, this.props.property.id)
+              onClick: () => this.props.onPasteInto(this.props.listId, this.props.property.id!)
             },
             "Paste Into"
           )
@@ -359,19 +381,19 @@ class PropertyComponent extends React.Component<any> {
     )
   }
 
-  renderEnumValues = (values: any) => {
-    const names = _.map(values, (value) => value.name[value._base || "en"])
+  renderEnumValues = (values: EnumValue[]) => {
+    const names = _.map(values, (value) => value.name[value.name._base || "en"])
 
     return R("span", null, `${names.join(" / ")}`)
   }
 
   renderTable(table: any) {
-    return R(LocalizedStringComponent, { value: this.props.schema.getTable(table)?.name })
+    return R(LocalizedStringComponent, { value: this.props.schema!.getTable(table)?.name })
   }
 
   render() {
     const classNames = ["pl-property"]
-    if (this.props.property.deprecated) {
+    if ((this.props.property as Property).deprecated) {
       classNames.push("deprecated")
     }
     return R(
@@ -382,14 +404,14 @@ class PropertyComponent extends React.Component<any> {
             ActionCancelModalComponent,
             {
               size: "large",
-              title: this.state.editorProperty.type === "section" ? "Edit section" : "Edit property",
+              title: this.state.editorProperty!.type === "section" ? "Edit section" : "Edit property",
               actionLabel: "Save",
               onAction: () => {
                 if (this.state.editorProperty) {
                   // Prevent duplicates
                   if (
                     this.state.editorProperty.id !== this.props.property.id &&
-                    this.props.allPropertyIds.includes(this.state.editorProperty.id)
+                    this.props.allPropertyIds.includes(this.state.editorProperty.id!)
                   ) {
                     return alert("Duplicate ids not allowed")
                   }
@@ -407,7 +429,7 @@ class PropertyComponent extends React.Component<any> {
                   features: this.props.features
                 })
               : R(PropertyEditorComponent, {
-                  property: this.state.editorProperty,
+                  property: this.state.editorProperty as Property,
                   schema: this.props.schema,
                   dataSource: this.props.dataSource,
                   table: this.props.table,
@@ -421,7 +443,7 @@ class PropertyComponent extends React.Component<any> {
           )
         : undefined,
       this.renderControls(),
-      this.props.property.deprecated ? R("div", { className: "pl-item-deprecated-overlay" }, "") : undefined,
+      (this.props.property as Property).deprecated ? R("div", { className: "pl-item-deprecated-overlay" }, "") : undefined,
       R(
         "div",
         { className: "pl-item", onDoubleClick: this.handleEdit },
@@ -443,8 +465,8 @@ class PropertyComponent extends React.Component<any> {
                 ? R("small", null, `[${this.props.property.id}] `)
                 : undefined,
               R(LocalizedStringComponent, { value: this.props.property.name }),
-              this.props.property.required ? R("span", { style: { color: "red" } }, "*") : undefined,
-              this.props.property.expr
+              (this.props.property as Property).required ? R("span", { style: { color: "red" } }, "*") : undefined,
+              (this.props.property as Property).expr
                 ? R("span", { className: "text-muted" }, " ", R("span", { className: "fa fa-calculator" }))
                 : undefined
             ),
@@ -455,28 +477,28 @@ class PropertyComponent extends React.Component<any> {
                   R(LocalizedStringComponent, { value: this.props.property.desc })
                 )
               : undefined,
-            this.props.property.sql
-              ? R("div", { className: "pl-item-detail-sql text-info" }, `SQL: ${this.props.property.sql}`)
+            (this.props.property as Property).sql
+              ? R("div", { className: "pl-item-detail-sql text-info" }, `SQL: ${(this.props.property as Property).sql}`)
               : undefined,
-            this.props.property.reverseSql
+            (this.props.property as Property).reverseSql
               ? R(
                   "div",
                   { className: "pl-item-detail-sql text-info" },
-                  `Reverse SQL: ${this.props.property.reverseSql}`
+                  `Reverse SQL: ${(this.props.property as Property).reverseSql}`
                 )
               : undefined,
-            ["enum", "enumset"].includes(this.props.property.type) && this.props.property.enumValues.length > 0
+            ["enum", "enumset"].includes(this.props.property.type) && (this.props.property as Property).enumValues!.length > 0
               ? R(
                   "div",
                   { className: "pl-item-detail-enum text-muted" },
-                  this.renderEnumValues(this.props.property.enumValues)
+                  this.renderEnumValues((this.props.property as Property).enumValues!)
                 )
               : undefined,
-            _.includes(this.props.features, "table") && this.props.property.table
-              ? R("div", { className: "pl-item-detail-table text-muted" }, this.renderTable(this.props.property.table))
+            _.includes(this.props.features, "table") && (this.props.property as Property).table
+              ? R("div", { className: "pl-item-detail-table text-muted" }, this.renderTable((this.props.property as Property).table))
               : undefined,
-            this.props.property.roles && this.props.createRoleDisplayElem
-              ? this.props.createRoleDisplayElem(this.props.property.roles)
+            (this.props.property as Property).roles && this.props.createRoleDisplayElem
+              ? this.props.createRoleDisplayElem((this.props.property as Property).roles!)
               : undefined
           )
         )
