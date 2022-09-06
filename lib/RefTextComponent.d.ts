@@ -1,5 +1,5 @@
 import React from "react";
-import { default as AsyncReactSelect } from "react-select/async";
+import { default as AsyncReactSelect } from "react-select/async-creatable";
 import { DataSource, Expr, Schema } from "mwater-expressions";
 export interface RefTextComponentProps {
     value?: Expr;

@@ -1,7 +1,7 @@
 import _ from "lodash"
 import React from "react"
 const R = React.createElement
-import { default as AsyncReactSelect } from "react-select/async"
+import { default as AsyncReactSelect } from "react-select/async-creatable"
 import { DataSource, Expr, ExprCompiler, ExprUtils, FieldExpr, OpExpr, Schema } from "mwater-expressions"
 import { JsonQLSelectQuery } from "jsonql"
 
@@ -177,7 +177,8 @@ export default class RefTextComponent extends React.Component<RefTextComponentPr
         isMulti: this.props.type == "text[]",
         defaultOptions: true,
         loadOptions: this.loadOptions,
-        onChange: this.handleChange
+        onChange: this.handleChange,
+        formatCreateLabel: (label) => `Use "${label}"`
       })
     )
   }
