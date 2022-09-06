@@ -30,7 +30,6 @@
     "mwater-expressions": "github:mWater/mwater-expressions",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
-    "react-bootstrap-daterangepicker": "^1.0.3",
     "react-datepicker": "^1.8.0",
     "react-dnd": "^6.0.0",
     "react-dnd-html5-backend": "^6.0.0",
@@ -48,7 +47,6 @@
     "build-library": "github:mWater/build-library",
     "canonical-json": "0.0.4",
     "chai": "^4.3.6",
-    "husky": "^8.0.1",
-    "react-addons-test-utils": "^0.14.2"
+    "husky": "^8.0.1"
   }
 }
