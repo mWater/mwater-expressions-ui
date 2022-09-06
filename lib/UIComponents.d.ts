@@ -172,7 +172,7 @@ declare let _ToggleEditComponent: {
     propTypes: {
         forceOpen: PropTypes.Requireable<boolean>;
         initiallyOpen: PropTypes.Requireable<boolean>;
-        label: PropTypes.Validator<string | number | boolean | {} | PropTypes.ReactElementLike | PropTypes.ReactNodeArray>;
+        label: PropTypes.Validator<NonNullable<PropTypes.ReactNodeLike>>;
         editor: PropTypes.Validator<any>;
         onRemove: PropTypes.Requireable<(...args: any[]) => any>;
     };
@@ -237,7 +237,7 @@ declare let _ButtonToggleComponent: {
     propTypes: {
         value: PropTypes.Requireable<any>;
         options: PropTypes.Validator<(PropTypes.InferProps<{
-            label: PropTypes.Validator<string | number | boolean | {} | PropTypes.ReactElementLike | PropTypes.ReactNodeArray>;
+            label: PropTypes.Validator<NonNullable<PropTypes.ReactNodeLike>>;
             value: PropTypes.Requireable<any>;
         }> | null | undefined)[]>;
         onChange: PropTypes.Validator<(...args: any[]) => any>;

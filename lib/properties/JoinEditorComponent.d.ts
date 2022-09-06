@@ -2,7 +2,7 @@ import { Join, Schema } from "mwater-expressions";
 /** Edits a join, preferring a simple inverse select dropdown, but allowing advanced mode */
 export declare const JoinEditorComponent: (props: {
     join?: Join | undefined;
-    onChange: (join?: Partial<Join> | undefined) => void;
+    onChange: (join?: Partial<Join>) => void;
     schema: Schema;
     /** Table that join is from */
     fromTableId: string;
