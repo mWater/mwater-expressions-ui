@@ -1,8 +1,8 @@
 import React from "react"
 const R = React.createElement
-import selection from "./saveSelection"
+import * as selection from "./saveSelection"
 
-interface ContentEditableComponentProps {
+export interface ContentEditableComponentProps {
   html: string
   /** Called with element */
   onChange: any
@@ -47,20 +47,24 @@ export default class ContentEditableComponent extends React.Component<ContentEdi
     // Start selection saver (blur is not reliable in Firefox)
     var saveRange = () => {
       this.range = selection.save(this.editor)
-      return (this.selSaver = setTimeout(saveRange, 200))
+      this.selSaver = setTimeout(saveRange, 200)
     }
 
     if (!this.selSaver) {
-      return (this.selSaver = setTimeout(saveRange, 200))
+      this.selSaver = setTimeout(saveRange, 200)
     }
   }
+  editor: HTMLElement | null
+  lastInnerHTML: string
+  range: any
+  selSaver: NodeJS.Timeout | null
 
   focus() {
-    return this.editor.focus()
+    this.editor!.focus()
   }
 
   pasteHTML(html: any) {
-    this.editor.focus()
+    this.editor!.focus()
 
     // Restore caret
     if (this.range) {
@@ -73,16 +77,16 @@ export default class ContentEditableComponent extends React.Component<ContentEdi
   }
 
   getSelectedHTML() {
-    let container
+    let container: HTMLElement
     let html = ""
-    const sel = window.getSelection()
+    const sel = window.getSelection()!
     if (sel.rangeCount) {
       container = document.createElement("div")
       for (let i = 0, end = sel.rangeCount, asc = 0 <= end; asc ? i < end : i > end; asc ? i++ : i--) {
         container.appendChild(sel.getRangeAt(i).cloneContents())
       }
     }
-    html = container.innerHTML
+    html = container!.innerHTML
     return html
   }
 
@@ -101,14 +105,14 @@ export default class ContentEditableComponent extends React.Component<ContentEdi
 
   componentWillUpdate() {
     // Save caret
-    return (this.range = selection.save(this.editor))
+    this.range = selection.save(this.editor)
   }
 
   componentDidMount() {
     if (this.editor) {
       // Set inner html
       this.editor.innerHTML = this.props.html
-      return (this.lastInnerHTML = this.editor.innerHTML)
+      this.lastInnerHTML = this.editor.innerHTML
     }
   }
 
@@ -121,7 +125,7 @@ export default class ContentEditableComponent extends React.Component<ContentEdi
 
     // Restore caret if still focused
     if (document.activeElement === this.editor && this.range) {
-      return selection.restore(this.editor, this.range)
+      selection.restore(this.editor, this.range)
     }
   }
 
@@ -129,7 +133,7 @@ export default class ContentEditableComponent extends React.Component<ContentEdi
     // Cancel timer
     if (this.selSaver) {
       clearTimeout(this.selSaver)
-      return (this.selSaver = null)
+      this.selSaver = null
     }
   }
 
@@ -138,7 +142,7 @@ export default class ContentEditableComponent extends React.Component<ContentEdi
       contentEditable: true,
       spellCheck: true,
       ref: (c) => {
-        return (this.editor = c)
+        this.editor = c
       },
       onClick: this.props.onClick,
       style: this.props.style,
@@ -153,7 +157,7 @@ export default class ContentEditableComponent extends React.Component<ContentEdi
 // TODO selectPastedContent doesn't work
 function pasteHtmlAtCaret(html: any) {
   let range = undefined
-  const sel = window.getSelection()
+  const sel = window.getSelection()!
 
   if (sel.getRangeAt && sel.rangeCount) {
     range = sel.getRangeAt(0)

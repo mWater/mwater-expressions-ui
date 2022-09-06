@@ -130,7 +130,7 @@ function getNodeAndOffsetAt(start: any, offset: any) {
 
 export function save(containerEl: any) {
   // Get range
-  var selection = window.getSelection()
+  var selection = window.getSelection()!
   if (selection.rangeCount > 0) {
     var range = selection.getRangeAt(0)
     return {
@@ -152,7 +152,7 @@ export function restore(containerEl: any, savedSel: any) {
   range.setStart(startNodeOffset.node, startNodeOffset.offset)
   range.setEnd(endNodeOffset.node, endNodeOffset.offset)
 
-  var sel = window.getSelection()
+  var sel = window.getSelection()!
   sel.removeAllRanges()
   sel.addRange(range)
 }

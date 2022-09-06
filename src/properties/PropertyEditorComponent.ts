@@ -1,36 +1,60 @@
 import PropTypes from "prop-types"
-import React from "react"
+import React, { ReactNode } from "react"
 const R = React.createElement
 import _ from "lodash"
 import * as ui from "react-library/lib/bootstrap"
 import LocalizedStringEditorComp from "./LocalizedStringEditorComp"
 import ExprComponent from "../ExprComponent"
-import { ExprUtils } from "mwater-expressions"
+import { Column, DataSource, ExprUtils, Schema, Variable } from "mwater-expressions"
 import IdFieldComponent from "./IdFieldComponent"
 import { JoinEditorComponent } from "./JoinEditorComponent"
 
-// Edit a single property
-export default class PropertyEditorComponent extends React.Component {
-  static propTypes = {
-    property: PropTypes.object.isRequired, // The property being edited
-    onChange: PropTypes.func.isRequired, // Function called when anything is changed in the editor
-    features: PropTypes.array, // Features to be enabled apart from the default features
-    schema: PropTypes.object, // schema of all data
-    dataSource: PropTypes.object, // data source
-    table: PropTypes.string, // Table that properties are of. Not required if table feature is on
-    tableIds: PropTypes.arrayOf(PropTypes.string.isRequired), // Ids of tables to include when using table feature
-    createRoleEditElem: PropTypes.func,
-    forbiddenPropertyIds: PropTypes.arrayOf(PropTypes.string.isRequired), // Ids of properties that are not allowed as would be duplicates
-    variables: PropTypes.array // Variables that may be used in expressions
-  }
+export interface Property extends Column {
+  table?: string
+}
 
+export interface PropertyEditorComponentProps {
+  /** The property being edited */
+  property: Property
+
+  /** Function called when anything is changed in the editor */
+  onChange: (property: Property) => void
+
+  /** Features to be enabled apart from the default features */
+  features?: string[]
+
+  /** schema of all data */
+  schema?: Schema
+
+  /** data source */
+  dataSource?: DataSource
+
+  /** Table that properties are of. Not required if table feature is on */
+  table?: string
+
+  /** Ids of tables to include when using table feature */
+  tableIds?: string[]
+
+  createRoleEditElem: (roles: any[] | undefined, onRolesChange: (roles: any[]) => void) => ReactNode
+
+  /** Ids of properties that are not allowed as would be duplicates */
+  forbiddenPropertyIds?: string[]
+
+  /** Variables that may be used in expressions */
+  variables?: Variable[]
+}
+
+// Edit a single property
+export default class PropertyEditorComponent extends React.Component<PropertyEditorComponentProps> {
   static defaultProps = { features: [] }
 
   render() {
+    const features = this.props.features || []
+
     return R(
       "div",
       null,
-      _.includes(this.props.features, "table")
+      _.includes(features, "table")
         ? R(
             ui.FormGroup,
             { label: "Table" },
@@ -46,7 +70,7 @@ export default class PropertyEditorComponent extends React.Component {
           )
         : undefined,
 
-      _.includes(this.props.features, "idField")
+      _.includes(features, "idField")
         ? [
             R(IdFieldComponent, {
               value: this.props.property.id,
@@ -58,7 +82,7 @@ export default class PropertyEditorComponent extends React.Component {
           ]
         : undefined,
 
-      _.includes(this.props.features, "code")
+      _.includes(features, "code")
         ? R(
             ui.FormGroup,
             { label: "Code" },
@@ -109,14 +133,14 @@ export default class PropertyEditorComponent extends React.Component {
           R("option", { key: "image", value: "image" }, "Image"),
           R("option", { key: "imagelist", value: "imagelist" }, "Imagelist"),
           R("option", { key: "json", value: "json" }, "JSON"),
-          _.includes(this.props.features, "idType") && this.props.schema
+          _.includes(features, "idType") && this.props.schema
             ? R("option", { key: "id", value: "id" }, "Reference")
             : undefined,
-          _.includes(this.props.features, "idType") && this.props.schema
+          _.includes(features, "idType") && this.props.schema
             ? R("option", { key: "id[]", value: "id[]" }, "Reference List")
             : undefined,
-          _.includes(this.props.features, "joinType") ? R("option", { key: "join", value: "join" }, "Join") : undefined,
-          _.includes(this.props.features, "dataurlType")
+          _.includes(features, "joinType") ? R("option", { key: "join", value: "join" }, "Join") : undefined,
+          _.includes(features, "dataurlType")
             ? R("option", { key: "dataurl", value: "dataurl" }, "Data URL (inline file storage)")
             : undefined
         )
@@ -132,7 +156,7 @@ export default class PropertyEditorComponent extends React.Component {
           )
         : undefined,
 
-      _.includes(this.props.features, "expr") &&
+      _.includes(features, "expr") &&
         this.props.property.type &&
         (this.props.property.table || this.props.table)
         ? R(
@@ -156,7 +180,7 @@ export default class PropertyEditorComponent extends React.Component {
           )
         : undefined,
 
-      _.includes(this.props.features, "conditionExpr") && (this.props.property.table || this.props.table)
+      _.includes(features, "conditionExpr") && (this.props.property.table || this.props.table)
         ? R(
             ui.FormGroup,
             { label: "Condition", hint: "Set this if field should be conditionally displayed" },
@@ -198,7 +222,7 @@ export default class PropertyEditorComponent extends React.Component {
           )
         : undefined,
 
-      _.includes(this.props.features, "required")
+      _.includes(features, "required")
         ? R(
             ui.Checkbox,
             {
@@ -218,7 +242,7 @@ export default class PropertyEditorComponent extends React.Component {
         "Deprecated"
       ),
 
-      _.includes(this.props.features, "uniqueCode") && this.props.property.type === "text"
+      _.includes(features, "uniqueCode") && this.props.property.type === "text"
         ? R(
             ui.Checkbox,
             {
@@ -229,7 +253,7 @@ export default class PropertyEditorComponent extends React.Component {
           )
         : undefined,
 
-      _.includes(this.props.features, "unique") && ["text", "id"].includes(this.props.property.type)
+      _.includes(features, "unique") && ["text", "id"].includes(this.props.property.type)
         ? R(
             ui.Checkbox,
             {
@@ -240,7 +264,7 @@ export default class PropertyEditorComponent extends React.Component {
           )
         : undefined,
 
-      _.includes(this.props.features, "indexed") && ["text", "id", "number", "enum"].includes(this.props.property.type)
+      _.includes(features, "indexed") && ["text", "id", "number", "enum"].includes(this.props.property.type)
         ? R(
             ui.Checkbox,
             {
@@ -251,7 +275,7 @@ export default class PropertyEditorComponent extends React.Component {
           )
         : undefined,
 
-      _.includes(this.props.features, "onDelete") && ["id"].includes(this.props.property.type)
+      _.includes(features, "onDelete") && ["id"].includes(this.props.property.type)
         ? R(
             ui.FormGroup,
             { label: "On Delete" },
@@ -268,7 +292,7 @@ export default class PropertyEditorComponent extends React.Component {
           )
         : undefined,
 
-      _.includes(this.props.features, "sql")
+      _.includes(features, "sql")
         ? R(
             ui.FormGroup,
             { label: "SQL", hint: "Use {alias} for the table alias" },
@@ -281,7 +305,7 @@ export default class PropertyEditorComponent extends React.Component {
           )
         : undefined,
 
-      _.includes(this.props.features, "reverseSql")
+      _.includes(features, "reverseSql")
         ? R(
             ui.FormGroup,
             { label: "Reverse SQL", hint: "Use {value} for the value to convert" },
@@ -309,7 +333,11 @@ export default class PropertyEditorComponent extends React.Component {
 }
 
 // Reusable table select Component
-class TableSelectComponent extends React.Component {
+class TableSelectComponent extends React.Component<{
+  value?: string
+  schema: Schema
+  onChange: (value: string | null) => void
+}> {
   static propTypes = {
     value: PropTypes.string, // The selected table
     schema: PropTypes.object.isRequired, // schema of all data

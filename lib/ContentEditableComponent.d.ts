@@ -1,5 +1,6 @@
+/// <reference types="node" />
 import React from "react";
-interface ContentEditableComponentProps {
+export interface ContentEditableComponentProps {
     html: string;
     /** Called with element */
     onChange: any;
@@ -14,24 +15,27 @@ interface ContentEditableComponentProps {
 export default class ContentEditableComponent extends React.Component<ContentEditableComponentProps> {
     handleInput: (ev: any) => any;
     handleBlur: (ev: any) => any;
-    handleFocus: (ev: any) => NodeJS.Timeout | undefined;
-    focus(): any;
+    handleFocus: (ev: any) => void;
+    editor: HTMLElement | null;
+    lastInnerHTML: string;
+    range: any;
+    selSaver: NodeJS.Timeout | null;
+    focus(): void;
     pasteHTML(html: any): any;
     getSelectedHTML(): string;
     shouldComponentUpdate(nextProps: any): boolean;
-    componentWillUpdate(): any;
-    componentDidMount(): any;
-    componentDidUpdate(): any;
-    componentWillUnmount(): null | undefined;
+    componentWillUpdate(): void;
+    componentDidMount(): void;
+    componentDidUpdate(): void;
+    componentWillUnmount(): void;
     render(): React.DetailedReactHTMLElement<{
         contentEditable: true;
         spellCheck: true;
-        ref: (c: HTMLElement | null) => HTMLElement | null;
+        ref: (c: HTMLElement | null) => void;
         onClick: any;
         style: any;
         onInput: (ev: any) => any;
-        onFocus: (ev: any) => NodeJS.Timeout | undefined;
+        onFocus: (ev: any) => void;
         onBlur: (ev: any) => any;
     }, HTMLElement>;
 }
-export {};
