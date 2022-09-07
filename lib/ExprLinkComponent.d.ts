@@ -31,7 +31,9 @@ export interface ExprLinkComponentProps {
     /** Hint that must be boolean (even though boolean can take any type) */
     booleanOnly?: boolean;
 }
-export default class ExprLinkComponent extends React.Component<ExprLinkComponentProps> {
+export default class ExprLinkComponent extends React.Component<ExprLinkComponentProps, {
+    modalVisible: boolean;
+}> {
     static contextTypes: {
         locale: PropTypes.Requireable<string>;
     };

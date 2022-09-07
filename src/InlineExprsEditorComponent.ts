@@ -1,23 +1,22 @@
 import _ from "lodash"
-import PropTypes from "prop-types"
 import React from "react"
 const R = React.createElement
 import ExprComponent from "./ExprComponent"
-import { ExprUtils } from "mwater-expressions"
+import { DataSource, Expr, ExprUtils, Schema } from "mwater-expressions"
 import ActionCancelModalComponent from "react-library/lib/ActionCancelModalComponent"
 import ContentEditableComponent from "./ContentEditableComponent"
 
 interface InlineExprsEditorComponentProps {
   /** Schema to use */
-  schema: any
+  schema: Schema
   /** Data source to use to get values */
-  dataSource: any
+  dataSource: DataSource
   /** Current table */
   table: string
   /** Text with embedded expressions as {0}, {1}, etc. */
   text?: string
   /** Expressions that correspond to {0}, {1}, etc. */
-  exprs?: any
+  exprs?: Expr[]
   /** Called with (text, exprs) */
   onChange: any
   /** Allow multiple lines */
@@ -30,6 +29,10 @@ interface InlineExprsEditorComponentProps {
 
 // Editor that is a text box with embeddable expressions
 export default class InlineExprsEditorComponent extends React.Component<InlineExprsEditorComponentProps> {
+  insertModal: any
+  updateModal: any
+  contentEditable: ContentEditableComponent | null
+
   static defaultProps = { exprs: [] }
 
   handleInsertClick = () => {
@@ -38,12 +41,12 @@ export default class InlineExprsEditorComponent extends React.Component<InlineEx
 
   handleInsert = (expr: any) => {
     if (expr) {
-      return this.contentEditable.pasteHTML(this.createExprHtml(expr))
+      this.contentEditable!.pasteHTML(this.createExprHtml(expr))
     }
   }
 
   handleUpdate = (expr: any, index: any) => {
-    const exprs = this.props.exprs.slice()
+    const exprs = this.props.exprs!.slice()
     exprs[index] = expr
     return this.props.onChange(this.props.text, exprs)
   }
@@ -53,12 +56,12 @@ export default class InlineExprsEditorComponent extends React.Component<InlineEx
     let index = ev.target.dataset["index"]
     if (index && index.match(/^\d+$/)) {
       index = parseInt(index)
-      return this.updateModal.open(this.props.exprs[index], index)
+      return this.updateModal.open(this.props.exprs![index], index)
     }
   }
 
   // Handle a change to the content editable element
-  handleChange = (elem: any) => {
+  handleChange = (elem: HTMLElement) => {
     // console.log "handleChange: #{elem.innerHTML}"
 
     // Walk DOM tree, adding strings and expressions
@@ -71,11 +74,11 @@ export default class InlineExprsEditorComponent extends React.Component<InlineEx
     // Which index of expression is current
     let index = 0
 
-    var processNode = (node: any, isFirst: any) => {
+    var processNode = (node: Node, isFirst?: boolean) => {
       if (node.nodeType === 1) {
         // Element
         // If br, add enter
-        if (["br", "BR"].includes(node.tagName)) {
+        if (["br", "BR"].includes((node as HTMLElement).tagName)) {
           text += "\n"
           wasBr = true
           return
@@ -108,13 +111,9 @@ export default class InlineExprsEditorComponent extends React.Component<InlineEx
         wasBr = false
 
         // Recurse to children
-        return (() => {
-          const result = []
-          for (let subnode of node.childNodes) {
-            result.push(processNode(subnode))
-          }
-          return result
-        })()
+        for (let subnode of node.childNodes) {
+          processNode(subnode)
+        }
       } else if (node.nodeType === 3) {
         wasBr = false
 
@@ -173,7 +172,7 @@ export default class InlineExprsEditorComponent extends React.Component<InlineEx
     // Replace {0}, {1}, etc with an inline div <div class="inline-expr"><!--encoded expression-->SUMMARY</div>
     html = html.replace(/\{(\d+)\}/g, (match, index) => {
       index = parseInt(index)
-      const expr = this.props.exprs[index]
+      const expr = this.props.exprs![index]
       if (expr) {
         return this.createExprHtml(expr, index)
       }
@@ -201,7 +200,7 @@ export default class InlineExprsEditorComponent extends React.Component<InlineEx
   renderInsertModal() {
     return R(ExprInsertModalComponent, {
       ref: (c: any) => {
-        return (this.insertModal = c)
+        this.insertModal = c
       },
       schema: this.props.schema,
       dataSource: this.props.dataSource,
@@ -213,7 +212,7 @@ export default class InlineExprsEditorComponent extends React.Component<InlineEx
   renderUpdateModal() {
     return R(ExprUpdateModalComponent, {
       ref: (c: any) => {
-        return (this.updateModal = c)
+        this.updateModal = c
       },
       schema: this.props.schema,
       dataSource: this.props.dataSource,
@@ -233,7 +232,7 @@ export default class InlineExprsEditorComponent extends React.Component<InlineEx
         { style: { paddingRight: 20 } },
         R(ContentEditableComponent, {
           ref: (c) => {
-            return (this.contentEditable = c)
+            this.contentEditable = c
           },
           html: this.createContentEditableHtml(),
           style: {

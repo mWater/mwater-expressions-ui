@@ -19,7 +19,7 @@ export interface ExprUIExtension<T extends ExtensionExpr> {
     /** Create display component for expression */
     createExprElement(options: {
         expr: T;
-        onExprChange: (expr: T | null) => void;
+        onExprChange?: (expr: T | null) => void;
         schema: Schema;
         dataSource: DataSource;
         variables: Variable[];

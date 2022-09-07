@@ -46,7 +46,7 @@ export interface ExprLinkComponentProps {
 
 
 // Allows user to select an expression or display an existing one. Shows as a link
-export default class ExprLinkComponent extends React.Component<ExprLinkComponentProps> {
+export default class ExprLinkComponent extends React.Component<ExprLinkComponentProps, { modalVisible: boolean }> {
   static contextTypes = { locale: PropTypes.string }
 
   static defaultProps = {
@@ -106,7 +106,7 @@ export default class ExprLinkComponent extends React.Component<ExprLinkComponent
           }
         }
       },
-      exprUtils.summarizeExpr(this.props.value)
+      exprUtils.summarizeExpr(this.props.value ?? null)
     )
   }
 
@@ -124,7 +124,7 @@ export default class ExprLinkComponent extends React.Component<ExprLinkComponent
           if (id === "edit") {
             return this.setState({ modalVisible: true })
           } else {
-            return this.props.onChange(null)
+            return this.props.onChange!(null)
           }
         }
       },
@@ -174,7 +174,7 @@ export default class ExprLinkComponent extends React.Component<ExprLinkComponent
             },
             onSelect: (expr: any) => {
               this.setState({ modalVisible: false })
-              return this.props.onChange(expr)
+              return this.props.onChange!(expr)
             }
           })
         : undefined,
@@ -187,6 +187,7 @@ export default class ExprLinkComponent extends React.Component<ExprLinkComponent
         } else if (this.props.value.type === "literal") {
           return this.renderLiteral()
         }
+        return null
       })()
     )
   }

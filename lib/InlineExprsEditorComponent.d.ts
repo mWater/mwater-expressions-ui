@@ -1,15 +1,17 @@
 import React from "react";
+import { DataSource, Expr, Schema } from "mwater-expressions";
+import ContentEditableComponent from "./ContentEditableComponent";
 interface InlineExprsEditorComponentProps {
     /** Schema to use */
-    schema: any;
+    schema: Schema;
     /** Data source to use to get values */
-    dataSource: any;
+    dataSource: DataSource;
     /** Current table */
     table: string;
     /** Text with embedded expressions as {0}, {1}, etc. */
     text?: string;
     /** Expressions that correspond to {0}, {1}, etc. */
-    exprs?: any;
+    exprs?: Expr[];
     /** Called with (text, exprs) */
     onChange: any;
     /** Allow multiple lines */
@@ -18,14 +20,17 @@ interface InlineExprsEditorComponentProps {
     rows?: number;
 }
 export default class InlineExprsEditorComponent extends React.Component<InlineExprsEditorComponentProps> {
+    insertModal: any;
+    updateModal: any;
+    contentEditable: ContentEditableComponent | null;
     static defaultProps: {
         exprs: never[];
     };
     handleInsertClick: () => any;
-    handleInsert: (expr: any) => any;
+    handleInsert: (expr: any) => void;
     handleUpdate: (expr: any, index: any) => any;
     handleClick: (ev: any) => any;
-    handleChange: (elem: any) => any;
+    handleChange: (elem: HTMLElement) => any;
     createExprHtml(expr: any, index: any): string;
     createContentEditableHtml(): string;
     renderInsertModal(): React.CElement<any, any>;

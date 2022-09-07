@@ -2,7 +2,7 @@ import _ from "lodash"
 import React, { ReactNode } from "react"
 const R = React.createElement
 
-import { AggrStatus, BuildEnumsetExpr, DataSource, EnumValue, Expr, ExprUtils, LiteralType, OpExpr, Schema, Variable } from "mwater-expressions"
+import { AggrStatus, BuildEnumsetExpr, CaseExpr, DataSource, EnumValue, Expr, ExprUtils, LiteralExpr, LiteralType, OpExpr, ScalarExpr, Schema, Variable } from "mwater-expressions"
 import LinkComponent from "./LinkComponent"
 import StackedComponent from "./StackedComponent"
 import ScoreExprComponent from "./ScoreExprComponent"
@@ -77,7 +77,7 @@ export default class ExprElementBuilder {
   //   aggrStatuses: statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] or ["literal"] if not table
   //   placeholder: empty placeholder
   //   exprLinkRef: ref to put on expr link component
-  build(expr: Expr, table: string | undefined, onChange: (expr: Expr) => void, options: BuildOptions = {}): ReactNode {
+  build(expr: Expr, table: string | undefined, onChange: ((expr: Expr) => void) | undefined, options: BuildOptions = {}): ReactNode {
     let elem
     _.defaults(options, {
       aggrStatuses: table ? ["individual", "literal"] : ["literal"]
@@ -132,7 +132,7 @@ export default class ExprElementBuilder {
         booleanOnly
       })
     } else if (expr.type === "op") {
-      elem = this.buildOp(expr, table, onChange, options)
+      elem = this.buildOp(expr, table, onChange, { ...options, aggrStatuses: options.aggrStatuses! })
       // else if expr.type == "field"
       //   elem = @buildField(expr, onChange, { key: options.key })
     } else if (expr.type === "scalar") {
@@ -175,7 +175,11 @@ export default class ExprElementBuilder {
     const links = []
 
     // Create a link to wrap the expression with an op. type is "n" for +/* that can take n, "binary" for -//, "unary" for sum, etc.
-    const createWrapOp = (op: string, name: string, type = "unary") => {
+    function createWrapOp(op: string, name: string, type = "unary") {
+      if (!onChange) {
+        return
+      }
+
       if (!(options.suppressWrapOps || []).includes(op)) {
         if (type === "unary") {
           links.push({ label: name, onClick: () => onChange({ type: "op", op, table, exprs: [expr] }) })
@@ -189,7 +193,7 @@ export default class ExprElementBuilder {
             onClick: () => {
               const exprs = (expr as OpExpr).exprs.slice()
               exprs.push(null)
-              onChange({ ...(expr as OpExpr),  exprs })
+              onChange({ ...(expr as OpExpr), exprs })
             }
           })
         }
@@ -223,31 +227,33 @@ export default class ExprElementBuilder {
         onClick: () => {
           const cases = expr.cases.slice()
           cases.push({ when: null, then: null })
-          return onChange({ ...expr, cases })
+          onChange!({ ...expr, cases })
         }
       })
     }
+
+    const exprTable = expr ? (expr as any).table as string | undefined : undefined
 
     // Add case mapping for enum
     if (exprType === "enum") {
       links.push({
         label: "Map Values",
         onClick: () => {
-          const newExpr = {
+          const newExpr: CaseExpr = {
             type: "case",
-            table: expr.table,
-            cases: _.map(this.exprUtils.getExprEnumValues(expr), (ev) => {
+            table: exprTable,
+            cases: _.map(this.exprUtils.getExprEnumValues(expr)!, (ev) => {
               const literal = { type: "literal", valueType: "enum", value: ev.id }
 
               return {
-                when: { type: "op", table: expr.table, op: "=", exprs: [expr, literal] },
-                then: { type: "literal", valueType: "text", value: ExprUtils.localizeString(ev.name) }
+                when: { type: "op", table: exprTable, op: "=", exprs: [expr, literal] } as Expr,
+                then: { type: "literal", valueType: "text", value: ExprUtils.localizeString(ev.name) } as Expr
               }
             }),
             else: null
           }
 
-          return onChange(newExpr)
+          onChange!(newExpr)
         }
       })
     }
@@ -288,21 +294,31 @@ export default class ExprElementBuilder {
     )
   }
 
-  buildScalar(expr: any, onChange: any, options = {}): ReactNode {
+  buildScalar(expr: ScalarExpr, onChange: any, options: {
+    key?: any
+
+    types?: LiteralType[]
+ 
+    /** the table from which id-type expressions must come */
+    idTable?: string
+  
+    /** array of { id, name } for the enumerable values to display */
+    enumValues?: EnumValue[]
+  } = {}): ReactNode {
     // Get joins string
     let innerElem
     let destTable = expr.table
     let joinsStr = ""
     for (let join of expr.joins) {
-      const joinCol = this.schema.getColumn(destTable, join)
+      const joinCol = this.schema.getColumn(destTable, join)!
       joinsStr += ExprUtils.localizeString(joinCol.name, this.locale) + " > "
-      destTable = joinCol.type === "join" ? joinCol.join.toTable : joinCol.idTable
+      destTable = joinCol.type === "join" ? joinCol.join!.toTable : joinCol.idTable!
     }
 
     // If just a field or id inside, add to string and make a simple link control
     if (expr.expr && ["field", "id"].includes(expr.expr.type)) {
-      // Summarize without aggregation
-      const summary = this.exprUtils.summarizeExpr(_.omit(expr, "aggr"))
+      // Summarize without aggregation (aggr is deprecated anyway)
+      const summary = this.exprUtils.summarizeExpr(_.omit(expr, "aggr") as ScalarExpr)
 
       return R(
         "div",
@@ -327,7 +343,7 @@ export default class ExprElementBuilder {
 
       // Determine if can allow aggregation
       const multipleJoins = this.exprUtils.isMultipleJoins(expr.table, expr.joins)
-      const innerAggrStatuses = multipleJoins ? ["literal", "aggregate"] : ["literal", "individual"]
+      const innerAggrStatuses: AggrStatus[] = multipleJoins ? ["literal", "aggregate"] : ["literal", "individual"]
 
       // True if an individual boolean is required, in which case any expression can be transformed into it
       const anyTypeAllowed = !options.types || (options.types.includes("boolean") && options.types.length === 1)
@@ -342,7 +358,7 @@ export default class ExprElementBuilder {
 
     return R(
       "div",
-      { style: { display: "flex", alignItems: "baseline" } },
+      { style: { display: "flex", alignItems: "baseline" }, key: options.key },
       R(
         LinkComponent,
         {
@@ -358,7 +374,18 @@ export default class ExprElementBuilder {
   }
 
   // Builds on op component
-  buildOp(expr: OpExpr, table: any, onChange: any, options = {}): ReactNode {
+  buildOp(expr: OpExpr, table: any, onChange: any, options: {
+    /** array of { id, name } for the enumerable values to display */
+    enumValues?: EnumValue[]
+
+    /** the table from which id-type expressions must come */
+    idTable?: string
+
+    types?: LiteralType[]
+ 
+    /** statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] or ["literal"] if not table */
+    aggrStatuses: AggrStatus[]
+  }): ReactNode {
     let rhsElem
     switch (expr.op) {
       // For vertical ops (ones with n values or other arithmetic)
@@ -379,7 +406,7 @@ export default class ExprElementBuilder {
             return onChange(_.extend({}, expr, { exprs: newExprs }))
           }
 
-          const types = ["and", "or"].includes(expr.op) ? ["boolean"] : ["number"]
+          const types: LiteralType[] = ["and", "or"].includes(expr.op) ? ["boolean"] : ["number"]
           const elem = this.build(innerExpr, table, onChange ? innerElemOnChange : undefined, {
             types,
             aggrStatuses: options.aggrStatuses,
@@ -451,7 +478,7 @@ export default class ExprElementBuilder {
           )
         }
 
-        var innerAggrStatuses = opItem.aggr ? ["literal", "individual"] : options.aggrStatuses
+        var innerAggrStatuses: AggrStatus[] | undefined = opItem.aggr ? ["literal", "individual"] : options.aggrStatuses
 
         var lhsOnChange = (newValue: any) => {
           const newExprs = expr.exprs.slice()
@@ -498,8 +525,8 @@ export default class ExprElementBuilder {
           rhsElem = [
             this.build(expr.exprs[1], table, onChange ? rhs1OnChange : undefined, {
               types: [opItem.exprTypes[1]],
-              enumValues: this.exprUtils.getExprEnumValues(expr.exprs[0]),
-              idTable: this.exprUtils.getExprIdTable(expr.exprs[0]),
+              enumValues: this.exprUtils.getExprEnumValues(expr.exprs[0]) ?? undefined,
+              idTable: this.exprUtils.getExprIdTable(expr.exprs[0]) ?? undefined,
               refExpr: expr.exprs[0],
               preferLiteral: true,
               aggrStatuses: innerAggrStatuses,
@@ -508,8 +535,8 @@ export default class ExprElementBuilder {
             "\u00A0and\u00A0",
             this.build(expr.exprs[2], table, onChange ? rhs2OnChange : undefined, {
               types: [opItem.exprTypes[2]],
-              enumValues: this.exprUtils.getExprEnumValues(expr.exprs[0]),
-              idTable: this.exprUtils.getExprIdTable(expr.exprs[0]),
+              enumValues: this.exprUtils.getExprEnumValues(expr.exprs[0]) ?? undefined,
+              idTable: this.exprUtils.getExprIdTable(expr.exprs[0]) ?? undefined,
               refExpr: expr.exprs[0],
               preferLiteral: true,
               aggrStatuses: innerAggrStatuses,
@@ -530,9 +557,9 @@ export default class ExprElementBuilder {
             key: "rhs",
             types: _.uniq(_.map(opItems, (oi) => oi.exprTypes[1])),
             enumValues: ["enum", "enumset"].includes(opItem.exprTypes[1])
-              ? this.exprUtils.getExprEnumValues(expr.exprs[0])
+              ? this.exprUtils.getExprEnumValues(expr.exprs[0])!
               : undefined, // Only include if type is enum or enumset
-            idTable: this.exprUtils.getExprIdTable(expr.exprs[0]),
+            idTable: this.exprUtils.getExprIdTable(expr.exprs[0]) ?? undefined,
             refExpr: expr.exprs[0],
             preferLiteral: opItem.rhsLiteral,
             aggrStatuses: innerAggrStatuses,
@@ -541,7 +568,7 @@ export default class ExprElementBuilder {
         }
 
         // Create op dropdown (finding matching type and lhs, not op). Allow aggregates if appropriate
-        var aggr = null
+        var aggr = undefined
         if (!options.aggrStatuses.includes("aggregate")) {
           aggr = false
         }
@@ -561,7 +588,7 @@ export default class ExprElementBuilder {
           LinkComponent,
           {
             dropdownItems: onChange
-              ? [{ id: "_remove", name: [R("i", { className: "fa fa-remove text-muted" }), " Remove"] }].concat(
+              ? [{ id: "_remove", name: [R("i", { className: "fa fa-remove text-muted" }), " Remove"] } as { id: string, name: ReactNode}].concat(
                   _.map(opItems, (oi) => ({
                     id: oi.op,
                     name: oi.name
@@ -601,7 +628,7 @@ export default class ExprElementBuilder {
     }
   }
 
-  buildCase(expr: any, onChange: any, options: any): ReactNode {
+  buildCase(expr: CaseExpr, onChange: any, options: any): ReactNode {
     // Style for labels "if", "then", "else"
     const labelStyle = {
       flex: "0 0 auto", // Don't resize
@@ -610,7 +637,7 @@ export default class ExprElementBuilder {
     }
 
     // Create inner elements
-    const items = _.map(expr.cases, (cse, i) => {
+    const items: ReactNode[] = _.map(expr.cases, (cse, i) => {
       // Create onChange functions
       const innerElemOnWhenChange = (newWhen: any) => {
         const cases = expr.cases.slice()
@@ -707,10 +734,13 @@ export default class ExprElementBuilder {
 }
 
 interface WrappedLinkComponentProps {
-  links: any
+  links: {
+    label: ReactNode
+    onClick: () => void
+  }[]
 }
 
-// TODO DOC
+/** Adds floating links below child component on hover */
 class WrappedLinkComponent extends React.Component<WrappedLinkComponentProps> {
   renderLinks() {
     return R(

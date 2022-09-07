@@ -3,7 +3,7 @@ import _ from "lodash"
 import React from "react"
 const R = React.createElement
 
-import { ExprUtils } from "mwater-expressions"
+import { AggrStatus, DataSource, EnumValue, Expr, ExprUtils, LiteralType, Schema, Variable } from "mwater-expressions"
 import ModalWindowComponent from "react-library/lib/ModalWindowComponent"
 import TabbedComponent from "react-library/lib/TabbedComponent"
 import SelectFieldExprComponent from "./SelectFieldExprComponent"
@@ -11,31 +11,58 @@ import SelectFormulaExprComponent from "./SelectFormulaExprComponent"
 import SelectLiteralExprComponent from "./SelectLiteralExprComponent"
 import SelectVariableExprComponent from "./SelectVariableExprComponent"
 
-export default class SelectExprModalComponent extends React.Component {
-  static propTypes = {
-    onSelect: PropTypes.func.isRequired, // Called with new expression
-    onCancel: PropTypes.func.isRequired, // Modal was cancelled
+export interface SelectExprModalComponentProps {
+  /** Called with new expression */
+  onSelect: (expr: Expr) => void
 
-    schema: PropTypes.object.isRequired,
-    dataSource: PropTypes.object.isRequired, // Data source to use to get values
-    variables: PropTypes.array.isRequired,
+  onCancel: () => void
 
-    table: PropTypes.string, // Current table. If none, then literal-only
-    value: PropTypes.object, // Current expression value
+  /** Variables that are available to be selected */
+  variables?: Variable[]
 
-    // Props to narrow down choices
-    types: PropTypes.array, // If specified, the types (value type) of expression required. e.g. ["boolean"]
-    enumValues: PropTypes.array, // Array of { id:, name: } of enum values that can be selected. Only when type = "enum"
-    idTable: PropTypes.string, // If specified the table from which id-type expressions must come
-    initialMode: PropTypes.oneOf(["field", "formula", "literal"]), // Initial mode. Default "field" unless no table, then "literal"
-    allowCase: PropTypes.bool, // Allow case statements
-    aggrStatuses: PropTypes.array, // statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"]
-    refExpr: PropTypes.object, // expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values
-    booleanOnly: PropTypes.bool, // Hint that must be boolean (even though boolean can take any type)
+  /** Current table. undefined for literal only */
+  table?: string
 
-    placeholder: PropTypes.string // Placeholder text (default Select...)
-  }
+  /** Current expression value */
+  value: Expr
 
+  /** If specified, the types (value type) of expression required. e.g. ["boolean"] */
+  types?: LiteralType[]
+
+  /** Array of { id:, name: } of enum values that can be selected. Only when type = "enum" */
+  enumValues?: EnumValue[]
+
+  /** If specified the table from which id-type expressions must come */
+  idTable?: string
+
+  /** Initial mode. Default "field" unless no table, then "literal" */
+  initialMode: "field" | "formula" | "literal"
+
+  /** Allow case statements */
+  allowCase?: boolean 
+
+  /** statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] */
+  aggrStatuses?: AggrStatus[]
+
+  /** expression to get values for (used for literals). This is primarily for text fields to allow easy selecting of literal values */
+  refExpr?: Expr
+
+  /** Hint that must be boolean (even though boolean can take any type) */
+  booleanOnly?: boolean
+
+  /** placeholder for empty value */
+  placeholder?: string
+
+  schema: Schema
+
+  /** Data source to use to get values */
+  dataSource: DataSource
+
+  /** True to prefer literal expressions */
+  preferLiteral?: boolean
+}
+
+export default class SelectExprModalComponent extends React.Component<SelectExprModalComponentProps> {
   static contextTypes = { locale: PropTypes.string }
 
   static defaultProps = {
@@ -71,7 +98,7 @@ export default class SelectExprModalComponent extends React.Component {
       })
     }
 
-    if (table || this.props.aggrStatuses.includes("literal")) {
+    if (table || this.props.aggrStatuses!.includes("literal")) {
       tabs.push({
         id: "formula",
         label: [R("i", { className: "fa fa-calculator" }), " Formula"],
@@ -87,7 +114,7 @@ export default class SelectExprModalComponent extends React.Component {
       })
     }
 
-    if (this.props.aggrStatuses.includes("literal")) {
+    if (this.props.aggrStatuses!.includes("literal")) {
       tabs.push({
         id: "literal",
         label: [R("i", { className: "fa fa-pencil" }), " Value"],
