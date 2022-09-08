@@ -5,31 +5,41 @@ const R = React.createElement
 
 import ScalarExprTreeComponent from "./ScalarExprTreeComponent"
 import ScalarExprTreeBuilder from "./ScalarExprTreeBuilder"
-import { ExprUtils } from "mwater-expressions"
+import { AggrStatus, DataSource, EnumValue, ExprUtils, Schema, Variable } from "mwater-expressions"
 
 interface SelectFieldExprComponentProps {
   /** Current expression value */
   value?: any
+
   /** Called with new expression */
   onChange: any
-  schema: any
+
+  schema: Schema
+
   /** Data source to use to get values */
-  dataSource: any
-  variables: any
+  dataSource: DataSource
+
+  variables: Variable[]
+
   /** Props to narrow down choices */
   table: string
+
   /** If specified, the types (value type) of expression required. e.g. ["boolean"] */
   types?: any
+
   /** Array of { id:, name: } of enum values that can be selected. Only when type = "enum" */
-  enumValues?: any
+  enumValues?: EnumValue[]
+
   /** If specified the table from which id-type expressions must come */
   idTable?: string
+
   /** statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] */
-  aggrStatuses?: any
+  aggrStatuses: AggrStatus[]
 }
 
 interface SelectFieldExprComponentState {
   searchText: any
+  focused: boolean
 }
 
 export default class SelectFieldExprComponent extends React.Component<
@@ -47,12 +57,14 @@ export default class SelectFieldExprComponent extends React.Component<
     // Should return null for default, true to include, false to exclude
     isScalarExprTreeSectionMatch: PropTypes.func
   }
+  searchComp: HTMLInputElement | null
 
   constructor(props: any) {
     super(props)
 
     this.state = {
-      searchText: ""
+      searchText: "",
+      focused: false
     }
   }
 
@@ -80,7 +92,7 @@ export default class SelectFieldExprComponent extends React.Component<
         cases: _.map(this.props.enumValues, (ev) => {
           // Find matching name (english)
           let literal
-          const fromEnumValues = exprUtils.getExprEnumValues(expr)
+          const fromEnumValues = exprUtils.getExprEnumValues(expr)!
           const matchingEnumValue = _.find(fromEnumValues, (fev) => fev.name.en === ev.name.en)
 
           if (matchingEnumValue) {
@@ -109,7 +121,7 @@ export default class SelectFieldExprComponent extends React.Component<
       for (var ev of this.props.enumValues) {
         // Find matching name (english)
         var literal
-        const fromEnumValues = exprUtils.getExprEnumValues(expr)
+        const fromEnumValues = exprUtils.getExprEnumValues(expr)!
         const matchingEnumValue = _.find(fromEnumValues, (fev) => fev.name.en === ev.name.en)
 
         if (matchingEnumValue) {
@@ -154,8 +166,8 @@ export default class SelectFieldExprComponent extends React.Component<
       "div",
       null,
       R("input", {
-        ref: (c: any) => {
-          return (this.searchComp = c)
+        ref: (c: HTMLInputElement | null) => {
+          this.searchComp = c
         },
         type: "text",
         placeholder: "Search Fields...",

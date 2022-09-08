@@ -41,7 +41,7 @@ export default class InlineExprsEditorComponent extends React.Component<InlineEx
 
   handleInsert = (expr: any) => {
     if (expr) {
-      this.contentEditable!.pasteHTML(this.createExprHtml(expr))
+      this.contentEditable!.pasteHTML(this.createExprHtml(expr, null))
     }
   }
 
@@ -85,26 +85,26 @@ export default class InlineExprsEditorComponent extends React.Component<InlineEx
         }
 
         // If expression, handle specially
-        if (node.className && node.className.match(/inline-expr-block/)) {
+        if ((node as HTMLElement).className && (node as HTMLElement).className.match(/inline-expr-block/)) {
           // Get expression decoded from comment which is first child
           const commentNode = _.find(node.childNodes, (subnode) => subnode.nodeType === 8)
           if (commentNode) {
             text += "{" + index + "}"
-            exprs.push(JSON.parse(decodeURIComponent(commentNode.nodeValue)))
+            exprs.push(JSON.parse(decodeURIComponent(node.nodeValue!)))
             index += 1
           }
           return
         }
 
         // <div><br><div> is just simple \n
-        if (node.tagName.toLowerCase() === "div" && node.innerHTML.toLowerCase() === "<br>") {
+        if ((node as HTMLElement).tagName.toLowerCase() === "div" && (node as HTMLElement).innerHTML.toLowerCase() === "<br>") {
           text += "\n"
           wasBr = false
           return
         }
 
         // If div, add enter if not initial div
-        if (!isFirst && !wasBr && ["div", "DIV"].includes(node.tagName)) {
+        if (!isFirst && !wasBr && ["div", "DIV"].includes((node as HTMLElement).tagName)) {
           text += "\n"
         }
 
@@ -118,7 +118,7 @@ export default class InlineExprsEditorComponent extends React.Component<InlineEx
         wasBr = false
 
         // Append text, stripping \r\n if not multiline
-        let nodeText = node.nodeValue
+        let nodeText = node.nodeValue || ""
         if (!this.props.multiline) {
           nodeText = nodeText.replace(/\r?\n/g, " ")
         }

@@ -159,7 +159,7 @@ export default class ExprLinkComponent extends React.Component<ExprLinkComponent
             schema: this.props.schema,
             dataSource: this.props.dataSource,
             table: this.props.table,
-            value: this.props.value,
+            value: this.props.value ?? null,
             variables: this.props.variables,
             types: this.props.types,
             enumValues: this.props.enumValues,

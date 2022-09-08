@@ -3,14 +3,15 @@ import _ from "lodash"
 import React from "react"
 const R = React.createElement
 
-import { ExprUtils } from "mwater-expressions"
+import { Expr, ExprUtils, Variable } from "mwater-expressions"
 
 interface SelectVariableExprComponentProps {
   /** Current expression value */
-  value?: any
+  value?: Expr
   /** Called with new expression */
   onChange: any
-  variables: any
+
+  variables: Variable[]
   /** Props to narrow down choices */
   types?: any
   /** Array of { id:, name: } of enum values that can be selected. Only when type = "enum" */

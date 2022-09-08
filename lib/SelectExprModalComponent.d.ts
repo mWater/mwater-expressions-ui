@@ -19,7 +19,7 @@ export interface SelectExprModalComponentProps {
     /** If specified the table from which id-type expressions must come */
     idTable?: string;
     /** Initial mode. Default "field" unless no table, then "literal" */
-    initialMode: "field" | "formula" | "literal";
+    initialMode?: "field" | "formula" | "literal";
     /** Allow case statements */
     allowCase?: boolean;
     /** statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] */
@@ -40,11 +40,7 @@ export default class SelectExprModalComponent extends React.Component<SelectExpr
     static contextTypes: {
         locale: PropTypes.Requireable<string>;
     };
-    static defaultProps: {
-        placeholder: string;
-        initialMode: string;
-        aggrStatuses: string[];
-    };
+    static defaultProps: Partial<SelectExprModalComponentProps>;
     renderContents(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     render(): React.CElement<import("react-library/lib/ModalWindowComponent").ModalWindowComponentProps, ModalWindowComponent>;
 }

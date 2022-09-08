@@ -1,25 +1,35 @@
-import PropTypes from "prop-types"
 import _ from "lodash"
 import React from "react"
 const R = React.createElement
 
 import { getExprUIExtensions } from "./extensions"
-import { ExprUtils } from "mwater-expressions"
+import { AggrStatus, BuildEnumsetExpr, CaseExpr, EnumValue, Expr, ExprUtils, LiteralType, OpExpr, Schema, ScoreExpr } from "mwater-expressions"
 
 interface SelectFormulaExprComponentProps {
+  schema: Schema
+
   /** Current expression value */
-  value?: any
+  value?: Expr
+
   /** Called with new expression */
-  onChange: any
+  onChange: (value: Expr) => void
+
   /** Props to narrow down choices */
   table?: string
+
   /** Allow case statements */
   allowCase?: boolean
+  
   /** If specified, the types (value type) of expression required. e.g. ["boolean"] */
-  types?: any
+  types?: LiteralType[]
+  
   /** statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] */
-  aggrStatuses?: any
+  aggrStatuses: AggrStatus[]
+
   locale?: string
+
+  /** Array of { id:, name: } of enum values that can be selected. Only when type = "enum" */
+  enumValues?: EnumValue[]
 }
 
 interface SelectFormulaExprComponentState {
@@ -30,6 +40,7 @@ export default class SelectFormulaExprComponent extends React.Component<
   SelectFormulaExprComponentProps,
   SelectFormulaExprComponentState
 > {
+  searchComp: HTMLInputElement | null
   constructor(props: any) {
     super(props)
 
@@ -47,7 +58,7 @@ export default class SelectFormulaExprComponent extends React.Component<
   }
 
   handleIfSelected = () => {
-    const ifExpr = {
+    const ifExpr: CaseExpr = {
       type: "case",
       cases: [{ when: null, then: null }],
       else: null
@@ -56,11 +67,11 @@ export default class SelectFormulaExprComponent extends React.Component<
       ifExpr.table = this.props.table
     }
 
-    return this.props.onChange(ifExpr)
+    this.props.onChange(ifExpr)
   }
 
   handleScoreSelected = () => {
-    const scoreExpr = {
+    const scoreExpr: ScoreExpr = {
       type: "score",
       input: null,
       scores: {}
@@ -69,22 +80,22 @@ export default class SelectFormulaExprComponent extends React.Component<
       scoreExpr.table = this.props.table
     }
 
-    return this.props.onChange(scoreExpr)
+    this.props.onChange(scoreExpr)
   }
 
   handleBuildEnumsetSelected = () => {
-    const expr = {
+    const expr: BuildEnumsetExpr = {
       type: "build enumset",
       values: {}
     }
     if (this.props.table) {
       expr.table = this.props.table
     }
-    return this.props.onChange(expr)
+    this.props.onChange(expr)
   }
 
   handleOpSelected = (op: any) => {
-    const expr = {
+    const expr: OpExpr = {
       type: "op",
       op,
       exprs: []
@@ -93,7 +104,7 @@ export default class SelectFormulaExprComponent extends React.Component<
       expr.table = this.props.table
     }
 
-    return this.props.onChange(expr)
+    this.props.onChange(expr)
   }
 
   render() {
@@ -124,7 +135,7 @@ export default class SelectFormulaExprComponent extends React.Component<
     }
 
     // Only allow aggregate expressions if relevant
-    let aggr = null
+    let aggr = undefined
     if (!this.props.aggrStatuses.includes("aggregate")) {
       aggr = false
     }
@@ -133,7 +144,7 @@ export default class SelectFormulaExprComponent extends React.Component<
     const exprUtils = new ExprUtils(this.props.schema)
     const opItems = exprUtils.findMatchingOpItems({ resultTypes: this.props.types, prefix: true, aggr })
     for (let opItem of _.uniq(opItems, "op")) {
-      items.push({ name: opItem.name, desc: opItem.desc, onClick: this.handleOpSelected.bind(null, opItem.op) })
+      items.push({ name: opItem.name, desc: opItem.desc || "", onClick: this.handleOpSelected.bind(null, opItem.op) })
     }
 
     // Add build enumset if has enumset possible and has values
@@ -176,7 +187,7 @@ export default class SelectFormulaExprComponent extends React.Component<
         return items.push({
           name: ExprUtils.localizeString(exprUIExtension.name, this.props.locale),
           desc: ExprUtils.localizeString(exprUIExtension.desc, this.props.locale),
-          onClick: () => this.props.onChange(exprUIExtension.createDefaultExpr(this.props.table))
+          onClick: () => this.props.onChange(exprUIExtension.createDefaultExpr(this.props.table ?? null))
         })
       })(exprUIExtension)
     }
@@ -190,8 +201,8 @@ export default class SelectFormulaExprComponent extends React.Component<
       "div",
       null,
       R("input", {
-        ref: (c: any) => {
-          return (this.searchComp = c)
+        ref: (c: HTMLInputElement | null) => {
+          this.searchComp = c
         },
         type: "text",
         placeholder: "Search Formulas...",

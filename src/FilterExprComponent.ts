@@ -3,13 +3,13 @@ import _ from "lodash"
 import React from "react"
 const R = React.createElement
 
-import { Schema, DataSource, Variable, Expr } from "mwater-expressions"
-import update from "update-object"
+import { Schema, DataSource, Variable, Expr, OpExpr } from "mwater-expressions"
 import { ExprCleaner } from "mwater-expressions"
 import ExprElementBuilder from "./ExprElementBuilder"
 import StackedComponent from "./StackedComponent"
 import RemovableComponent from "./RemovableComponent"
 import ExprLinkComponent from "./ExprLinkComponent"
+import produce from "immer"
 
 interface FilterExprComponentProps {
   schema: Schema
@@ -52,7 +52,7 @@ export default class FilterExprComponent extends React.Component<FilterExprCompo
   handleAddFilter = () => {
     // If already "and", add null
     if (this.props.value && this.props.value.type == "op" && this.props.value.op === "and") {
-      this.props.onChange!(update(this.props.value, { exprs: { $push: [null] } }))
+      this.props.onChange!(produce(this.props.value, draft => { draft.exprs.push(null) }))
       return
     }
 
@@ -80,11 +80,11 @@ export default class FilterExprComponent extends React.Component<FilterExprCompo
 
   // Handle change to a single item
   handleAndChange = (i: any, expr: any) => {
-    return this.handleChange(update(this.props.value, { exprs: { $splice: [[i, 1, expr]] } }))
+    return this.handleChange(produce(this.props.value as OpExpr, draft => { draft.exprs[i] = expr }))
   }
 
   handleAndRemove = (i: any) => {
-    return this.handleChange(update(this.props.value, { exprs: { $splice: [[i, 1]] } }))
+    return this.handleChange(produce(this.props.value as OpExpr, draft => { draft.exprs.splice(i, 1) }))
   }
 
   handleRemove = () => {

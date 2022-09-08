@@ -1,11 +1,12 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { Expr, Variable } from "mwater-expressions";
 interface SelectVariableExprComponentProps {
     /** Current expression value */
-    value?: any;
+    value?: Expr;
     /** Called with new expression */
     onChange: any;
-    variables: any;
+    variables: Variable[];
     /** Props to narrow down choices */
     types?: any;
     /** Array of { id:, name: } of enum values that can be selected. Only when type = "enum" */

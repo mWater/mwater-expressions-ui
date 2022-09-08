@@ -1,12 +1,12 @@
 import _ from "lodash"
 import PropTypes from "prop-types"
-import React from "react"
-import ReactDOM from "react-dom"
+import React, { ReactNode } from "react"
+import { ScalarTreeNode } from "./ScalarExprTreeBuilder"
 const R = React.createElement
 
 interface ScalarExprTreeComponentProps {
   /** Tree from ScalarExprTreeBuilder */
-  tree: any
+  tree: ScalarTreeNode[]
   /** Called with newly selected value */
   onChange: any
   /** Render height of the component */
@@ -32,7 +32,7 @@ export default class ScalarExprTreeComponent extends React.Component<ScalarExprT
 
 interface ScalarExprTreeTreeComponentProps {
   /** Tree from ScalarExprTreeBuilder */
-  tree: any
+  tree: ScalarTreeNode[]
   /** Called with newly selected value */
   onChange: any
   /** String to prefix names with */
@@ -74,8 +74,9 @@ class ScalarExprTreeTreeComponent extends React.Component<ScalarExprTreeTreeComp
 
 interface ScalarExprTreeLeafComponentProps {
   /** Contains item "name" and "value" */
-  item: any
+  item: ScalarTreeNode
   prefix?: string
+  onChange: any
 }
 
 class ScalarExprTreeLeafComponent extends React.Component<ScalarExprTreeLeafComponentProps> {
@@ -105,11 +106,14 @@ class ScalarExprTreeLeafComponent extends React.Component<ScalarExprTreeLeafComp
 
 interface ScalarExprTreeNodeComponentProps {
   /** Item to display */
-  item: any
+  item: ScalarTreeNode
+
   /** Called when item is selected */
   onChange: any
   /** Optional string filter */
   filter?: string
+
+  prefix?: string
 }
 
 interface ScalarExprTreeNodeComponentState {
@@ -124,7 +128,7 @@ class ScalarExprTreeNodeComponent extends React.Component<
     // Should return decorated element
     { decorateScalarExprTreeSectionChildren: PropTypes.func }
 
-  constructor(props: any) {
+  constructor(props: ScalarExprTreeNodeComponentProps) {
     super(props)
     this.state = {
       collapse: this.props.item.initiallyOpen ? "open" : "closed"
@@ -158,6 +162,7 @@ class ScalarExprTreeNodeComponent extends React.Component<
   render() {
     let children, prefix: any
     let arrow = null
+
     if (this.state.collapse === "closed") {
       arrow = R("i", { className: "fa fa-plus-square-o", style: { width: 15 } })
     } else if (this.state.collapse === "open") {
@@ -167,14 +172,14 @@ class ScalarExprTreeNodeComponent extends React.Component<
     if (this.state.collapse === "open") {
       // Compute new prefix, adding when going into joins
       prefix = this.props.prefix || ""
-      if (this.props.item.item.type === "join") {
+      if (this.props.item.item!.type === "join") {
         prefix = prefix + this.props.item.name + " > "
       }
 
       // Render child items
-      const childItems = this.props.item.children()
+      const childItems = this.props.item.children!()
 
-      children = _.map(childItems, (item) => {
+      children = _.map(childItems, (item): ReactNode => {
         if (item.children) {
           return R(ScalarExprTreeNodeComponent, {
             key: item.key,
@@ -189,7 +194,7 @@ class ScalarExprTreeNodeComponent extends React.Component<
       })
 
       // Decorate children if section
-      if (this.context.decorateScalarExprTreeSectionChildren && this.props.item.item.type === "section") {
+      if (this.context.decorateScalarExprTreeSectionChildren && this.props.item.item!.type === "section") {
         children = this.context.decorateScalarExprTreeSectionChildren({
           children,
           tableId: this.props.item.tableId,

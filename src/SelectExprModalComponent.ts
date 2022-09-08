@@ -36,7 +36,7 @@ export interface SelectExprModalComponentProps {
   idTable?: string
 
   /** Initial mode. Default "field" unless no table, then "literal" */
-  initialMode: "field" | "formula" | "literal"
+  initialMode?: "field" | "formula" | "literal"
 
   /** Allow case statements */
   allowCase?: boolean 
@@ -65,7 +65,7 @@ export interface SelectExprModalComponentProps {
 export default class SelectExprModalComponent extends React.Component<SelectExprModalComponentProps> {
   static contextTypes = { locale: PropTypes.string }
 
-  static defaultProps = {
+  static defaultProps: Partial<SelectExprModalComponentProps> = {
     placeholder: "Select...",
     initialMode: "field",
     aggrStatuses: ["individual", "literal"]
@@ -138,7 +138,7 @@ export default class SelectExprModalComponent extends React.Component<SelectExpr
         label: ["Variables"],
         elem: R(SelectVariableExprComponent, {
           value: this.props.value,
-          variables: this.props.variables,
+          variables: this.props.variables!,
           onChange: this.props.onSelect,
           types: this.props.types,
           enumValues: this.props.enumValues,

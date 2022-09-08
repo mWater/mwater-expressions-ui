@@ -1,17 +1,66 @@
 import _ from "lodash"
-import { ExprUtils } from "mwater-expressions"
+import { Column, Expr, ExprUtils, FieldExpr, LiteralType, Schema, Section, Variable } from "mwater-expressions"
+
+export interface ScalarTreeNode {
+  /** name of item, */
+  name: string
+
+  /** description of item, */
+  desc?: string
+
+  /** { table, joins, expr } - partial scalar expression, null if not selectable node */
+  value?: { table: string, joins: string[], expr: Expr } | null
+
+  /** function which returns children nodes */
+  children?: () => ScalarTreeNode[]
+
+  /** true if children should display initially */
+  initiallyOpen?: boolean
+
+  /** table id of current item if applicable */
+  tableId?: string
+
+  /** column/section object of current item if applicable */
+  item?: Column | Section
+
+  /** unique key within sibling list if present */
+  key: any
+}
+
 
 // Builds a tree for selecting table + joins + expr of a scalar expression
 // Organizes columns, and follows joins
-// options:
-//   locale: optional locale to use for names
-//   isScalarExprTreeSectionInitiallyOpen: optiona function to override initial open state of a section. Passed { tableId: id of table, section: section object from schema, filter: optional string filter }
-//     Should return true to set initially open
-//   isScalarExprTreeSectionMatch: optiona function to override filtering of a section. Passed { tableId: id of table, section: section object from schema, filter: optional string filter }
-//     Should return null for default, true to include, false to exclude
-//   variables: list of variables to show
 export default class ScalarExprTreeBuilder {
-  constructor(schema: any, options = {}) {
+  schema: Schema
+  locale: string | undefined
+  isScalarExprTreeSectionInitiallyOpen: ((input: {
+    tableId: string; section: Section; filter?: string
+  }) => boolean) | undefined
+  isScalarExprTreeSectionMatch: ((input: {
+    tableId: string; section: Section; filter?: string
+  }) => boolean) | undefined
+  variables: Variable[]
+  exprUtils: ExprUtils
+
+  constructor(schema: Schema, options: {
+    /** Optional locale to use for names */
+    locale?: string
+
+    /** Optional function to override initial open state of a section. 
+     * Passed { tableId: id of table, section: section object from schema, filter: optional string filter }
+     * Should return true to set initially open
+     */
+    isScalarExprTreeSectionInitiallyOpen?: (input: { tableId: string, section: Section, filter?: string }) => boolean
+
+    /** Optional function to override filtering of a section. 
+     * Passed { tableId: id of table, section: section object from schema, filter: optional string filter }
+     * Should return null for default, true to include, false to exclude
+     */
+    isScalarExprTreeSectionMatch?: (input: { tableId: string, section: Section, filter?: string }) => boolean
+
+    /** List of variables to show */
+    variables?: Variable[]
+  } = {}) {
     this.schema = schema
     this.locale = options.locale
     this.isScalarExprTreeSectionInitiallyOpen = options.isScalarExprTreeSectionInitiallyOpen
@@ -33,14 +82,25 @@ export default class ScalarExprTreeBuilder {
   //   item: column/section object of current item if applicable
   //   key: unique key within sibling list if present
   // }
-  // options are:
-  //  table: starting table
-  //  types: types to limit to
-  //  idTable: id type table to limit to
-  //  includeAggr: to include aggregate expressions, including an count() option that has name that is "Number of ..." at first table level
-  //  initialValue: initial value to flesh out TODO REMOVE
-  //  filter: optional string filter
-  getTree(options = {}) {
+  getTree(options: {
+    /** starting table */
+    table: string
+
+    /** types to limit to */
+    types?: LiteralType[]
+
+    /** id type table to limit to */
+    idTable?: string
+
+    /** to include aggregate expressions, including an count() option that has name that is "Number of ..." at first table level */
+    includeAggr?: boolean
+
+    /** initial value to flesh out TODO REMOVE */
+    initialValue?: Expr
+
+    /** optional string filter */
+    filter?: string
+  }): ScalarTreeNode[] {
     return this.createTableChildNodes({
       startTable: options.table,
       table: options.table,
@@ -55,30 +115,48 @@ export default class ScalarExprTreeBuilder {
   }
 
   // Options:
-  // startTable: table id that started from
-  // table: table id to get nodes for
-  // joins: joins for child nodes
-  // types: types to limit to
-  // idTable: table to limit to for id type
-  // includeAggr: to include an count() option that has and name that is "Number of ..."
-  // initialValue: initial value to flesh out TODO REMOVE
-  // filter: optional string filter
-  // depth: current depth. First level is 0
-  createTableChildNodes(options: any) {
-    let node
-    let nodes = []
-    const table = this.schema.getTable(options.table)
+  createTableChildNodes(options: {
+    /** table id that started from */
+    startTable: string
+
+    /** table id to get nodes for */
+    table: string
+
+    /** joins for child nodes */
+    joins: string[]
+
+    /** types to limit to */
+    types?: LiteralType[]
+
+    /** table to limit to for id type */
+    idTable?: string
+
+    /** to include an count() option that has and name that is "Number of ..." */
+    includeAggr?: boolean
+
+    /** initial value to flesh out TODO REMOVE */
+    initialValue?: Expr
+
+    /** optional string filter */
+    filter?: string
+
+    /** current depth. First level is 0 */
+    depth: number
+  }): ScalarTreeNode[] {
+    let node: ScalarTreeNode
+    let nodes: ScalarTreeNode[] = []
+    const table = this.schema.getTable(options.table)!
 
     // Create count node if any joins
     if (options.includeAggr) {
       node = {
-        name: `Number of ${ExprUtils.localizeString(this.schema.getTable(options.table).name, this.locale)}`,
+        name: `Number of ${ExprUtils.localizeString(this.schema.getTable(options.table)!.name, this.locale)}`,
         value: {
           table: options.startTable,
           joins: options.joins,
           expr: { type: "op", op: "count", table: options.table, exprs: [] }
         },
-        tableId: options.tableId,
+        tableId: options.table,
         key: "(count)"
       }
       if (filterMatches(options.filter, node.name)) {
@@ -111,7 +189,7 @@ export default class ScalarExprTreeBuilder {
       (!options.types || options.types.includes("id"))
     ) {
       node = {
-        name: ExprUtils.localizeString(this.schema.getTable(options.table).name, this.locale) || "(unnamed)",
+        name: ExprUtils.localizeString(this.schema.getTable(options.table)!.name, this.locale) || "(unnamed)",
         desc: "Id of the row",
         value: { table: options.startTable, joins: options.joins, expr: { type: "id", table: options.table } },
         tableId: options.table,
@@ -128,7 +206,7 @@ export default class ScalarExprTreeBuilder {
         name: "Advanced...",
         desc: "Use to create an advanced function here",
         value: { table: options.startTable, joins: options.joins, expr: null },
-        tableId: options.tableId,
+        tableId: options.table,
         key: "(advanced)"
       })
     }
@@ -152,11 +230,11 @@ export default class ScalarExprTreeBuilder {
   // filter: optional string filter
   // depth: current depth. First level is 0
   createNodes(contents: any, options: any) {
-    const nodes = []
+    const nodes: ScalarTreeNode[] = []
 
     for (let item of contents) {
       ;((item) => {
-        let node
+        let node: ScalarTreeNode
         if (item.type === "section") {
           // Avoid if deprecated
           if (!item.deprecated) {
@@ -176,7 +254,7 @@ export default class ScalarExprTreeBuilder {
               matches = overrideMatch
             }
 
-            const childOptions = _.extend({}, options)
+            const childOptions = { ...options }
 
             // Strip filter if matches to allow all sub-items
             if (matches) {
@@ -209,7 +287,7 @@ export default class ScalarExprTreeBuilder {
             }
 
             // If empty, do not show if searching unless override match
-            const numChildren = node.children().length
+            const numChildren = node.children!().length
             if (numChildren > 0 || !options.filter || overrideMatch) {
               // If depth is 0-1 and searching and doesn't match, leave open
               if (options.depth < 2 && options.filter && !matches) {
@@ -217,20 +295,20 @@ export default class ScalarExprTreeBuilder {
               }
 
               if (!options.filter) {
-                return nodes.push(node)
+                nodes.push(node)
               } else if (matches) {
-                return nodes.push(node)
+                nodes.push(node)
               } else if (options.depth < 2 && numChildren) {
-                return nodes.push(node)
+                nodes.push(node)
               }
             }
           }
         } else {
           // Gracefully handle deprecated columns
           if (!item.deprecated) {
-            node = this.createColumnNode(_.extend(options, { column: item }))
-            if (node) {
-              return nodes.push(node)
+            const node2 = this.createColumnNode(_.extend(options, { column: item }))
+            if (node2) {
+              nodes.push(node2)
             }
           }
         }
@@ -245,7 +323,7 @@ export default class ScalarExprTreeBuilder {
     let joins: any
     const { column } = options
 
-    const node = {
+    const node: ScalarTreeNode = {
       name: ExprUtils.localizeString(column.name, this.locale) || "(unnamed)",
       desc: ExprUtils.localizeString(column.desc, this.locale),
       tableId: options.table,
@@ -379,7 +457,7 @@ export default class ScalarExprTreeBuilder {
         return
       }
 
-      const fieldExpr = { type: "field", table: options.table, column: column.id }
+      const fieldExpr: FieldExpr = { type: "field", table: options.table, column: column.id }
 
       // Skip if aggregate and not aggr allowed
       if (
@@ -393,7 +471,7 @@ export default class ScalarExprTreeBuilder {
       // Don't allow selecting non-number fields in multiple joins, as it's too confusing https://github.com/mWater/mwater-portal/issues/1121
       // unless they are ordered. New: But allow text in order to make list.
       if (
-        !this.schema.getTable(options.table).ordering &&
+        !this.schema.getTable(options.table)!.ordering &&
         this.exprUtils.isMultipleJoins(options.startTable, options.joins) &&
         !["number", "text"].includes(column.type)
       ) {

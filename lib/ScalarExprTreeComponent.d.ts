@@ -1,7 +1,8 @@
 import React from "react";
+import { ScalarTreeNode } from "./ScalarExprTreeBuilder";
 interface ScalarExprTreeComponentProps {
     /** Tree from ScalarExprTreeBuilder */
-    tree: any;
+    tree: ScalarTreeNode[];
     /** Called with newly selected value */
     onChange: any;
     /** Render height of the component */
