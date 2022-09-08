@@ -142,7 +142,13 @@ export default class ExprElementBuilder {
         enumValues: options.enumValues
       })
     } else if (expr.type === "case") {
-      elem = this.buildCase(expr, onChange, { key: options.key, types: options.types, enumValues: options.enumValues })
+      elem = this.buildCase(expr, onChange, { 
+        key: options.key, 
+        types: options.types, 
+        enumValues: options.enumValues, 
+        aggrStatuses: options.aggrStatuses!, 
+        idTable: options.idTable 
+      })
     } else if (expr.type === "id") {
       elem = this.buildId(expr, onChange, { key: options.key })
     } else if (expr.type === "score") {
@@ -374,7 +380,7 @@ export default class ExprElementBuilder {
   }
 
   // Builds on op component
-  buildOp(expr: OpExpr, table: any, onChange: any, options: {
+  buildOp(expr: OpExpr, table: string | undefined, onChange: any, options: {
     /** array of { id, name } for the enumerable values to display */
     enumValues?: EnumValue[]
 
@@ -628,7 +634,20 @@ export default class ExprElementBuilder {
     }
   }
 
-  buildCase(expr: CaseExpr, onChange: any, options: any): ReactNode {
+  buildCase(expr: CaseExpr, onChange: ((expr: CaseExpr) => void) | undefined, options: {
+    key?: any
+
+    /** array of { id, name } for the enumerable values to display */
+    enumValues?: EnumValue[]
+
+    /** the table from which id-type expressions must come */
+    idTable?: string
+
+    types?: LiteralType[]
+ 
+    /** statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] or ["literal"] if not table */
+    aggrStatuses: AggrStatus[]
+  }): ReactNode {
     // Style for labels "if", "then", "else"
     const labelStyle = {
       flex: "0 0 auto", // Don't resize
@@ -642,13 +661,13 @@ export default class ExprElementBuilder {
       const innerElemOnWhenChange = (newWhen: any) => {
         const cases = expr.cases.slice()
         cases[i] = _.extend({}, cases[i], { when: newWhen })
-        return onChange(_.extend({}, expr, { cases }))
+        onChange!(_.extend({}, expr, { cases }))
       }
 
       const innerElemOnThenChange = (newThen: any) => {
         const cases = expr.cases.slice()
         cases[i] = _.extend({}, cases[i], { then: newThen })
-        return onChange(_.extend({}, expr, { cases }))
+        onChange!(_.extend({}, expr, { cases }))
       }
 
       // Build a flexbox that wraps with a when and then flexbox
@@ -675,7 +694,8 @@ export default class ExprElementBuilder {
             types: options.types,
             preferLiteral: true,
             enumValues: options.enumValues,
-            aggrStatuses: options.aggrStatuses
+            aggrStatuses: options.aggrStatuses,
+            idTable: options.idTable
           })
         )
       )
@@ -683,7 +703,7 @@ export default class ExprElementBuilder {
       const handleRemove = () => {
         const cases = expr.cases.slice()
         cases.splice(i, 1)
-        return onChange(_.extend({}, expr, { cases }))
+        onChange!(_.extend({}, expr, { cases }))
       }
 
       return { elem, onRemove: onChange ? handleRemove : undefined }
@@ -691,7 +711,7 @@ export default class ExprElementBuilder {
 
     // Add else
     const onElseChange = (newValue: any) => {
-      return onChange(_.extend({}, expr, { else: newValue }))
+      onChange!(_.extend({}, expr, { else: newValue }))
     }
 
     items.push({
@@ -704,13 +724,14 @@ export default class ExprElementBuilder {
           types: options.types,
           preferLiteral: true,
           enumValues: options.enumValues,
-          aggrStatuses: options.aggrStatuses
+          aggrStatuses: options.aggrStatuses,
+          idTable: options.idTable
         })
       )
     })
 
     // Create stacked expression
-    return R(StackedComponent, { items })
+    return R(StackedComponent, { key: options.key, items })
   }
 
   buildScore(expr: any, onChange: any, options: any): ReactNode {

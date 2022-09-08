@@ -42,7 +42,7 @@ export default class ExprElementBuilder {
         /** array of { id, name } for the enumerable values to display */
         enumValues?: EnumValue[];
     }): ReactNode;
-    buildOp(expr: OpExpr, table: any, onChange: any, options: {
+    buildOp(expr: OpExpr, table: string | undefined, onChange: any, options: {
         /** array of { id, name } for the enumerable values to display */
         enumValues?: EnumValue[];
         /** the table from which id-type expressions must come */
@@ -51,7 +51,16 @@ export default class ExprElementBuilder {
         /** statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] or ["literal"] if not table */
         aggrStatuses: AggrStatus[];
     }): ReactNode;
-    buildCase(expr: CaseExpr, onChange: any, options: any): ReactNode;
+    buildCase(expr: CaseExpr, onChange: ((expr: CaseExpr) => void) | undefined, options: {
+        key?: any;
+        /** array of { id, name } for the enumerable values to display */
+        enumValues?: EnumValue[];
+        /** the table from which id-type expressions must come */
+        idTable?: string;
+        types?: LiteralType[];
+        /** statuses of aggregation to allow. list of "individual", "literal", "aggregate". Default: ["individual", "literal"] or ["literal"] if not table */
+        aggrStatuses: AggrStatus[];
+    }): ReactNode;
     buildScore(expr: any, onChange: any, options: any): ReactNode;
     buildBuildEnumset(expr: BuildEnumsetExpr, onChange: any, options: any): ReactNode;
 }
