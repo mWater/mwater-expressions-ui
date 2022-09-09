@@ -1,5 +1,5 @@
 import _ from "lodash"
-import React from "react"
+import React, { ReactNode } from "react"
 const R = React.createElement
 import { default as AsyncReactSelect } from "react-select/async-creatable"
 import { DataSource, Expr, ExprCompiler, ExprUtils, FieldExpr, OpExpr, Schema } from "mwater-expressions"
@@ -51,7 +51,7 @@ export default class RefTextComponent extends React.Component<RefTextComponentPr
     return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&")
   }
 
-  loadOptions = (input: any, cb: any) => {
+  loadOptions = (input: string, cb: (rows: { value: string, label: ReactNode }[]) => void) => {
     // Create query to get matches ordered by most frequent to least
     const exprCompiler = new ExprCompiler(this.props.schema)
     const exprUtils = new ExprUtils(this.props.schema)
@@ -127,7 +127,8 @@ export default class RefTextComponent extends React.Component<RefTextComponentPr
       }
     }
     else {
-      console.error(`Unsupported refExprType: ${refExprType}`)
+      // No reference, only allow creation of values
+      cb([])
       return
     }
 

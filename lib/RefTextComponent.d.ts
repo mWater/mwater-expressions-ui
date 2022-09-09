@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { default as AsyncReactSelect } from "react-select/async-creatable";
 import { DataSource, Expr, Schema } from "mwater-expressions";
 export interface RefTextComponentProps {
@@ -19,7 +19,10 @@ export default class RefTextComponent extends React.Component<RefTextComponentPr
     focus(): void;
     handleChange: (value: any) => void;
     escapeRegex(s: any): any;
-    loadOptions: (input: any, cb: any) => void;
+    loadOptions: (input: string, cb: (rows: {
+        value: string;
+        label: ReactNode;
+    }[]) => void) => void;
     render(): React.DetailedReactHTMLElement<{
         style: {
             width: string;

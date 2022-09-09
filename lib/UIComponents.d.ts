@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import motion from "react-motion";
 export declare class SectionComponent extends React.Component<{
     icon?: string;
     label: ReactNode;
@@ -33,11 +34,7 @@ export declare class SwitchViewComponent extends React.Component<{
     componentWillReceiveProps(nextProps: any): void;
     refCallback: (id: any, comp: any) => void;
     componentDidUpdate(prevProps: any, prevState: any): void;
-    render(): React.CElement<{
-        style: {};
-    }, React.Component<{
-        style: {};
-    }, any, any>>;
+    render(): React.CElement<motion.MotionProps, motion.Motion>;
 }
 export declare class ToggleEditComponent extends React.Component<{
     forceOpen?: boolean;
