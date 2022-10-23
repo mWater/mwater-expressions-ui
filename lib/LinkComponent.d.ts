@@ -12,7 +12,7 @@ export default class LinkComponent extends React.Component<LinkComponentProps> {
     renderRemove(): React.DetailedReactHTMLElement<{
         className: string;
         onClick: any;
-    }, HTMLElement> | undefined;
+    }, HTMLElement> | null;
     renderDropdownItem: (item: any) => React.DetailedReactHTMLElement<{
         className: string;
     }, HTMLElement> | React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;

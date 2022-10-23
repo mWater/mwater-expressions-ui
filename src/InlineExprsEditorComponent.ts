@@ -123,7 +123,7 @@ export default class InlineExprsEditorComponent extends React.Component<InlineEx
           nodeText = nodeText.replace(/\r?\n/g, " ")
         }
 
-        return (text += nodeText)
+        text += nodeText
       }
     }
 

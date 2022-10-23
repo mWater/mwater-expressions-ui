@@ -48,6 +48,7 @@ export default class SectionEditorComponent extends React.Component<SectionEdito
             )
           )
         }
+        return null
       })(),
       _.includes(this.props.features, "code")
         ? R(

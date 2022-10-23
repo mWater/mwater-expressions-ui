@@ -23,6 +23,7 @@ export default class LinkComponent extends React.Component<LinkComponentProps> {
         R("i", { className: "fa fa-remove" })
       )
     }
+    return null
   }
 
   renderDropdownItem = (item: any) => {

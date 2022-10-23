@@ -1,9 +1,8 @@
-import { Moment } from "moment"
+import moment, { Moment } from "moment"
 import React from "react"
 const R = React.createElement
 import { default as DatePicker } from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
-import "./DateTimePickerComponent.css"
 
 export interface DateTimePickerComponentProps {
   /** do we need time picker? */
@@ -19,12 +18,14 @@ export interface DateTimePickerComponentProps {
 export default class DateTimePickerComponent extends React.Component<DateTimePickerComponentProps> {
   render() {
     return R(DatePicker, {
-      selected: this.props.date,
+      selected: this.props.date ? this.props.date.toDate() : undefined,
       showTimeSelect: this.props.timepicker,
       inline: true,
       showMonthDropdown: true,
       showYearDropdown: true,
-      onChange: this.props.onChange
+      onChange: (date) => {
+        this.props.onChange(date ? moment(date as Date) : undefined)
+      }
     })
   }
 }
