@@ -11,8 +11,13 @@ export interface Property extends Column {
     indexed?: boolean;
     /** True if property must be unique */
     unique?: boolean;
-    /** Action on delete */
-    onDelete?: "set_null" | "cascade";
+    /** For id type only: action when the row that is referenced is deleted.
+     * Default is to do nothing, leaving an invalid reference.
+     *
+     * "restrict" will prevent deletion of the row that is referenced at the database level
+     * "cascade" will delete the row at the database level with no archives
+     */
+    onDelete?: "cascade" | "restrict";
     /** Roles on property. User-defined */
     roles?: any[];
     sql?: string;

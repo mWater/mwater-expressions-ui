@@ -52,7 +52,7 @@ export interface PropertyListComponentProps {
    * section: allow adding sections
    * table: each property contains table
    * unique: allow unique flag on properties
-   * onDelete: allow undefined, "cascade" or "set_null"
+   * onDelete: allow undefined, "cascade" or "restrict"
    * dataurlType: allow dataurl type fields
    * indexed: allow indexed flag on properties
    * required: allow required flag on properties
