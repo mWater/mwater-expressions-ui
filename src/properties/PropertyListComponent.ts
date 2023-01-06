@@ -54,6 +54,8 @@ export interface PropertyListComponentProps {
    * unique: allow unique flag on properties
    * onDelete: allow undefined, "cascade" or "restrict"
    * dataurlType: allow dataurl type fields
+   * fileType: allow file type fields
+   * filelistType: allow filelist type fields
    * indexed: allow indexed flag on properties
    * required: allow required flag on properties
    */
@@ -71,6 +73,8 @@ export interface PropertyListComponentProps {
     | "unique"
     | "onDelete"
     | "dataurlType"
+    | "fileType"
+    | "filelistType"
     | "indexed"
     | "reverseSql"
     | "required"
@@ -326,7 +330,9 @@ class PropertyComponent extends React.Component<{
     boolean: "fa fa-toggle-on",
     id: "fa fa-arrow-right",
     join: "fa fa-link",
-    dataurl: "fa fa-file"
+    dataurl: "fa fa-file",
+    file: "fa fa-file",
+    filelist: "fa fa-file"
   }
 
   static contextTypes = { clipboard: PropTypes.object }

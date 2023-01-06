@@ -170,6 +170,12 @@ export default class PropertyEditorComponent extends React.Component<PropertyEdi
           _.includes(features, "joinType") ? R("option", { key: "join", value: "join" }, "Join") : undefined,
           _.includes(features, "dataurlType")
             ? R("option", { key: "dataurl", value: "dataurl" }, "Data URL (inline file storage)")
+            : undefined,
+          _.includes(features, "fileType")
+            ? R("option", { key: "file", value: "file" }, "File")
+            : undefined,
+          _.includes(features, "filelistType")
+            ? R("option", { key: "filelist", value: "filelist" }, "File list")
             : undefined
         )
       ),

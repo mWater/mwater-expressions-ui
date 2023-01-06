@@ -16,7 +16,7 @@ export interface PropertyListComponentProps {
     propertyIdGenerator?: () => string;
     /** Variables that may be used in expressions */
     variables?: Variable[];
-    features?: ("sql" | "idField" | "uniqueCode" | "idType" | "joinType" | "code" | "expr" | "conditionExpr" | "section" | "table" | "unique" | "onDelete" | "dataurlType" | "indexed" | "reverseSql" | "required")[];
+    features?: ("sql" | "idField" | "uniqueCode" | "idType" | "joinType" | "code" | "expr" | "conditionExpr" | "section" | "table" | "unique" | "onDelete" | "dataurlType" | "fileType" | "filelistType" | "indexed" | "reverseSql" | "required")[];
     /** function that returns the UI of the roles, called with a single argument, the array containing roles */
     createRoleDisplayElem?: (roles: any[]) => ReactNode;
     /** function that returns the UI of the roles for editing, gets passed two arguments
