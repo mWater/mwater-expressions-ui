@@ -4,23 +4,25 @@ import React from "react"
 const R = React.createElement
 
 import moment from "moment"
-import { DataSource, EnumValue, Expr, ExprUtils, Schema } from "mwater-expressions"
+import { DataSource, EnumValue, Expr, ExprUtils, LiteralExpr, LiteralType, Schema } from "mwater-expressions"
 import DateTimePickerComponent from "./DateTimePickerComponent"
 import IdLiteralComponent from "./IdLiteralComponent"
-import { Toggle } from "react-library/lib/bootstrap"
+import { TextInput, Toggle } from "react-library/lib/bootstrap"
+import { ListEditorComponent } from "react-library/lib/ListEditorComponent"
 import RefTextComponent from "./RefTextComponent"
 
-interface SelectLiteralExprComponentProps {
+export interface SelectLiteralExprComponentProps {
   /** Current expression value */
   value?: any
   /** Called with new expression */
-  onChange: any
+  onChange: (value: LiteralExpr | null) => void
+
   /** Called to cancel */
-  onCancel: any
+  onCancel: () => void
   schema: Schema
   dataSource: DataSource
   /** Props to narrow down choices */
-  types?: any
+  types?: LiteralType[]
   /** Array of { id:, name: } of enum values that can be selected. Only when type = "enum" */
   enumValues?: EnumValue[]
   /** If specified the table from which id-type expressions must come */
@@ -166,6 +168,11 @@ export default class SelectLiteralExprComponent extends React.Component<
       refExpr = refExpr.expr
     }
 
+    // If reference expression is aggregate, null it, as it is not supported (https://github.com/mWater/mwater-portal/issues/1532)
+    if (refExpr && exprUtils.getExprAggrStatus(refExpr) === "aggregate") {
+      refExpr = null
+    }
+
     // If text and has a reference expression
     if ((exprType === "text" || _.isEqual(this.props.types, ["text"])) && refExpr) {
       return R(RefTextComponent, {
@@ -178,7 +185,7 @@ export default class SelectLiteralExprComponent extends React.Component<
       })
     }
     
-    // If text[] and has refExpr, use special component
+    // If text[] and has reference expression, use special component
     if ((exprType === "text[]" || _.isEqual(this.props.types, ["text[]"])) && refExpr) {
       return R(RefTextComponent, {
         value: expr,
@@ -188,6 +195,11 @@ export default class SelectLiteralExprComponent extends React.Component<
         dataSource: this.props.dataSource,
         onChange: this.handleChange
       })
+    }
+
+    // If text[], use special component
+    if ((exprType === "text[]" || _.isEqual(this.props.types, ["text[]"]))) {
+      return <TextListComponent value={expr} onChange={this.handleChange} />
     }
 
     if ((exprType === "enum" || _.isEqual(this.props.types, ["enum"])) && this.props.enumValues) {
@@ -393,4 +405,20 @@ class EnumsetAsListComponent extends React.Component<EnumsetAsListComponentProps
       })
     )
   }
+}
+
+function TextListComponent(props: {
+  value?: LiteralExpr | null
+  /** Called with new expression */
+  onChange: (value: LiteralExpr | null) => void
+}) {
+  const value: string[] = props.value?.value || []
+
+  return <ListEditorComponent
+    items={value}
+    onItemsChange={(items) => props.onChange(items.length > 0 ? { type: "literal", valueType: "text[]", value: items } : null)}
+    renderItem={(item, index, onItemChange) => <TextInput value={item} onChange={onItemChange} />}
+    addLabel="Add item"
+    createNew={() => ""}
+  />
 }
