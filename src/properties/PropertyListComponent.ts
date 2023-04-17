@@ -186,6 +186,14 @@ class InnerPropertyListComponent extends React.Component<PropertyListComponentPr
         title: this.state.addingItem.type === "section" ? "Add a section" : "Add a property",
         actionLabel: "Save",
         onAction: () => {
+          // Require id and name
+          if (!this.state.addingItem!.id && this.state.addingItem!.type !== "section") {
+            return alert("Id required")
+          }
+          if (!this.state.addingItem!.name) {
+            return alert("Name required")
+          }
+
           if (this.state.addingItem) {
             // Prevent duplicates
             if (allPropertyIds.includes(this.state.addingItem.id)) {
@@ -413,6 +421,13 @@ class PropertyComponent extends React.Component<{
               title: this.state.editorProperty!.type === "section" ? "Edit section" : "Edit property",
               actionLabel: "Save",
               onAction: () => {
+                // Require id and name
+                if (!this.state.editorProperty!.id && this.state.editorProperty!.type !== "section") {
+                  return alert("Id required")
+                }
+                if (!this.state.editorProperty!.name) {
+                  return alert("Name required")
+                }
                 if (this.state.editorProperty) {
                   // Prevent duplicates
                   if (
