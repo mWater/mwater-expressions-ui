@@ -77,7 +77,17 @@ export default class ExprLinkComponent extends React.Component<ExprLinkComponent
     if (this.props.onChange) {
       return R(
         "a",
-        { onClick: this.handleClick, style: { cursor: "pointer", fontStyle: "italic", color: "var(--bs-primary)" } },
+        { onClick: this.handleClick, style: { 
+          cursor: "pointer", 
+          fontStyle: "italic", 
+          color: "var(--bs-primary)",
+          backgroundColor: "var(--bs-gray-200)",
+          borderRadius: 5,
+          paddingLeft: 5,
+          paddingRight: 5,
+          paddingTop: 2,
+          paddingBottom: 2
+        } },
         this.props.placeholder ? this.props.placeholder : "None"
       )
     } else {

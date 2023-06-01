@@ -51,6 +51,12 @@ export default class ExprLinkComponent extends React.Component<ExprLinkComponent
             cursor: "pointer";
             fontStyle: "italic";
             color: "var(--bs-primary)";
+            backgroundColor: "var(--bs-gray-200)";
+            borderRadius: number;
+            paddingLeft: number;
+            paddingRight: number;
+            paddingTop: number;
+            paddingBottom: number;
         };
     }, HTMLElement> | React.DetailedReactHTMLElement<{
         className: string;
