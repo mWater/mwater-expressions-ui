@@ -84,7 +84,7 @@ export default function <T extends any>(WrappedComponent: T): T {
         if (this.props.propertyIdGenerator) {
           property.id = this.props.propertyIdGenerator()
         } else {
-          property.id = "p" + uuid.v4().split("-")[0]
+          property.id += "_" + uuid.v4().split("-")[0]
         }
       }
 
