@@ -82,7 +82,7 @@ export default function <T extends any>(WrappedComponent: T): T {
       if (!cut) {
         // Id is used as key, so the id needs to be regenerated
         if (this.props.propertyIdGenerator) {
-          property.id = this.props.propertyIdGenerator()
+          property.id += this.props.propertyIdGenerator()
         } else {
           property.id += "_" + uuid.v4().split("-")[0]
         }

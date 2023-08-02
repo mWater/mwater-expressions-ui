@@ -59,8 +59,8 @@ $(() =>
 
     // ReactDOM.render(R(MockTestInlineExprsEditorComponent), document.getElementById("main"))
     // ReactDOM.render(R(MockPropertyEditorTestComponent), document.getElementById("main"))
-    // ReactDOM.render(R(PropertyListContainerComponentWrapped, schema: schema, dataSource: dataSource, table: "entities.water_system"), document.getElementById("main"))
-    ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
+    ReactDOM.render(R(PropertyListContainerComponentWrapped, { schema: schema, dataSource: dataSource, table: "entities.water_system" }), document.getElementById("main"))
+    //ReactDOM.render(R(LiveTestComponent), document.getElementById("main"))
     // ReactDOM.render(R(MockTestComponent), document.getElementById("main"))
   })
 )
