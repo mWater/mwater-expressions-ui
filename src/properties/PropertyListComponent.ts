@@ -80,13 +80,11 @@ export interface PropertyListComponentProps {
     | "required"
   )[]
 
-  /** function that returns the UI of the roles, called with a single argument, the array containing roles */
-  createRoleDisplayElem?: (roles: any[]) => ReactNode
+  /** Function that adds extra display to property list items */
+  createExtraDisplayElem?: (property: Column | Section) => ReactNode
 
-  /** function that returns the UI of the roles for editing, gets passed two arguments
-   * 1. the array containing roles
-   * 2. The callback function that should be called when the roles change */
-  createRoleEditElem?: (roles: any[], onChange: (roles: any[]) => void) => ReactNode
+  /** Function that adds extra UI to editing properties */
+  createExtraEditElem?: (property: Column | Section, onChange: (property: Column | Section) => void) => ReactNode
 
   /** supplied by NestedListClipboardEnhancement */
   onCut?: () => void
@@ -222,7 +220,7 @@ class InnerPropertyListComponent extends React.Component<PropertyListComponentPr
             variables: this.props.variables,
             onChange: (updatedProperty: any) => this.setState({ addingItem: updatedProperty }),
             features: this.props.features,
-            createRoleEditElem: this.props.createRoleEditElem,
+            createExtraEditElem: this.props.createExtraEditElem,
             forbiddenPropertyIds: allPropertyIds
           })
     )
@@ -253,8 +251,8 @@ class InnerPropertyListComponent extends React.Component<PropertyListComponentPr
         onCopy: this.props.onCopy,
         onPaste: this.props.onPaste,
         onPasteInto: this.props.onPasteInto,
-        createRoleEditElem: this.props.createRoleEditElem,
-        createRoleDisplayElem: this.props.createRoleDisplayElem,
+        createExtraEditElem: this.props.createExtraEditElem,
+        createExtraDisplayElem: this.props.createExtraDisplayElem,
         listId: this.props.listId,
         allPropertyIds
       })
@@ -302,13 +300,11 @@ class PropertyComponent extends React.Component<{
   /** Features to be enabled apart from the default features */
   features: string[]
   
-  /** function that returns the UI of the roles, called with a single argument, the array containing roles */
-  createRoleDisplayElem?: (roles: any[]) => ReactNode
+  /** Function that adds extra UI to editing properties */
+  createExtraEditElem?: (property: Column | Section, onChange: (property: Column | Section) => void) => ReactNode
 
-  /** function that returns the UI of the roles for editing, gets passed two arguments
-   * 1. the array containing roles
-   * 2. The callback function that should be called when the roles change */
-  createRoleEditElem?: (roles: any[], onChange: (roles: any[]) => void) => ReactNode
+  /** Function that adds extra display to property list items */
+  createExtraDisplayElem?: (property: Column | Section) => ReactNode
 
   onCut: (listId: string, propertyId: string) => void
   onCopy: (listId: string, propertyId: string) => void
@@ -458,7 +454,7 @@ class PropertyComponent extends React.Component<{
                   variables: this.props.variables,
                   onChange: (updatedProperty: any) => this.setState({ editorProperty: updatedProperty }),
                   features: this.props.features,
-                  createRoleEditElem: this.props.createRoleEditElem,
+                  createExtraEditElem: this.props.createExtraEditElem,
                   forbiddenPropertyIds: _.without(this.props.allPropertyIds, this.props.property.id)
                 })
           )
@@ -518,8 +514,8 @@ class PropertyComponent extends React.Component<{
             _.includes(this.props.features, "table") && (this.props.property as Property).table
               ? R("div", { className: "pl-item-detail-table text-muted" }, this.renderTable((this.props.property as Property).table))
               : undefined,
-            (this.props.property as Property).roles && this.props.createRoleDisplayElem
-              ? this.props.createRoleDisplayElem((this.props.property as Property).roles!)
+            (this.props.property as Property).roles && this.props.createExtraDisplayElem
+              ? this.props.createExtraDisplayElem(this.props.property)
               : undefined
           )
         )
@@ -537,8 +533,8 @@ class PropertyComponent extends React.Component<{
               table: this.props.table,
               tableIds: this.props.tableIds,
               variables: this.props.variables,
-              createRoleEditElem: this.props.createRoleEditElem,
-              createRoleDisplayElem: this.props.createRoleDisplayElem,
+              createExtraDisplayElem: this.props.createExtraDisplayElem,
+              createExtraEditElem: this.props.createExtraEditElem,
               onCut: this.props.onCut,
               onCopy: this.props.onCopy,
               onPaste: this.props.onPaste,

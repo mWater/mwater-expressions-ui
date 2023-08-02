@@ -17,12 +17,10 @@ export interface PropertyListComponentProps {
     /** Variables that may be used in expressions */
     variables?: Variable[];
     features?: ("sql" | "idField" | "uniqueCode" | "idType" | "joinType" | "code" | "expr" | "conditionExpr" | "section" | "table" | "unique" | "onDelete" | "dataurlType" | "fileType" | "filelistType" | "indexed" | "reverseSql" | "required")[];
-    /** function that returns the UI of the roles, called with a single argument, the array containing roles */
-    createRoleDisplayElem?: (roles: any[]) => ReactNode;
-    /** function that returns the UI of the roles for editing, gets passed two arguments
-     * 1. the array containing roles
-     * 2. The callback function that should be called when the roles change */
-    createRoleEditElem?: (roles: any[], onChange: (roles: any[]) => void) => ReactNode;
+    /** Function that adds extra display to property list items */
+    createExtraDisplayElem?: (property: Column | Section) => ReactNode;
+    /** Function that adds extra UI to editing properties */
+    createExtraEditElem?: (property: Column | Section, onChange: (property: Column | Section) => void) => ReactNode;
     /** supplied by NestedListClipboardEnhancement */
     onCut?: () => void;
     /** supplied by NestedListClipboardEnhancement */

@@ -63,7 +63,8 @@ export interface PropertyEditorComponentProps {
   /** Ids of tables to include when using table feature */
   tableIds?: string[]
 
-  createRoleEditElem?: (roles: any[] | undefined, onRolesChange: (roles: any[]) => void) => ReactNode
+  /** Function that adds extra UI to editing properties */
+  createExtraEditElem?: (property: Column | Section, onChange: (property: Column | Section) => void) => ReactNode
 
   /** Ids of properties that are not allowed as would be duplicates */
   forbiddenPropertyIds?: string[]
@@ -353,14 +354,8 @@ export default class PropertyEditorComponent extends React.Component<PropertyEdi
           )
         : undefined,
 
-      this.props.createRoleEditElem
-        ? R(
-            ui.FormGroup,
-            { label: "Roles" },
-            this.props.createRoleEditElem(this.props.property.roles || [], (roles: any) =>
-              this.props.onChange(_.extend({}, this.props.property, { roles }))
-            )
-          )
+      this.props.createExtraEditElem
+        ? this.props.createExtraEditElem(this.props.property, this.props.onChange)
         : undefined
     )
   }

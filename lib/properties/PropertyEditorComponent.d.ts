@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { Column, DataSource, Expr, Schema, Variable } from "mwater-expressions";
+import { Column, DataSource, Expr, Schema, Section, Variable } from "mwater-expressions";
 export interface Property extends Column {
     table?: string;
     contents?: Property[];
@@ -38,7 +38,8 @@ export interface PropertyEditorComponentProps {
     table?: string;
     /** Ids of tables to include when using table feature */
     tableIds?: string[];
-    createRoleEditElem?: (roles: any[] | undefined, onRolesChange: (roles: any[]) => void) => ReactNode;
+    /** Function that adds extra UI to editing properties */
+    createExtraEditElem?: (property: Column | Section, onChange: (property: Column | Section) => void) => ReactNode;
     /** Ids of properties that are not allowed as would be duplicates */
     forbiddenPropertyIds?: string[];
     /** Variables that may be used in expressions */
