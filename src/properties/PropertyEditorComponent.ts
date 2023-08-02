@@ -162,6 +162,9 @@ export default class PropertyEditorComponent extends React.Component<PropertyEdi
           R("option", { key: "image", value: "image" }, "Image"),
           R("option", { key: "imagelist", value: "imagelist" }, "Imagelist"),
           R("option", { key: "json", value: "json" }, "JSON"),
+          _.includes(features, "unitType")
+            ? R("option", { key: "unit", value: "unit" }, "Unit")
+            : undefined,
           _.includes(features, "idType") && this.props.schema
             ? R("option", { key: "id", value: "id" }, "Reference")
             : undefined,
