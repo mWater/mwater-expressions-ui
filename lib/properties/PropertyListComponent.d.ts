@@ -16,7 +16,7 @@ export interface PropertyListComponentProps {
     propertyIdGenerator?: () => string;
     /** Variables that may be used in expressions */
     variables?: Variable[];
-    features?: ("sql" | "idField" | "uniqueCode" | "idType" | "joinType" | "code" | "expr" | "conditionExpr" | "section" | "table" | "unique" | "onDelete" | "dataurlType" | "fileType" | "filelistType" | "indexed" | "reverseSql" | "required")[];
+    features?: ("sql" | "idField" | "uniqueCode" | "idType" | "unitType" | "joinType" | "code" | "expr" | "conditionExpr" | "section" | "table" | "unique" | "onDelete" | "dataurlType" | "fileType" | "filelistType" | "indexed" | "reverseSql" | "required")[];
     /** Function that adds extra display to property list items */
     createExtraDisplayElem?: (property: Column | Section) => ReactNode;
     /** Function that adds extra UI to editing properties */

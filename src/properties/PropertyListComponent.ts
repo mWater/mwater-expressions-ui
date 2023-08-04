@@ -45,6 +45,7 @@ export interface PropertyListComponentProps {
    * idField: show id field for properties
    * uniqueCode: allow uniqueCode flag on properties
    * idType: allow id-type fields
+   * unitType: allow unit-type fields (does not include unit details, just the type)
    * joinType: allow join-type fields
    * code: show code of properties
    * expr: allow fields with expr set
@@ -64,6 +65,7 @@ export interface PropertyListComponentProps {
     | "idField"
     | "uniqueCode"
     | "idType"
+    | "unitType"
     | "joinType"
     | "code"
     | "expr"
